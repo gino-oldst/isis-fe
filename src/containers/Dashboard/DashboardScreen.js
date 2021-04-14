@@ -7,14 +7,14 @@ import type { Menu } from '../../types';
 import './dashboard.scss';
 
 type Props = {
-    dashboardMenu: Array<Menu>
+    sidebarMenu: Array<Menu>
 }
 
-function DashboardScreen({ dashboardMenu }: Props): React$Element<any> {
+function DashboardScreen({ sidebarMenu }: Props): React$Element<any> {
     return (
         <div className='dashboard'>
             <CollapsibleSidebar
-                menu={dashboardMenu} />
+                menu={sidebarMenu} />
 
             <div className='p-3'>
                 <Typography variant='size-22'>

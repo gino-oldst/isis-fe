@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fab } from '@fortawesome/free-brands-svg-icons';
-import { faCheckSquare, faCoffee, faCircle } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import configureStore, { history } from './redux/store';
@@ -13,7 +13,7 @@ import './styles/styles.scss';
 
 const store = configureStore();
 
-library.add(fab, faCheckSquare, faCoffee, faCircle);
+library.add(fab, faBell, faUserCircle);
 
 ReactDOM.render(
     <React.StrictMode>

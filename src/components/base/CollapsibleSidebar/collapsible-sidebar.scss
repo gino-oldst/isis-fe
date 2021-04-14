@@ -1,6 +1,5 @@
-
-@import '../../../styles/utils/_variables';
-@import '../../../styles/utils/_mixins';
+@import "../../../styles/utils/_variables";
+@import "../../../styles/utils/_mixins";
 
 .collapsible-sidebar {
     background-color: $color-brand-2;
@@ -51,13 +50,12 @@
 
         &-item {
             display: flex;
-            padding: 6px $spacing;
-            margin: 4px 0;
+            padding: 14px $spacing;
             cursor: pointer;
 
             &.is-active,
             &:hover {
-                background-color: rgba(0, 0, 0, 0.1);
+                background-color: rgb(138, 138, 138);
             }
         }
     }

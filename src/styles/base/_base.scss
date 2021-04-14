@@ -125,6 +125,13 @@ blockquote {
     border-left: 0.5rem $color-divider solid;
 }
 
+// navbar
+.navlinks-right {
+    .navbar__account {
+        font-size: 1.5rem;
+    }
+}
+
 // text effects
 .cursor-pointer {
     cursor: pointer;

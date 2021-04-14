@@ -4,6 +4,7 @@ import { useAccordionToggle } from 'react-bootstrap/AccordionToggle';
 import { Accordion, Card } from 'react-bootstrap';
 import { IoMdMenu, IoMdClose } from 'react-icons/io';
 import { MdKeyboardArrowDown } from 'react-icons/md';
+import Typography from '../Typography/Typography';
 import type { Menu } from '../../../types';
 import './collapsible-sidebar.scss';
 
@@ -21,6 +22,9 @@ export default function CollapsibleSidebar({
 }: Props): React$Element<any> {
     const Icon = !isOpen ? IoMdMenu : IoMdClose;
 
+    console.log(pathName)
+    ;
+
     return (
         <div className={`collapsible-sidebar${!isOpen ? ' is-open' : ''}`} >
             <div className='collapsible-sidebar__control'>
@@ -36,9 +40,9 @@ export default function CollapsibleSidebar({
                             <Card>
                                 <Card.Header>
                                     <div onClick={item.onClick || null}>
-                                        <CustomToggle eventKey={i} withSubmenu={!!item.subMenu}>
-                                            <item.icon size={20}/>
-                                            <p className='ml-3 mb-0'>{item.label}</p>
+                                        <CustomToggle eventKey={i} pathName={pathName} itemKey={item.key}
+                                            withSubmenu={!!item.subMenu}>
+                                            <Typography variant='size-16' color='color-3' className='ml-3 mb-0'>{item.label}</Typography>
                                         </CustomToggle>
                                     </div>
                                 </Card.Header>
@@ -50,7 +54,6 @@ export default function CollapsibleSidebar({
                                                     key={sub.key}
                                                     onClick={item.onClick || null}
                                                     className={`collapsible-sidebar__menu-item ${pathName === `/${sub.key}` ? 'is-active' : ''}`}>
-                                                    <item.icon size={20} color='transparent'/>
                                                     <p className='ml-3 mb-0'>{sub.label}</p>
                                                 </div>
                                             )}
@@ -68,12 +71,12 @@ export default function CollapsibleSidebar({
     );
 }
 
-function CustomToggle({ children, eventKey, withSubmenu }) {
+function CustomToggle({ children, eventKey, pathName, itemKey, withSubmenu }) {
     const decoratedOnClick = useAccordionToggle(eventKey);
 
     return (
         <div
-            className='collapsible-sidebar__menu-item justify-content-between'
+            className={`collapsible-sidebar__menu-item justify-content-between ${pathName === `/${itemKey.toLowerCase()}` ? 'is-active' : ''}`}
             onClick={decoratedOnClick}>
             <div className='d-flex'>
                 {children}

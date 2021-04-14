@@ -1,0 +1,36 @@
+@import "../../../styles/utils/_variables";
+@import "../../../styles/utils/_mixins";
+
+.dropdown {
+    cursor: pointer;
+
+    .dropdown-icon {
+        height: 25px;
+    }
+
+    .dropdown-toggle::after {
+        display: none !important;
+    }
+
+    .btn:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    .dropdown-item {
+        padding: 10px 20px;
+    }
+
+    .dropdown-item.active,
+    .dropdown-item:active {
+        background-color: black !important;
+    }
+}
+
+.task-menu {
+    color: #d8d8d8 !important;
+}
+
+.show.dropdown .task-menu {
+    color: black !important;
+}

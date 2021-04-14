@@ -3,7 +3,6 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import './login.scss';
 import { Form, FormGroup, Input } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../components/base/Button/Button';
 import Typography from '../../components/base/Typography/Typography';
 
@@ -72,10 +71,10 @@ export default function Login({
 
 const ContactDetailsModal = () => {
     return (
-        <div className='login__contact-details text-left py-2 px-5'>
+        <div className='login__contact-details text-left py-2 px-4'>
             <Typography
                 variant='size-26' color='color-2' weight='semi-bold'
-                className='my-1'>
+                className='mb-1'>
                 Admin contact details
             </Typography>
             <Typography
@@ -85,12 +84,12 @@ const ContactDetailsModal = () => {
             </Typography>
             <Typography
                 variant='size-16' color='color-2'
-                className='my-1'>
+                className='mb-1'>
                 &bull; Calls: <span className='color-link-text cursor-pointer'>44 (0)20 3352 1231 / 44(0)20 2526 3158</span>
             </Typography>
             <Typography
                 variant='size-16' color='color-2'
-                className='my-1'>
+                className='mb-2'>
                 &bull; Email: <span className='color-link-text cursor-pointer'>admin@admin.com</span>
             </Typography>
         </div>
