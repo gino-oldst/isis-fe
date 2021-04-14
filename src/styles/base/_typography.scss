@@ -1,0 +1,70 @@
+html {
+    font-size: 87.5%;  // 14px
+    text-size-adjust: 100%;
+}
+
+body {
+    font-family: $font-family-1;
+    font-weight: $font-normal;
+    color: $color-font-base;
+    font-size: $font-size-base;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    font-family: $font-family-1;
+    font-weight: $font-medium;
+    color: $color-font-base;
+    margin-bottom: 0;
+}
+
+h1,
+.h1 {
+    font-size: 30px;
+    line-height: 43px;
+}
+
+h2,
+.h2 {
+    font-size: 24px;
+    line-height: 35px;
+}
+
+h3,
+.h3 {
+    font-size: 20px;
+    line-height: 28px;
+}
+
+h4,
+.h4 {
+    font-size: 16px;
+    line-height: 22px;
+}
+
+h5,
+.h5 {
+    font-size: 12px;
+    line-height: 17px;
+}
+
+a {
+    color: $color-link;
+
+    &:hover,
+    &:focus {
+        color: $color-link-hover;
+    }
+}

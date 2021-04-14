@@ -1,0 +1,97 @@
+
+@import '../../../styles/utils/_variables';
+@import '../../../styles/utils/_mixins';
+
+.typography {
+    color: $color-font-base;
+    font-size: 14px;
+    line-height: 21px;
+    margin-bottom: 0;
+
+    &.size {
+        &-40 {
+            font-size: 40px;
+            line-height: 54px;
+        }
+
+        &-26 {
+            font-size: 26px;
+            line-height: 35px;
+        }
+
+        &-24 {
+            font-size: 24px;
+            line-height: 33px;
+        }
+
+        &-22 {
+            font-size: 22px;
+            line-height: 30px;
+        }
+
+        &-20 {
+            font-size: 20px;
+            line-height: 27px;
+        }
+
+        &-18 {
+            font-size: 18px;
+            line-height: 24px;
+        }
+
+        &-16 {
+            font-size: 16px;
+            line-height: 22px;
+        }
+
+        &-14 {
+            font-size: 14px;
+            line-height: 19px;
+        }
+
+        &-12 {
+            font-size: 12px;
+            line-height: 15px;
+        }
+    }
+
+    &.color {
+        &-1 {
+            color: $color-brand-1;
+        }
+
+        &-2 {
+            color: $color-brand-2;
+        }
+
+        &-3 {
+            color: $color-brand-3;
+        }
+    }
+
+    &.weight {
+        &-light {
+            font-weight: 300;
+        }
+
+        &-regular {
+            font-weight: 400;
+        }
+
+        &-semi-bold {
+            font-weight: 600;
+        }
+
+        &-bold {
+            font-weight: 700;
+        }
+
+        // &-extra-bold {
+        //     font-weight: 800;
+        // }
+
+        // &-black {
+        //     font-weight: 900;
+        // }
+    }
+}

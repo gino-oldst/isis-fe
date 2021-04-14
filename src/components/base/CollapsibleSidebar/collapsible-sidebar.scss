@@ -1,0 +1,64 @@
+
+@import '../../../styles/utils/_variables';
+@import '../../../styles/utils/_mixins';
+
+.collapsible-sidebar {
+    background-color: $color-brand-2;
+    height: 100%;
+    width: $sidebar-width;
+    transition: all 0.3s;
+    color: $color-brand-3;
+    flex: 0 0 $sidebar-width;
+
+    &.is-open {
+        width: 55px;
+        flex: 0 0 55px;
+    }
+
+    &__control {
+        display: flex;
+        justify-content: flex-end;
+
+        &-button {
+            cursor: pointer;
+        }
+    }
+
+    &__content {
+        transition: all 0.3s;
+
+        &.is-visible {
+            display: none;
+        }
+    }
+
+    &__content-menu {
+        .card {
+            background-color: transparent;
+            border: none;
+            border-radius: 0;
+
+            &-header {
+                padding: 0;
+                border-bottom: none;
+                background-color: transparent;
+            }
+        }
+    }
+
+    &__menu {
+        padding: 12px;
+
+        &-item {
+            display: flex;
+            padding: 6px $spacing;
+            margin: 4px 0;
+            cursor: pointer;
+
+            &.is-active,
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+        }
+    }
+}

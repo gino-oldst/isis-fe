@@ -1,0 +1,136 @@
+@import "../utils/_variables";
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    touch-action: manipulation;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+}
+
+#root {
+    height: 100%;
+}
+
+#outer-container {
+    height: 100%;
+    // background: rgba(203, 203, 210, 0.15);
+    overflow: hidden;
+}
+
+#page-wrap {
+    position: relative;
+    z-index: 0;
+    contain: layout;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding: 1.5rem 1.75rem;
+    height: 100%;
+}
+
+.safari-fix #page-wrap {
+    position: fixed;
+    overflow: hidden;
+    -webkit-overflow-scrolling: auto;
+}
+
+.no-transition,
+.no-transition * {
+    transition-property: none !important;
+    transform: none !important;
+    animation: none !important;
+}
+
+main {
+    height: 100%;
+    overflow: auto;
+
+    &.error-page {
+        padding-top: $spacing-double;
+    }
+}
+
+.top-spacing {
+    margin-top: $spacing;
+}
+
+.top-spacing-double {
+    margin-top: $spacing-double;
+}
+
+.top-spacing-third {
+    margin-top: $spacing-third;
+}
+
+.top-spacing-half {
+    margin-top: $spacing-half;
+}
+
+.flex-centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    border: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+a,
+button {
+    &::-moz-focus-inner {
+        border: 0;
+    }
+
+    &:focus {
+        outline: 0;
+    }
+}
+
+hr {
+    border-color: #ccc;
+}
+
+section {
+    figure {
+        margin-bottom: $spacing;
+
+        figcaption {
+            display: block;
+            margin-bottom: $spacing-half;
+        }
+
+        img {
+            width: 100%;
+        }
+    }
+}
+
+article section {
+    margin-bottom: $spacing-double;
+}
+
+blockquote {
+    margin: 0;
+    padding-left: $spacing-half;
+    border-left: 0.5rem $color-divider solid;
+}
+
+// text effects
+.cursor-pointer {
+    cursor: pointer;
+}
+
+// text colors
+.color-link-text {
+    color: #3366bb;
+}

@@ -1,0 +1,9 @@
+
+@import '../../../styles/utils/_variables';
+@import '../../../styles/utils/_mixins';
+
+.navbar {
+    padding: 0 $spacing;
+    height: $height-navmenu;
+    box-shadow: 0 2px $color-shadow;
+}

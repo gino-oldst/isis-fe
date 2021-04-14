@@ -1,0 +1,29 @@
+@import "../../styles/utils/_variables";
+@import "../../styles/utils/_mixins";
+
+.login {
+    height: 100%;
+
+    .form-container {
+        border-top-left-radius: $border-radius-large;
+        border-top-right-radius: $border-radius-large;
+        border-bottom-left-radius: $border-radius-large;
+        border-bottom-right-radius: $border-radius-large;
+        width: 350px;
+
+        @include screen-xs {
+            width: 75%;
+        }
+    }
+
+    &__button {
+        padding: 0.7rem 0;
+        border: 1px solid #ced4da !important;
+        font-size: 1.1rem !important;
+    }
+
+    input {
+        padding: 0.7rem 1rem;
+        font-size: 1.1rem !important;
+    }
+}
