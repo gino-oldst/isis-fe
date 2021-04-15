@@ -30,6 +30,18 @@ Size40.args = {
     variant: 'size-40'
 };
 
+export const Size35 = Template.bind({});
+Size35.args = {
+    children: 'Size 35',
+    variant: 'size-35'
+};
+
+export const Size30 = Template.bind({});
+Size30.args = {
+    children: 'Size 30',
+    variant: 'size-30'
+};
+
 export const Size26 = Template.bind({});
 Size26.args = {
     children: 'Size 26',

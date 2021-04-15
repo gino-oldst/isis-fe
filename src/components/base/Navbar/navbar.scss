@@ -1,9 +1,21 @@
-
-@import '../../../styles/utils/_variables';
-@import '../../../styles/utils/_mixins';
+@import "../../../styles/utils/_variables";
+@import "../../../styles/utils/_mixins";
 
 .navbar {
     padding: 0 $spacing;
     height: $height-navmenu;
     box-shadow: 0 2px $color-shadow;
+
+    &__brand-logo {
+        height: 40px;
+        margin-left: 50px;
+    }
+
+    &__user-icon {
+        font-size: 2.5rem;
+    }
+
+    &__notification-bell {
+        font-size: 1.6rem;
+    }
 }

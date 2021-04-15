@@ -19,7 +19,7 @@ export default function Navbar({
 }: Props): React$Element<any> {
     return (
         <div className={`navbar ${className}`} >
-            <Typography variant='size-24' className='mr-auto'>{navbarBrand}</Typography>
+            <img src={navbarBrand} alt='mariana_logo' className='navbar__brand-logo mr-auto' />
             {children}
         </div>
     );

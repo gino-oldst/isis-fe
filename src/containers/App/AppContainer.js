@@ -11,6 +11,7 @@ import Typography from '../../components/base/Typography/Typography';
 import Navbar from '../../components/base/Navbar/Navbar';
 import { clearModalContent } from '../../redux/modules/modalEvent';
 import { setLoggingOut } from '../../redux/modules/authentication';
+import navbarBrand from '../../assets/logos/mariana_logo.png';
 
 import {
     Nav,
@@ -34,7 +35,6 @@ function App() {
     const dispatch = useDispatch();
     const { modalContent, onToggle, ...modalEvent } = useSelector(({ modalEvent }) => modalEvent);
     const { isAuthed } = useSelector(({ authentication }) => authentication);
-    const navbarBrand = process.env.REACT_APP_NAV_TITLE.toUpperCase();
 
     const sidebarMenu = [{
         label: 'Dashboard',
@@ -77,7 +77,8 @@ function App() {
     return (
         <AppLoadingContainer>
             <div id='outer-container'>
-                {isAuthed && <Navbar navbarBrand={navbarBrand}><NavbarLinks /></Navbar>}
+                {/* {isAuthed && <Navbar navbarBrand={navbarBrand}><NavbarLinks /></Navbar>} */}
+                {<Navbar navbarBrand={navbarBrand}><NavbarLinks /></Navbar>}
                 <React.Suspense fallback={loading()}>
                     <Switch>
                         {routes.map((route, i) => (
@@ -106,7 +107,8 @@ const Notifications = () => {
     return (
         <div className='navbar__notifications'>
             <DropdownToggle nav={true} className='d-flex'>
-                <FontAwesomeIcon icon='bell' size='lg' color='gray' />
+                <FontAwesomeIcon className='navbar__notification-bell' icon='bell' size='lg'
+                    color='gray' />
             </DropdownToggle>
             <DropdownMenu right={true} className='mt-2 pb-4 navbar__navbar__notifications-dropdown'>
                 <DropdownItem header={true} tag='div' style={{ cursor: 'default' }}>
@@ -130,7 +132,8 @@ const NavbarAccount = () => {
     return (
         <div className='navbar__account'>
             <DropdownToggle nav={true} className='d-flex'>
-                <FontAwesomeIcon icon='user-circle' size='lg' color='gray' />
+                <FontAwesomeIcon className='navbar__user-icon' icon='user-circle' size='lg'
+                    color='gray' />
             </DropdownToggle>
             <DropdownMenu right={true}>
                 <DropdownItem onClick={() => history.push('/reset-password')}>
@@ -161,12 +164,13 @@ function RouteWithSubRoutes({ component: Component, handleCloseModal, ...rest })
 function PrivateRoute({ component: Component, isAuthed, sidebarMenu, handleCloseModal, ...rest }) {
     return (
         <Route {...rest} render={(routeProps) => (
-            isAuthed
-                ? <Component {...routeProps} sidebarMenu={sidebarMenu} handleCloseModal={handleCloseModal} />
-                : <Redirect to={{
-                    pathname: '/login',
-                    state: { from: routeProps.location }
-                }}/>
+            <Component {...routeProps} sidebarMenu={sidebarMenu} handleCloseModal={handleCloseModal} />
+            // isAuthed
+            //     ? <Component {...routeProps} sidebarMenu={sidebarMenu} handleCloseModal={handleCloseModal} />
+            //     : <Redirect to={{
+            //         pathname: '/login',
+            //         state: { from: routeProps.location }
+            //     }}/>
         )}/>
     );
 }

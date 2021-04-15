@@ -2,7 +2,7 @@
 @import "../../../styles/utils/_mixins";
 
 .collapsible-sidebar {
-    background-color: $color-brand-2;
+    background-color: $color-sidebar-1;
     height: 100%;
     width: $sidebar-width;
     transition: all 0.3s;
@@ -50,12 +50,12 @@
 
         &-item {
             display: flex;
-            padding: 14px $spacing;
+            padding: 18px $spacing;
             cursor: pointer;
 
             &.is-active,
             &:hover {
-                background-color: rgb(138, 138, 138);
+                background-color: $color-sidebar-2;
             }
         }
     }

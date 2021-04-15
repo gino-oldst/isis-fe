@@ -25,6 +25,10 @@
     .dropdown-item:active {
         background-color: black !important;
     }
+
+    .dropdown-menu {
+        margin-left: -50px !important;
+    }
 }
 
 .task-menu {

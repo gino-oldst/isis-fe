@@ -35,3 +35,15 @@ Color2.args = {
     children: '#464646',
     color: 'color-2'
 };
+
+export const Color3 = Template.bind({});
+Color3.args = {
+    children: '#000',
+    color: 'color-3'
+};
+
+export const Color4 = Template.bind({});
+Color4.args = {
+    children: '#fff',
+    color: 'color-4'
+};

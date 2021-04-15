@@ -44,6 +44,14 @@ $color-primary: $color-brand-1;
 // $color-danger: ;
 // $color-light: ;
 
+// colors: sidebar
+$color-sidebar-1: #15273e;
+$color-sidebar-2: #004a93;
+$color-sidebar-3: #777777;
+
+// colors: breadcrumbs
+$color-breadcrumbs-1: #757575;
+
 // colors: links
 $color-link: $color-brand-1;
 $color-link-hover: lighten($color-brand-1, 15%);

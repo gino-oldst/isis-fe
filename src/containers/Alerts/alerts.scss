@@ -4,4 +4,22 @@
 .alerts {
     height: 100%;
     display: flex;
+
+    &__title {
+        margin-top: 0.5rem;
+        margin-bottom: 2rem;
+        font-size: 2rem !important;
+        font-family: "Playfair Display", serif;
+    }
+
+    .react-table {
+        font-family: "Roboto", serif;
+
+        &__table-head-rows {
+            th {
+                font-weight: 800 !important;
+                border-top: none;
+            }
+        }
+    }
 }

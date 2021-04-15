@@ -2,7 +2,7 @@
 import React from 'react';
 import { useAccordionToggle } from 'react-bootstrap/AccordionToggle';
 import { Accordion, Card } from 'react-bootstrap';
-import { IoMdMenu, IoMdClose } from 'react-icons/io';
+// import { IoMdMenu, IoMdClose } from 'react-icons/io';
 import { MdKeyboardArrowDown } from 'react-icons/md';
 import Typography from '../Typography/Typography';
 import type { Menu } from '../../../types';
@@ -20,19 +20,16 @@ type Props = {
 export default function CollapsibleSidebar({
     className = '', children, handleToggleSidebar, isOpen, pathName, menu = []
 }: Props): React$Element<any> {
-    const Icon = !isOpen ? IoMdMenu : IoMdClose;
-
-    console.log(pathName)
-    ;
+    // const Icon = !isOpen ? IoMdMenu : IoMdClose;
 
     return (
         <div className={`collapsible-sidebar${!isOpen ? ' is-open' : ''}`} >
-            <div className='collapsible-sidebar__control'>
+            {/* <div className='collapsible-sidebar__control'>
                 <div onClick={handleToggleSidebar} className='collapsible-sidebar__control-button'>
                     <Icon color='#fff' size={30} className='m-3'/>
                 </div>
-            </div>
-
+            </div> */}
+            <div style={{ marginTop: '50px' }} />
             <div className={`collapsible-sidebar__content${!isOpen ? ' is-visible' : ''}  ${className}`}>
                 <div className='collapsible-sidebar__content-menu'>
                     {menu.map((item, i) =>
@@ -42,7 +39,7 @@ export default function CollapsibleSidebar({
                                     <div onClick={item.onClick || null}>
                                         <CustomToggle eventKey={i} pathName={pathName} itemKey={item.key}
                                             withSubmenu={!!item.subMenu}>
-                                            <Typography variant='size-16' color='color-3' className='ml-3 mb-0'>{item.label}</Typography>
+                                            <Typography variant='size-16' className='ml-3 mb-0'>{item.label}</Typography>
                                         </CustomToggle>
                                     </div>
                                 </Card.Header>
