@@ -2,6 +2,7 @@
 @import "../../../styles/utils/_mixins";
 
 .navbar {
+    z-index: 100;
     padding: 0 $spacing;
     height: $height-navmenu;
     box-shadow: 0 2px $color-shadow;
