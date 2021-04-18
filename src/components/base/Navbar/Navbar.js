@@ -1,6 +1,10 @@
 // @flow
 import * as React from 'react';
-import Typography from '../Typography/Typography';
+import {
+    Nav,
+    Navbar as ReactNavbar,
+    NavbarBrand
+} from 'reactstrap';
 import './navbar.scss';
 
 type Props = {
@@ -18,9 +22,15 @@ export default function Navbar({
     children
 }: Props): React$Element<any> {
     return (
-        <div className={`navbar ${className}`} >
-            <img src={navbarBrand} alt='mariana_logo' className='navbar__brand-logo mr-auto' />
-            {children}
+        <div className={`${className}`}>
+            <ReactNavbar color='light' light={true}>
+                <NavbarBrand href='/dashboard'>
+                    <img src={navbarBrand} alt='mariana_logo' className='navbar__brand-logo mr-auto' />
+                </NavbarBrand>
+                <Nav className='ml-auto' navbar={true}>
+                    {children}
+                </Nav>
+            </ReactNavbar>
         </div>
     );
 }

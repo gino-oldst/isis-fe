@@ -2,14 +2,13 @@
 @import "../../../styles/utils/_mixins";
 
 .navbar {
-    z-index: 100;
     padding: 0 $spacing;
     height: $height-navmenu;
-    box-shadow: 0 2px $color-shadow;
+    box-shadow: 0 1px $color-shadow;
 
     &__brand-logo {
-        height: 40px;
-        margin-left: 50px;
+        height: 45px;
+        margin-left: 45px;
     }
 
     &__user-icon {

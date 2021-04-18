@@ -10,7 +10,7 @@ $media-xs: 480px;
 // DIMENSIONS
 
 // navmenu height
-$height-navmenu: 60px;
+$height-navmenu: 70px;
 
 // sidebar
 $sidebar-width: 230px;
@@ -36,6 +36,8 @@ $color-brand-3: #efefef;
 $color-font-base: $color-brand-2;
 $color-link-text: #3366bb;
 
+$color-progress-bar: #0e7eed;
+$bg-download-button: #004a93;
 $color-primary: $color-brand-1;
 // $color-secondary: ;
 // $color-success: ;
@@ -63,7 +65,16 @@ $color-divider: #efefef;
 $color-modal-bg: #f5f7f9;
 
 // color: shadow
-$color-shadow: rgba(0, 0, 0, 0.11);
+$color-shadow: #d8d8d8;
+
+// colors: line chart
+$color-line-1: #9ab87a;
+$color-line-2: #d68b5c;
+
+// colors: dougnut chart
+$color-dougnut-1: #3485d5;
+$color-dougnut-2: #d68b5c;
+$color-dougnut-3: #f3f3f3;
 
 //-------------------------------------//
 // FONTS
@@ -71,6 +82,8 @@ $color-shadow: rgba(0, 0, 0, 0.11);
 // fonts: base styles
 $font-family-1: "Source Sans Pro", "Helvetica Neue", helvetica, arial,
     sans-serif;
+$font-family-2: "Playfair Display", serif;
+$font-family-3: "Open Sans", serif;
 $font-size-base: 1rem;
 
 // fonts: weights

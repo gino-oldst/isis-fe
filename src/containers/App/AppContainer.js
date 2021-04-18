@@ -64,10 +64,10 @@ function App() {
     const NavbarLinks = () => {
         return (
             <Nav className='navlinks-right'>
-                <UncontrolledDropdown nav={true} direction='down' className='d-flex align-self-center mr-2'>
+                <UncontrolledDropdown nav={true} direction='down' className='d-flex align-self-center mr-4'>
                     <Notifications />
                 </UncontrolledDropdown>
-                <UncontrolledDropdown nav={true} direction='down'>
+                <UncontrolledDropdown nav={true} direction='down' className='mr-4'>
                     <NavbarAccount />
                 </UncontrolledDropdown>
             </Nav>

@@ -18,7 +18,7 @@ body {
 
 #outer-container {
     height: 100%;
-    // background: rgba(203, 203, 210, 0.15);
+    background: #f2f2f2;
     overflow: hidden;
 }
 
@@ -144,4 +144,56 @@ blockquote {
 // text colors
 .color-link-text {
     color: #3366bb;
+}
+.color-progress-bar {
+    color: $color-progress-bar;
+}
+
+// bg colors
+.bg-open {
+    background-color: #d68b5c;
+}
+.bg-review {
+    background-color: #996888;
+}
+.bg-resolve {
+    background-color: #9ab87a;
+}
+.bg-done {
+    background-color: #7f7f7f;
+}
+.bg-download-button {
+    background-color: $bg-download-button;
+}
+
+// fonts
+.playfair-font {
+    font-family: $font-family-2;
+}
+
+.roboto-font {
+    font-family: $font-family-3;
+}
+
+// scrollbar
+::-webkit-scrollbar {
+    height: 8px;
+    width: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #fff;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    // background-color: lighten($color-text-dark, 10%);
+    background-color: #d8d8d8;
+    border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background-color: #cacaca;
 }
