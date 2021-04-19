@@ -1,0 +1,51 @@
+@import "../../styles/utils/variables";
+
+.navbar__notifications {
+    &__icon {
+        .notification_icon {
+            border-radius: 30px;
+            margin-left: 4px;
+            margin-right: 20px;
+            width: 34px;
+            height: 34px;
+            padding: 10px;
+            background: $color-sidebar-2;
+        }
+    }
+
+    &__read-icon {
+        color: $color-sidebar-2;
+    }
+
+    &-dropdown {
+        width: 450px;
+    }
+
+    &-today-title,
+    &-past-title {
+        letter-spacing: 0.175rem;
+
+        p {
+            color: #a0a0a0 !important;
+            padding: 0.5rem 0;
+        }
+    }
+
+    button {
+        &:focus,
+        &:active {
+            background-color: lighten($color-sidebar-2, 60%) !important;
+            border-color: lighten($color-sidebar-2, 60%) !important;
+        }
+    }
+}
+
+.navbar__account {
+    button {
+        &:focus,
+        &:active {
+            background-color: lighten($color-sidebar-2, 10%) !important;
+            border-color: lighten($color-sidebar-2, 10%) !important;
+        }
+    }
+}

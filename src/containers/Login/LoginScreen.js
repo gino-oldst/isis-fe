@@ -53,7 +53,7 @@ export default function Login({
                                 className='login__button w-100 d-block' />
                         </FormGroup>
                         <Typography
-                            variant='size-14' color='color-2'
+                            variant='size-16' color='color-2'
                             className='login__forgot-pass text-center mt-4'>
                             Forgot Password?
                             <span className='cursor-pointer color-sidebar-2 ml-1'

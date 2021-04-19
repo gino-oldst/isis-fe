@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
+import { Switch, Route, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import Spinner from 'react-bootstrap/Spinner';
 import routes from '../../config/routes';
@@ -8,10 +8,14 @@ import AppModal from '../../components/base/Modal/Modal';
 import FlashNotification from '../../components/modules/FlashNotification/FlashNotification';
 import WrapperBackground from '../../components/base/WrapperBackground/WrapperBackground';
 import Typography from '../../components/base/Typography/Typography';
+import Badge from '../../components/base/Badge/Badge';
+import Tooltip from '../../components/base/Tooltip/Tooltip';
 import Navbar from '../../components/base/Navbar/Navbar';
 import { clearModalContent } from '../../redux/modules/modalEvent';
 import { setLoggingOut } from '../../redux/modules/authentication';
 import navbarBrand from '../../assets/logos/mariana_logo.png';
+import bellIcon from '../../assets/images/ic_bell-solid-white.svg';
+import './app.scss';
 
 import {
     Nav,
@@ -110,10 +114,63 @@ const Notifications = () => {
                 <FontAwesomeIcon className='navbar__notification-bell' icon='bell' size='lg'
                     color='gray' />
             </DropdownToggle>
-            <DropdownMenu right={true} className='mt-2 pb-4 navbar__navbar__notifications-dropdown'>
-                <DropdownItem header={true} tag='div' style={{ cursor: 'default' }}>
-                    <Typography weight='semi-bold' className='py-2 pb-4'>Notifications</Typography>
-                </DropdownItem>
+            <DropdownMenu right={true} className='mt-2 navbar__notifications-dropdown'>
+                <div className='navbar__notifications-title px-4 pt-2'>
+                    <Typography color='color-3' weight='semi-bold' variant='size-16'
+                        className='mb-2'>Notifications</Typography>
+                </div>
+                <div className='navbar__notifications-today'>
+                    <div className='navbar__notifications-today-title px-4 py-1'>
+                        <Typography color='color-3' weight='light' variant='size-10'>TODAY</Typography>
+                    </div>
+                    <DropdownItem className='px-4 py-4 d-flex align-items-center'>
+                        <div className='navbar__notifications__icon'>
+                            <img src={bellIcon} alt='Notification_Bell_Icon' className='notification_icon' />
+                        </div>
+                        <div className='navbar__notifications__details mr-auto'>
+                            <Typography color='color-3' variant='size-14' weight='semi-bold'
+                                className='mb-2'>Jonathan Greene assigned an alert to you</Typography>
+                            <Typography color='color-3' variant='size-16' className='mb-2'>
+                                <span className='mr-3'>MU311 | Marking the Close</span>
+                                <Badge status='Open' />
+                            </Typography>
+                            <Typography color='color-3' variant='size-12' className='text-muted'>Today, 10:03 AM</Typography>
+                        </div>
+                        <div className='navbar__notifications__read-icon mr-2'>
+                            <FontAwesomeIcon className='navbar__notification-read' icon='circle' size='xs'
+                                data-tip={true} data-for='notif-1'/>
+                        </div>
+                        <Tooltip place='left' id='notif-1'>
+                            <Typography variant='size-10' weight='light' color='color-3'>Mark as read</Typography>
+                        </Tooltip>
+                    </DropdownItem>
+                </div>
+                <div className='navbar__notifications-past'>
+                    <div className='navbar__notifications-past-title px-4 py-1'>
+                        <Typography color='color-3' weight='light' variant='size-10'>YESTERDAY AND EARLIER</Typography>
+                    </div>
+                    <DropdownItem className='px-4 py-4 d-flex align-items-center'>
+                        <div className='navbar__notifications__icon'>
+                            <img src={bellIcon} alt='Notification_Bell_Icon' className='notification_icon' />
+                        </div>
+                        <div className='navbar__notifications__details mr-auto'>
+                            <Typography color='color-3' variant='size-14' weight='semi-bold'
+                                className='mb-2'>Pamela Johnson assigned an alert to you</Typography>
+                            <Typography color='color-3' variant='size-16' className='mb-2'>
+                                <span className='mr-3'>MU305 | Flash Order</span>
+                                <Badge status='Open' />
+                            </Typography>
+                            <Typography color='color-3' variant='size-12' className='text-muted'>10 Jul 2020, 10:03 AM</Typography>
+                        </div>
+                        <div className='navbar__notifications__read-icon mr-2'>
+                            <FontAwesomeIcon className='navbar__notification-read' icon='circle' size='xs'
+                                data-tip={true} data-for='notif-2'/>
+                        </div>
+                        <Tooltip place='left' id='notif-2'>
+                            <Typography variant='size-10' weight='light' color='color-3'>Mark as read</Typography>
+                        </Tooltip>
+                    </DropdownItem>
+                </div>
             </DropdownMenu>
         </div>
     );
@@ -136,10 +193,10 @@ const NavbarAccount = () => {
                     color='gray' />
             </DropdownToggle>
             <DropdownMenu right={true}>
-                <DropdownItem onClick={() => history.push('/reset-password')}>
+                <DropdownItem className='px-4 py-2' onClick={() => history.push('/reset-password')}>
                     Change Password
                 </DropdownItem>
-                <DropdownItem onClick={logout}>
+                <DropdownItem className='px-4 py-2' onClick={logout}>
                     Logout
                 </DropdownItem>
             </DropdownMenu>

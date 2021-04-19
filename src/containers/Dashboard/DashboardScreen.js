@@ -212,10 +212,10 @@ function DashboardScreen({
                                                                         data-tip={true} data-for={`status-level__${data.id}`}>
                                                                         <Typography variant='size-12' weight='light'>{data.label}</Typography>
                                                                     </Progress>
-                                                                    <Tooltip
-                                                                        key={data.id}
-                                                                        id={`status-level__${data.id}`}
-                                                                        data={data}/>
+                                                                    <Tooltip key={data.id} id={`status-level__${data.id}`} place='bottom'>
+                                                                        <Typography variant='size-14' weight='semi-bold' color='color-3'>{data.label}</Typography>
+                                                                        <Typography variant='size-10' weight='light' color='color-3'>{data.alerts} Alerts</Typography>
+                                                                    </Tooltip>
                                                                 </>
                                                             );
                                                         })}
