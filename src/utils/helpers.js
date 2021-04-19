@@ -22,6 +22,27 @@ const range = len => {
     return arr;
 };
 
+export const getTextColor = text => {
+    let color = '';
+
+    switch (text.toLowerCase()) {
+        case 'base':
+            color = 'color-badge-green';
+            break;
+        case 'manager':
+            color = 'color-badge-orange';
+            break;
+        case 'co':
+            color = 'text-danger';
+            break;
+        default:
+            color = 'text-dark';
+            break;
+    }
+
+    return <span className={color}>{text}</span>;
+};
+
 const newRecord = () => {
     return {
         identifier: namor.generate({ words: 1, numbers: 1 }),

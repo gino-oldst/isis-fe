@@ -1,7 +1,17 @@
-
-@import '../../../styles/utils/_variables';
-@import '../../../styles/utils/_mixins';
+@import "../../../styles/utils/_variables";
+@import "../../../styles/utils/_mixins";
 
 .date-picker {
+}
 
+.MuiOutlinedInput-input {
+    padding: 12px 0 !important;
+}
+
+.MuiOutlinedInput-root {
+    border-radius: 2px !important;
+
+    .MuiInputAdornment-positionStart {
+        margin-right: 0 !important;
+    }
 }

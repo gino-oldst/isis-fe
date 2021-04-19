@@ -4,4 +4,36 @@
 .behaviours {
     height: 100%;
     display: flex;
+
+    &__content {
+        padding: 0.6rem 2rem;
+    }
+
+    &__title {
+        margin-top: 0.35rem;
+        margin-bottom: 2rem;
+        font-size: 2rem !important;
+        font-family: $font-family-2;
+    }
+
+    .table {
+        min-width: 1200px;
+
+        thead {
+            font-size: 1.2rem;
+
+            th {
+                border-top: 0;
+                text-align: left;
+            }
+        }
+
+        tbody {
+            td {
+                padding: 1.1rem 0 1.1rem 0.8rem;
+                text-align: left;
+                font-size: 1.1rem;
+            }
+        }
+    }
 }

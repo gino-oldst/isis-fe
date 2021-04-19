@@ -1,0 +1,9 @@
+@import "../../../styles/utils/_variables";
+@import "../../../styles/utils/_mixins";
+
+.badge {
+    font-size: 75% !important;
+    font-weight: 400;
+    letter-spacing: 1.2px;
+    padding: 5px 12px;
+}

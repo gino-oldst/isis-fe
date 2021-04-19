@@ -52,12 +52,12 @@ export default function DatePicker({
                     animateYearScrolling={true}
                     inputProps={{ style: { fontSize: 15 } }} // font size of input text
                     InputLabelProps={{ style: { fontSize: 15 } }} // font size of input label
-                    style={{ width: '50%' }}
+                    style={{ width: '25%' }}
                     InputProps={{
                         startAdornment: (
-                            <InputAdornment position={'start'} className='mx-2'>
+                            <InputAdornment position={'start'}>
                                 <Icon>
-                                    <FontAwesomeIcon icon='calendar-alt' size='sm' />
+                                    <FontAwesomeIcon icon='calendar-alt' size='xs' />
                                 </Icon>
                             </InputAdornment>)
                     }}/>

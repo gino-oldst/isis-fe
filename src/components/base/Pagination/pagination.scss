@@ -1,0 +1,52 @@
+@import "../../../styles/utils/_variables";
+@import "../../../styles/utils/_mixins";
+
+.pagination {
+    .disabled {
+        color: rgb(160, 160, 160);
+    }
+
+    .page-item {
+        cursor: pointer;
+        text-align: center;
+        border: 0;
+
+        &.active {
+            .page-link {
+                border: 1px solid red;
+            }
+        }
+
+        .page-link {
+            font-size: 1rem;
+            color: #000;
+            border: 0;
+        }
+    }
+
+    li:first-child {
+        margin-top: 0.5rem;
+        margin-right: 20px;
+
+        a {
+            display: none;
+        }
+
+        &:after {
+            content: "Prev";
+        }
+    }
+
+    li:last-child {
+        margin-top: 0.5rem;
+        margin-left: 20px;
+
+        a {
+            display: none;
+        }
+
+        &:after {
+            content: "Next";
+        }
+    }
+}

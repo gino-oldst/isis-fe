@@ -63,7 +63,7 @@ function DashboardScreen({
                                                     <DatePicker
                                                         value={selectedDate}
                                                         onChange={handleDateChange} />
-                                                    <Typography color='color-3' variant='size-18' className='mx-4'>to</Typography>
+                                                    <Typography color='color-3' variant='size-16' className='mx-4'>to</Typography>
                                                     <DatePicker
                                                         value={selectedDate}
                                                         onChange={handleDateChange} />
