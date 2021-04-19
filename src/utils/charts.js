@@ -23,7 +23,8 @@ export function makeDougnutChartData() {
                 ],
                 borderWidth: 0
             }
-        ]
+        ],
+        text: '70 ALERTS'
     };
 
     return data;
@@ -52,11 +53,12 @@ export function lineChartOptions() {
             }]
         },
         legend: {
-            align: 'end',
-            labels: {
-                boxWidth: 3,
-                usePointStyle: true
-            }
+            display: false
+            // align: 'end',
+            // labels: {
+            //     boxWidth: 3,
+            //     usePointStyle: true
+            // }
         }
     };
 }

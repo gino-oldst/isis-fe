@@ -17,7 +17,7 @@ import {
     Progress
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Line, Doughnut } from 'react-chartjs-2';
+import { Line, Doughnut, Chart } from 'react-chartjs-2';
 import {
     lineChartOptions,
     doughnutChartOptions,
@@ -34,6 +34,31 @@ type Props = {
     selectedDate: Date,
     handleDateChange: Function
 }
+
+// for dougnut text inside
+const originalDoughnutDraw = Chart.controllers.doughnut.prototype.draw;
+
+Chart.helpers.extend(Chart.controllers.doughnut.prototype, {
+    draw: function() {
+        originalDoughnutDraw.apply(this, arguments);
+
+        const chart = this.chart.chart;
+        const ctx = chart.ctx;
+        const width = chart.width;
+        const height = chart.height;
+
+        const fontSize = (height / 140).toFixed(2);
+
+        ctx.font = fontSize + 'em Roboto';
+        ctx.textBaseline = 'middle';
+
+        const text = chart.config.data.text;
+        const textX = Math.round((width - ctx.measureText(text).width) / 2);
+        const textY = height / 2;
+
+        ctx.fillText(text, textX, textY);
+    }
+});
 
 function DashboardScreen({
     sidebarMenu,
@@ -96,7 +121,21 @@ function DashboardScreen({
                                     <Row>
                                         <Col>
                                             <div className='dashboard__alert-statistics py-4'>
-                                                <Typography color='color-3' variant='size-22' className='playfair-font mb-4'>Alert Statistics</Typography>
+                                                <div className='dashboard__alert-statistics-header d-block d-md-flex align-items-start'>
+                                                    <Typography color='color-3' variant='size-22' className='playfair-font mr-auto mb-4'>Alert Statistics</Typography>
+                                                    <div className='dashboard__alert-statistics__chart-label d-block d-md-flex mt-2 mb-4 mb-md-0'>
+                                                        <div className='dashboard__alert-statistics__received d-flex align-items-center mr-5 mb-2 mb-md-0'>
+                                                            <FontAwesomeIcon className='mr-2 pb-1 mt-1' icon='circle' size='xs'
+                                                                style={{ color: '#d68b5c' }} />
+                                                            <Typography color='color-3' variant='size-12'>Alert Received</Typography>
+                                                        </div>
+                                                        <div className='dashboard__alert-statistics__resolved d-flex align-items-center'>
+                                                            <FontAwesomeIcon className='mr-2 pb-1 mt-1' icon='circle' size='xs'
+                                                                style={{ color: '#9ab87a' }} />
+                                                            <Typography color='color-3' variant='size-12'>Alert Resolved</Typography>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div className='dashboard__charts-alert-statistics__chart'>
                                                     <Line
                                                         data={makeLineChartData}
@@ -111,12 +150,44 @@ function DashboardScreen({
                                             <div className='dashboard__escalation-level py-4'>
                                                 <Typography color='color-3' variant='size-22' className='playfair-font mb-5'>Escalation Level Changes in Period</Typography>
                                                 <div className='dashboard__charts-escalation-level__chart'>
-                                                    <Doughnut
-                                                        data={makeDougnutChartData}
-                                                        height={180}
-                                                        width={50}
-                                                        responsive={true}
-                                                        options={doughnutChartOptions()} />
+                                                    <Row className='d-flex align-items-center'>
+                                                        <Col sm={12} md={4}>
+                                                            <div className='mb-3 mb-md-0'>
+                                                                <Doughnut
+                                                                    data={makeDougnutChartData}
+                                                                    height={180}
+                                                                    width={50}
+                                                                    responsive={true}
+                                                                    options={doughnutChartOptions()} />
+                                                            </div>
+                                                        </Col>
+                                                        <Col sm={12} md={4}>
+                                                            <div className='dashboard__escalation-level__labels mb-3 mb-md-0'>
+                                                                <div className='dashboard__escalation-level__label1 d-flex align-items-end'>
+                                                                    <FontAwesomeIcon className='dashboard__escalation-level__label-icon mr-2 mb-2 pb-1' icon='circle' size='xs'
+                                                                        style={{ color: '#d68b5c' }} />
+                                                                    <Typography color='color-3' variant='size-30'>23%</Typography>
+                                                                </div>
+                                                                <div className='dashboard__escalation-level__sublabel1 mt-2'>
+                                                                    <Typography color='color-3' variant='size-14' weight='semi-bold'>16 Alerts</Typography>
+                                                                    <Typography color='color-3' variant='size-14' weight='light'>Moved from Base to Manager</Typography>
+                                                                </div>
+                                                            </div>
+                                                        </Col>
+                                                        <Col sm={12} md={4}>
+                                                            <div className='dashboard__escalation-level__labels'>
+                                                                <div className='dashboard__escalation-level__label2 d-flex align-items-end'>
+                                                                    <FontAwesomeIcon className='dashboard__escalation-level__label-icon mr-2 mb-2 pb-1' icon='circle' size='xs'
+                                                                        style={{ color: '#3485d5' }} />
+                                                                    <Typography color='color-3' variant='size-30'>62%</Typography>
+                                                                </div>
+                                                                <div className='dashboard__escalation-level__sub-label2 mt-2'>
+                                                                    <Typography color='color-3' variant='size-14' weight='semi-bold'>43 Alerts</Typography>
+                                                                    <Typography color='color-3' variant='size-14' weight='light'>Moved from Manager to CO</Typography>
+                                                                </div>
+                                                            </div>
+                                                        </Col>
+                                                    </Row>
                                                 </div>
                                             </div>
                                         </Col>
