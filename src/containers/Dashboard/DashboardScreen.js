@@ -4,7 +4,10 @@ import Button from '../../components/base/Button/Button';
 import Typography from '../../components/base/Typography/Typography';
 import CollapsibleSidebar from '../../components/base/CollapsibleSidebar/CollapsibleSidebarContainer';
 import DatePicker from '../../components/base/DatePicker/DatePicker';
+import Tooltip from '../../components/base/Tooltip/Tooltip';
 import withLoading from '../../components/modules/withLoading/withLoading';
+import receivedIcon from '../../assets/images/icon_bell1.svg';
+import resolvedIcon from '../../assets/images/icon_bell2.svg';
 import type { Menu } from '../../types';
 import {
     Row,
@@ -44,7 +47,7 @@ function DashboardScreen({
             <div className='dashboard__content w-100 overflow-auto'>
                 <div className='dashboard__header d-block d-md-flex align-items-center mb-4'>
                     <Typography color='color-3' className='dashboard__title mr-auto mb-4 mb-md-0'>MAR Alerts Overview</Typography>
-                    <Button label={<><FontAwesomeIcon className='mr-3' icon='file-download' size='sm' /><span>Download</span></>} className='dashboard__download-button' size='lg' />
+                    <Button label={<><FontAwesomeIcon className='mr-3' icon='file-download' size='sm' /><span className='font-weight-light'>Download</span></>} className='dashboard__download-button' size='lg' />
                 </div>
                 <div>
                     <Row>
@@ -72,9 +75,9 @@ function DashboardScreen({
                                         <Col lg={12} xl={6}>
                                             <Card>
                                                 <CardBody className='d-flex align-items-center justify-content-center'>
-                                                    <FontAwesomeIcon className='mr-4' icon='bell' size='lg' />
-                                                    <Typography className='mr-2 playfair-font' color='color-3' weight='bold'
-                                                        variant='size-26'>70</Typography>
+                                                    <img src={receivedIcon} alt='Alerts_Received_Icon' className='mr-4' />
+                                                    <Typography className='mr-3 pb-2 playfair-font' color='color-3' weight='semi-bold'
+                                                        variant='size-30'>70</Typography>
                                                     <Typography color='color-3' weight='light' variant='size-16'>Alerts Received</Typography>
                                                 </CardBody>
                                             </Card>
@@ -82,9 +85,9 @@ function DashboardScreen({
                                         <Col lg={12} xl={6}>
                                             <Card className='mt-xl-0 mt-3'>
                                                 <CardBody className='d-flex align-items-center justify-content-center'>
-                                                    <FontAwesomeIcon className='mr-4' icon='bell' size='lg' />
-                                                    <Typography className='mr-2 playfair-font' color='color-3' weight='bold'
-                                                        variant='size-26'>42</Typography>
+                                                    <img src={resolvedIcon} alt='Alerts_Received_Icon' className='mr-4' />
+                                                    <Typography className='mr-3 pb-2 playfair-font' color='color-3' weight='semi-bold'
+                                                        variant='size-30'>42</Typography>
                                                     <Typography color='color-3' weight='light' variant='size-16'>Alerts Resolved</Typography>
                                                 </CardBody>
                                             </Card>
@@ -132,7 +135,17 @@ function DashboardScreen({
                                                     <Progress multi={true}>
                                                         {makeStatusLevelAlertsData().map(data => {
                                                             return (
-                                                                <Progress bar={true} className={data.color} value={data.alerts}>{data.label}</Progress>
+                                                                <>
+                                                                    <Progress key={`progress__${data.id}`} bar={true} className={data.color}
+                                                                        value={data.alerts}
+                                                                        data-tip={true} data-for={`status-level__${data.id}`}>
+                                                                        <Typography variant='size-12' weight='light'>{data.label}</Typography>
+                                                                    </Progress>
+                                                                    <Tooltip
+                                                                        key={data.id}
+                                                                        id={`status-level__${data.id}`}
+                                                                        data={data}/>
+                                                                </>
                                                             );
                                                         })}
                                                     </Progress>

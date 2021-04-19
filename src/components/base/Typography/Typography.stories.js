@@ -14,7 +14,7 @@ const config = {
             },
             control: {
                 type: 'select',
-                options: ['size-40', 'size-26', 'size-24', 'size-22', 'size-20', 'size-16', 'size-14', 'size-12']
+                options: ['size-40', 'size-35', 'size-30', 'size-26', 'size-24', 'size-22', 'size-20', 'size-16', 'size-14', 'size-12', 'size-10', 'size-8']
             }
         }
     }
@@ -82,4 +82,16 @@ export const Size12 = Template.bind({});
 Size12.args = {
     children: 'Size 12',
     variant: 'size-12'
+};
+
+export const Size10 = Template.bind({});
+Size10.args = {
+    children: 'Size 10',
+    variant: 'size-10'
+};
+
+export const Size8 = Template.bind({});
+Size8.args = {
+    children: 'Size 8',
+    variant: 'size-8'
 };

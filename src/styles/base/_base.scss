@@ -145,8 +145,20 @@ blockquote {
 .color-link-text {
     color: #3366bb;
 }
+.color-sidebar-1 {
+    color: $color-sidebar-1;
+}
+.color-sidebar-2 {
+    color: $color-sidebar-2;
+}
+.color-sidebar-3 {
+    color: $color-sidebar-3;
+}
 .color-progress-bar {
     color: $color-progress-bar;
+}
+.color-forgot-pass {
+    color: $color-forgot-pass;
 }
 
 // bg colors
@@ -164,6 +176,15 @@ blockquote {
 }
 .bg-download-button {
     background-color: $bg-download-button;
+}
+.bg-sidebar-1 {
+    background-color: $color-sidebar-1;
+}
+.bg-sidebar-2 {
+    background-color: $color-sidebar-2;
+}
+.bg-sidebar-3 {
+    background-color: $color-sidebar-3;
 }
 
 // fonts

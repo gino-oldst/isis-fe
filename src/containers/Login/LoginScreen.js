@@ -5,6 +5,7 @@ import './login.scss';
 import { Form, FormGroup, Input } from 'reactstrap';
 import Button from '../../components/base/Button/Button';
 import Typography from '../../components/base/Typography/Typography';
+import logo from '../../assets/logos/mariana_logo.png';
 
 import { setModalContent } from '../../redux/modules/modalEvent';
 
@@ -36,12 +37,8 @@ export default function Login({
     return (
         <div className='login'>
             <div className='d-flex justify-content-center align-items-center w-100 h-100'>
-                <div className='form-container'>
-                    <Typography
-                        variant='size-40' color='color-2'
-                        className='text-center mb-5'>
-                        MARIANA UFP
-                    </Typography>
+                <div className='form-container text-center'>
+                    <img src={logo} alt='Mariana_UFP_logo' className='login__logo' />
                     <Form onSubmit={onSubmit}>
                         <FormGroup>
                             <Input type='email' name='email' placeholder='Email'
@@ -52,14 +49,14 @@ export default function Login({
                                 size='lg' onChange={onChange} />
                         </FormGroup>
                         <FormGroup>
-                            <Button label='Log In' variant='outline-dark' type='submit'
+                            <Button label='Log In' type='submit'
                                 className='login__button w-100 d-block' />
                         </FormGroup>
                         <Typography
                             variant='size-14' color='color-2'
-                            className='text-center mt-4'>
+                            className='login__forgot-pass text-center mt-4'>
                             Forgot Password?
-                            <span className='cursor-pointer color-link-text ml-1'
+                            <span className='cursor-pointer color-sidebar-2 ml-1'
                                 onClick={showContactDetailsModal}>Contact admin for help.</span>
                         </Typography>
                     </Form>

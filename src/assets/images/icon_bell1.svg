@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>ic</title>
+    <g id="high-fidelity" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Dashboard" transform="translate(-324.000000, -268.000000)">
+            <g id="date-ranged" transform="translate(257.000000, 151.000000)">
+                <g id="alerts-received" transform="translate(29.000000, 99.500000)">
+                    <g id="ic" transform="translate(38.000000, 17.500000)">
+                        <rect id="Rectangle-Copy" fill="#FFF2D0" x="0" y="0" width="50" height="50" rx="25"></rect>
+                        <g id="bell-solid" transform="translate(15.000000, 14.000000)" fill="#F3C035" fill-rule="nonzero">
+                            <path d="M10,22.7555556 C11.5697778,22.7555556 12.8431111,21.4822222 12.8431111,19.9111111 L7.15688889,19.9111111 C7.15688889,21.4822222 8.43022222,22.7555556 10,22.7555556 Z M19.5728889,16.1017778 C18.7142222,15.1791111 17.1075556,13.7911111 17.1075556,9.24444444 C17.1075556,5.79111111 14.6862222,3.02666667 11.4213333,2.34844444 L11.4213333,1.42222222 C11.4213333,0.636888889 10.7848889,0 10,0 C9.21511111,0 8.57866667,0.636888889 8.57866667,1.42222222 L8.57866667,2.34844444 C5.31377778,3.02666667 2.89244444,5.79111111 2.89244444,9.24444444 C2.89244444,13.7911111 1.28577778,15.1791111 0.427111111,16.1017778 C0.160444444,16.3884444 0.0422222222,16.7311111 0.0444137161,17.0666667 C0.0493333333,17.7955556 0.621333333,18.4888889 1.47111111,18.4888889 L18.5288889,18.4888889 C19.3786667,18.4888889 19.9511111,17.7955556 19.9555863,17.0666667 C19.9577778,16.7311111 19.8395556,16.388 19.5728889,16.1017778 L19.5728889,16.1017778 Z" id="Shape"></path>
+                        </g>
+                        <line x1="25" y1="7" x2="25" y2="10.540028" id="Line-2" stroke="#FBD670" stroke-width="2" stroke-linecap="round"></line>
+                        <line x1="13.0606602" y1="12.5523701" x2="13.0606602" y2="15.6207021" id="Line-2" stroke="#FBD670" stroke-width="2" stroke-linecap="round" transform="translate(13.060660, 14.080674) rotate(-45.000000) translate(-13.060660, -14.080674) "></line>
+                        <line x1="38.9393398" y1="12.6006881" x2="38.9393398" y2="15.6207021" id="Line-2" stroke="#FBD670" stroke-width="2" stroke-linecap="round" transform="translate(38.939340, 14.080674) scale(-1, 1) rotate(-45.000000) translate(-38.939340, -14.080674) "></line>
+                        <line x1="38" y1="25.520014" x2="38" y2="28.540028" id="Line-2" stroke="#FBD670" stroke-width="2" stroke-linecap="round" transform="translate(38.000000, 27.000000) scale(-1, 1) rotate(-90.000000) translate(-38.000000, -27.000000) "></line>
+                        <line x1="11" y1="25.520014" x2="11" y2="28.540028" id="Line-2" stroke="#FBD670" stroke-width="2" stroke-linecap="round" transform="translate(11.000000, 27.000000) scale(-1, 1) rotate(-90.000000) translate(-11.000000, -27.000000) "></line>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

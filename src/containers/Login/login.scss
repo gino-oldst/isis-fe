@@ -16,14 +16,31 @@
         }
     }
 
+    &__logo {
+        height: 80px;
+        margin-bottom: 3rem;
+    }
+
     &__button {
         padding: 0.7rem 0;
-        border: 1px solid #ced4da !important;
-        font-size: 1.1rem !important;
+        background-color: $color-sidebar-2;
+        border: $color-sidebar-2;
+        border-radius: 0.2rem;
+
+        &:hover,
+        &:focus,
+        &:active {
+            background-color: darken($bg-download-button, 10%) !important;
+            border-color: darken($bg-download-button, 10%) !important;
+        }
+    }
+
+    &__forgot-pass {
+        color: $color-forgot-pass;
     }
 
     input {
-        padding: 0.7rem 1rem;
-        font-size: 1.1rem !important;
+        padding: 1.6rem 1rem;
+        font-size: 1.2rem !important;
     }
 }
