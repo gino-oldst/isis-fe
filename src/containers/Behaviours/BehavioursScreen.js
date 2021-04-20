@@ -52,7 +52,7 @@ function BehavioursScreen({
                                                     ? (
                                                         <td key={`td-${idx2}`}>
                                                             {idx2 === 0
-                                                                ? <span className='color-sidebar-2 cursor-pointer' onClick={() => viewBehaviourDetails(value.detail, value.identifier, value.behaviourName)}>{value[dataKeys[idx2]]}</span>
+                                                                ? <span className='color-link-text cursor-pointer' onClick={() => viewBehaviourDetails(value.detail, value.identifier, value.behaviourName)}>{value[dataKeys[idx2]]}</span>
                                                                 : dataKeys[idx2].toLowerCase() === 'date'
                                                                     ? moment(value[dataKeys[idx2]]).format('L')
                                                                     : dataKeys[idx2].toLowerCase() === 'escalation'

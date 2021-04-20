@@ -1,32 +1,54 @@
 // @flow
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import Toggle from 'react-toggle';
 import 'react-toggle/style.css';
 import Table from '../../components/base/Table/Table';
+import Select from '../../components/base/Select/Select';
+import Button from '../../components/base/Button/Button';
 import Typography from '../../components/base/Typography/Typography';
 import Breadcrumbs from '../../components/base/Breadcrumbs/Breadcrumbs';
 import CollapsibleSidebar from '../../components/base/CollapsibleSidebar/CollapsibleSidebarContainer';
 import withLoading from '../../components/modules/withLoading/withLoading';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { capitalize } from '../../utils/helpers';
 import type { Menu } from '../../types';
 import {
     Card,
-    CardBody
+    CardBody,
+    FormGroup,
+    Label,
+    Input
 } from 'reactstrap';
 import './behaviour-detail.scss';
+
+import { setModalContent } from '../../redux/modules/modalEvent';
 
 type Props = {
     sidebarMenu: Array<Menu>,
     tableColumns: Array,
     tableData: Array,
-    selectedBehaviour: Object
+    selectedBehaviour: Object,
+    handleCloseModal: Function
 }
 
 function BehaviourDetailScreen({
     sidebarMenu,
     tableColumns,
     tableData,
-    selectedBehaviour
+    selectedBehaviour,
+    handleCloseModal
 }: Props): React$Element<any> {
+    const dispatch = useDispatch();
+
+    const showBehavioursModal = column => {
+        dispatch(setModalContent({
+            modalContent: <BehavioursModal
+                column={column}
+                handleCloseModal={handleCloseModal} />
+        }));
+    };
+
     return (
         <div className='behaviour-detail'>
             <CollapsibleSidebar
@@ -56,11 +78,13 @@ function BehaviourDetailScreen({
                                     return (
                                         <tr key={`tr-${idx1}`}>
                                             {dataKeys.map((key, idx2) => {
+                                                const columnName = dataKeys[idx2].toLowerCase();
+
                                                 return (
                                                     <td key={`td-${idx2}`}>
-                                                        {dataKeys[idx2].toLowerCase() === 'parameter' ||
-                                                        dataKeys[idx2].toLowerCase() === 'threshold'
-                                                            ? <span className='color-sidebar-2 cursor-pointer'>{value[dataKeys[idx2]]}</span>
+                                                        {columnName === 'parameter' ||
+                                                        columnName === 'threshold'
+                                                            ? <span className='color-link-text cursor-pointer' onClick={() => showBehavioursModal(columnName)}>{value[dataKeys[idx2]]}</span>
                                                             : value[dataKeys[idx2]]
                                                         }
                                                     </td>
@@ -81,3 +105,46 @@ function BehaviourDetailScreen({
 const BehaviourDetail: any = withLoading<React$Element<Props>>(BehaviourDetailScreen);
 
 export default BehaviourDetail;
+
+const BehavioursModal = ({
+    column,
+    handleCloseModal
+}) => {
+    return (
+        <div className='behaviour-detail__edit-parameter p-4'>
+            <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
+                onClick={handleCloseModal} />
+            <Typography variant='size-26' color='color-3'
+                className='mb-4 playfair-font'>
+                Edit {capitalize(column)}
+            </Typography>
+            <FormGroup className='mb-4'>
+                <Label for='note'><Typography color='color-3' variant='size-16'>{capitalize(column)}</Typography></Label>
+                {column === 'parameter'
+                    ? (
+                        <Select
+                            defaultValue={{
+                                label: '3 Day Return',
+                                value: '3 Day Return'
+                            }}
+                            options={[{
+                                label: '3 Day Return',
+                                value: '3 Day Return'
+                            }, {
+                                label: '5 Day Return',
+                                value: '5 Day Return'
+                            }]} />
+                    )
+                    : (
+                        <Input type='text' name='threshold' bsSize='lg' />
+                    )}
+            </FormGroup>
+            <div className='behaviour-detail__edit-parameter-buttons d-flex justify-content-center'>
+                <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
+                    onClick={handleCloseModal}/>
+                <Button label='Save' variant='primary' className='save-button px-4 py-2'
+                    onClick={handleCloseModal} />
+            </div>
+        </div>
+    );
+};

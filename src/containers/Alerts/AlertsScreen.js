@@ -75,7 +75,7 @@ function AlertsScreen({
                                                             ? (
                                                                 <td key={`td-${idx2}`}>
                                                                     {idx2 === 0
-                                                                        ? <span className='color-sidebar-2 cursor-pointer' onClick={() => viewAlertDetails(value.detail, value)}>{value[dataKeys[idx2]]}</span>
+                                                                        ? <span className='color-link-text cursor-pointer' onClick={() => viewAlertDetails(value.detail, value)}>{value[dataKeys[idx2]]}</span>
                                                                         : dataKeys[idx2].toLowerCase() === 'date'
                                                                             ? moment(value[dataKeys[idx2]]).format('L')
                                                                             : dataKeys[idx2].toLowerCase() === 'escalation'

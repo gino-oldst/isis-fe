@@ -5,6 +5,7 @@ import './login.scss';
 import { Form, FormGroup, Input } from 'reactstrap';
 import Button from '../../components/base/Button/Button';
 import Typography from '../../components/base/Typography/Typography';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import logo from '../../assets/logos/mariana_logo.png';
 
 import { setModalContent } from '../../redux/modules/modalEvent';
@@ -30,7 +31,7 @@ export default function Login({
 
     const showContactDetailsModal = () => {
         dispatch(setModalContent({
-            modalContent: <ContactDetailsModal />
+            modalContent: <ContactDetailsModal handleCloseModal={handleCloseModal} />
         }));
     };
 
@@ -66,9 +67,13 @@ export default function Login({
     );
 }
 
-const ContactDetailsModal = () => {
+const ContactDetailsModal = ({
+    handleCloseModal
+}) => {
     return (
         <div className='login__contact-details text-left py-2 px-4'>
+            <FontAwesomeIcon className='color-link-text cursor-pointer float-right' icon='times' size='lg'
+                onClick={handleCloseModal} />
             <Typography
                 variant='size-26' color='color-2' weight='semi-bold'
                 className='mb-1'>

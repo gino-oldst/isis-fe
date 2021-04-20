@@ -247,3 +247,20 @@ blockquote {
 textarea {
     resize: none;
 }
+
+// input focus color
+.form-control:focus {
+    border-color: darken($bg-download-button, 10%) !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 74, 147, 0.25);
+}
+
+// react-toggle switch bg color
+.react-toggle--checked {
+    .react-toggle-track {
+        background-color: $bg-download-button !important;
+    }
+
+    .react-toggle-thumb {
+        border-color: $bg-download-button !important;
+    }
+}
