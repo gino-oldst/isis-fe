@@ -1,10 +1,10 @@
 // @flow
-const FILTER_TABLE = 'SET_LOGGING_OUT';
+const SET_SELECTED_ALERT = 'SET_SELECTED_ALERT';
 
-export function updateUserToken(userToken: Object): {userToken: string} {
+export function setSelectedAlert(data: Object) {
     return {
-        type: FILTER_TABLE,
-        userToken
+        type: SET_SELECTED_ALERT,
+        data
     };
 }
 
@@ -35,7 +35,8 @@ const initialState = {
                 client: 'Client 1',
                 escalation: 'Base',
                 assigned: 'Mark Thomson',
-                status: 'Resolved'
+                status: 'Resolved',
+                detail: '/alert/MUA312'
             },
             {
                 identifier: 'MUA313',
@@ -48,7 +49,8 @@ const initialState = {
                 client: 'Client 1',
                 escalation: 'Base',
                 assigned: 'Mark Thomson',
-                status: 'In Review'
+                status: 'In Review',
+                detail: '/alert/MUA313'
             },
             {
                 identifier: 'MUA314',
@@ -61,7 +63,8 @@ const initialState = {
                 client: 'Client 1',
                 escalation: 'Manager',
                 assigned: 'Mark Thomson',
-                status: 'Archived'
+                status: 'Archived',
+                detail: '/alert/MUA314'
             },
             {
                 identifier: 'MUA315',
@@ -74,7 +77,8 @@ const initialState = {
                 client: 'Client 1',
                 escalation: 'Manager',
                 assigned: 'Mark Thomson',
-                status: 'Resolved'
+                status: 'Resolved',
+                detail: '/alert/MUA315'
             },
             {
                 identifier: 'MUA316',
@@ -87,9 +91,14 @@ const initialState = {
                 client: 'Client 1',
                 escalation: 'CO',
                 assigned: 'Mark Thomson',
-                status: 'Open'
+                status: 'Open',
+                detail: '/alert/MUA316'
             }
         ]
+    },
+    selected: {
+        data: {},
+        activity: []
     }
 };
 
@@ -99,9 +108,13 @@ export default function authentication(state: Object = initialState, action: Obj
     table: {}
   } {
     switch (action.type) {
-        case FILTER_TABLE:
+        case SET_SELECTED_ALERT:
             return {
-                state
+                ...state,
+                selected: {
+                    ...state.selected,
+                    data: action.data
+                }
             };
         default:
             return state;

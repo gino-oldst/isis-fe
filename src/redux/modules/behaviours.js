@@ -1,10 +1,11 @@
 // @flow
-const FILTER_TABLE = 'SET_LOGGING_OUT';
+const SET_SELECTED_BEHAVIOUR = 'SET_SELECTED_BEHAVIOUR';
 
-export function updateUserToken(userToken: Object): {userToken: string} {
+export function setSelectedBehaviour(identifier: String, behaviour: String) {
     return {
-        type: FILTER_TABLE,
-        userToken
+        type: SET_SELECTED_BEHAVIOUR,
+        identifier,
+        behaviour
     };
 }
 
@@ -19,27 +20,53 @@ const initialState = {
             {
                 identifier: 'MUB01',
                 behaviourName: 'Insider Trading',
-                status: 'Active'
+                status: 'Active',
+                detail: '/behaviour/MUB01'
             },
             {
                 identifier: 'MUB02',
                 behaviourName: 'Front Running',
-                status: 'Active'
+                status: 'Active',
+                detail: '/behaviour/MUB02'
             },
             {
                 identifier: 'MUB03',
                 behaviourName: 'Making the Close',
-                status: 'Active'
+                status: 'Active',
+                detail: '/behaviour/MUB03'
             },
             {
                 identifier: 'MUB04',
                 behaviourName: 'Flash Execution / Order',
-                status: 'Active'
+                status: 'Active',
+                detail: '/behaviour/MUB04'
             },
             {
                 identifier: 'MUB05',
                 behaviourName: 'Away from the Market',
-                status: 'Inactive'
+                status: 'Inactive',
+                detail: '/behaviour/MUB05'
+            }
+        ]
+    },
+    selected: {
+        identifier: '',
+        behaviour: '',
+        columns: [
+            'Rule Number',
+            'Parameter',
+            'Threshold'
+        ],
+        data: [
+            {
+                ruleNumber: '01',
+                parameter: '3 day return',
+                threshold: '30%'
+            },
+            {
+                ruleNumber: '02',
+                parameter: '6 day return',
+                threshold: '20%'
             }
         ]
     }
@@ -51,9 +78,14 @@ export default function authentication(state: Object = initialState, action: Obj
     table: {}
   } {
     switch (action.type) {
-        case FILTER_TABLE:
+        case SET_SELECTED_BEHAVIOUR:
             return {
-                state
+                ...state,
+                selected: {
+                    ...state.selected,
+                    identifier: action.identifier,
+                    behaviour: action.behaviour
+                }
             };
         default:
             return state;

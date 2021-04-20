@@ -144,31 +144,29 @@ const Notifications = ({
                     <div className='navbar__notifications-today-title px-4 py-1'>
                         <Typography color='color-3' weight='light' variant='size-10'>TODAY</Typography>
                     </div>
-                    {today.map(now => {
+                    {today.map((now, idx) => {
                         return (
-                            <>
-                                <DropdownItem className='px-4 py-4 d-flex align-items-center'>
-                                    <div className='navbar__notifications__icon'>
-                                        <img src={bellIcon} alt='Notification_Bell_Icon' className='notification_icon' />
-                                    </div>
-                                    <div className='navbar__notifications__details mr-auto'>
-                                        <Typography color='color-3' variant='size-14' weight='semi-bold'
-                                            className='mb-2'>{now.description}</Typography>
-                                        <Typography color='color-3' variant='size-16' className='mb-2'>
-                                            <span className='mr-3'>{now.identifier} | {now.behaviour}</span>
-                                            <Badge status={now.status} />
-                                        </Typography>
-                                        <Typography color='color-3' variant='size-12' className='text-muted'>Today, {moment(now.date).format('hh:mm a')}</Typography>
-                                    </div>
-                                    <div className='navbar__notifications__read-icon mr-2'>
-                                        <FontAwesomeIcon className='navbar__notification-read' icon='circle' size='xs'
-                                            data-tip={true} data-for='notif-1'/>
-                                    </div>
-                                    <Tooltip place='left' id='notif-1'>
-                                        <Typography variant='size-10' weight='light' color='color-3'>{now.resolved ? 'Unread' : 'Mark as read'}</Typography>
-                                    </Tooltip>
-                                </DropdownItem>
-                            </>
+                            <DropdownItem key={`today-${idx}`} className='px-4 py-4 d-flex align-items-center'>
+                                <div className='navbar__notifications__icon'>
+                                    <img src={bellIcon} alt='Notification_Bell_Icon' className='notification_icon' />
+                                </div>
+                                <div className='navbar__notifications__details mr-auto'>
+                                    <Typography color='color-3' variant='size-14' weight='semi-bold'
+                                        className='mb-2'>{now.description}</Typography>
+                                    <Typography color='color-3' variant='size-16' className='mb-2'>
+                                        <span className='mr-3'>{now.identifier} | {now.behaviour}</span>
+                                        <Badge status={now.status} />
+                                    </Typography>
+                                    <Typography color='color-3' variant='size-12' className='text-muted'>Today, {moment(now.date).format('hh:mm a')}</Typography>
+                                </div>
+                                <div className='navbar__notifications__read-icon mr-2'>
+                                    <FontAwesomeIcon className='navbar__notification-read' icon='circle' size='xs'
+                                        data-tip={true} data-for='notif-1'/>
+                                </div>
+                                <Tooltip place='left' id='notif-1'>
+                                    <Typography variant='size-10' weight='light' color='color-3'>{now.resolved ? 'Unread' : 'Mark as read'}</Typography>
+                                </Tooltip>
+                            </DropdownItem>
                         );
                     })}
                 </div>
@@ -176,9 +174,9 @@ const Notifications = ({
                     <div className='navbar__notifications-past-title px-4 py-1'>
                         <Typography color='color-3' weight='light' variant='size-10'>YESTERDAY AND EARLIER</Typography>
                     </div>
-                    {yesterday.map(yes => {
+                    {yesterday.map((yes, idx) => {
                         return (
-                            <DropdownItem className='px-4 py-4 d-flex align-items-center'>
+                            <DropdownItem key={`yesterdat-${idx}`} className='px-4 py-4 d-flex align-items-center'>
                                 <div className='navbar__notifications__icon'>
                                     <img src={bellIcon} alt='Notification_Bell_Icon' className='notification_icon' />
                                 </div>
@@ -214,7 +212,7 @@ const NavbarAccount = () => {
     const logout = () => {
         localStorage.clear();
         dispatch(setLoggingOut());
-        history.push('/login');
+        window.location.href = '/login';
     };
 
     return (

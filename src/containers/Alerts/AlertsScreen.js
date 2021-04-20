@@ -1,5 +1,7 @@
 // @flow
 import React from 'react';
+import moment from 'moment';
+import Badge from '../../components/base/Badge/Badge';
 import Table from '../../components/base/Table/Table';
 import Button from '../../components/base/Button/Button';
 import DatePicker from '../../components/base/DatePicker/DatePicker';
@@ -8,23 +10,27 @@ import Breadcrumbs from '../../components/base/Breadcrumbs/Breadcrumbs';
 import CollapsibleSidebar from '../../components/base/CollapsibleSidebar/CollapsibleSidebarContainer';
 import withLoading from '../../components/modules/withLoading/withLoading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { getTextColor } from '../../utils/helpers';
 import type { Menu } from '../../types';
 import {
     Card,
-    CardBody
+    CardBody,
+    Spinner
 } from 'reactstrap';
 import './alerts.scss';
 
 type Props = {
-    sidebarMenu: Array<Menu>,
+    tableColumns: Array,
     tableData: Array,
-    tableColumns: Array
+    viewAlertDetails: Function,
+    sidebarMenu: Array<Menu>
 }
 
 function AlertsScreen({
-    sidebarMenu,
+    tableColumns,
     tableData,
-    tableColumns
+    viewAlertDetails,
+    sidebarMenu
 }: Props): React$Element<any> {
     return (
         <div className='alerts'>
@@ -49,10 +55,46 @@ function AlertsScreen({
                                     size='lg' />
                                 </div>
                             </div>
-                            <Table className='alerts__table'
-                                tableColumns={tableColumns}
-                                tableData={tableData}
-                                filterable={true} />
+                            {tableColumns === undefined || tableData === undefined
+                                ? (
+                                    <Spinner />
+                                )
+                                : (
+                                    <Table className='alerts__table'
+                                        tableColumns={tableColumns}
+                                        tableData={tableData}
+                                        filterable={true}
+                                        paginated={true}>
+                                        {tableData.map((value, idx1) => {
+                                            const dataKeys = Object.keys(value);
+
+                                            return (
+                                                <tr key={`tr-${idx1}`}>
+                                                    {dataKeys.map((key, idx2) => {
+                                                        return dataKeys[idx2].toLowerCase() !== 'detail'
+                                                            ? (
+                                                                <td key={`td-${idx2}`}>
+                                                                    {idx2 === 0
+                                                                        ? <span className='color-sidebar-2 cursor-pointer' onClick={() => viewAlertDetails(value.detail, value)}>{value[dataKeys[idx2]]}</span>
+                                                                        : dataKeys[idx2].toLowerCase() === 'date'
+                                                                            ? moment(value[dataKeys[idx2]]).format('L')
+                                                                            : dataKeys[idx2].toLowerCase() === 'escalation'
+                                                                                ? <span className='font-weight-bold'>{getTextColor(value[dataKeys[idx2]])}</span>
+                                                                                : dataKeys[idx2].toLowerCase() === 'status'
+                                                                                    ? <Badge status={value[dataKeys[idx2]]} />
+                                                                                    : value[dataKeys[idx2]]
+                                                                    }
+                                                                </td>
+                                                            )
+                                                            : (
+                                                                null
+                                                            );
+                                                    })}
+                                                </tr>
+                                            );
+                                        })}
+                                    </Table>
+                                )}
                         </CardBody>
                     </Card>
                 </div>

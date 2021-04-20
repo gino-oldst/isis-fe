@@ -42,11 +42,11 @@ export default function Login({
                     <Form onSubmit={onSubmit}>
                         <FormGroup>
                             <Input type='email' name='email' placeholder='Email'
-                                size='lg' onChange={onChange} />
+                                bsSize='lg' onChange={onChange} />
                         </FormGroup>
                         <FormGroup>
                             <Input type='password' name='password' placeholder='Password'
-                                size='lg' onChange={onChange} />
+                                bsSize='lg' onChange={onChange} />
                         </FormGroup>
                         <FormGroup>
                             <Button label='Log In' type='submit'

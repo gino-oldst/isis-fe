@@ -242,3 +242,8 @@ blockquote {
 ::-webkit-scrollbar-thumb:hover {
     background-color: #cacaca;
 }
+
+// textarea resize
+textarea {
+    resize: none;
+}

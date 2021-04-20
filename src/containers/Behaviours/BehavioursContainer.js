@@ -1,8 +1,10 @@
 // @flow
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import BehavioursScreen from './BehavioursScreen';
 import type { Menu } from '../../types';
+import { setSelectedBehaviour } from '../../redux/modules/behaviours';
 
 type Props = {
     sidebarMenu: Array<Menu>
@@ -11,10 +13,19 @@ type Props = {
 export default function BehavioursContainer({
     sidebarMenu
 }: Props): React$Element<any> {
+    const dispatch = useDispatch();
+    const history = useHistory();
     const { table } = useSelector(({ behaviours }) => behaviours);
+
+    const viewBehaviourDetails = async (path, identifier, behaviour) => {
+        await dispatch(setSelectedBehaviour(identifier, behaviour));
+
+        history.push(path);
+    };
 
     return <BehavioursScreen
         tableColumns={table.columns}
         tableData={table.data}
+        viewBehaviourDetails={viewBehaviourDetails}
         sidebarMenu={sidebarMenu} />;
 }

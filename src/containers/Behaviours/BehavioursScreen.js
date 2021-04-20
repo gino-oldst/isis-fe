@@ -1,13 +1,13 @@
 // @flow
 import React from 'react';
+import moment from 'moment';
+import Badge from '../../components/base/Badge/Badge';
 import Table from '../../components/base/Table/Table';
-import Button from '../../components/base/Button/Button';
-import DatePicker from '../../components/base/DatePicker/DatePicker';
 import CollapsibleSidebar from '../../components/base/CollapsibleSidebar/CollapsibleSidebarContainer';
 import Typography from '../../components/base/Typography/Typography';
 import Breadcrumbs from '../../components/base/Breadcrumbs/Breadcrumbs';
 import withLoading from '../../components/modules/withLoading/withLoading';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { getTextColor } from '../../utils/helpers';
 import type { Menu } from '../../types';
 import {
     Card,
@@ -18,13 +18,15 @@ import './behaviours.scss';
 type Props = {
     sidebarMenu: Array<Menu>,
     tableColumns: Array,
-    tableData: Array
+    tableData: Array,
+    viewBehaviourDetails: Function
 }
 
 function BehavioursScreen({
     sidebarMenu,
     tableColumns,
-    tableData
+    tableData,
+    viewBehaviourDetails
 }: Props): React$Element<any> {
     return (
         <div className='behaviours'>
@@ -38,7 +40,37 @@ function BehavioursScreen({
                             <Typography color='color-3' className='behaviours__title'>Behaviours</Typography>
                             <Table className='behaviours__table'
                                 tableColumns={tableColumns}
-                                tableData={tableData} />
+                                tableData={tableData}
+                                paginated={true}>
+                                {tableData.map((value, idx1) => {
+                                    const dataKeys = Object.keys(value);
+
+                                    return (
+                                        <tr key={`tr-${idx1}`}>
+                                            {dataKeys.map((key, idx2) => {
+                                                return dataKeys[idx2].toLowerCase() !== 'detail'
+                                                    ? (
+                                                        <td key={`td-${idx2}`}>
+                                                            {idx2 === 0
+                                                                ? <span className='color-sidebar-2 cursor-pointer' onClick={() => viewBehaviourDetails(value.detail, value.identifier, value.behaviourName)}>{value[dataKeys[idx2]]}</span>
+                                                                : dataKeys[idx2].toLowerCase() === 'date'
+                                                                    ? moment(value[dataKeys[idx2]]).format('L')
+                                                                    : dataKeys[idx2].toLowerCase() === 'escalation'
+                                                                        ? <span className='font-weight-bold'>{getTextColor(value[dataKeys[idx2]])}</span>
+                                                                        : dataKeys[idx2].toLowerCase() === 'status'
+                                                                            ? <Badge status={value[dataKeys[idx2]]} />
+                                                                            : value[dataKeys[idx2]]
+                                                            }
+                                                        </td>
+                                                    )
+                                                    : (
+                                                        null
+                                                    );
+                                            })}
+                                        </tr>
+                                    );
+                                })}
+                            </Table>
                         </CardBody>
                     </Card>
                 </div>

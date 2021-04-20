@@ -5,6 +5,8 @@ const NotFound = React.lazy(() => import('../containers/NotFound/NotFoundContain
 const Dashboard = React.lazy(() => import('../containers/Dashboard/DashboardContainer'));
 const Alerts = React.lazy(() => import('../containers/Alerts/AlertsContainer'));
 const Behaviours = React.lazy(() => import('../containers/Behaviours/BehavioursContainer'));
+const AlertDetail = React.lazy(() => import('../containers/AlertDetail/AlertDetailContainer'));
+const BehaviourDetail = React.lazy(() => import('../containers/BehaviourDetail/BehaviourDetailContainer'));
 // ROUTE IMPORT CODE GENERATOR INDICATOR DO NOT DELETE
 
 const routes = [{
@@ -31,6 +33,16 @@ const routes = [{
     path: '/behaviours',
     name: 'Behaviours',
     component: Behaviours,
+    authedRoute: true
+}, {
+    path: '/alert/:id',
+    name: 'AlertDetail',
+    component: AlertDetail,
+    authedRoute: true
+}, {
+    path: '/behaviour/:id',
+    name: 'BehaviourDetail',
+    component: BehaviourDetail,
     authedRoute: true
 }, // ROUTE ENTRY CODE GENERATOR INDICATOR DO NOT DELETE
 {
