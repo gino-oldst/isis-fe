@@ -1,7 +1,7 @@
-import React from 'react';
-import { Switch, Route, useHistory } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Switch, Route, useHistory, Redirect } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import Spinner from 'react-bootstrap/Spinner';
+import moment from 'moment';
 import routes from '../../config/routes';
 import AppLoadingContainer from '../AppLoading/AppLoadingContainer';
 import AppModal from '../../components/base/Modal/Modal';
@@ -22,7 +22,8 @@ import {
     UncontrolledDropdown,
     DropdownItem,
     DropdownMenu,
-    DropdownToggle
+    DropdownToggle,
+    Spinner
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -38,7 +39,24 @@ function App() {
     const history = useHistory();
     const dispatch = useDispatch();
     const { modalContent, onToggle, ...modalEvent } = useSelector(({ modalEvent }) => modalEvent);
+    const { data } = useSelector(({ notifications }) => notifications);
     const { isAuthed } = useSelector(({ authentication }) => authentication);
+    const [todaysNotification, setTodaysNotification] = useState({});
+    const [yesterdaysNotification, setYesterdaysNotification] = useState({});
+
+    useEffect(() => {
+        const today = [];
+        const yesterday = [];
+
+        data.map(notif => {
+            return moment(notif.date).isSame(moment(), 'day')
+                ? today.push(notif)
+                : yesterday.push(notif);
+        });
+
+        setTodaysNotification(today);
+        setYesterdaysNotification(yesterday);
+    }, []);
 
     const sidebarMenu = [{
         label: 'Dashboard',
@@ -69,7 +87,7 @@ function App() {
         return (
             <Nav className='navlinks-right'>
                 <UncontrolledDropdown nav={true} direction='down' className='d-flex align-self-center mr-4'>
-                    <Notifications />
+                    <Notifications today={todaysNotification} yesterday={yesterdaysNotification} />
                 </UncontrolledDropdown>
                 <UncontrolledDropdown nav={true} direction='down' className='mr-4'>
                     <NavbarAccount />
@@ -107,7 +125,10 @@ function App() {
     );
 }
 
-const Notifications = () => {
+const Notifications = ({
+    today,
+    yesterday
+}) => {
     return (
         <div className='navbar__notifications'>
             <DropdownToggle nav={true} className='d-flex'>
@@ -123,53 +144,63 @@ const Notifications = () => {
                     <div className='navbar__notifications-today-title px-4 py-1'>
                         <Typography color='color-3' weight='light' variant='size-10'>TODAY</Typography>
                     </div>
-                    <DropdownItem className='px-4 py-4 d-flex align-items-center'>
-                        <div className='navbar__notifications__icon'>
-                            <img src={bellIcon} alt='Notification_Bell_Icon' className='notification_icon' />
-                        </div>
-                        <div className='navbar__notifications__details mr-auto'>
-                            <Typography color='color-3' variant='size-14' weight='semi-bold'
-                                className='mb-2'>Jonathan Greene assigned an alert to you</Typography>
-                            <Typography color='color-3' variant='size-16' className='mb-2'>
-                                <span className='mr-3'>MU311 | Marking the Close</span>
-                                <Badge status='Open' />
-                            </Typography>
-                            <Typography color='color-3' variant='size-12' className='text-muted'>Today, 10:03 AM</Typography>
-                        </div>
-                        <div className='navbar__notifications__read-icon mr-2'>
-                            <FontAwesomeIcon className='navbar__notification-read' icon='circle' size='xs'
-                                data-tip={true} data-for='notif-1'/>
-                        </div>
-                        <Tooltip place='left' id='notif-1'>
-                            <Typography variant='size-10' weight='light' color='color-3'>Mark as read</Typography>
-                        </Tooltip>
-                    </DropdownItem>
+                    {today.map(now => {
+                        return (
+                            <>
+                                <DropdownItem className='px-4 py-4 d-flex align-items-center'>
+                                    <div className='navbar__notifications__icon'>
+                                        <img src={bellIcon} alt='Notification_Bell_Icon' className='notification_icon' />
+                                    </div>
+                                    <div className='navbar__notifications__details mr-auto'>
+                                        <Typography color='color-3' variant='size-14' weight='semi-bold'
+                                            className='mb-2'>{now.description}</Typography>
+                                        <Typography color='color-3' variant='size-16' className='mb-2'>
+                                            <span className='mr-3'>{now.identifier} | {now.behaviour}</span>
+                                            <Badge status={now.status} />
+                                        </Typography>
+                                        <Typography color='color-3' variant='size-12' className='text-muted'>Today, {moment(now.date).format('hh:mm a')}</Typography>
+                                    </div>
+                                    <div className='navbar__notifications__read-icon mr-2'>
+                                        <FontAwesomeIcon className='navbar__notification-read' icon='circle' size='xs'
+                                            data-tip={true} data-for='notif-1'/>
+                                    </div>
+                                    <Tooltip place='left' id='notif-1'>
+                                        <Typography variant='size-10' weight='light' color='color-3'>{now.resolved ? 'Unread' : 'Mark as read'}</Typography>
+                                    </Tooltip>
+                                </DropdownItem>
+                            </>
+                        );
+                    })}
                 </div>
                 <div className='navbar__notifications-past'>
                     <div className='navbar__notifications-past-title px-4 py-1'>
                         <Typography color='color-3' weight='light' variant='size-10'>YESTERDAY AND EARLIER</Typography>
                     </div>
-                    <DropdownItem className='px-4 py-4 d-flex align-items-center'>
-                        <div className='navbar__notifications__icon'>
-                            <img src={bellIcon} alt='Notification_Bell_Icon' className='notification_icon' />
-                        </div>
-                        <div className='navbar__notifications__details mr-auto'>
-                            <Typography color='color-3' variant='size-14' weight='semi-bold'
-                                className='mb-2'>Pamela Johnson assigned an alert to you</Typography>
-                            <Typography color='color-3' variant='size-16' className='mb-2'>
-                                <span className='mr-3'>MU305 | Flash Order</span>
-                                <Badge status='Open' />
-                            </Typography>
-                            <Typography color='color-3' variant='size-12' className='text-muted'>10 Jul 2020, 10:03 AM</Typography>
-                        </div>
-                        <div className='navbar__notifications__read-icon mr-2'>
-                            <FontAwesomeIcon className='navbar__notification-read' icon='circle' size='xs'
-                                data-tip={true} data-for='notif-2'/>
-                        </div>
-                        <Tooltip place='left' id='notif-2'>
-                            <Typography variant='size-10' weight='light' color='color-3'>Mark as read</Typography>
-                        </Tooltip>
-                    </DropdownItem>
+                    {yesterday.map(yes => {
+                        return (
+                            <DropdownItem className='px-4 py-4 d-flex align-items-center'>
+                                <div className='navbar__notifications__icon'>
+                                    <img src={bellIcon} alt='Notification_Bell_Icon' className='notification_icon' />
+                                </div>
+                                <div className='navbar__notifications__details mr-auto'>
+                                    <Typography color='color-3' variant='size-14' weight='semi-bold'
+                                        className='mb-2'>{yes.description}</Typography>
+                                    <Typography color='color-3' variant='size-16' className='mb-2'>
+                                        <span className='mr-3'>{yes.identifier} | {yes.behaviour}</span>
+                                        <Badge status={yes.status} />
+                                    </Typography>
+                                    <Typography color='color-3' variant='size-12' className='text-muted'>{moment(yes.date).format('DD MMM yyyy, hh:mm a')}</Typography>
+                                </div>
+                                <div className='navbar__notifications__read-icon mr-2'>
+                                    <FontAwesomeIcon className='navbar__notification-read' icon='circle' size='xs'
+                                        data-tip={true} data-for='notif-2'/>
+                                </div>
+                                <Tooltip place='left' id='notif-2'>
+                                    <Typography variant='size-10' weight='light' color='color-3'>{yes.resolved ? 'Unread' : 'Mark as read'}</Typography>
+                                </Tooltip>
+                            </DropdownItem>
+                        );
+                    })}
                 </div>
             </DropdownMenu>
         </div>

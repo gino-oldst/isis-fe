@@ -19,6 +19,8 @@
 
     &-dropdown {
         width: 450px;
+        max-height: 80vh;
+        overflow: auto;
     }
 
     &-today-title,
