@@ -16,7 +16,155 @@ export default function AlertsContainer({
     const history = useHistory();
     const dispatch = useDispatch();
     const { table } = useSelector(({ alerts }) => alerts);
-    const [filterOptions, setFilterOptions] = useState({});
+    const [filterString, setFilterString] = useState('');
+    const [filterOptions, setFilterOptions] = useState({
+        alertType: [
+            {
+                label: 'Select All',
+                checked: false
+            },
+            {
+                label: 'Insider Trading',
+                checked: false
+            },
+            {
+                label: 'Marking the Close',
+                checked: false
+            },
+            {
+                label: 'High Volume',
+                checked: false
+            },
+            {
+                label: 'Flash Execution',
+                checked: false
+            },
+            {
+                label: 'Flash Order',
+                checked: false
+            }
+        ],
+        broker: [
+            {
+                label: 'Select All',
+                checked: false
+            },
+            {
+                label: 'Ysa Domingo',
+                checked: false
+            },
+            {
+                label: 'Miguel Ladisla',
+                checked: false
+            }
+        ],
+        ticker: [
+            {
+                label: 'Select All',
+                checked: false
+            },
+            {
+                label: 'BP',
+                checked: false
+            },
+            {
+                label: 'BO',
+                checked: false
+            }
+        ],
+        book: [
+            {
+                label: 'Select All',
+                checked: false
+            },
+            {
+                label: 'Book 1',
+                checked: false
+            },
+            {
+                label: 'Book 2',
+                checked: false
+            }
+        ],
+        quantity: [
+            {
+                label: 'Select All',
+                checked: false
+            },
+            {
+                label: 'Below 100K',
+                checked: false
+            },
+            {
+                label: '100K - 500K',
+                checked: false
+            },
+            {
+                label: '501K - 1M',
+                checked: false
+            },
+            {
+                label: 'Above 1M',
+                checked: false
+            }
+        ],
+        client: [
+            {
+                label: 'Select All',
+                checked: false
+            },
+            {
+                label: 'Client 1',
+                checked: false
+            },
+            {
+                label: 'Client 2',
+                checked: false
+            }
+        ],
+        escalation: [
+            {
+                label: 'Select All',
+                checked: false
+            },
+            {
+                label: 'Base',
+                checked: false
+            },
+            {
+                label: 'Manager',
+                checked: false
+            }
+        ],
+        assigned: [
+            {
+                label: 'Select All',
+                checked: false
+            },
+            {
+                label: 'Mark Thomson',
+                checked: false
+            },
+            {
+                label: 'Jonas Morgan',
+                checked: false
+            }
+        ],
+        status: [
+            {
+                label: 'Select All',
+                checked: false
+            },
+            {
+                label: 'Resolved',
+                checked: false
+            },
+            {
+                label: 'Archived',
+                checked: false
+            }
+        ]
+    });
     const [alerts, setAlerts] = useState({
         data: [],
         currentPage: 1,
@@ -31,35 +179,12 @@ export default function AlertsContainer({
     };
 
     useEffect(() => {
-        if (table.data !== undefined && table.data.length > 0) {
-            getColumnFilterOptions();
-            getTablePagination();
-        }
+        if (table.data !== undefined && table.data.length > 0) getTablePagination();
     }, []);
 
     useEffect(() => {
         getTablePagination();
     }, [alerts.currentPage]);
-
-    const getColumnFilterOptions = () => {
-        const cols = {};
-
-        Object.keys(table.data[0]).map(key => {
-            cols[key.toLowerCase()] = [];
-        });
-
-        table.data.map(data => {
-            Object.keys(data).map(key => {
-                cols[key.toLowerCase()].push(data[key]);
-            });
-        });
-
-        Object.keys(cols).map(col => {
-            cols[col] = [...new Set(cols[col])];
-        });
-
-        setFilterOptions(cols);
-    };
 
     const getTablePagination = () => {
         // Logic for displaying todos
@@ -77,6 +202,8 @@ export default function AlertsContainer({
     return <AlertsScreen
         filterOptions={filterOptions}
         setFilterOptions={setFilterOptions}
+        filterString={filterString}
+        setFilterString={setFilterString}
         tableColumns={table.columns}
         tableData={alerts.data}
         paginationData={alerts}

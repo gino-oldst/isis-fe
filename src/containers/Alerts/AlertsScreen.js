@@ -22,6 +22,8 @@ import './alerts.scss';
 type Props = {
     filterOptions: Object,
     setFilterOptions: Function,
+    filterString: String,
+    setFilterString: Function,
     tableColumns: Array,
     tableData: Array,
     paginationData: Object,
@@ -33,6 +35,8 @@ type Props = {
 function AlertsScreen({
     filterOptions,
     setFilterOptions,
+    filterString,
+    setFilterString,
     tableColumns,
     tableData,
     paginationData,
@@ -71,6 +75,8 @@ function AlertsScreen({
                                     <Table className='alerts__table'
                                         filterOptions={filterOptions}
                                         setFilterOptions={setFilterOptions}
+                                        filterString={filterString}
+                                        setFilterString={setFilterString}
                                         tableColumns={tableColumns}
                                         paginationData={paginationData}
                                         setPaginationData={setPaginationData}

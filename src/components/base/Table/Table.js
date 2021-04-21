@@ -1,10 +1,11 @@
 // @flow
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '../../base/Button/Button';
 import Typography from '../../base/Typography/Typography';
 import Pagination from '../../base/Pagination/Pagination';
 import DatePicker from '../../base/DatePicker/DatePicker';
 import CustomDropdown from '../../base/CustomDropdown/CustomDropdown';
+import { camelize } from '../../../utils/helpers';
 import {
     Table as ReactTable,
     DropdownItem,
@@ -20,6 +21,8 @@ type Props = {
     className?: string,
     filterOptions: Object,
     setFilterOptions: Function,
+    filterString: String,
+    setFilterString: Function,
     tableColumns: Array,
     paginationData: Object,
     setPaginationData: Function,
@@ -32,6 +35,8 @@ export default function Table({
     className = '',
     filterOptions,
     setFilterOptions,
+    filterString,
+    setFilterString,
     tableColumns,
     paginationData,
     setPaginationData,
@@ -53,8 +58,16 @@ export default function Table({
                                         ? columnName === 'date'
                                             ? <DateSearch />
                                             : columnName === 'quantity'
-                                                ? <QuantitySearch columnName={columnName} filterOptions={filterOptions} setFilterOptions={setFilterOptions} />
-                                                : <CheckboxSearch columnName={columnName} filterOptions={filterOptions} setFilterOptions={setFilterOptions} />
+                                                ? <QuantitySearch columnName={column}
+                                                    filterOptions={filterOptions}
+                                                    setFilterOptions={setFilterOptions}
+                                                    filterString={filterString}
+                                                    setFilterString={setFilterString} />
+                                                : <CheckboxSearch columnName={column}
+                                                    filterOptions={filterOptions}
+                                                    setFilterOptions={setFilterOptions}
+                                                    filterString={filterString}
+                                                    setFilterString={setFilterString} />
                                         : null
                                     }
                                 </th>
@@ -78,8 +91,53 @@ export default function Table({
 const CheckboxSearch = ({
     columnName,
     filterOptions,
-    setFilterOptions
+    setFilterOptions,
+    filterString,
+    setFilterString
 }) => {
+    const [searchString, setSearchString] = useState('');
+    const searchedOptions = filterOptions[camelize(columnName)].filter(option => option.label.toLowerCase().includes(filterString.toLowerCase()));
+
+    const selectFilterHandler = (column, label, isChecked) => {
+        const filteredOptions = filterOptions[column].map(option => {
+            if (label.toLowerCase() === 'select all') {
+                option.checked = isChecked; // select all options
+            } else {
+                if (option.label.toLowerCase() === 'select all' && option.checked === true) option.checked = false; // for toggle
+                if (option.label === label) option.checked = isChecked; // select single option
+                if (filterOptions[column].filter(opt => opt.label.toLowerCase() !== 'select all' && opt.checked === false).length === 0) filterOptions[column][0].checked = isChecked; // uncheck select all if all are not checked
+            }
+
+            return option;
+        });
+
+        setFilterOptions({
+            ...filterOptions,
+            [column]: filteredOptions
+        });
+    };
+
+    const searchFilterHandler = value => {
+        setSearchString(value);
+        setFilterString(value.toLowerCase());
+    };
+
+    const resetFilterHandler = column => {
+        setFilterString('');
+        setSearchString('');
+
+        const resetedOptions = filterOptions[column].map(option => {
+            option.checked = false;
+
+            return option;
+        });
+
+        setFilterOptions({
+            ...filterOptions,
+            [column]: resetedOptions
+        });
+    };
+
     return (
         <CustomDropdown tag='span'
             toggle={<img className='table__filter-icon cursor-pointer' src={filterIcon} alt='talbe-filter-icon' />}>
@@ -89,35 +147,35 @@ const CheckboxSearch = ({
             <DropdownItem divider={true} />
             <DropdownItem header={true}>
                 <Input type='text' name='search' placeholder='Search...'
-                    bsSize='md' />
+                    bsSize='md' value={searchString} onChange={e => searchFilterHandler(e.target.value)} />
             </DropdownItem>
             <div className='table__filter-options overflow-auto'>
-                <FormGroup check={true}>
-                    <Label check={true}>
-                        <Input type='checkbox' />{' '}
-                        (Select All)
-                    </Label>
-                </FormGroup>
-                {Object.keys(filterOptions).length > 0 && filterOptions[columnName].map((option, idx) => {
+                {searchedOptions.map((option, idx) => {
                     return (
-                        option !== '' && option !== undefined &&
-                            <FormGroup key={idx} check={true}>
-                                <Label check={true}>
-                                    <Input type='checkbox' />{' '}
-                                    {option}
-                                </Label>
-                            </FormGroup>
+                        <FormGroup key={idx} check={true}>
+                            <Label check={true}>
+                                <Input type='checkbox' checked={option.checked} onChange={() => selectFilterHandler(camelize(columnName), option.label, !option.checked)} />{' '}
+                                {option.label.toLowerCase() === 'select all' ? `(${option.label})` : option.label}
+                            </Label>
+                        </FormGroup>
                     );
                 })}
             </div>
             <DropdownItem divider={true} />
             <Button label={<><Typography weight='light' variant='size-14'>Reset</Typography></>}
-                className='table__filter-reset-button float-right mr-2'/>
+                className='table__filter-reset-button float-right mr-2'
+                onClick={() => resetFilterHandler(camelize(columnName))}/>
         </CustomDropdown>
     );
 };
 
-const QuantitySearch = () => {
+const QuantitySearch = ({
+    columnName,
+    filterOptions,
+    setFilterOptions,
+    filterString,
+    setFilterString
+}) => {
     return (
         <CustomDropdown tag='span'
             toggle={<img className='table__filter-icon cursor-pointer' src={filterIcon} alt='talbe-filter-icon' />}>
@@ -127,30 +185,16 @@ const QuantitySearch = () => {
             <DropdownItem divider={true} />
             <div className='table__quantity-filter-options'>
                 <FormGroup tag='fieldset'>
-                    <FormGroup check={true} className='mb-1'>
-                        <Label check={true}>
-                            <Input type='radio' name='radio' />{' '}
-                            Below 100K
-                        </Label>
-                    </FormGroup>
-                    <FormGroup check={true} className='mb-1'>
-                        <Label check={true}>
-                            <Input type='radio' name='radio' />{' '}
-                            100K - 500K
-                        </Label>
-                    </FormGroup>
-                    <FormGroup check={true} className='mb-1'>
-                        <Label check={true}>
-                            <Input type='radio' name='radio' />{' '}
-                            501K - 1M
-                        </Label>
-                    </FormGroup>
-                    <FormGroup check={true} className='mb-1'>
-                        <Label check={true}>
-                            <Input type='radio' name='radio' />{' '}
-                            Above 1M
-                        </Label>
-                    </FormGroup>
+                    {filterOptions[camelize(columnName)].map((option, idx) => {
+                        return (
+                            <FormGroup key={idx} check={true} className='mb-1'>
+                                <Label check={true}>
+                                    <Input type='radio' name='radio' />{' '}
+                                    {option.label}
+                                </Label>
+                            </FormGroup>
+                        );
+                    })}
                 </FormGroup>
             </div>
             <DropdownItem divider={true} />
