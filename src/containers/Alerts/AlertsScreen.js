@@ -20,15 +20,23 @@ import {
 import './alerts.scss';
 
 type Props = {
+    filterOptions: Object,
+    setFilterOptions: Function,
     tableColumns: Array,
     tableData: Array,
+    paginationData: Object,
+    setPaginationData: Function,
     viewAlertDetails: Function,
     sidebarMenu: Array<Menu>
 }
 
 function AlertsScreen({
+    filterOptions,
+    setFilterOptions,
     tableColumns,
     tableData,
+    paginationData,
+    setPaginationData,
     viewAlertDetails,
     sidebarMenu
 }: Props): React$Element<any> {
@@ -61,8 +69,11 @@ function AlertsScreen({
                                 )
                                 : (
                                     <Table className='alerts__table'
+                                        filterOptions={filterOptions}
+                                        setFilterOptions={setFilterOptions}
                                         tableColumns={tableColumns}
-                                        tableData={tableData}
+                                        paginationData={paginationData}
+                                        setPaginationData={setPaginationData}
                                         filterable={true}
                                         paginated={true}>
                                         {tableData.map((value, idx1) => {

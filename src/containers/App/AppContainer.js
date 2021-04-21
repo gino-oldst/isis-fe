@@ -65,11 +65,11 @@ function App() {
     }, {
         label: 'Alerts',
         onClick: () => history.push('/alerts'),
-        key: 'alerts'
+        key: 'alert'
     }, {
         label: 'Behaviours',
         onClick: () => history.push('/behaviours'),
-        key: 'behaviours'
+        key: 'behaviour'
     }];
 
     const handleCloseModal = () => {
@@ -141,9 +141,11 @@ const Notifications = ({
                         className='mb-2'>Notifications</Typography>
                 </div>
                 <div className='navbar__notifications-today'>
-                    <div className='navbar__notifications-today-title px-4 py-1'>
-                        <Typography color='color-3' weight='light' variant='size-10'>TODAY</Typography>
-                    </div>
+                    {today.length > 0 &&
+                        <div className='navbar__notifications-today-title px-4 py-1'>
+                            <Typography color='color-3' weight='light' variant='size-10'>TODAY</Typography>
+                        </div>
+                    }
                     {today.map((now, idx) => {
                         return (
                             <DropdownItem key={`today-${idx}`} className='px-4 py-4 d-flex align-items-center'>
@@ -171,9 +173,11 @@ const Notifications = ({
                     })}
                 </div>
                 <div className='navbar__notifications-past'>
-                    <div className='navbar__notifications-past-title px-4 py-1'>
-                        <Typography color='color-3' weight='light' variant='size-10'>YESTERDAY AND EARLIER</Typography>
-                    </div>
+                    {yesterday.length > 0 &&
+                        <div className='navbar__notifications-past-title px-4 py-1'>
+                            <Typography color='color-3' weight='light' variant='size-10'>YESTERDAY AND EARLIER</Typography>
+                        </div>
+                    }
                     {yesterday.map((yes, idx) => {
                         return (
                             <DropdownItem key={`yesterdat-${idx}`} className='px-4 py-4 d-flex align-items-center'>

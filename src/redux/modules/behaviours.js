@@ -46,6 +46,24 @@ const initialState = {
                 behaviourName: 'Away from the Market',
                 status: 'Inactive',
                 detail: '/behaviour/MUB05'
+            },
+            {
+                identifier: 'MUB06',
+                behaviourName: 'Away from the Market',
+                status: 'Inactive',
+                detail: '/behaviour/MUB05'
+            },
+            {
+                identifier: 'MUB07',
+                behaviourName: 'Away from the Market',
+                status: 'Inactive',
+                detail: '/behaviour/MUB05'
+            },
+            {
+                identifier: 'MUB08',
+                behaviourName: 'Away from the Market',
+                status: 'Inactive',
+                detail: '/behaviour/MUB05'
             }
         ]
     },

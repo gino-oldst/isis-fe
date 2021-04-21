@@ -24,29 +24,13 @@
         }
     }
 
-    li:first-child {
-        margin-top: 0.5rem;
-        margin-right: 20px;
-
-        a {
-            display: none;
-        }
-
-        &:after {
-            content: "Prev";
-        }
-    }
-
+    li:first-child,
     li:last-child {
-        margin-top: 0.5rem;
-        margin-left: 20px;
-
         a {
-            display: none;
-        }
-
-        &:after {
-            content: "Next";
+            font-size: 0.9rem !important;
+            padding: 10px 6px 6px 6px !important;
+            margin-left: 10px !important;
+            margin-right: 10px !important;
         }
     }
 }

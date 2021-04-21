@@ -182,7 +182,7 @@ function AlertDetailScreen({
                                         </Card>
                                     </div>
                                 </Col>
-                                <Col sm={12} className='mt-4 mt-0-xl'>
+                                <Col sm={12} className='mt-4 mt-0-xl mb-2'>
                                     <div className='alert-detail__activities'>
                                         <Typography color='color-3' variant='size-26' className='playfair-font mb-4'>Activity</Typography>
                                         <div className='alert-detail__activity-info d-flex align-items-center mb-3'>

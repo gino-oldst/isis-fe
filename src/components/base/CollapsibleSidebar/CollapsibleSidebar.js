@@ -50,7 +50,7 @@ export default function CollapsibleSidebar({
                                                 <div
                                                     key={sub.key}
                                                     onClick={item.onClick || null}
-                                                    className={`collapsible-sidebar__menu-item ${pathName === `/${sub.key}` ? 'is-active' : ''}`}>
+                                                    className={`collapsible-sidebar__menu-item ${pathName.includes(sub.key.toLowerCase()) ? 'is-active' : ''}`}>
                                                     <p className='ml-3 mb-0'>{sub.label}</p>
                                                 </div>
                                             )}
@@ -73,7 +73,7 @@ function CustomToggle({ children, eventKey, pathName, itemKey, withSubmenu }) {
 
     return (
         <div
-            className={`collapsible-sidebar__menu-item justify-content-between ${pathName === `/${itemKey.toLowerCase()}` ? 'is-active' : ''}`}
+            className={`collapsible-sidebar__menu-item justify-content-between ${pathName.includes(itemKey.toLowerCase()) ? 'is-active' : ''}`}
             onClick={decoratedOnClick}>
             <div className='d-flex'>
                 {children}

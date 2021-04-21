@@ -7,4 +7,67 @@
         color: $color-sidebar-2;
         font-size: 1rem;
     }
+
+    &__filter-options {
+        max-height: 130px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+    }
+
+    &__filter-options {
+        .form-check {
+            padding-bottom: 0.2rem;
+        }
+    }
+
+    &__quantity-filter-options,
+    &__date-filter-options {
+        padding: 0.3rem 1.2rem;
+    }
+
+    .form-check-label {
+        font-weight: 500;
+        font-size: 1.1rem;
+    }
+
+    .MuiOutlinedInput-input {
+        padding: 8px 0 !important;
+        font-size: 1rem !important;
+    }
+
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .dropdown-menu {
+        margin-left: -150px;
+        width: 280px;
+
+        .dropdown-divider {
+            border-top: 1px solid #dee2e6;
+        }
+    }
+
+    .dropdown-date-type-header .form-group {
+        width: 230px !important;
+        position: relative;
+        bottom: 0.5em;
+    }
+
+    .dropdown-date-type-header .dropdown-item:last-child {
+        height: 50px;
+    }
+
+    &__filter-reset-button {
+        border: $bg-download-button;
+        background-color: $bg-download-button;
+        border-radius: 0.2rem;
+
+        &:hover,
+        &:focus,
+        &:active {
+            background-color: darken($bg-download-button, 10%) !important;
+            border-color: darken($bg-download-button, 10%) !important;
+        }
+    }
 }

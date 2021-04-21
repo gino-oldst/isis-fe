@@ -19,6 +19,8 @@ type Props = {
     sidebarMenu: Array<Menu>,
     tableColumns: Array,
     tableData: Array,
+    paginationData: Object,
+    setPaginationData: Function,
     viewBehaviourDetails: Function
 }
 
@@ -26,6 +28,8 @@ function BehavioursScreen({
     sidebarMenu,
     tableColumns,
     tableData,
+    paginationData,
+    setPaginationData,
     viewBehaviourDetails
 }: Props): React$Element<any> {
     return (
@@ -41,6 +45,8 @@ function BehavioursScreen({
                             <Table className='behaviours__table'
                                 tableColumns={tableColumns}
                                 tableData={tableData}
+                                paginationData={paginationData}
+                                setPaginationData={setPaginationData}
                                 paginated={true}>
                                 {tableData.map((value, idx1) => {
                                     const dataKeys = Object.keys(value);

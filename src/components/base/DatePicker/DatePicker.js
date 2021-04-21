@@ -8,7 +8,9 @@ import DateFnsUtils from '@date-io/date-fns';
 import './date-picker.scss';
 
 type Props = {
-    className?: string
+    className?: string,
+    width: Integer,
+    format: string
 }
 
 const materialTheme = createMuiTheme({
@@ -39,6 +41,8 @@ const materialTheme = createMuiTheme({
 
 export default function DatePicker({
     className = '',
+    width = 25,
+    format = 'MM/dd/yyyy',
     ...rest
 }: Props): React$Element<any> {
     return (
@@ -48,11 +52,11 @@ export default function DatePicker({
                     {...rest}
                     disablePast={true}
                     minDate={new Date()}
-                    format='MM/dd/yyyy'
+                    format={format}
                     animateYearScrolling={true}
                     inputProps={{ style: { fontSize: 15 } }} // font size of input text
                     InputLabelProps={{ style: { fontSize: 15 } }} // font size of input label
-                    style={{ width: '25%' }}
+                    style={{ width: `${width}%` }}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position={'start'}>
