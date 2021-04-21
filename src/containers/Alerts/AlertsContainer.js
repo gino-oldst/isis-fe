@@ -20,7 +20,7 @@ export default function AlertsContainer({
     const [alerts, setAlerts] = useState({
         data: [],
         currentPage: 1,
-        dataPerPage: 5,
+        dataPerPage: 10,
         totalPages: 0
     });
 
@@ -50,7 +50,7 @@ export default function AlertsContainer({
 
         table.data.map(data => {
             Object.keys(data).map(key => {
-                cols[key.toLowerCase()].push(data[key.toLowerCase()]);
+                cols[key.toLowerCase()].push(data[key]);
             });
         });
 

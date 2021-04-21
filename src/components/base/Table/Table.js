@@ -92,25 +92,16 @@ const CheckboxSearch = ({
                     bsSize='md' />
             </DropdownItem>
             <div className='table__filter-options overflow-auto'>
+                <FormGroup check={true}>
+                    <Label check={true}>
+                        <Input type='checkbox' />{' '}
+                        (Select All)
+                    </Label>
+                </FormGroup>
                 {Object.keys(filterOptions).length > 0 && filterOptions[columnName].map((option, idx) => {
                     return (
                         option !== '' && option !== undefined &&
-                        idx === 0
-                            ? <>
-                                <FormGroup check={true}>
-                                    <Label check={true}>
-                                        <Input type='checkbox' />{' '}
-                                (Select All)
-                                    </Label>
-                                </FormGroup>
-                                <FormGroup check={true}>
-                                    <Label check={true}>
-                                        <Input type='checkbox' />{' '}
-                                        {option}
-                                    </Label>
-                                </FormGroup>
-                            </>
-                            : <FormGroup check={true}>
+                            <FormGroup key={idx} check={true}>
                                 <Label check={true}>
                                     <Input type='checkbox' />{' '}
                                     {option}
