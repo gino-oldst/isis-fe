@@ -23,6 +23,7 @@ type Props = {
     setFilterOptions: Function,
     filterString: String,
     setFilterString: Function,
+    setActiveFilterColumn: Function,
     tableColumns: Array,
     paginationData: Object,
     setPaginationData: Function,
@@ -37,6 +38,7 @@ export default function Table({
     setFilterOptions,
     filterString,
     setFilterString,
+    setActiveFilterColumn,
     tableColumns,
     paginationData,
     setPaginationData,
@@ -67,7 +69,8 @@ export default function Table({
                                                     filterOptions={filterOptions}
                                                     setFilterOptions={setFilterOptions}
                                                     filterString={filterString}
-                                                    setFilterString={setFilterString} />
+                                                    setFilterString={setFilterString}
+                                                    setActiveFilterColumn={setActiveFilterColumn} />
                                         : null
                                     }
                                 </th>
@@ -93,7 +96,8 @@ const CheckboxSearch = ({
     filterOptions,
     setFilterOptions,
     filterString,
-    setFilterString
+    setFilterString,
+    setActiveFilterColumn
 }) => {
     const [searchString, setSearchString] = useState('');
     const searchedOptions = filterOptions[camelize(columnName)].filter(option => option.label.toLowerCase().includes(filterString.toLowerCase()));
@@ -115,6 +119,8 @@ const CheckboxSearch = ({
             ...filterOptions,
             [column]: filteredOptions
         });
+
+        setActiveFilterColumn(column);
     };
 
     const searchFilterHandler = value => {

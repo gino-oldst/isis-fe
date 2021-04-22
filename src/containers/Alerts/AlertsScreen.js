@@ -24,6 +24,7 @@ type Props = {
     setFilterOptions: Function,
     filterString: String,
     setFilterString: Function,
+    setActiveFilterColumn: Function,
     tableColumns: Array,
     tableData: Array,
     paginationData: Object,
@@ -37,6 +38,7 @@ function AlertsScreen({
     setFilterOptions,
     filterString,
     setFilterString,
+    setActiveFilterColumn,
     tableColumns,
     tableData,
     paginationData,
@@ -77,6 +79,7 @@ function AlertsScreen({
                                         setFilterOptions={setFilterOptions}
                                         filterString={filterString}
                                         setFilterString={setFilterString}
+                                        setActiveFilterColumn={setActiveFilterColumn}
                                         tableColumns={tableColumns}
                                         paginationData={paginationData}
                                         setPaginationData={setPaginationData}
