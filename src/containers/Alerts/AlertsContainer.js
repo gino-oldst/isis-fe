@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import AlertsScreen from './AlertsScreen';
 import type { Menu } from '../../types';
+import { camelize } from '../../utils/helpers';
 
 import { setSelectedAlert } from '../../redux/modules/alerts';
 
@@ -36,451 +37,184 @@ export default function AlertsContainer({
             ],
             data: [
                 {
+                    id: 1,
                     identifier: 'MUA312',
                     alertType: 'Insider Trading',
                     date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
                     broker: 'Peter Davidson',
                     ticker: 'BP',
                     book: 'Book 1',
-                    quantity: 89,
+                    quantity: 12,
                     client: 'Client 1',
                     escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA312',
-                    alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 1',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA312'
-                },
-                {
-                    identifier: 'MUA313',
-                    alertType: 'Marking the Close',
-                    date: new Date(new Date(2021, 5, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 8, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 2',
-                    escalation: 'Base',
-                    assigned: 'Mark Thomson',
-                    status: 'In Review',
-                    detail: '/alert/MUA313'
-                },
-                {
-                    identifier: 'MUA314',
-                    alertType: 'High Volume',
-                    date: new Date(new Date(2021, 6, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 2',
-                    quantity: 89,
-                    client: 'Client 3',
-                    escalation: 'Manager',
-                    assigned: 'Mark Thomson',
-                    status: 'Archived',
-                    detail: '/alert/MUA314'
-                },
-                {
-                    identifier: 'MUA315',
-                    alertType: 'Flash Execution',
-                    date: new Date(new Date(2021, 7, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 2, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 2',
-                    quantity: 89,
-                    client: 'Client 4',
-                    escalation: 'Manager',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA315'
-                },
-                {
-                    identifier: 'MUA316',
-                    alertType: 'Flash Order',
-                    date: new Date(new Date(2021, 8, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 5, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 5',
-                    escalation: 'CO',
                     assigned: 'Mark Thomson',
                     status: 'Open',
-                    detail: '/alert/MUA316'
-                }, {
-                    identifier: 'MUA312',
+                    detail: '/alert/MUA312'
+                },
+                {
+                    id: 2,
+                    identifier: 'MUA313',
                     alertType: 'Insider Trading',
                     date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
                     broker: 'Peter Davidson',
                     ticker: 'BP',
-                    book: 'Book 1',
+                    book: 'Book 2',
+                    quantity: 11,
+                    client: 'Client 1',
+                    escalation: 'CO',
+                    assigned: 'Mark Thomson',
+                    status: 'In Review',
+                    detail: '/alert/MUA312'
+                },
+                {
+                    id: 3,
+                    identifier: 'MUA314',
+                    alertType: 'Insider Trading',
+                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
+                    broker: 'Peter Davidson',
+                    ticker: 'BP',
+                    book: 'Book 2',
                     quantity: 89,
-                    client: 'Client 6',
-                    escalation: 'Base',
+                    client: 'Client 1',
+                    escalation: 'CO',
                     assigned: 'Mark Thomson',
                     status: 'Resolved',
                     detail: '/alert/MUA312'
                 },
                 {
-                    identifier: 'MUA313',
-                    alertType: 'Marking the Close',
-                    date: new Date(new Date(2021, 5, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 8, 7).getTime())),
+                    id: 4,
+                    identifier: 'MUA315',
+                    alertType: 'Insider Trading',
+                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
                     broker: 'Peter Davidson',
                     ticker: 'BP',
+                    book: 'Book 2',
+                    quantity: 93,
+                    client: 'Client 1',
+                    escalation: 'Manager',
+                    assigned: 'Mark Thomson',
+                    status: 'In Review',
+                    detail: '/alert/MUA312'
+                },
+                {
+                    id: 5,
+                    identifier: 'MUA316',
+                    alertType: 'Insider Trading',
+                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
+                    broker: 'Jeff Smith',
+                    ticker: 'OCDO',
                     book: 'Book 3',
                     quantity: 89,
-                    client: 'Client 7',
+                    client: 'Client 1',
+                    escalation: 'Manager',
+                    assigned: 'Mark Thomson',
+                    status: 'Resolved',
+                    detail: '/alert/MUA312'
+                },
+                {
+                    id: 6,
+                    identifier: 'MUA317',
+                    alertType: 'Insider Trading',
+                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
+                    broker: 'Paul Herbert',
+                    ticker: 'BP',
+                    book: 'Book 4',
+                    quantity: 89,
+                    client: 'Client 1',
                     escalation: 'Base',
                     assigned: 'Mark Thomson',
-                    status: 'In Review',
-                    detail: '/alert/MUA313'
-                },
-                {
-                    identifier: 'MUA314',
-                    alertType: 'High Volume',
-                    date: new Date(new Date(2021, 6, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 8',
-                    escalation: 'Manager',
-                    assigned: 'Mark Thomson',
                     status: 'Archived',
-                    detail: '/alert/MUA314'
+                    detail: '/alert/MUA312'
                 },
                 {
-                    identifier: 'MUA315',
-                    alertType: 'Flash Execution',
-                    date: new Date(new Date(2021, 7, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 2, 7).getTime())),
+                    id: 7,
+                    identifier: 'MUA318',
+                    alertType: 'Insider Trading',
+                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
+                    broker: 'Peter Davidson',
+                    ticker: 'OCDO',
+                    book: 'Book 4',
+                    quantity: 21,
+                    client: 'Client 1',
+                    escalation: 'Base',
+                    assigned: 'Gergana Tsoneva',
+                    status: 'Resolved',
+                    detail: '/alert/MUA312'
+                },
+                {
+                    id: 8,
+                    identifier: 'MUA319',
+                    alertType: 'Insider Trading',
+                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
+                    broker: 'Peter Davidson',
+                    ticker: 'SDR',
+                    book: 'Book 5',
+                    quantity: 33,
+                    client: 'Client 1',
+                    escalation: 'Base',
+                    assigned: 'Gergana Tsoneva',
+                    status: 'Archived',
+                    detail: '/alert/MUA312'
+                },
+                {
+                    id: 9,
+                    identifier: 'MUA320',
+                    alertType: 'Marking the Close',
+                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
+                    broker: 'Peter Davidson',
+                    ticker: 'BNZL',
+                    book: 'Book 6',
+                    quantity: 1044,
+                    client: 'Client 1',
+                    escalation: 'Base',
+                    assigned: 'Darren Hibbitt',
+                    status: 'Open',
+                    detail: '/alert/MUA312'
+                },
+                {
+                    id: 10,
+                    identifier: 'MUA321',
+                    alertType: 'High Volume',
+                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
                     broker: 'Peter Davidson',
                     ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 9',
-                    escalation: 'Manager',
+                    book: 'Book 7',
+                    quantity: 16,
+                    client: 'Client 1',
+                    escalation: 'Base',
+                    assigned: 'Darren Hibbitt',
+                    status: 'Open',
+                    detail: '/alert/MUA312'
+                },
+                {
+                    id: 11,
+                    identifier: 'MUA322',
+                    alertType: 'Flash Execution',
+                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
+                    broker: 'Peter Davidson',
+                    ticker: 'BNZL',
+                    book: 'Book 7',
+                    quantity: 11,
+                    client: 'Client 1',
+                    escalation: 'Base',
+                    assigned: 'Darren Hibbitt',
+                    status: 'Resolved',
+                    detail: '/alert/MUA312'
+                },
+                {
+                    id: 12,
+                    identifier: 'MUA323',
+                    alertType: 'Flash Order',
+                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
+                    broker: 'Peter Davidson',
+                    ticker: 'WPP',
+                    book: 'Book 8',
+                    quantity: 102,
+                    client: 'Client 1',
+                    escalation: 'Base',
                     assigned: 'Mark Thomson',
                     status: 'Resolved',
-                    detail: '/alert/MUA315'
-                },
-                {
-                    identifier: 'MUA316',
-                    alertType: 'Flash Order',
-                    date: new Date(new Date(2021, 8, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 5, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 10',
-                    escalation: 'CO',
-                    assigned: 'Mark Thomson',
-                    status: 'Open',
-                    detail: '/alert/MUA316'
-                },
-                {
-                    identifier: 'MUA315',
-                    alertType: 'Flash Execution',
-                    date: new Date(new Date(2021, 7, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 2, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 11',
-                    escalation: 'Manager',
-                    assigned: 'Mark Thomson',
-                    status: 'Resolved',
-                    detail: '/alert/MUA315'
-                },
-                {
-                    identifier: 'MUA316',
-                    alertType: 'Flash Order',
-                    date: new Date(new Date(2021, 8, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 5, 7).getTime())),
-                    broker: 'Peter Davidson',
-                    ticker: 'BP',
-                    book: 'Book 1',
-                    quantity: 89,
-                    client: 'Client 12',
-                    escalation: 'CO',
-                    assigned: 'Mark Thomson',
-                    status: 'Open',
-                    detail: '/alert/MUA316'
+                    detail: '/alert/MUA312'
                 }
             ]
         },
@@ -685,6 +419,7 @@ export default function AlertsContainer({
 
         // option 1: static column filter options - wont show any if not applicable
         // option 2: remove column filter options based on what's already filtered to avoid unnecessary filtering of other columns
+        collectColumnFilterOptions();
 
         if (activeFilterColumn !== '') {
             filterOptions[activeFilterColumn].filter(opt => {
@@ -695,6 +430,26 @@ export default function AlertsContainer({
         filteredByColumnData.length > 0
             ? getTablePagination(filteredByColumnData, !isFilteredBefore.current ? 1 : alerts.currentPage) // set current page back to 1 when filtering column
             : getTablePagination();
+    };
+
+    const collectColumnFilterOptions = () => {
+        const filteredColumns = {};
+        const excludedKeys = ['date', 'quantity'];
+
+        data.table.columns.forEach(col => {
+            const camelizedColumn = camelize(col);
+            const initialValue = !excludedKeys.includes(camelizedColumn) ? ['Select All'] : [];
+
+            filteredColumns[camelizedColumn] = initialValue;
+
+            alerts.data.map(record => {
+                const value = record[camelizedColumn];
+
+                if (!filteredColumns[camelizedColumn].includes(value) && !excludedKeys.includes(camelizedColumn)) filteredColumns[camelizedColumn].push(record[camelizedColumn]);
+            });
+        });
+
+        console.log(filteredColumns);
     };
 
     const checkIfTableIsFiltered = () => {

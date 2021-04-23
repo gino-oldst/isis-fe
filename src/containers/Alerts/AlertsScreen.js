@@ -87,11 +87,12 @@ function AlertsScreen({
                                         paginated={true}>
                                         {tableData.map((value, idx1) => {
                                             const dataKeys = Object.keys(value);
+                                            const excludedColumns = ['id', 'detail'];
 
                                             return (
                                                 <tr key={`tr-${idx1}`}>
                                                     {dataKeys.map((key, idx2) => {
-                                                        return dataKeys[idx2].toLowerCase() !== 'detail'
+                                                        return !excludedColumns.includes(dataKeys[idx2].toLowerCase())
                                                             ? (
                                                                 <td key={`td-${idx2}`}>
                                                                     {idx2 === 0

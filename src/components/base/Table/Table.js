@@ -156,7 +156,7 @@ const CheckboxSearch = ({
                     bsSize='md' value={searchString} onChange={e => searchFilterHandler(e.target.value)} />
             </DropdownItem>
             <div className='table__filter-options overflow-auto'>
-                {searchedOptions.map((option, idx) => {
+                {filterOptions[camelize(columnName)].map((option, idx) => {
                     return (
                         <FormGroup key={idx} check={true}>
                             <Label check={true}>
