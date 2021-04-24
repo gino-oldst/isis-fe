@@ -1,7 +1,5 @@
 // @flow
 import React from 'react';
-import moment from 'moment';
-import Badge from '../../components/base/Badge/Badge';
 import Table from '../../components/base/Table/Table';
 import Button from '../../components/base/Button/Button';
 import DatePicker from '../../components/base/DatePicker/DatePicker';
@@ -10,7 +8,6 @@ import Breadcrumbs from '../../components/base/Breadcrumbs/Breadcrumbs';
 import CollapsibleSidebar from '../../components/base/CollapsibleSidebar/CollapsibleSidebarContainer';
 import withLoading from '../../components/modules/withLoading/withLoading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { getTextColor } from '../../utils/helpers';
 import type { Menu } from '../../types';
 import {
     Card,
@@ -20,29 +17,15 @@ import {
 import './alerts.scss';
 
 type Props = {
-    filterOptions: Object,
-    setFilterOptions: Function,
-    filterString: String,
-    setFilterString: Function,
-    setActiveFilterColumn: Function,
     tableColumns: Array,
     tableData: Array,
-    paginationData: Object,
-    setPaginationData: Function,
     viewAlertDetails: Function,
     sidebarMenu: Array<Menu>
 }
 
 function AlertsScreen({
-    filterOptions,
-    setFilterOptions,
-    filterString,
-    setFilterString,
-    setActiveFilterColumn,
     tableColumns,
     tableData,
-    paginationData,
-    setPaginationData,
     viewAlertDetails,
     sidebarMenu
 }: Props): React$Element<any> {
@@ -75,46 +58,9 @@ function AlertsScreen({
                                 )
                                 : (
                                     <Table className='alerts__table'
-                                        filterOptions={filterOptions}
-                                        setFilterOptions={setFilterOptions}
-                                        filterString={filterString}
-                                        setFilterString={setFilterString}
-                                        setActiveFilterColumn={setActiveFilterColumn}
+                                        tableData={tableData}
                                         tableColumns={tableColumns}
-                                        paginationData={paginationData}
-                                        setPaginationData={setPaginationData}
-                                        filterable={true}
-                                        paginated={true}>
-                                        {tableData.map((value, idx1) => {
-                                            const dataKeys = Object.keys(value);
-                                            const excludedColumns = ['id', 'detail'];
-
-                                            return (
-                                                <tr key={`tr-${idx1}`}>
-                                                    {dataKeys.map((key, idx2) => {
-                                                        return !excludedColumns.includes(dataKeys[idx2].toLowerCase())
-                                                            ? (
-                                                                <td key={`td-${idx2}`}>
-                                                                    {idx2 === 0
-                                                                        ? <span className='color-link-text cursor-pointer' onClick={() => viewAlertDetails(value.detail, value)}>{value[dataKeys[idx2]]}</span>
-                                                                        : dataKeys[idx2].toLowerCase() === 'date'
-                                                                            ? moment(value[dataKeys[idx2]]).format('L')
-                                                                            : dataKeys[idx2].toLowerCase() === 'escalation'
-                                                                                ? <span className='font-weight-bold'>{getTextColor(value[dataKeys[idx2]])}</span>
-                                                                                : dataKeys[idx2].toLowerCase() === 'status'
-                                                                                    ? <Badge status={value[dataKeys[idx2]]} />
-                                                                                    : value[dataKeys[idx2]]
-                                                                    }
-                                                                </td>
-                                                            )
-                                                            : (
-                                                                null
-                                                            );
-                                                    })}
-                                                </tr>
-                                            );
-                                        })}
-                                    </Table>
+                                        viewAlertDetails={viewAlertDetails} />
                                 )}
                         </CardBody>
                     </Card>

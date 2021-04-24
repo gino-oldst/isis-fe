@@ -1,10 +1,9 @@
 // @flow
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import AlertsScreen from './AlertsScreen';
 import type { Menu } from '../../types';
-import { camelize } from '../../utils/helpers';
 
 import { setSelectedAlert } from '../../redux/modules/alerts';
 
@@ -17,9 +16,6 @@ export default function AlertsContainer({
 }: Props): React$Element<any> {
     const history = useHistory();
     const dispatch = useDispatch();
-    const isFilteredBefore = useRef(1);
-    const [filterString, setFilterString] = useState('');
-    const [activeFilterColumn, setActiveFilterColumn] = useState('');
     const [data, setData] = useState({
         table: {
             columns: [
@@ -74,7 +70,7 @@ export default function AlertsContainer({
                     broker: 'Peter Davidson',
                     ticker: 'BP',
                     book: 'Book 2',
-                    quantity: 89,
+                    quantity: 1500000,
                     client: 'Client 1',
                     escalation: 'CO',
                     assigned: 'Mark Thomson',
@@ -104,7 +100,7 @@ export default function AlertsContainer({
                     broker: 'Jeff Smith',
                     ticker: 'OCDO',
                     book: 'Book 3',
-                    quantity: 89,
+                    quantity: 458000,
                     client: 'Client 1',
                     escalation: 'Manager',
                     assigned: 'Mark Thomson',
@@ -119,7 +115,7 @@ export default function AlertsContainer({
                     broker: 'Paul Herbert',
                     ticker: 'BP',
                     book: 'Book 4',
-                    quantity: 89,
+                    quantity: 223560,
                     client: 'Client 1',
                     escalation: 'Base',
                     assigned: 'Mark Thomson',
@@ -149,7 +145,7 @@ export default function AlertsContainer({
                     broker: 'Peter Davidson',
                     ticker: 'SDR',
                     book: 'Book 5',
-                    quantity: 33,
+                    quantity: 789233,
                     client: 'Client 1',
                     escalation: 'Base',
                     assigned: 'Gergana Tsoneva',
@@ -179,7 +175,7 @@ export default function AlertsContainer({
                     broker: 'Peter Davidson',
                     ticker: 'BP',
                     book: 'Book 7',
-                    quantity: 16,
+                    quantity: 985000,
                     client: 'Client 1',
                     escalation: 'Base',
                     assigned: 'Darren Hibbitt',
@@ -215,6 +211,51 @@ export default function AlertsContainer({
                     assigned: 'Mark Thomson',
                     status: 'Resolved',
                     detail: '/alert/MUA312'
+                },
+                {
+                    id: 13,
+                    identifier: 'MUA312',
+                    alertType: 'Insider Trading',
+                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
+                    broker: 'Peter Davidson',
+                    ticker: 'BP',
+                    book: 'Book 1',
+                    quantity: 1000502,
+                    client: 'Client 1',
+                    escalation: 'Base',
+                    assigned: 'Mark Thomson',
+                    status: 'Open',
+                    detail: '/alert/MUA312'
+                },
+                {
+                    id: 14,
+                    identifier: 'MUA312',
+                    alertType: 'Insider Trading',
+                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
+                    broker: 'Peter Davidson',
+                    ticker: 'BP',
+                    book: 'Book 1',
+                    quantity: 12,
+                    client: 'Client 1',
+                    escalation: 'Base',
+                    assigned: 'Mark Thomson',
+                    status: 'Open',
+                    detail: '/alert/MUA312'
+                },
+                {
+                    id: 15,
+                    identifier: 'MUA312',
+                    alertType: 'Insider Trading',
+                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
+                    broker: 'Peter Davidson',
+                    ticker: 'BP',
+                    book: 'Book 1',
+                    quantity: 12,
+                    client: 'Client 1',
+                    escalation: 'Base',
+                    assigned: 'Mark Thomson',
+                    status: 'Open',
+                    detail: '/alert/MUA312'
                 }
             ]
         },
@@ -223,156 +264,6 @@ export default function AlertsContainer({
             activity: []
         }
     }); // table data
-    const [filterOptions, setFilterOptions] = useState({
-        alertType: [
-            {
-                label: 'Select All',
-                checked: false
-            },
-            {
-                label: 'Insider Trading',
-                checked: false
-            },
-            {
-                label: 'Marking the Close',
-                checked: false
-            },
-            {
-                label: 'High Volume',
-                checked: false
-            },
-            {
-                label: 'Flash Execution',
-                checked: false
-            },
-            {
-                label: 'Flash Order',
-                checked: false
-            }
-        ],
-        broker: [
-            {
-                label: 'Select All',
-                checked: false
-            },
-            {
-                label: 'Ysa Domingo',
-                checked: false
-            },
-            {
-                label: 'Miguel Ladisla',
-                checked: false
-            }
-        ],
-        ticker: [
-            {
-                label: 'Select All',
-                checked: false
-            },
-            {
-                label: 'BP',
-                checked: false
-            },
-            {
-                label: 'BO',
-                checked: false
-            }
-        ],
-        book: [
-            {
-                label: 'Select All',
-                checked: false
-            },
-            {
-                label: 'Book 1',
-                checked: false
-            },
-            {
-                label: 'Book 2',
-                checked: false
-            }
-        ],
-        quantity: [
-            {
-                label: 'Below 100K',
-                checked: false
-            },
-            {
-                label: '100K - 500K',
-                checked: false
-            },
-            {
-                label: '501K - 1M',
-                checked: false
-            },
-            {
-                label: 'Above 1M',
-                checked: false
-            }
-        ],
-        client: [
-            {
-                label: 'Select All',
-                checked: false
-            },
-            {
-                label: 'Client 1',
-                checked: false
-            },
-            {
-                label: 'Client 2',
-                checked: false
-            }
-        ],
-        escalation: [
-            {
-                label: 'Select All',
-                checked: false
-            },
-            {
-                label: 'Base',
-                checked: false
-            },
-            {
-                label: 'Manager',
-                checked: false
-            }
-        ],
-        assigned: [
-            {
-                label: 'Select All',
-                checked: false
-            },
-            {
-                label: 'Mark Thomson',
-                checked: false
-            },
-            {
-                label: 'Jonas Morgan',
-                checked: false
-            }
-        ],
-        status: [
-            {
-                label: 'Select All',
-                checked: false
-            },
-            {
-                label: 'Resolved',
-                checked: false
-            },
-            {
-                label: 'Archived',
-                checked: false
-            }
-        ]
-    }); // table column filters
-    const [alerts, setAlerts] = useState({
-        data: [],
-        currentPage: 1,
-        dataPerPage: 10,
-        totalPages: 0
-    }); // table pagination
 
     const viewAlertDetails = async (path, data) => {
         await dispatch(setSelectedAlert(data)); // redux version
@@ -388,86 +279,9 @@ export default function AlertsContainer({
         history.push(path);
     };
 
-    useEffect(() => {
-        if (data.table.data !== undefined && data.table.data.length > 0) getTablePagination();
-    }, []); // pagination init
-
-    useEffect(() => {
-        filterTableByColumn();
-        isFilteredBefore.current = checkIfTableIsFiltered().length > 0;
-    }, [filterOptions, alerts.currentPage]); // pagination click and column  filter select
-
-    const getTablePagination = (
-        tableData = data.table.data,
-        tableCurrentPage = alerts.currentPage
-    ) => {
-        // Logic for displaying todos
-        const indexOfLastData = alerts.currentPage * alerts.dataPerPage;
-        const indexOfFirstData = indexOfLastData - alerts.dataPerPage;
-        const currentData = tableData.slice(indexOfFirstData, indexOfLastData);
-
-        setAlerts({
-            ...alerts,
-            data: currentData,
-            currentPage: tableCurrentPage,
-            totalPages: (tableData.length % alerts.dataPerPage) > 0 ? parseInt(tableData.length / alerts.dataPerPage) + 1 : parseInt(tableData.length / alerts.dataPerPage)
-        });
-    };
-
-    const filterTableByColumn = () => {
-        const filteredByColumnData = [];
-
-        // option 1: static column filter options - wont show any if not applicable
-        // option 2: remove column filter options based on what's already filtered to avoid unnecessary filtering of other columns
-        collectColumnFilterOptions();
-
-        if (activeFilterColumn !== '') {
-            filterOptions[activeFilterColumn].filter(opt => {
-                filteredByColumnData.push(...data.table.data.filter(dataOpt => opt.checked === true && dataOpt[activeFilterColumn].toLowerCase() === opt.label.toLowerCase()));
-            }); // get all used column for filtering
-        }
-
-        filteredByColumnData.length > 0
-            ? getTablePagination(filteredByColumnData, !isFilteredBefore.current ? 1 : alerts.currentPage) // set current page back to 1 when filtering column
-            : getTablePagination();
-    };
-
-    const collectColumnFilterOptions = () => {
-        const filteredColumns = {};
-        const excludedKeys = ['date', 'quantity'];
-
-        data.table.columns.forEach(col => {
-            const camelizedColumn = camelize(col);
-            const initialValue = !excludedKeys.includes(camelizedColumn) ? ['Select All'] : [];
-
-            filteredColumns[camelizedColumn] = initialValue;
-
-            alerts.data.map(record => {
-                const value = record[camelizedColumn];
-
-                if (!filteredColumns[camelizedColumn].includes(value) && !excludedKeys.includes(camelizedColumn)) filteredColumns[camelizedColumn].push(record[camelizedColumn]);
-            });
-        });
-
-        console.log(filteredColumns);
-    };
-
-    const checkIfTableIsFiltered = () => {
-        return Object.keys(filterOptions).filter(options => {
-            return filterOptions[options].filter(option => option.checked === true).length > 0;
-        });
-    };
-
     return <AlertsScreen
-        filterOptions={filterOptions}
-        setFilterOptions={setFilterOptions}
-        filterString={filterString}
-        setFilterString={setFilterString}
-        setActiveFilterColumn={setActiveFilterColumn}
         tableColumns={data.table.columns}
-        tableData={alerts.data}
-        paginationData={alerts}
-        setPaginationData={setAlerts}
+        tableData={data.table.data}
         viewAlertDetails={viewAlertDetails}
         sidebarMenu={sidebarMenu} />;
 }
