@@ -19,8 +19,6 @@ type Props = {
     sidebarMenu: Array<Menu>,
     tableColumns: Array,
     tableData: Array,
-    paginationData: Object,
-    setPaginationData: Function,
     viewBehaviourDetails: Function
 }
 
@@ -28,8 +26,6 @@ function BehavioursScreen({
     sidebarMenu,
     tableColumns,
     tableData,
-    paginationData,
-    setPaginationData,
     viewBehaviourDetails
 }: Props): React$Element<any> {
     return (
@@ -45,38 +41,7 @@ function BehavioursScreen({
                             <Table className='behaviours__table'
                                 tableColumns={tableColumns}
                                 tableData={tableData}
-                                paginationData={paginationData}
-                                setPaginationData={setPaginationData}
-                                paginated={true}>
-                                {tableData.map((value, idx1) => {
-                                    const dataKeys = Object.keys(value);
-
-                                    return (
-                                        <tr key={`tr-${idx1}`}>
-                                            {dataKeys.map((key, idx2) => {
-                                                return dataKeys[idx2].toLowerCase() !== 'detail'
-                                                    ? (
-                                                        <td key={`td-${idx2}`}>
-                                                            {idx2 === 0
-                                                                ? <span className='color-link-text cursor-pointer' onClick={() => viewBehaviourDetails(value.detail, value.identifier, value.behaviourName)}>{value[dataKeys[idx2]]}</span>
-                                                                : dataKeys[idx2].toLowerCase() === 'date'
-                                                                    ? moment(value[dataKeys[idx2]]).format('L')
-                                                                    : dataKeys[idx2].toLowerCase() === 'escalation'
-                                                                        ? <span className='font-weight-bold'>{getTextColor(value[dataKeys[idx2]])}</span>
-                                                                        : dataKeys[idx2].toLowerCase() === 'status'
-                                                                            ? <Badge status={value[dataKeys[idx2]]} />
-                                                                            : value[dataKeys[idx2]]
-                                                            }
-                                                        </td>
-                                                    )
-                                                    : (
-                                                        null
-                                                    );
-                                            })}
-                                        </tr>
-                                    );
-                                })}
-                            </Table>
+                                viewBehaviourDetails={viewBehaviourDetails} />
                         </CardBody>
                     </Card>
                 </div>

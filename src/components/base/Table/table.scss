@@ -10,7 +10,7 @@
 
     &__filter-options {
         max-height: 130px;
-        padding: 0.5rem 1.5rem;
+        padding: 0.2rem 1.5rem;
         font-weight: 600;
     }
 
@@ -68,6 +68,38 @@
         &:active {
             background-color: darken($bg-download-button, 10%) !important;
             border-color: darken($bg-download-button, 10%) !important;
+        }
+    }
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+
+    span {
+        color: black;
+        float: left;
+        text-decoration: none;
+        transition: background-color 0.3s;
+
+        border-radius: 30px;
+        margin-right: 10px;
+        width: 36px;
+        height: 36px;
+        padding: 6px 14px;
+        background: #fff;
+
+        &.active {
+            border: 1px solid $color-sidebar-2;
+        }
+
+        &:first-child,
+        &:last-child {
+            font-size: 0.9rem !important;
+            padding: 10px 6px 6px 6px !important;
+            margin-left: 10px !important;
+            margin-right: 10px !important;
         }
     }
 }
