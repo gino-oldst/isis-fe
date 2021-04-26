@@ -1,5 +1,5 @@
 // @flow
-import React from 'react';
+import React, { useState } from 'react';
 import Table from '../../components/base/Table/Table';
 import Button from '../../components/base/Button/Button';
 import DatePicker from '../../components/base/DatePicker/DatePicker';
@@ -19,6 +19,8 @@ import './alerts.scss';
 type Props = {
     tableColumns: Array,
     tableData: Array,
+    filters: Array,
+    setFilters: Function,
     viewAlertDetails: Function,
     sidebarMenu: Array<Menu>
 }
@@ -26,9 +28,15 @@ type Props = {
 function AlertsScreen({
     tableColumns,
     tableData,
+    filters,
+    setFilters,
     viewAlertDetails,
     sidebarMenu
 }: Props): React$Element<any> {
+    const [selectedStartDate, setSelectedStartDate] = useState(new Date());
+
+    console.log(selectedStartDate);
+
     return (
         <div className='alerts'>
             <CollapsibleSidebar
@@ -41,7 +49,10 @@ function AlertsScreen({
                             <div className='alerts__header d-flex align-items-center'>
                                 <Typography color='color-3' className='alerts__title mr-auto'>Alerts</Typography>
                                 <div className='alerts__date-picker d-flex align-items-center justify-content-end mb-4'>
-                                    <DatePicker inputVariant='outlined' />
+                                    <DatePicker inputVariant='outlined' value={selectedStartDate}
+                                        onChange={setSelectedStartDate}
+                                        onClose={() => console.log('closed')}
+                                        onOpen={() => console.log('opened')} />
                                     <Typography color='color-3' variant='size-16' className='mx-4'>to</Typography>
                                     <DatePicker inputVariant='outlined' />
                                     <Button label={<>
@@ -60,6 +71,8 @@ function AlertsScreen({
                                     <Table className='alerts__table'
                                         tableData={tableData}
                                         tableColumns={tableColumns}
+                                        filters={filters}
+                                        setFilters={setFilters}
                                         viewAlertDetails={viewAlertDetails} />
                                 )}
                         </CardBody>

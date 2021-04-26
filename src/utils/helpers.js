@@ -14,6 +14,39 @@ export function camelize(str: string): string {
     return str.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
 }
 
+export function kFormatter(value: integer): string {
+    const COUNT_FORMATS =
+    [
+        { // 0 - 999
+            letter: '',
+            limit: 1e3
+        },
+        { // 1,000 - 999,999
+            letter: 'K',
+            limit: 1e6
+        },
+        { // 1,000,000 - 999,999,999
+            letter: 'M',
+            limit: 1e9
+        },
+        { // 1,000,000,000 - 999,999,999,999
+            letter: 'B',
+            limit: 1e12
+        },
+        { // 1,000,000,000,000 - 999,999,999,999,999
+            letter: 'T',
+            limit: 1e15
+        }
+    ];
+
+    const format = COUNT_FORMATS.find(format => (value < format.limit));
+
+    value = (1000 * value / format.limit);
+    value = Math.round(value * 10) / 10; // keep one decimal number, only if needed
+
+    return (value + format.letter).toString();
+}
+
 export const isValidEmail = (str: string): boolean => /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(str);
 
 const range = len => {

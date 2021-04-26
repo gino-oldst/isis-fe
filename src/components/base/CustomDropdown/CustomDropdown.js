@@ -32,7 +32,8 @@ export default function CustomDropdown({
     return (
         <UncontrolledButtonDropdown
             direction={direction}
-            className={parentClassName}>
+            className={parentClassName}
+            {...rest}>
             <DropdownToggle tag={tag || null} className={toggleClassName || ''}>
                 {isDangerousHTML
                     ? (

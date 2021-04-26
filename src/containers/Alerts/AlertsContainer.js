@@ -16,6 +16,7 @@ export default function AlertsContainer({
 }: Props): React$Element<any> {
     const history = useHistory();
     const dispatch = useDispatch();
+    const [filters, setFilters] = useState([]);
     const [data, setData] = useState({
         table: {
             columns: [
@@ -186,11 +187,11 @@ export default function AlertsContainer({
                     id: 11,
                     identifier: 'MUA322',
                     alertType: 'Flash Execution',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
+                    date: new Date(),
                     broker: 'Peter Davidson',
                     ticker: 'BNZL',
                     book: 'Book 7',
-                    quantity: 11,
+                    quantity: 122,
                     client: 'Client 1',
                     escalation: 'Base',
                     assigned: 'Darren Hibbitt',
@@ -201,7 +202,7 @@ export default function AlertsContainer({
                     id: 12,
                     identifier: 'MUA323',
                     alertType: 'Flash Order',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
+                    date: new Date(2021, 3, 20, 10, 33, 30, 0),
                     broker: 'Peter Davidson',
                     ticker: 'WPP',
                     book: 'Book 8',
@@ -246,7 +247,7 @@ export default function AlertsContainer({
                     id: 15,
                     identifier: 'MUA312',
                     alertType: 'Insider Trading',
-                    date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
+                    date: new Date(2021, 3, 18, 18, 33, 30, 0),
                     broker: 'Peter Davidson',
                     ticker: 'BP',
                     book: 'Book 1',
@@ -263,7 +264,7 @@ export default function AlertsContainer({
             data: {},
             activity: []
         }
-    }); // table data
+    }); // table dummy data
 
     const viewAlertDetails = async (path, data) => {
         await dispatch(setSelectedAlert(data)); // redux version
@@ -282,6 +283,8 @@ export default function AlertsContainer({
     return <AlertsScreen
         tableColumns={data.table.columns}
         tableData={data.table.data}
+        filters={filters}
+        setFilters={setFilters}
         viewAlertDetails={viewAlertDetails}
         sidebarMenu={sidebarMenu} />;
 }

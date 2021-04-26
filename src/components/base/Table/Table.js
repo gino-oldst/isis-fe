@@ -4,10 +4,11 @@ import moment from 'moment';
 import Button from '../../base/Button/Button';
 import Badge from '../../base/Badge/Badge';
 import Typography from '../../base/Typography/Typography';
-import Pagination from '../../base/Pagination/Pagination';
-import DatePicker from '../../base/DatePicker/DatePicker';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import CustomDropdown from '../../base/CustomDropdown/CustomDropdown';
-import { camelize, getTextColor } from '../../../utils/helpers';
+import { kFormatter, getTextColor } from '../../../utils/helpers';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     Table as ReactstrapTable,
     DropdownItem,
@@ -18,7 +19,7 @@ import {
 import filterIcon from '../../../assets/images/ic_filter.svg';
 import './table.scss';
 
-import { useTable, useFilters, useGlobalFilter, usePagination, useAsyncDebounce } from 'react-table';
+import { useTable, useRowSelect, useFilters, useGlobalFilter, usePagination, useSortBy, useAsyncDebounce } from 'react-table';
 // A great library for fuzzy filtering/sorting items
 import { matchSorter } from 'match-sorter';
 
@@ -83,7 +84,6 @@ function SelectColumnFilter({
     // Calculate the options for filtering
     // using the preFilteredRows
     const [selectFilter, setSelectFilter] = useState([]);
-    const [radioFilter, setRadioFilter] = useState([]);
     const [searchFilter, setSearchFilter] = useState('');
     const options = useMemo(() => {
         const options = new Set();
@@ -110,14 +110,6 @@ function SelectColumnFilter({
             : setSelectFilter([...selectFilter.filter(val => val !== value)]);
     };
 
-    const handleRadioFilterChange = (e, value) => {
-        const isChecked = e.target.checked;
-
-        isChecked
-            ? setRadioFilter(value)
-            : setRadioFilter('');
-    };
-
     const handleSearch = value => {
         setSearchFilter(value);
     };
@@ -125,7 +117,6 @@ function SelectColumnFilter({
     const handleResetFilter = () => {
         setFilter([]);
         setSelectFilter([]);
-        setRadioFilter('');
         setSearchFilter('');
     };
 
@@ -140,85 +131,20 @@ function SelectColumnFilter({
                 <img src={filterIcon} alt='talbe-filter-icon' />
             </DropdownItem>
             <DropdownItem divider={true} />
-            {Header.toLowerCase() === 'quantity'
-                ? (
-                    <div className='table__quantity-filter-options'>
-                        <FormGroup check={true}>
-                            <Label check={true}>
-                                <Input type='radio' name='radio'
-                                    checked={radioFilter === 1} onChange={e => handleRadioFilterChange(e, 1)} />{' '}
-                                Below 100K
-                            </Label>
-                        </FormGroup>
-                        <FormGroup check={true}>
-                            <Label check={true}>
-                                <Input type='radio' name='radio'
-                                    checked={radioFilter === 2} onChange={e => handleRadioFilterChange(e, 2)} />{' '}
-                                100K - 500K
-                            </Label>
-                        </FormGroup>
-                        <FormGroup check={true}>
-                            <Label check={true}>
-                                <Input type='radio' name='radio'
-                                    checked={radioFilter === 3} onChange={e => handleRadioFilterChange(e, 3)} />{' '}
-                                501K - 1M
-                            </Label>
-                        </FormGroup>
-                        <FormGroup check={true}>
-                            <Label check={true}>
-                                <Input type='radio' name='radio'
-                                    checked={radioFilter === 4} onChange={e => handleRadioFilterChange(e, 4)} />{' '}
-                                Above 1M
-                            </Label>
-                        </FormGroup>
-                    </div>
-                )
-                : Header.toLowerCase() === 'date'
-                    ? (
-                        <div className='table__date-filter-options'>
-                            <FormGroup tag='fieldset'>
-                                <FormGroup check={true} className='mb-1'>
-                                    <Label check={true}>
-                                        <Input type='radio' name='radio' />{' '}
-                                    Today
-                                    </Label>
-                                </FormGroup>
-                                <FormGroup check={true} className='mb-1'>
-                                    <Label check={true}>
-                                        <Input type='radio' name='radio' />{' '}
-                                    Last 7 Days
-                                    </Label>
-                                </FormGroup>
-                                <FormGroup check={true} className='mb-1'>
-                                    <Label check={true}>
-                                        <Input type='radio' name='radio' />{' '}
-                                        <span className='mr-2'>Specific Date</span>
-                                        <DatePicker width={55} format='dd MMM yyyy' className='table__date-filter-picker'
-                                            inputVariant='outlined' />
-                                    </Label>
-                                </FormGroup>
-                            </FormGroup>
-                        </div>
-                    )
-                    : (
-                        <>
-                            <DropdownItem header={true}>
-                                <Input type='text' name='search' placeholder='Search...'
-                                    bsSize='md' value={searchFilter} onChange={e => handleSearch(e.target.value)} />
-                            </DropdownItem>
-                            {choices.map((option, i) => (
-                                <div key={i} className='table__filter-options overflow-auto'>
-                                    <FormGroup key={i} check={true}>
-                                        <Label check={true}>
-                                            <Input type='checkbox' checked={selectFilter.includes(option.toString())} onChange={e => handleFilterChange(e, option.toString())}/>
-                                            {option.toString()}
-                                        </Label>
-                                    </FormGroup>
-                                </div>
-                            ))}
-                        </>
-                    )
-            }
+            <DropdownItem header={true}>
+                <Input type='text' name='search' placeholder='Search...'
+                    bsSize='md' value={searchFilter} onChange={e => handleSearch(e.target.value)} />
+            </DropdownItem>
+            <div className='table__filter-options overflow-auto'>
+                {choices.map((option, i) => (
+                    <FormGroup key={i} check={true}>
+                        <Label check={true}>
+                            <Input type='checkbox' checked={selectFilter.includes(option.toString())} onChange={e => handleFilterChange(e, option.toString())}/>
+                            {option.toString()}
+                        </Label>
+                    </FormGroup>
+                ))}
+            </div>
             <DropdownItem divider={true} />
             <Button label={<><Typography weight='light' variant='size-14'>Reset</Typography></>}
                 className='table__filter-reset-button float-right mr-2' onClick={() => handleResetFilter()}/>
@@ -263,28 +189,28 @@ function RadioColumnFilter({
             <div className='table__quantity-filter-options'>
                 <FormGroup check={true}>
                     <Label check={true}>
-                        <Input type='radio' name='radio'
+                        <Input type='radio' name='radio1'
                             checked={radioFilter === 1} onChange={e => handleRadioFilterChange(e, 1)} />{' '}
                         Below 100K
                     </Label>
                 </FormGroup>
                 <FormGroup check={true}>
                     <Label check={true}>
-                        <Input type='radio' name='radio'
+                        <Input type='radio' name='radio2'
                             checked={radioFilter === 2} onChange={e => handleRadioFilterChange(e, 2)} />{' '}
                         100K - 500K
                     </Label>
                 </FormGroup>
                 <FormGroup check={true}>
                     <Label check={true}>
-                        <Input type='radio' name='radio'
+                        <Input type='radio' name='radio3'
                             checked={radioFilter === 3} onChange={e => handleRadioFilterChange(e, 3)} />{' '}
                         501K - 1M
                     </Label>
                 </FormGroup>
                 <FormGroup check={true}>
                     <Label check={true}>
-                        <Input type='radio' name='radio'
+                        <Input type='radio' name='radio4'
                             checked={radioFilter === 4} onChange={e => handleRadioFilterChange(e, 4)} />{' '}
                         Above 1M
                     </Label>
@@ -297,18 +223,137 @@ function RadioColumnFilter({
     );
 }
 
+function DateColumnFilter({
+    column: { setFilter }
+}) {
+    // Calculate the options for filtering
+    // using the preFilteredRows
+    const [dateFilter, setDateFilter] = useState(0);
+    const [defaultDate, setDefaultDate] = useState(new Date());
+    const [selectedDate, setDateChange] = useState(3);
+    const datepickerOpen = React.createRef();
+
+    useEffect(() => {
+        setFilter(dateFilter);
+    }, [dateFilter]);
+
+    useEffect(() => {
+        setFilter(selectedDate);
+    }, [selectedDate]);
+
+    const handleDateFilterChange = (isChecked, value) => {
+        isChecked
+            ? setDateFilter(value)
+            : setDateFilter(0);
+    };
+
+    const handleResetFilter = () => {
+        setFilter(undefined);
+        setDateFilter(3);
+        setDateChange(3);
+        setDefaultDate(new Date());
+    };
+
+    const handleDateChange = value => {
+        setDateChange(value);
+        setDefaultDate(value);
+        setDateFilter(3);
+    };
+
+    return (
+        <CustomDropdown tag='span'
+            toggle={<img className='table__filter-icon cursor-pointer' src={filterIcon} alt='talbe-filter-icon' />}>
+            <DropdownItem header={true} className='text-center'>
+                <img src={filterIcon} alt='talbe-filter-icon' />
+            </DropdownItem>
+            <DropdownItem divider={true} />
+            <div className='table__date-filter-options'>
+                <FormGroup tag='fieldset'>
+                    <FormGroup check={true} className='mb-1'>
+                        <Label check={true}>
+                            <Input type='radio' name='radio'
+                                checked={dateFilter === 1} onChange={e => handleDateFilterChange(e.target.checked, 1)}/>{' '}
+                        Today
+                        </Label>
+                    </FormGroup>
+                    <FormGroup check={true} className='mb-1'>
+                        <Label check={true}>
+                            <Input type='radio' name='radio'
+                                checked={dateFilter === 2} onChange={e => handleDateFilterChange(e.target.checked, 2)} />{' '}
+                        Last 7 Days
+                        </Label>
+                    </FormGroup>
+                    <FormGroup check={true} className='mb-1'>
+                        <Label check={true}>
+                            <Input type='radio' name='radio'
+                                checked={dateFilter === 3} onChange={e => {
+                                    handleDateFilterChange(e.target.checked, 3);
+                                }} onClick={() => datepickerOpen.current.setOpen(true)} />{' '}
+                            <span className='mr-2'>Specific Date</span>
+                            {/* <DatePicker width={55} format='dd MMM yyyy' className='table__date-filter-picker'
+                                inputVariant='outlined'
+                                value={selectedDate}
+                                open={datepickerOpen}
+                                onClose={() => {
+                                    handleDateFilterChange(true, 3);
+                                    setDatepickerOpen(false);
+                                }}
+                                onOpen={() => {
+                                    handleDateFilterChange(true, 3);
+                                    setDatepickerOpen(true);
+                                }}
+                                onChange={value => handleDateChange(value)} /> */}
+                        </Label>
+                        <FontAwesomeIcon icon='calendar-alt' size='md' className='date-picker__icon' />
+                        <DatePicker ref={datepickerOpen} selected={defaultDate}
+                            className='table__date-picker'
+                            dateFormat='dd MMM yyyy'
+                            onChange={date => {
+                                handleDateChange(date);
+                            }} />
+                    </FormGroup>
+                </FormGroup>
+            </div>
+            <DropdownItem divider={true} />
+            <Button label={<><Typography weight='light' variant='size-14'>Reset</Typography></>}
+                className='table__filter-reset-button float-right mr-2' onClick={() => handleResetFilter()}/>
+        </CustomDropdown>
+    );
+}
+
+// For row selection
+const IndeterminateCheckbox = React.forwardRef(
+    ({ indeterminate, ...rest }, ref) => {
+        const defaultRef = React.useRef();
+        const resolvedRef = ref || defaultRef;
+
+        React.useEffect(() => {
+            resolvedRef.current.indeterminate = indeterminate;
+        }, [resolvedRef, indeterminate]);
+
+        return (
+            <>
+                <input type='checkbox' ref={resolvedRef} {...rest} />
+            </>
+        );
+    }
+);
+
 // Our table component
-function Table({ columns, data }) {
+function Table({
+    columns,
+    data,
+    filters,
+    setFilters
+}) {
     const filterTypes = useMemo(
         () => ({
-            // Add a new fuzzyTextFilterFn filter type.
             fuzzyText: fuzzyTextFilterFn,
             // Or, override the default text filter to use
             // "startWith"
             text: (rows, id, filterValue) => {
                 return rows.filter(row => {
-                    const rowValue = row.values[id]
-;
+                    const rowValue = row.values[id];
 
                     return rowValue !== undefined
                         ? String(rowValue)
@@ -351,15 +396,38 @@ function Table({ columns, data }) {
         {
             columns,
             data,
-            defaultColumn, // Be sure to pass the defaultColumn option
+            defaultColumn,
             filterTypes
         },
-        useFilters, // useFilters!
-        useGlobalFilter, // useGlobalFilter!
-        usePagination // usePagination!
+        useFilters,
+        useGlobalFilter,
+        useSortBy,
+        usePagination,
+        useRowSelect,
+        hooks => {
+            hooks.visibleColumns.push(columns => [
+                {
+                    id: 'selection',
+                    Header: ({ getToggleAllRowsSelectedProps }) => (
+                        <div>
+                            <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+                        </div>
+                    ),
+                    Cell: ({ row }) => (
+                        <div>
+                            <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+                        </div>
+                    )
+                },
+                ...columns
+            ]);
+        }
     );
 
-    const [currentPage, setCurrentPage] = useState(0);
+    const maxPage = 3;
+    const paginationLoopLength = (rows.length % state.pageSize) > 0 ? parseInt(rows.length / state.pageSize + 1) : rows.length / state.pageSize;
+
+    setFilters(state.filters); // collect all applied filters from table
 
     return (
         <>
@@ -369,8 +437,15 @@ function Table({ columns, data }) {
                         <tr {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers.map(column => (
                                 <th {...column.getHeaderProps()}>
-                                    {column.render('Header')}
                                     {/* Render the columns filter UI */}
+                                    <span {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                        {column.render('Header')}
+                                        {column.isSorted
+                                            ? column.isSortedDesc
+                                                ? ' 🔽'
+                                                : ' 🔼'
+                                            : ''}
+                                    </span>
                                     {column.canFilter ? column.render('Filter') : null}
                                 </th>
                             ))}
@@ -378,33 +453,36 @@ function Table({ columns, data }) {
                     ))}
                 </thead>
                 <tbody {...getTableBodyProps()}>
-                    {page.map((row, i) => {
-                        prepareRow(row);
+                    {page.length > 0
+                        ? (
+                            page.map((row, i) => {
+                                prepareRow(row);
 
-                        return (
-                            <tr {...row.getRowProps()}>
-                                {row.cells.map(cell => {
-                                    return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
-                                })}
+                                return (
+                                    <tr {...row.getRowProps()}>
+                                        {row.cells.map(cell => {
+                                            return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+                                        })}
+                                    </tr>
+                                );
+                            })
+                        )
+                        : (
+                            <tr>
+                                <th className='text-muted'>
+                                    No data available
+                                </th>
                             </tr>
-                        );
-                    })}
+                        )}
                 </tbody>
             </ReactstrapTable>
             <div className='pagination'>
                 <span className={`cursor-pointer ${!canPreviousPage ? 'text-muted' : ''}`} onClick={() => previousPage()}>Prev</span>
-                {/* {
-                    Array.from(Array(parseInt(page.length / 10) + 1), (_, i) => {
-                        return (
-                            <span className={`cursor-pointer ${i === state.pageIndex ? 'active' : ''}`} onClick={() => {
-                                gotoPage(i);
-                                setCurrentPage(i);
-                            }}>
-                                {i + 1}
-                            </span>
-                        );
-                    })
-                } */}
+                {Array.from(Array(paginationLoopLength), (_, i) => {
+                    const dynamicPageIndex = state.pageIndex > maxPage ? state.pageIndex - 2 + i : i + 1;
+
+                    return i <= maxPage && <span className={`cursor-pointer ${state.pageIndex + 1 === dynamicPageIndex ? 'active' : ''}`} onClick={() => gotoPage(dynamicPageIndex - 1)}>{dynamicPageIndex}</span>;
+                })}
                 <span className={`cursor-pointer ${!canNextPage ? 'text-muted' : ''}`} onClick={() => nextPage()}>Next</span>
             </div>
             {/* <div>
@@ -422,7 +500,7 @@ function multiSelectFilter(rows, columnIds, filterValue) {
     return filterValue.length === 0 ? rows : rows.filter((row) => filterValue.includes(String(row.original[columnIds])));
 }
 
-// Define a custom filter filter function!
+// Quantity custom filter function!
 function filterGreaterThan(rows, id, filterValue) {
     const result = rows.filter(row => {
         const rowValue = row.values[id];
@@ -444,11 +522,33 @@ function filterGreaterThan(rows, id, filterValue) {
     return result;
 }
 
+/* Date custom filter function */
+function dateSelectFilter(rows, id, filterValue) {
+    const result = rows.filter(row => {
+        const rowValue = row.values[id];
+
+        switch (filterValue) {
+            case 1:
+                return moment(rowValue).format('L') === moment().format('L');
+            case 2:
+                return moment.utc(rowValue).isBetween(moment.utc().subtract(7, 'd'), moment.utc());
+            case 3:
+                return rowValue;
+            default:
+                return moment.utc(rowValue).isBetween(moment.utc(filterValue));
+        }
+    });
+
+    return result;
+}
+
 type Props = {
     children?: string | React.Node,
     className?: string,
     tableData: Array,
     tableColumns: Array,
+    filters: Array,
+    setFilters: Function,
     viewAlertDetails: Function,
 }
 
@@ -457,6 +557,8 @@ export default function ReactTable({
     className = '',
     tableData,
     tableColumns,
+    filters,
+    setFilters,
     viewAlertDetails
 }: Props): React$Element<any> {
     const columns = useMemo(
@@ -475,9 +577,15 @@ export default function ReactTable({
             },
             {
                 Header: 'Date',
-                accessor: d => moment(d.date).local().format('DD/MM/YY'),
-                Filter: SelectColumnFilter,
-                filter: multiSelectFilter
+                accessor: 'date',
+                disableFilters: true,
+                Cell: e => <span>{moment(e.value).format('DD/MM/YY')}</span>,
+                sortType: (a, b) => {
+                    a = new Date(a.values.date).getTime();
+                    b = new Date(b.values.date).getTime();
+
+                    return b > a ? -1 : 1;
+                }
             },
             {
                 Header: 'Broker',
@@ -486,10 +594,23 @@ export default function ReactTable({
                 filter: multiSelectFilter
             },
             {
+                Header: 'Ticker',
+                accessor: 'ticker',
+                Filter: SelectColumnFilter,
+                filter: multiSelectFilter
+            },
+            {
+                Header: 'Book',
+                accessor: 'book',
+                Filter: SelectColumnFilter,
+                filter: multiSelectFilter
+            },
+            {
                 Header: 'Quantity',
                 accessor: 'quantity',
                 Filter: RadioColumnFilter,
-                filter: filterGreaterThan
+                filter: filterGreaterThan,
+                Cell: e => <span>{kFormatter(e.value)}</span>
             },
             {
                 Header: 'Client',
@@ -523,51 +644,8 @@ export default function ReactTable({
 
     return (
         <div className={`w-100 ${className}`}>
-            <Table columns={columns} data={tableData} />
-            {/* {paginated && <Pagination className='mt-3'
-                totalPages={paginationData.totalPages}
-                currentPage={paginationData.currentPage}
-                paginationData={paginationData}
-                setPaginationData={setPaginationData} />} */}
+            <Table columns={columns} data={tableData} filters={filters}
+                setFilters={setFilters} />
         </div>
     );
 }
-
-const DateSearch = () => {
-    return (
-        <CustomDropdown tag='span'
-            toggle={<img className='table__filter-icon cursor-pointer' src={filterIcon} alt='talbe-filter-icon' />}>
-            <DropdownItem header={true} className='text-center'>
-                <img src={filterIcon} alt='talbe-filter-icon' />
-            </DropdownItem>
-            <DropdownItem divider={true} />
-            <div className='table__date-filter-options'>
-                <FormGroup tag='fieldset'>
-                    <FormGroup check={true} className='mb-1'>
-                        <Label check={true}>
-                            <Input type='radio' name='radio' />{' '}
-                            Today
-                        </Label>
-                    </FormGroup>
-                    <FormGroup check={true} className='mb-1'>
-                        <Label check={true}>
-                            <Input type='radio' name='radio' />{' '}
-                            Last 7 Days
-                        </Label>
-                    </FormGroup>
-                    <FormGroup check={true} className='mb-1'>
-                        <Label check={true}>
-                            <Input type='radio' name='radio' />{' '}
-                            <span className='mr-2'>Specific Date</span>
-                            <DatePicker width={55} format='dd MMM yyyy' className='table__date-filter-picker'
-                                inputVariant='outlined' />
-                        </Label>
-                    </FormGroup>
-                </FormGroup>
-            </div>
-            <DropdownItem divider={true} />
-            <Button label={<><Typography weight='light' variant='size-14'>Reset</Typography></>}
-                className='table__filter-reset-button float-right mr-2'/>
-        </CustomDropdown>
-    );
-};

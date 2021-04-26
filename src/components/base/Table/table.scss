@@ -4,6 +4,7 @@
 .table {
     &__filter-icon {
         margin-left: 0.5rem;
+        margin-bottom: 0.3rem;
         color: $color-sidebar-2;
         font-size: 1rem;
     }
@@ -69,6 +70,25 @@
             background-color: darken($bg-download-button, 10%) !important;
             border-color: darken($bg-download-button, 10%) !important;
         }
+    }
+
+    .date-picker__icon {
+        position: absolute;
+        top: 8px;
+        left: 120px;
+        z-index: 100;
+    }
+
+    .react-datepicker-wrapper {
+        width: 60%;
+    }
+
+    &__date-picker {
+        width: 90%;
+        padding-left: 32px;
+        font-size: 1.1rem;
+        border-radius: 5px;
+        border: solid 2px #f1f1f1;
     }
 }
 
