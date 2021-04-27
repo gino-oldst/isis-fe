@@ -41,7 +41,8 @@ function BehavioursScreen({
                             <Table className='behaviours__table'
                                 tableColumns={tableColumns}
                                 tableData={tableData}
-                                viewBehaviourDetails={viewBehaviourDetails} />
+                                pagination={true}
+                                viewDetails={viewBehaviourDetails} />
                         </CardBody>
                     </Card>
                 </div>

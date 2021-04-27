@@ -70,30 +70,11 @@ function BehaviourDetailScreen({
                             <Typography color='color-3' variant='size-16' className='mb-4'>
                                 {selectedBehaviour.identifier}
                             </Typography>
-                            <Table className='behaviour-detail__table'
-                                tableColumns={tableColumns}>
-                                {tableData.map((value, idx1) => {
-                                    const dataKeys = Object.keys(value);
-
-                                    return (
-                                        <tr key={`tr-${idx1}`}>
-                                            {dataKeys.map((key, idx2) => {
-                                                const columnName = dataKeys[idx2].toLowerCase();
-
-                                                return (
-                                                    <td key={`td-${idx2}`}>
-                                                        {columnName === 'parameter' ||
-                                                        columnName === 'threshold'
-                                                            ? <span className='color-link-text cursor-pointer' onClick={() => showBehavioursModal(columnName)}>{value[dataKeys[idx2]]}</span>
-                                                            : value[dataKeys[idx2]]
-                                                        }
-                                                    </td>
-                                                );
-                                            })}
-                                        </tr>
-                                    );
-                                })}
-                            </Table>
+                            <Table className='behaviours__table'
+                                tableColumns={tableColumns}
+                                tableData={tableData}
+                                pagination={true}
+                                viewDetails={showBehavioursModal} />
                         </CardBody>
                     </Card>
                 </div>

@@ -17,6 +17,46 @@
         font-family: $font-family-2;
     }
 
+    &__date-filter-options {
+        max-height: 130px;
+        padding: 0.2rem 1.5rem;
+        font-weight: 600;
+
+        .form-check {
+            padding-bottom: 0.2rem;
+        }
+    }
+
+    .MuiOutlinedInput-input {
+        padding: 8px 0 !important;
+        font-size: 1rem !important;
+    }
+
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .dropdown-menu {
+        width: 300px;
+
+        .dropdown-divider {
+            border-top: 1px solid #dee2e6;
+        }
+    }
+
+    &__filter-reset-button {
+        border: $bg-download-button;
+        background-color: $bg-download-button;
+        border-radius: 0.2rem;
+
+        &:hover,
+        &:focus,
+        &:active {
+            background-color: darken($bg-download-button, 10%) !important;
+            border-color: darken($bg-download-button, 10%) !important;
+        }
+    }
+
     &__download-button {
         border: $bg-download-button;
         background-color: $bg-download-button;

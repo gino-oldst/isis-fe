@@ -290,19 +290,6 @@ function DateColumnFilter({
                                     handleDateFilterChange(e.target.checked, 3);
                                 }} onClick={() => datepickerOpen.current.setOpen(true)} />{' '}
                             <span className='mr-2'>Specific Date</span>
-                            {/* <DatePicker width={55} format='dd MMM yyyy' className='table__date-filter-picker'
-                                inputVariant='outlined'
-                                value={selectedDate}
-                                open={datepickerOpen}
-                                onClose={() => {
-                                    handleDateFilterChange(true, 3);
-                                    setDatepickerOpen(false);
-                                }}
-                                onOpen={() => {
-                                    handleDateFilterChange(true, 3);
-                                    setDatepickerOpen(true);
-                                }}
-                                onChange={value => handleDateChange(value)} /> */}
                         </Label>
                         <FontAwesomeIcon icon='calendar-alt' size='md' className='date-picker__icon' />
                         <DatePicker ref={datepickerOpen} selected={defaultDate}
@@ -343,6 +330,11 @@ const IndeterminateCheckbox = React.forwardRef(
 function Table({
     columns,
     data,
+    selectableRows,
+    globalFilter,
+    pagination,
+    sortable,
+    getAppliedFilters,
     filters,
     setFilters
 }) {
@@ -384,12 +376,10 @@ function Table({
         visibleColumns,
         preGlobalFilteredRows,
         setGlobalFilter,
-        pageOptions,
         page,
         gotoPage,
         previousPage,
         nextPage,
-        setPageSize,
         canPreviousPage,
         canNextPage
     } = useTable(
@@ -404,8 +394,8 @@ function Table({
         useSortBy,
         usePagination,
         useRowSelect,
-        hooks => {
-            hooks.visibleColumns.push(columns => [
+        hooks => { // push column for the checkbox
+            selectableRows && hooks.visibleColumns.push(columns => [
                 {
                     id: 'selection',
                     Header: ({ getToggleAllRowsSelectedProps }) => (
@@ -424,27 +414,43 @@ function Table({
         }
     );
 
-    const maxPage = 3;
+    const maxPage = 3; // max page for pagination button
     const paginationLoopLength = (rows.length % state.pageSize) > 0 ? parseInt(rows.length / state.pageSize + 1) : rows.length / state.pageSize;
 
-    setFilters(state.filters); // collect all applied filters from table
+    getAppliedFilters && setFilters(state.filters); // collect all applied filters from table
 
     return (
         <>
             <ReactstrapTable responsive={true} {...getTableProps()}>
                 <thead>
+                    {globalFilter &&
+                        <tr>
+                            <th
+                                colSpan={visibleColumns.length}
+                                style={{
+                                    textAlign: 'left'
+                                }}>
+                                <GlobalFilter
+                                    preGlobalFilteredRows={preGlobalFilteredRows}
+                                    globalFilter={state.globalFilter}
+                                    setGlobalFilter={setGlobalFilter}/>
+                            </th>
+                        </tr>
+                    }
                     {headerGroups.map(headerGroup => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers.map(column => (
                                 <th {...column.getHeaderProps()}>
                                     {/* Render the columns filter UI */}
-                                    <span {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                    <span {...column.getHeaderProps(sortable && column.getSortByToggleProps())}>
                                         {column.render('Header')}
-                                        {column.isSorted
+                                        {sortable &&
+                                            column.isSorted
                                             ? column.isSortedDesc
                                                 ? ' 🔽'
                                                 : ' 🔼'
-                                            : ''}
+                                            : ''
+                                        }
                                     </span>
                                     {column.canFilter ? column.render('Filter') : null}
                                 </th>
@@ -476,20 +482,17 @@ function Table({
                         )}
                 </tbody>
             </ReactstrapTable>
-            <div className='pagination'>
-                <span className={`cursor-pointer ${!canPreviousPage ? 'text-muted' : ''}`} onClick={() => previousPage()}>Prev</span>
-                {Array.from(Array(paginationLoopLength), (_, i) => {
-                    const dynamicPageIndex = state.pageIndex > maxPage ? state.pageIndex - 2 + i : i + 1;
+            {pagination &&
+                <div className='pagination'>
+                    <span className={`cursor-pointer ${!canPreviousPage ? 'text-muted' : ''}`} onClick={() => previousPage()}>Prev</span>
+                    {Array.from(Array(paginationLoopLength), (_, i) => {
+                        const dynamicPageIndex = state.pageIndex > maxPage ? state.pageIndex - 2 + i : i + 1;
 
-                    return i <= maxPage && <span className={`cursor-pointer ${state.pageIndex + 1 === dynamicPageIndex ? 'active' : ''}`} onClick={() => gotoPage(dynamicPageIndex - 1)}>{dynamicPageIndex}</span>;
-                })}
-                <span className={`cursor-pointer ${!canNextPage ? 'text-muted' : ''}`} onClick={() => nextPage()}>Next</span>
-            </div>
-            {/* <div>
-                <pre>
-                    <code>{JSON.stringify(state.filters, null, 2)}</code>
-                </pre>
-            </div> */}
+                        return i <= maxPage && <span className={`cursor-pointer ${state.pageIndex + 1 === dynamicPageIndex ? 'active' : ''}`} onClick={() => gotoPage(dynamicPageIndex - 1)}>{dynamicPageIndex}</span>;
+                    })}
+                    <span className={`cursor-pointer ${!canNextPage ? 'text-muted' : ''}`} onClick={() => nextPage()}>Next</span>
+                </div>
+            }
         </>
     );
 }
@@ -522,34 +525,16 @@ function filterGreaterThan(rows, id, filterValue) {
     return result;
 }
 
-/* Date custom filter function */
-function dateSelectFilter(rows, id, filterValue) {
-    const result = rows.filter(row => {
-        const rowValue = row.values[id];
-
-        switch (filterValue) {
-            case 1:
-                return moment(rowValue).format('L') === moment().format('L');
-            case 2:
-                return moment.utc(rowValue).isBetween(moment.utc().subtract(7, 'd'), moment.utc());
-            case 3:
-                return rowValue;
-            default:
-                return moment.utc(rowValue).isBetween(moment.utc(filterValue));
-        }
-    });
-
-    return result;
-}
-
 type Props = {
     children?: string | React.Node,
     className?: string,
     tableData: Array,
     tableColumns: Array,
+    selectableRows: Boolean,
+    globalFilter: Boolean,
     filters: Array,
     setFilters: Function,
-    viewAlertDetails: Function,
+    viewDetails: Function,
 }
 
 export default function ReactTable({
@@ -557,94 +542,64 @@ export default function ReactTable({
     className = '',
     tableData,
     tableColumns,
+    selectableRows = false,
+    globalFilter = false,
+    pagination = false,
+    sortable = false,
+    getAppliedFilters = false,
     filters,
     setFilters,
-    viewAlertDetails
+    viewDetails
 }: Props): React$Element<any> {
     const columns = useMemo(
-        () => [
-            {
-                Header: 'Identifier',
-                accessor: 'identifier',
-                disableFilters: true,
-                Cell: e => <span className='color-link-text cursor-pointer' onClick={() => viewAlertDetails(e.cell.row.original.detail, e.cell.row.original)}>{e.value}</span>
-            },
-            {
-                Header: 'Alert Type',
-                accessor: 'alertType',
-                Filter: SelectColumnFilter,
-                filter: multiSelectFilter
-            },
-            {
-                Header: 'Date',
-                accessor: 'date',
-                disableFilters: true,
-                Cell: e => <span>{moment(e.value).format('DD/MM/YY')}</span>,
-                sortType: (a, b) => {
-                    a = new Date(a.values.date).getTime();
-                    b = new Date(b.values.date).getTime();
+        () => tableColumns.map(column => {
+            const rootPath = window.location.pathname.split('/')[1];
 
-                    return b > a ? -1 : 1;
-                }
-            },
-            {
-                Header: 'Broker',
-                accessor: 'broker',
-                Filter: SelectColumnFilter,
-                filter: multiSelectFilter
-            },
-            {
-                Header: 'Ticker',
-                accessor: 'ticker',
-                Filter: SelectColumnFilter,
-                filter: multiSelectFilter
-            },
-            {
-                Header: 'Book',
-                accessor: 'book',
-                Filter: SelectColumnFilter,
-                filter: multiSelectFilter
-            },
-            {
-                Header: 'Quantity',
-                accessor: 'quantity',
-                Filter: RadioColumnFilter,
-                filter: filterGreaterThan,
-                Cell: e => <span>{kFormatter(e.value)}</span>
-            },
-            {
-                Header: 'Client',
-                accessor: 'client',
-                Filter: SelectColumnFilter,
-                filter: multiSelectFilter
-            },
-            {
-                Header: 'Escalation',
-                accessor: 'escalation',
-                Filter: SelectColumnFilter,
-                filter: multiSelectFilter,
-                Cell: e => <span className='font-weight-bold'>{getTextColor(e.value)}</span>
-            },
-            {
-                Header: 'Assigned',
-                accessor: 'assigned',
-                Filter: SelectColumnFilter,
-                filter: multiSelectFilter
-            },
-            {
-                Header: 'Status',
-                accessor: 'status',
-                Filter: SelectColumnFilter,
-                filter: multiSelectFilter,
-                Cell: e => <Badge status={e.value} />
-            }
-        ],
+            return {
+                Header: column.header,
+                accessor: column.accessor,
+                disableFilters: column.disableFilters,
+                Filter: column.accessor !== 'quantity' ? SelectColumnFilter : RadioColumnFilter,
+                filter: column.accessor !== 'quantity' ? multiSelectFilter : filterGreaterThan,
+                Cell: e => column.accessor === 'date'
+                    ? <span>{moment(e.value).format('DD/MM/YY')}</span>
+                    : <span className={`${column.clickable
+                        ? 'color-link-text cursor-pointer'
+                        : ''}`} onClick={() => rootPath === 'alerts' && column.accessor === 'identifier'
+                        ? viewDetails(e.cell.row.original.detail, e.cell.row.original)
+                        : rootPath === 'behaviours' && column.accessor === 'identifier'
+                            ? viewDetails(e.cell.row.original.detail, e.cell.row.original.identifier, e.cell.row.original.behaviourName)
+                            : column.accessor === 'parameter' || column.accessor === 'threshold'
+                                ? viewDetails(column.accessor)
+                                : null}>{column.accessor === 'quantity'
+                            ? kFormatter(e.value)
+                            : column.accessor === 'escalation'
+                                ? <span className='font-weight-bold'>{getTextColor(e.value)}</span>
+                                : column.accessor === 'status'
+                                    ? <Badge status={e.value} />
+                                    : e.value}</span>,
+                sortType: column.accessor === 'date'
+                    ? (a, b, c, d) => {
+                        a = new Date(a.values.date).getTime();
+                        b = new Date(b.values.date).getTime();
+
+                        return b > a ? -1 : 1;
+                    }
+                    : 'alphanumeric'
+            };
+        }),
         []
     );
 
     return (
         <div className={`w-100 ${className}`}>
-            <Table columns={columns} data={tableData} filters={filters}
+            <Table columns={columns} data={tableData}
+                selectableRows={selectableRows}
+                globalFilter={globalFilter}
+                pagination={pagination}
+                sortable={sortable}
+                getAppliedFilters={getAppliedFilters}
+                filters={filters}
                 setFilters={setFilters} />
         </div>
     );

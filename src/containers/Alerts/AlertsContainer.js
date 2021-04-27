@@ -20,17 +20,72 @@ export default function AlertsContainer({
     const [data, setData] = useState({
         table: {
             columns: [
-                'Identifier',
-                'Alert Type',
-                'Date',
-                'Broker',
-                'Ticker',
-                'Book',
-                'Quantity',
-                'Client',
-                'Escalation',
-                'Assigned',
-                'Status'
+                {
+                    header: 'Identifier',
+                    accessor: 'identifier',
+                    disableFilters: false,
+                    clickable: true
+                },
+                {
+                    header: 'Alert Type',
+                    accessor: 'alertType',
+                    disableFilters: false,
+                    clickable: false
+                },
+                {
+                    header: 'Date',
+                    accessor: 'date',
+                    disableFilters: true,
+                    clickable: false
+                },
+                {
+                    header: 'Broker',
+                    accessor: 'broker',
+                    disableFilters: false,
+                    clickable: false
+                },
+                {
+                    header: 'Ticker',
+                    accessor: 'ticker',
+                    disableFilters: false,
+                    clickable: false
+                },
+                {
+                    header: 'Book',
+                    accessor: 'book',
+                    disableFilters: false,
+                    clickable: false
+                },
+                {
+                    header: 'Quantity',
+                    accessor: 'quantity',
+                    disableFilters: false,
+                    clickable: false
+                },
+                {
+                    header: 'Client',
+                    accessor: 'client',
+                    disableFilters: false,
+                    clickable: false
+                },
+                {
+                    header: 'Escalation',
+                    accessor: 'escalation',
+                    disableFilters: false,
+                    clickable: false
+                },
+                {
+                    header: 'Assigned',
+                    accessor: 'assigned',
+                    disableFilters: false,
+                    clickable: false
+                },
+                {
+                    header: 'Status',
+                    accessor: 'status',
+                    disableFilters: false,
+                    clickable: false
+                }
             ],
             data: [
                 {

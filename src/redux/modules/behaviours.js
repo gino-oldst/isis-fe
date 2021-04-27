@@ -12,9 +12,24 @@ export function setSelectedBehaviour(identifier: String, behaviour: String) {
 const initialState = {
     table: {
         columns: [
-            'Identifier',
-            'Behaviour Name',
-            'Status'
+            {
+                header: 'Identifier',
+                accessor: 'identifier',
+                disableFilters: true,
+                clickable: true
+            },
+            {
+                header: 'Behaviour Name',
+                accessor: 'behaviourName',
+                disableFilters: true,
+                clickable: false
+            },
+            {
+                header: 'Status',
+                accessor: 'status',
+                disableFilters: true,
+                clickable: false
+            }
         ],
         data: [
             {
@@ -71,9 +86,24 @@ const initialState = {
         identifier: '',
         behaviour: '',
         columns: [
-            'Rule Number',
-            'Parameter',
-            'Threshold'
+            {
+                header: 'Rule Number',
+                accessor: 'ruleNumber',
+                disableFilters: true,
+                clickable: false
+            },
+            {
+                header: 'Parameter',
+                accessor: 'parameter',
+                disableFilters: true,
+                clickable: true
+            },
+            {
+                header: 'Threshold',
+                accessor: 'threshold',
+                disableFilters: true,
+                clickable: true
+            }
         ],
         data: [
             {
