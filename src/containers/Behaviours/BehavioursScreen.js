@@ -16,6 +16,7 @@ import {
 import './behaviours.scss';
 
 type Props = {
+    breadcrumb: Array,
     sidebarMenu: Array<Menu>,
     tableColumns: Array,
     tableData: Array,
@@ -23,6 +24,7 @@ type Props = {
 }
 
 function BehavioursScreen({
+    breadcrumb,
     sidebarMenu,
     tableColumns,
     tableData,
@@ -33,7 +35,7 @@ function BehavioursScreen({
             <CollapsibleSidebar
                 menu={sidebarMenu} />
             <div className='w-100 overflow-auto'>
-                <Breadcrumbs links={['Home', 'Behaviours']} />
+                <Breadcrumbs links={breadcrumb} />
                 <div className='behaviours__content'>
                     <Card className='px-4 py-2'>
                         <CardBody>

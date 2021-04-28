@@ -23,11 +23,13 @@ import {
 import './alert-detail.scss';
 
 type Props = {
+    breadcrumb: Array,
     sidebarMenu: Array<Menu>,
     selectedAlert: Object
 }
 
 function AlertDetailScreen({
+    breadcrumb,
     sidebarMenu,
     selectedAlert
 }: Props): React$Element<any> {
@@ -36,7 +38,7 @@ function AlertDetailScreen({
             <CollapsibleSidebar
                 menu={sidebarMenu} />
             <div className='w-100 overflow-auto'>
-                <Breadcrumbs links={['Home', 'Alerts', selectedAlert.identifier]} />
+                <Breadcrumbs links={breadcrumb} />
                 <div className='alert-detail__content'>
                     <Card className='px-4 py-2'>
                         <CardBody>

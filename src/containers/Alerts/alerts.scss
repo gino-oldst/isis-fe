@@ -21,15 +21,21 @@
         max-height: 130px;
         padding: 0.2rem 1.5rem;
         font-weight: 600;
+        font-size: 1.1rem;
 
         .form-check {
             padding-bottom: 0.2rem;
         }
     }
 
-    .MuiOutlinedInput-input {
-        padding: 8px 0 !important;
-        font-size: 1rem !important;
+    &__date-picker {
+        .btn-group {
+            width: 25%;
+        }
+    }
+
+    .MuiInputAdornment-root.MuiInputAdornment-positionEnd {
+        display: none;
     }
 
     .form-group {
@@ -57,7 +63,9 @@
         }
     }
 
-    &__download-button {
+    &__download-button,
+    &__save-button,
+    &__bulk-action-button {
         border: $bg-download-button;
         background-color: $bg-download-button;
         border-radius: 0.2rem;
@@ -93,11 +101,26 @@
                 font-size: 1.1rem;
             }
         }
+
+        .selected-row {
+            background: rgba(0, 74, 147, 0.075);
+        }
     }
 
     @media (max-width: 1200px) {
         &__header {
             display: block !important;
         }
+    }
+
+    .date-picker__icon {
+        position: absolute;
+        top: 6px;
+        left: 120px;
+        z-index: 100;
+    }
+
+    .react-datepicker-wrapper {
+        width: 60%;
     }
 }

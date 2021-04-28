@@ -1,6 +1,8 @@
 // @flow
 import React, { useMemo, useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import moment from 'moment';
+import { matchSorter } from 'match-sorter';
 import Button from '../../base/Button/Button';
 import Badge from '../../base/Badge/Badge';
 import Typography from '../../base/Typography/Typography';
@@ -20,8 +22,7 @@ import filterIcon from '../../../assets/images/ic_filter.svg';
 import './table.scss';
 
 import { useTable, useRowSelect, useFilters, useGlobalFilter, usePagination, useSortBy, useAsyncDebounce } from 'react-table';
-// A great library for fuzzy filtering/sorting items
-import { matchSorter } from 'match-sorter';
+import { setIsRowSelected, setAppliedFilters } from '../../../redux/modules/table';
 
 // Define a default UI for filtering
 function GlobalFilter({
@@ -333,10 +334,7 @@ function Table({
     selectableRows,
     globalFilter,
     pagination,
-    sortable,
-    getAppliedFilters,
-    filters,
-    setFilters
+    sortable
 }) {
     const filterTypes = useMemo(
         () => ({
@@ -414,10 +412,20 @@ function Table({
         }
     );
 
+    useEffect(() => {
+        dispatch(setAppliedFilters(state.filters));
+    }, [state.filters]);
+
+    const dispatch = useDispatch();
     const maxPage = 3; // max page for pagination button
     const paginationLoopLength = (rows.length % state.pageSize) > 0 ? parseInt(rows.length / state.pageSize + 1) : rows.length / state.pageSize;
+    // collect all applied filters from table
 
-    getAppliedFilters && setFilters(state.filters); // collect all applied filters from table
+    const selectedRows = page.filter(row => row.isSelected === true).length;
+
+    useEffect(() => {
+        dispatch(setIsRowSelected(selectedRows > 0));
+    }, [selectedRows]);
 
     return (
         <>
@@ -465,7 +473,7 @@ function Table({
                                 prepareRow(row);
 
                                 return (
-                                    <tr {...row.getRowProps()}>
+                                    <tr {...row.getRowProps()} className={`${row.isSelected ? 'selected-row' : ''}`}>
                                         {row.cells.map(cell => {
                                             return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
                                         })}
@@ -532,8 +540,6 @@ type Props = {
     tableColumns: Array,
     selectableRows: Boolean,
     globalFilter: Boolean,
-    filters: Array,
-    setFilters: Function,
     viewDetails: Function,
 }
 
@@ -546,9 +552,6 @@ export default function ReactTable({
     globalFilter = false,
     pagination = false,
     sortable = false,
-    getAppliedFilters = false,
-    filters,
-    setFilters,
     viewDetails
 }: Props): React$Element<any> {
     const columns = useMemo(
@@ -597,10 +600,7 @@ export default function ReactTable({
                 selectableRows={selectableRows}
                 globalFilter={globalFilter}
                 pagination={pagination}
-                sortable={sortable}
-                getAppliedFilters={getAppliedFilters}
-                filters={filters}
-                setFilters={setFilters} />
+                sortable={sortable} />
         </div>
     );
 }

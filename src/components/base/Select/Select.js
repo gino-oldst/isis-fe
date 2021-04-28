@@ -30,12 +30,10 @@ const colourStyles = { // remove default bg color and text color (blue)
             backgroundColor: null
         };
     },
-    // control: (base) => ({
-    //     ...base,
-    //     height: 33,
-    //     minHeight: 33,
-    //     fontSize: 14
-    // }),
+    control: (base) => ({
+        ...base,
+        fontSize: 16
+    }),
     dropdownIndicator: base => ({
         ...base,
         padding: '5px 2px 8px 5px'

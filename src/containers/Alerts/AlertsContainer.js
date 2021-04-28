@@ -1,6 +1,6 @@
 // @flow
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import AlertsScreen from './AlertsScreen';
 import type { Menu } from '../../types';
@@ -8,22 +8,34 @@ import type { Menu } from '../../types';
 import { setSelectedAlert } from '../../redux/modules/alerts';
 
 type Props = {
-    sidebarMenu: Array<Menu>
+    sidebarMenu: Array<Menu>,
+    handleCloseModal: Function
 }
 
 export default function AlertsContainer({
-    sidebarMenu
+    sidebarMenu,
+    handleCloseModal
 }: Props): React$Element<any> {
     const history = useHistory();
     const dispatch = useDispatch();
-    const [filters, setFilters] = useState([]);
+    const { isRowsSelected } = useSelector(({ table }) => table);
+    const breadcrumb = [
+        {
+            label: 'Home',
+            path: '/dashboard'
+        },
+        {
+            label: 'Alerts',
+            path: '/alerts'
+        }
+    ];
     const [data, setData] = useState({
         table: {
             columns: [
                 {
                     header: 'Identifier',
                     accessor: 'identifier',
-                    disableFilters: false,
+                    disableFilters: true,
                     clickable: true
                 },
                 {
@@ -336,10 +348,11 @@ export default function AlertsContainer({
     };
 
     return <AlertsScreen
+        breadcrumb={breadcrumb}
         tableColumns={data.table.columns}
         tableData={data.table.data}
-        filters={filters}
-        setFilters={setFilters}
+        isRowsSelected={isRowsSelected}
         viewAlertDetails={viewAlertDetails}
+        handleCloseModal={handleCloseModal}
         sidebarMenu={sidebarMenu} />;
 }

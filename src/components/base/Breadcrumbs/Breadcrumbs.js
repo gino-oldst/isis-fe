@@ -23,7 +23,7 @@ export default function Breadcrumbs({
                     )
                     : (
                         links.map((link, idx) => {
-                            return <BreadcrumbItem key={idx} active={links.length === idx + 1}><a href='#'>{link}</a></BreadcrumbItem>;
+                            return <BreadcrumbItem key={idx} active={links.length === idx + 1}><a href={link.path}>{link.label}</a></BreadcrumbItem>;
                         })
                     )}
             </Breadcrumb>

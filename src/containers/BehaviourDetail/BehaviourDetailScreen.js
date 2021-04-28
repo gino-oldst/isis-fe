@@ -25,6 +25,7 @@ import './behaviour-detail.scss';
 import { setModalContent } from '../../redux/modules/modalEvent';
 
 type Props = {
+    breadcrumb: Array,
     sidebarMenu: Array<Menu>,
     tableColumns: Array,
     tableData: Array,
@@ -33,6 +34,7 @@ type Props = {
 }
 
 function BehaviourDetailScreen({
+    breadcrumb,
     sidebarMenu,
     tableColumns,
     tableData,
@@ -54,7 +56,7 @@ function BehaviourDetailScreen({
             <CollapsibleSidebar
                 menu={sidebarMenu} />
             <div className='w-100 overflow-auto'>
-                <Breadcrumbs links={['Home', 'Behaviours', selectedBehaviour.identifier]} />
+                <Breadcrumbs links={breadcrumb} />
                 <div className='behaviour-detail__content'>
                     <Card className='px-4 py-2'>
                         <CardBody>

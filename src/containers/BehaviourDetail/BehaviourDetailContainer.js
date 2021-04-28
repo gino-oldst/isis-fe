@@ -13,8 +13,23 @@ export default function BehaviourDetailContainer({
     handleCloseModal
 }: Props): React$Element<any> {
     const { selected } = useSelector(({ behaviours }) => behaviours);
+    const breadcrumb = [
+        {
+            label: 'Home',
+            path: '/dashboard'
+        },
+        {
+            label: 'Behaviours',
+            path: '/behaviours'
+        },
+        {
+            label: selected.identifier,
+            path: `/behaviour/${selected.identifier}`
+        }
+    ];
 
     return <BehaviourDetailScreen
+        breadcrumb={breadcrumb}
         tableColumns={selected.columns}
         tableData={selected.data}
         selectedBehaviour={selected}

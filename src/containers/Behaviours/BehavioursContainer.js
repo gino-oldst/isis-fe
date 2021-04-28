@@ -16,6 +16,16 @@ export default function BehavioursContainer({
     const dispatch = useDispatch();
     const history = useHistory();
     const { table } = useSelector(({ behaviours }) => behaviours);
+    const breadcrumb = [
+        {
+            label: 'Home',
+            path: '/dashboard'
+        },
+        {
+            label: 'Behaviours',
+            path: '/behaviours'
+        }
+    ];
 
     const viewBehaviourDetails = async (path, identifier, behaviour) => {
         await dispatch(setSelectedBehaviour(identifier, behaviour));
@@ -24,6 +34,7 @@ export default function BehavioursContainer({
     };
 
     return <BehavioursScreen
+        breadcrumb={breadcrumb}
         tableColumns={table.columns}
         tableData={table.data}
         viewBehaviourDetails={viewBehaviourDetails}
