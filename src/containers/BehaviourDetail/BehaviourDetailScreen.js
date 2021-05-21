@@ -43,10 +43,10 @@ function BehaviourDetailScreen({
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
 
-    const showBehavioursModal = column => {
+    const showUpdateParameterModal = rowData => {
         dispatch(setModalContent({
-            modalContent: <BehavioursModal
-                column={column}
+            modalContent: <UpdateParameterModal
+                rowData={rowData}
                 handleCloseModal={handleCloseModal} />
         }));
     };
@@ -76,7 +76,7 @@ function BehaviourDetailScreen({
                                 tableColumns={tableColumns}
                                 tableData={tableData}
                                 pagination={true}
-                                viewDetails={showBehavioursModal} />
+                                viewDetails={showUpdateParameterModal} />
                         </CardBody>
                     </Card>
                 </div>
@@ -89,8 +89,8 @@ const BehaviourDetail: any = withLoading<React$Element<Props>>(BehaviourDetailSc
 
 export default BehaviourDetail;
 
-const BehavioursModal = ({
-    column,
+const UpdateParameterModal = ({
+    rowData,
     handleCloseModal
 }) => {
     return (
@@ -99,33 +99,27 @@ const BehavioursModal = ({
                 onClick={handleCloseModal} />
             <Typography variant='size-26' color='color-3'
                 className='mb-4 playfair-font'>
-                Edit {capitalize(column)}
+                Update Parameter
             </Typography>
             <FormGroup className='mb-4'>
-                <Label for='note'><Typography color='color-3' variant='size-16'>{capitalize(column)}</Typography></Label>
-                {column === 'parameter'
-                    ? (
-                        <Select
-                            defaultValue={{
-                                label: '3 Day Return',
-                                value: '3 Day Return'
-                            }}
-                            options={[{
-                                label: '3 Day Return',
-                                value: '3 Day Return'
-                            }, {
-                                label: '5 Day Return',
-                                value: '5 Day Return'
-                            }]} />
-                    )
-                    : (
-                        <Input type='text' name='threshold' bsSize='lg' />
-                    )}
+                <Label for='note'><Typography color='color-3' variant='size-16'>Code</Typography></Label>
+                <Input type='text' name='code' bsSize='lg'
+                    defaultValue={rowData.code} />
+            </FormGroup>
+            <FormGroup className='mb-4'>
+                <Label for='note'><Typography color='color-3' variant='size-16'>Description</Typography></Label>
+                <Input type='text' name='description' bsSize='lg'
+                    defaultValue={rowData.description} />
+            </FormGroup>
+            <FormGroup className='mb-5'>
+                <Label for='note'><Typography color='color-3' variant='size-16'>Value</Typography></Label>
+                <Input type='text' name='value' bsSize='lg'
+                    defaultValue={rowData.value} />
             </FormGroup>
             <div className='behaviour-detail__edit-parameter-buttons d-flex justify-content-center'>
                 <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
                     onClick={handleCloseModal}/>
-                <Button label='Save' variant='primary' className='save-button px-4 py-2'
+                <Button label='Save' variant='primary' className='save-button px-5 py-2'
                     onClick={handleCloseModal} />
             </div>
         </div>

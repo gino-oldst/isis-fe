@@ -572,8 +572,8 @@ export default function ReactTable({
                         ? viewDetails(e.cell.row.original.detail, e.cell.row.original)
                         : rootPath === 'behaviours' && column.accessor === 'identifier'
                             ? viewDetails(e.cell.row.original.detail, e.cell.row.original.identifier, e.cell.row.original.behaviourName)
-                            : column.accessor === 'parameter' || column.accessor === 'threshold'
-                                ? viewDetails(column.accessor)
+                            : column.accessor === 'code'
+                                ? viewDetails(e.row.values)
                                 : null}>{column.accessor === 'quantity'
                             ? kFormatter(e.value)
                             : column.accessor === 'escalation'

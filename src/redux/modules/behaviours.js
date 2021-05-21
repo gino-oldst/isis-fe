@@ -87,34 +87,44 @@ const initialState = {
         behaviour: '',
         columns: [
             {
-                header: 'Rule Number',
-                accessor: 'ruleNumber',
+                header: 'Code',
+                accessor: 'code',
+                disableFilters: true,
+                clickable: true
+            },
+            {
+                header: 'Description',
+                accessor: 'description',
                 disableFilters: true,
                 clickable: false
             },
             {
-                header: 'Parameter',
-                accessor: 'parameter',
+                header: 'Value',
+                accessor: 'value',
                 disableFilters: true,
-                clickable: true
-            },
-            {
-                header: 'Threshold',
-                accessor: 'threshold',
-                disableFilters: true,
-                clickable: true
+                clickable: false
             }
         ],
         data: [
             {
-                ruleNumber: '01',
-                parameter: '3 day return',
-                threshold: '30%'
+                code: 'Excess return',
+                description: 'Excess return in days',
+                value: '3'
             },
             {
-                ruleNumber: '02',
-                parameter: '6 day return',
-                threshold: '20%'
+                code: 'Excess return threshold',
+                description: 'Excess return threshold percentage',
+                value: '20%'
+            },
+            {
+                code: 'Excess loss',
+                description: 'Excess loss in days',
+                value: '3'
+            },
+            {
+                code: 'Excess loss threshold',
+                description: 'Excess loss threshold percentage',
+                value: '20%'
             }
         ]
     }

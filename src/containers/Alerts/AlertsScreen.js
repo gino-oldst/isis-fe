@@ -194,6 +194,7 @@ function AlertsScreen({
                                                                     selected={dateRangeValues.end}
                                                                     className='table__date-picker'
                                                                     dateFormat='dd MMM yyyy'
+                                                                    minDate={dateRangeValues.start}
                                                                     onChange={date => {
                                                                         handleDateChange('end', 3, date);
                                                                     }} />
