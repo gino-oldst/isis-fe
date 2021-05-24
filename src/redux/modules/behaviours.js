@@ -1,11 +1,26 @@
 // @flow
 const SET_SELECTED_BEHAVIOUR = 'SET_SELECTED_BEHAVIOUR';
+const SET_BEHAVIOURS_DATA = 'SET_BEHAVIOURS_DATA';
+const SET_PARAMETERS_DATA = 'SET_PARAMETERS_DATA';
 
-export function setSelectedBehaviour(identifier: String, behaviour: String) {
+export function setSelectedBehaviour(data: Object) {
     return {
         type: SET_SELECTED_BEHAVIOUR,
-        identifier,
-        behaviour
+        data
+    };
+}
+
+export function setBehavioursData(data: Array) {
+    return {
+        type: SET_BEHAVIOURS_DATA,
+        data
+    };
+}
+
+export function setParametersData(data: Array) {
+    return {
+        type: SET_PARAMETERS_DATA,
+        data
     };
 }
 
@@ -14,13 +29,13 @@ const initialState = {
         columns: [
             {
                 header: 'Identifier',
-                accessor: 'identifier',
+                accessor: 'internalCode',
                 disableFilters: true,
                 clickable: true
             },
             {
                 header: 'Behaviour Name',
-                accessor: 'behaviourName',
+                accessor: 'description',
                 disableFilters: true,
                 clickable: false
             },
@@ -31,64 +46,18 @@ const initialState = {
                 clickable: false
             }
         ],
-        data: [
-            {
-                identifier: 'MUB01',
-                behaviourName: 'Insider Trading',
-                status: 'Active',
-                detail: '/behaviour/MUB01'
-            },
-            {
-                identifier: 'MUB02',
-                behaviourName: 'Front Running',
-                status: 'Active',
-                detail: '/behaviour/MUB02'
-            },
-            {
-                identifier: 'MUB03',
-                behaviourName: 'Making the Close',
-                status: 'Active',
-                detail: '/behaviour/MUB03'
-            },
-            {
-                identifier: 'MUB04',
-                behaviourName: 'Flash Execution / Order',
-                status: 'Active',
-                detail: '/behaviour/MUB04'
-            },
-            {
-                identifier: 'MUB05',
-                behaviourName: 'Away from the Market',
-                status: 'Inactive',
-                detail: '/behaviour/MUB05'
-            },
-            {
-                identifier: 'MUB06',
-                behaviourName: 'Away from the Market',
-                status: 'Inactive',
-                detail: '/behaviour/MUB05'
-            },
-            {
-                identifier: 'MUB07',
-                behaviourName: 'Away from the Market',
-                status: 'Inactive',
-                detail: '/behaviour/MUB05'
-            },
-            {
-                identifier: 'MUB08',
-                behaviourName: 'Away from the Market',
-                status: 'Inactive',
-                detail: '/behaviour/MUB05'
-            }
-        ]
+        data: []
     },
     selected: {
+        id: null,
+        code: null,
         identifier: '',
         behaviour: '',
+        status: '',
         columns: [
             {
                 header: 'Code',
-                accessor: 'code',
+                accessor: 'name',
                 disableFilters: true,
                 clickable: true
             },
@@ -105,28 +74,7 @@ const initialState = {
                 clickable: false
             }
         ],
-        data: [
-            {
-                code: 'Excess return',
-                description: 'Excess return in days',
-                value: '3'
-            },
-            {
-                code: 'Excess return threshold',
-                description: 'Excess return threshold percentage',
-                value: '20%'
-            },
-            {
-                code: 'Excess loss',
-                description: 'Excess loss in days',
-                value: '3'
-            },
-            {
-                code: 'Excess loss threshold',
-                description: 'Excess loss threshold percentage',
-                value: '20%'
-            }
-        ]
+        data: []
     }
 };
 
@@ -141,8 +89,27 @@ export default function authentication(state: Object = initialState, action: Obj
                 ...state,
                 selected: {
                     ...state.selected,
-                    identifier: action.identifier,
-                    behaviour: action.behaviour
+                    id: action.data.id,
+                    code: action.data.code,
+                    identifier: action.data.internalCode,
+                    behaviour: action.data.description,
+                    status: action.data.status
+                }
+            };
+        case SET_BEHAVIOURS_DATA:
+            return {
+                ...state,
+                table: {
+                    ...state.table,
+                    data: action.data
+                }
+            };
+        case SET_PARAMETERS_DATA:
+            return {
+                ...state,
+                selected: {
+                    ...state.selected,
+                    data: action.data
                 }
             };
         default:

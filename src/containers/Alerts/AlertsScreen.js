@@ -267,20 +267,16 @@ const ActionModal = ({
                     }}
                     options={[
                         {
-                            label: 'Person 1',
-                            value: 'Person 1'
+                            label: 'Base',
+                            value: 'Base'
                         },
                         {
-                            label: 'Person 2',
-                            value: 'Person 2'
+                            label: 'Manager',
+                            value: 'Manager'
                         },
                         {
-                            label: 'Person 3',
-                            value: 'Person 3'
-                        },
-                        {
-                            label: 'Person 4',
-                            value: 'Person 4'
+                            label: 'CO',
+                            value: 'CO'
                         }
                     ]} />
             </FormGroup>

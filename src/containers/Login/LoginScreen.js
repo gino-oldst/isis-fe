@@ -42,7 +42,7 @@ export default function Login({
                     <img src={logo} alt='Mariana_UFP_logo' className='login__logo' />
                     <Form onSubmit={onSubmit}>
                         <FormGroup>
-                            <Input type='email' name='email' placeholder='Email'
+                            <Input type='text' name='username' placeholder='Username'
                                 bsSize='lg' onChange={onChange} />
                         </FormGroup>
                         <FormGroup>

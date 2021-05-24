@@ -27,11 +27,7 @@ export async function checkAuthorization() {
         if (data.exp < new Date().getTime() / 1000) {
             localStorage.clear();
 
-            if (window.location.pathname.search('task') > -1) {
-                window.location.href = `/login?redirect=${window.location.pathname}`;
-            } else {
-                window.location.href = '/login';
-            }
+            window.location.href = '/login';
         }
     }
 

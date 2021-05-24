@@ -51,7 +51,7 @@ function AlertDetailScreen({
                                 className='ml-4 d-flex align-items-center alert-detail__download-button px-4'
                                 size='lg' />
                             </div>
-                            <Row>
+                            <Row className='mt-4'>
                                 <Col sm={12} md={8}>
                                     <div className='alert-detail__information'>
                                         <Row>
@@ -169,14 +169,14 @@ function AlertDetailScreen({
                                                     <Col lg={12} xl={8}>
                                                         <Select
                                                             options={[{
-                                                                label: 'Mark Thomson',
-                                                                value: 'Mark Thomson'
+                                                                label: 'Base',
+                                                                value: 'Base'
                                                             }, {
-                                                                label: 'Gergana Tsoneva',
-                                                                value: 'Gergana Tsoneva'
+                                                                label: 'Manager',
+                                                                value: 'Manager'
                                                             }, {
-                                                                label: 'Darren Hibbitt',
-                                                                value: 'Darren Hibbitt'
+                                                                label: 'CO',
+                                                                value: 'CO'
                                                             }]} />
                                                     </Col>
                                                 </FormGroup>

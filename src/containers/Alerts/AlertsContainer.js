@@ -1,6 +1,7 @@
 // @flow
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { checkAuthorization } from '../../utils/Auth';
 import { useHistory } from 'react-router-dom';
 import AlertsScreen from './AlertsScreen';
 import type { Menu } from '../../types';
@@ -332,6 +333,17 @@ export default function AlertsContainer({
             activity: []
         }
     }); // table dummy data
+
+    // check if user is logged in
+    useEffect(() => {
+        checkAuth();
+    }, []);
+
+    const checkAuth = async () => {
+        const auth = await checkAuthorization();
+
+        if (!auth) history.push('/login');
+    };
 
     const viewAlertDetails = async (path, data) => {
         await dispatch(setSelectedAlert(data)); // redux version

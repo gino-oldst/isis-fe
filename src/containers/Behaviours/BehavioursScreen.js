@@ -1,21 +1,20 @@
 // @flow
 import React from 'react';
-import moment from 'moment';
-import Badge from '../../components/base/Badge/Badge';
 import Table from '../../components/base/Table/Table';
 import CollapsibleSidebar from '../../components/base/CollapsibleSidebar/CollapsibleSidebarContainer';
 import Typography from '../../components/base/Typography/Typography';
 import Breadcrumbs from '../../components/base/Breadcrumbs/Breadcrumbs';
 import withLoading from '../../components/modules/withLoading/withLoading';
-import { getTextColor } from '../../utils/helpers';
 import type { Menu } from '../../types';
 import {
     Card,
-    CardBody
+    CardBody,
+    Spinner
 } from 'reactstrap';
 import './behaviours.scss';
 
 type Props = {
+    loading: Boolean,
     breadcrumb: Array,
     sidebarMenu: Array<Menu>,
     tableColumns: Array,
@@ -24,6 +23,7 @@ type Props = {
 }
 
 function BehavioursScreen({
+    loading,
     breadcrumb,
     sidebarMenu,
     tableColumns,
@@ -40,11 +40,16 @@ function BehavioursScreen({
                     <Card className='px-4 py-2'>
                         <CardBody>
                             <Typography color='color-3' className='behaviours__title'>Behaviours</Typography>
-                            <Table className='behaviours__table'
-                                tableColumns={tableColumns}
-                                tableData={tableData}
-                                pagination={true}
-                                viewDetails={viewBehaviourDetails} />
+                            {loading
+                                ? <Spinner animation='border' role='status' className='d-flex mx-auto my-5 text-center'>
+                                    <span className='sr-only'>Loading...</span>
+                                </Spinner>
+                                : <Table className='behaviours__table'
+                                    tableColumns={tableColumns}
+                                    tableData={tableData}
+                                    pagination={true}
+                                    viewDetails={viewBehaviourDetails} />
+                            }
                         </CardBody>
                     </Card>
                 </div>

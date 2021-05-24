@@ -1,10 +1,12 @@
 // @flow
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { checkAuthorization } from '../../utils/Auth';
 import BehavioursScreen from './BehavioursScreen';
 import type { Menu } from '../../types';
-import { setSelectedBehaviour } from '../../redux/modules/behaviours';
+import { setBehavioursData, setSelectedBehaviour } from '../../redux/modules/behaviours';
+import { getBehaviours } from '../../api/behaviours';
 
 type Props = {
     sidebarMenu: Array<Menu>
@@ -15,6 +17,7 @@ export default function BehavioursContainer({
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const history = useHistory();
+    const [loading, setLoading] = useState(false);
     const { table } = useSelector(({ behaviours }) => behaviours);
     const breadcrumb = [
         {
@@ -27,13 +30,39 @@ export default function BehavioursContainer({
         }
     ];
 
-    const viewBehaviourDetails = async (path, identifier, behaviour) => {
-        await dispatch(setSelectedBehaviour(identifier, behaviour));
+    // check if user is logged in
+    useEffect(() => {
+        checkAuth();
+    }, []);
 
-        history.push(path);
+    const checkAuth = async () => {
+        const auth = await checkAuthorization();
+
+        if (!auth) history.push('/login');
+        else loadBehavioursData();
+    };
+
+    const loadBehavioursData = () => {
+        setLoading(true);
+
+        const behaviours = getBehaviours();
+
+        behaviours
+            .then(res => {
+                dispatch(setBehavioursData(res.data.data));
+                setLoading(false);
+            })
+            .catch(err => console.error(err));
+    };
+
+    const viewBehaviourDetails = async row => {
+        await dispatch(setSelectedBehaviour(row.original));
+
+        history.push(`/behaviour/${row.original.internalCode}`);
     };
 
     return <BehavioursScreen
+        loading={loading}
         breadcrumb={breadcrumb}
         tableColumns={table.columns}
         tableData={table.data}

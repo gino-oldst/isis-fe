@@ -570,16 +570,16 @@ export default function ReactTable({
                         ? 'color-link-text cursor-pointer'
                         : ''}`} onClick={() => rootPath === 'alerts' && column.accessor === 'identifier'
                         ? viewDetails(e.cell.row.original.detail, e.cell.row.original)
-                        : rootPath === 'behaviours' && column.accessor === 'identifier'
-                            ? viewDetails(e.cell.row.original.detail, e.cell.row.original.identifier, e.cell.row.original.behaviourName)
-                            : column.accessor === 'code'
+                        : rootPath === 'behaviours' && column.accessor === 'internalCode'
+                            ? viewDetails(e.cell.row)
+                            : column.accessor === 'name'
                                 ? viewDetails(e.row.values)
                                 : null}>{column.accessor === 'quantity'
                             ? kFormatter(e.value)
                             : column.accessor === 'escalation'
                                 ? <span className='font-weight-bold'>{getTextColor(e.value)}</span>
                                 : column.accessor === 'status'
-                                    ? <Badge status={e.value} />
+                                    ? <Badge status={e.value === 'IN_ACTIVE' ? 'INACTIVE' : e.value} />
                                     : e.value}</span>,
                 sortType: column.accessor === 'date'
                     ? (a, b, c, d) => {

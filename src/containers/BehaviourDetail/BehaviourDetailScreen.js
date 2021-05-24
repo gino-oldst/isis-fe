@@ -4,27 +4,27 @@ import { useDispatch } from 'react-redux';
 import Toggle from 'react-toggle';
 import 'react-toggle/style.css';
 import Table from '../../components/base/Table/Table';
-import Select from '../../components/base/Select/Select';
 import Button from '../../components/base/Button/Button';
 import Typography from '../../components/base/Typography/Typography';
 import Breadcrumbs from '../../components/base/Breadcrumbs/Breadcrumbs';
 import CollapsibleSidebar from '../../components/base/CollapsibleSidebar/CollapsibleSidebarContainer';
 import withLoading from '../../components/modules/withLoading/withLoading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { capitalize } from '../../utils/helpers';
 import type { Menu } from '../../types';
 import {
     Card,
     CardBody,
     FormGroup,
     Label,
-    Input
+    Input,
+    Spinner
 } from 'reactstrap';
 import './behaviour-detail.scss';
 
 import { setModalContent } from '../../redux/modules/modalEvent';
 
 type Props = {
+    loading: Boolean,
     breadcrumb: Array,
     sidebarMenu: Array<Menu>,
     tableColumns: Array,
@@ -34,6 +34,7 @@ type Props = {
 }
 
 function BehaviourDetailScreen({
+    loading,
     breadcrumb,
     sidebarMenu,
     tableColumns,
@@ -44,6 +45,7 @@ function BehaviourDetailScreen({
     const dispatch = useDispatch();
 
     const showUpdateParameterModal = rowData => {
+        console.log(rowData);
         dispatch(setModalContent({
             modalContent: <UpdateParameterModal
                 rowData={rowData}
@@ -66,17 +68,23 @@ function BehaviourDetailScreen({
                                     <Typography color='color-3' className='mr-3' variant='size-18'
                                         weight='light'>Active</Typography>
                                     <Toggle
-                                        icons={false} />
+                                        icons={false}
+                                        checked={selectedBehaviour.status.toLowerCase() === 'active'} />
                                 </div>
                             </div>
                             <Typography color='color-3' variant='size-16' className='mb-4'>
                                 {selectedBehaviour.identifier}
                             </Typography>
-                            <Table className='behaviours__table'
-                                tableColumns={tableColumns}
-                                tableData={tableData}
-                                pagination={true}
-                                viewDetails={showUpdateParameterModal} />
+                            {loading
+                                ? <Spinner animation='border' role='status' className='d-flex mx-auto my-5 text-center'>
+                                    <span className='sr-only'>Loading...</span>
+                                </Spinner>
+                                : <Table className='behaviours__table'
+                                    tableColumns={tableColumns}
+                                    tableData={tableData}
+                                    pagination={true}
+                                    viewDetails={showUpdateParameterModal} />
+                            }
                         </CardBody>
                     </Card>
                 </div>
@@ -104,7 +112,7 @@ const UpdateParameterModal = ({
             <FormGroup className='mb-4'>
                 <Label for='note'><Typography color='color-3' variant='size-16'>Code</Typography></Label>
                 <Input type='text' name='code' bsSize='lg'
-                    defaultValue={rowData.code} />
+                    defaultValue={rowData.name} />
             </FormGroup>
             <FormGroup className='mb-4'>
                 <Label for='note'><Typography color='color-3' variant='size-16'>Description</Typography></Label>

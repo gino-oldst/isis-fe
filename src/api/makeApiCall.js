@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { config, grantType } from 'config/constants';
-import { store } from 'redux/store';
+import { config } from '../config/constants';
+import { getAuthToken } from '../utils/Auth';
 
 export const api = axios.create({
     baseURL: config.apiUrl,
@@ -29,44 +29,51 @@ export function serialize(data: Object) {
  * @param {String} contentType - header contentType of request
  * @returns {Promise}
  */
-export default async function makeApiRequest(endpoint: string, method: string, data: Object | string = null, contentType: string) {
-    const { userToken } = store.getState().authentication;
+export default async function makeApiCall(
+    endpoint: string,
+    method: string,
+    data: Object = null
+) {
+    const accessToken = await getAuthToken();
+
     const request = {
         method,
         url: endpoint,
-        data: data ? endpoint.includes('oauth') ? serialize(data) : data : ''
+        data: data ? (endpoint.includes('oauth') ? serialize(data) : data) : ''
     };
 
     if (endpoint.includes('oauth')) {
         request.headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization: `Basic ${data.grant_type === grantType.CLIENT_CREDENTIALS
-                ? config.clientCredentialInternal
-                : config.clientCredentialMobile}`
+            Authorization: `Basic ${config.adminApplAuthHeader}`
         };
+    } else if (endpoint.includes('generate-token')) {
+        request.headers = {};
     } else {
         request.headers = {
-            Authorization: `Bearer ${userToken.access_token}`
+            Authorization: `Bearer ${accessToken}`
         };
-
-        if (contentType) {
-            request.headers['Content-Type'] = contentType;
-        } else if (endpoint.includes('convert-to-pdf')) {
-            request.headers['Content-Type'] = 'application/json';
-            request.headers.Accept = 'application/pdf';
-            request.responseType = 'blob';
-        }
     }
 
-    const response = await api(request);
+    try {
+        const response = await api(request);
 
-    if (response.status === 200) {
-        return response.data;
-    } else {
-        const error = new Error(response.statusText);
+        return response;
+    } catch (err) {
+        if (err.response) {
+            const errData = {};
 
-        error.response = response;
-        throw error;
+            errData.status = err.response.status;
+            errData.message = err.response.message;
+
+            throw errData;
+        } else {
+            const errDataNetwork = {};
+
+            errDataNetwork.status = 503;
+            errDataNetwork.message = 'Network Unreachable';
+            throw errDataNetwork;
+        }
     }
 }
 
