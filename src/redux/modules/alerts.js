@@ -1,5 +1,8 @@
 // @flow
+const SET_ALERTS_DATA = 'SET_ALERTS_DATA';
 const SET_SELECTED_ALERT = 'SET_SELECTED_ALERT';
+const SET_ASSIGNEES = 'SET_ASSIGNEES';
+const REPLACE_ALERT_DETAILS = 'REPLACE_ALERT_DETAILS';
 
 export function setSelectedAlert(data: Object) {
     return {
@@ -8,204 +11,136 @@ export function setSelectedAlert(data: Object) {
     };
 }
 
+export function setAlertsData(data: Array) {
+    return {
+        type: SET_ALERTS_DATA,
+        data
+    };
+}
+
+export function setAssignees(users: Array) {
+    return {
+        type: SET_ASSIGNEES,
+        users
+    };
+}
+
+export function replaceAlertDetails(data: Array) {
+    return {
+        type: REPLACE_ALERT_DETAILS,
+        data
+    };
+}
+
 const initialState = {
     table: {
         columns: [
-            'Identifier',
-            'Alert Type',
-            'Date',
-            'Broker',
-            'Ticker',
-            'Book',
-            'Quantity',
-            'Client',
-            'Escalation',
-            'Assigned',
-            'Status'
-        ],
-        data: [
             {
-                identifier: 'MUA312',
-                alertType: 'Insider Trading',
-                date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                broker: 'Peter Davidson',
-                ticker: 'BP',
-                book: 'Book 1',
-                quantity: 89,
-                client: 'Client 1',
-                escalation: 'Base',
-                assigned: 'Mark Thomson',
-                status: 'Resolved',
-                detail: '/alert/MUA312'
+                header: 'Identifier',
+                accessor: 'behaviourCode',
+                disableFilters: true,
+                clickable: true
             },
             {
-                identifier: 'MUA313',
-                alertType: 'Marking the Close',
-                date: new Date(new Date(2021, 5, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 8, 7).getTime())),
-                broker: 'Peter Davidson',
-                ticker: 'BP',
-                book: 'Book 1',
-                quantity: 89,
-                client: 'Client 2',
-                escalation: 'Base',
-                assigned: 'Mark Thomson',
-                status: 'In Review',
-                detail: '/alert/MUA313'
+                header: 'Alert Type',
+                accessor: 'behaviourDescription',
+                disableFilters: false,
+                clickable: false
             },
             {
-                identifier: 'MUA314',
-                alertType: 'High Volume',
-                date: new Date(new Date(2021, 6, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                broker: 'Peter Davidson',
-                ticker: 'BP',
-                book: 'Book 1',
-                quantity: 89,
-                client: 'Client 3',
-                escalation: 'Manager',
-                assigned: 'Mark Thomson',
-                status: 'Archived',
-                detail: '/alert/MUA314'
+                header: 'Date',
+                accessor: 'dateCreated',
+                disableFilters: true,
+                clickable: false
             },
             {
-                identifier: 'MUA315',
-                alertType: 'Flash Execution',
-                date: new Date(new Date(2021, 7, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 2, 7).getTime())),
-                broker: 'Peter Davidson',
-                ticker: 'BP',
-                book: 'Book 1',
-                quantity: 89,
-                client: 'Client 4',
-                escalation: 'Manager',
-                assigned: 'Mark Thomson',
-                status: 'Resolved',
-                detail: '/alert/MUA315'
+                header: 'Broker',
+                accessor: 'broker',
+                disableFilters: false,
+                clickable: false
             },
             {
-                identifier: 'MUA316',
-                alertType: 'Flash Order',
-                date: new Date(new Date(2021, 8, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 5, 7).getTime())),
-                broker: 'Peter Davidson',
-                ticker: 'BP',
-                book: 'Book 1',
-                quantity: 89,
-                client: 'Client 5',
-                escalation: 'CO',
-                assigned: 'Mark Thomson',
-                status: 'Open',
-                detail: '/alert/MUA316'
-            }, {
-                identifier: 'MUA312',
-                alertType: 'Insider Trading',
-                date: new Date(new Date(2021, 4, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                broker: 'Peter Davidson',
-                ticker: 'BP',
-                book: 'Book 1',
-                quantity: 89,
-                client: 'Client 6',
-                escalation: 'Base',
-                assigned: 'Mark Thomson',
-                status: 'Resolved',
-                detail: '/alert/MUA312'
+                header: 'Ticker',
+                accessor: 'ticker',
+                disableFilters: false,
+                clickable: false
             },
             {
-                identifier: 'MUA313',
-                alertType: 'Marking the Close',
-                date: new Date(new Date(2021, 5, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 8, 7).getTime())),
-                broker: 'Peter Davidson',
-                ticker: 'BP',
-                book: 'Book 1',
-                quantity: 89,
-                client: 'Client 7',
-                escalation: 'Base',
-                assigned: 'Mark Thomson',
-                status: 'In Review',
-                detail: '/alert/MUA313'
+                header: 'Book',
+                accessor: 'book',
+                disableFilters: false,
+                clickable: false
             },
             {
-                identifier: 'MUA314',
-                alertType: 'High Volume',
-                date: new Date(new Date(2021, 6, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 1, 7).getTime())),
-                broker: 'Peter Davidson',
-                ticker: 'BP',
-                book: 'Book 1',
-                quantity: 89,
-                client: 'Client 8',
-                escalation: 'Manager',
-                assigned: 'Mark Thomson',
-                status: 'Archived',
-                detail: '/alert/MUA314'
+                header: 'Quantity',
+                accessor: 'quantity',
+                disableFilters: false,
+                clickable: false
             },
             {
-                identifier: 'MUA315',
-                alertType: 'Flash Execution',
-                date: new Date(new Date(2021, 7, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 2, 7).getTime())),
-                broker: 'Peter Davidson',
-                ticker: 'BP',
-                book: 'Book 1',
-                quantity: 89,
-                client: 'Client 9',
-                escalation: 'Manager',
-                assigned: 'Mark Thomson',
-                status: 'Resolved',
-                detail: '/alert/MUA315'
+                header: 'Client',
+                accessor: 'client',
+                disableFilters: false,
+                clickable: false
             },
             {
-                identifier: 'MUA316',
-                alertType: 'Flash Order',
-                date: new Date(new Date(2021, 8, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 5, 7).getTime())),
-                broker: 'Peter Davidson',
-                ticker: 'BP',
-                book: 'Book 1',
-                quantity: 89,
-                client: 'Client 10',
-                escalation: 'CO',
-                assigned: 'Mark Thomson',
-                status: 'Open',
-                detail: '/alert/MUA316'
+                header: 'Escalation',
+                accessor: 'escalation',
+                disableFilters: false,
+                clickable: false
             },
             {
-                identifier: 'MUA315',
-                alertType: 'Flash Execution',
-                date: new Date(new Date(2021, 7, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 2, 7).getTime())),
-                broker: 'Peter Davidson',
-                ticker: 'BP',
-                book: 'Book 1',
-                quantity: 89,
-                client: 'Client 11',
-                escalation: 'Manager',
-                assigned: 'Mark Thomson',
-                status: 'Resolved',
-                detail: '/alert/MUA315'
+                header: 'Assigned',
+                accessor: 'assignedUser',
+                disableFilters: false,
+                clickable: false
             },
             {
-                identifier: 'MUA316',
-                alertType: 'Flash Order',
-                date: new Date(new Date(2021, 8, 7).getTime() + Math.random() * (new Date().getTime() - new Date(2021, 5, 7).getTime())),
-                broker: 'Peter Davidson',
-                ticker: 'BP',
-                book: 'Book 1',
-                quantity: 89,
-                client: 'Client 12',
-                escalation: 'CO',
-                assigned: 'Mark Thomson',
-                status: 'Open',
-                detail: '/alert/MUA316'
+                header: 'Status',
+                accessor: 'status',
+                disableFilters: false,
+                clickable: false
             }
-        ]
+        ],
+        data: []
     },
     selected: {
         data: {},
-        activity: []
+        assignees: []
     }
 };
 
-export default function authentication(state: Object = initialState, action: Object):
+export default function alerts(state: Object = initialState, action: Object):
   | any
   | {
     table: {}
   } {
     switch (action.type) {
+        case SET_ALERTS_DATA:
+            return {
+                ...state,
+                table: {
+                    ...state.table,
+                    data: action.data
+                }
+            };
         case SET_SELECTED_ALERT:
+            return {
+                ...state,
+                selected: {
+                    ...state.selected,
+                    data: action.data
+                }
+            };
+        case SET_ASSIGNEES:
+            return {
+                ...state,
+                selected: {
+                    ...state.selected,
+                    assignees: action.users
+                }
+            };
+        case REPLACE_ALERT_DETAILS:
             return {
                 ...state,
                 selected: {

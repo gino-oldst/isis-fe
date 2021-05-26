@@ -2,6 +2,8 @@
 const SET_SELECTED_BEHAVIOUR = 'SET_SELECTED_BEHAVIOUR';
 const SET_BEHAVIOURS_DATA = 'SET_BEHAVIOURS_DATA';
 const SET_PARAMETERS_DATA = 'SET_PARAMETERS_DATA';
+const REPLACE_PARAMETER_STATUS = 'REPLACE_PARAMETER_STATUS';
+const REPLACE_PARAMETERS_DATA = 'REPLACE_PARAMETERS_DATA';
 
 export function setSelectedBehaviour(data: Object) {
     return {
@@ -20,6 +22,20 @@ export function setBehavioursData(data: Array) {
 export function setParametersData(data: Array) {
     return {
         type: SET_PARAMETERS_DATA,
+        data
+    };
+}
+
+export function replaceParameterStatus(status: String) {
+    return {
+        type: REPLACE_PARAMETER_STATUS,
+        status
+    };
+}
+
+export function replaceParametersData(data: Object) {
+    return {
+        type: REPLACE_PARAMETERS_DATA,
         data
     };
 }
@@ -78,7 +94,7 @@ const initialState = {
     }
 };
 
-export default function authentication(state: Object = initialState, action: Object):
+export default function behaviours(state: Object = initialState, action: Object):
   | any
   | {
     table: {}
@@ -112,6 +128,31 @@ export default function authentication(state: Object = initialState, action: Obj
                     data: action.data
                 }
             };
+        case REPLACE_PARAMETER_STATUS:
+            return {
+                ...state,
+                selected: {
+                    ...state.selected,
+                    status: action.status
+                }
+            };
+
+        case REPLACE_PARAMETERS_DATA: {
+            const toUpdateIndex = state.selected.data.findIndex(param => param.id === action.data.id);
+
+            const newData = [...state.selected.data];
+
+            newData[toUpdateIndex] = action.data;
+
+            return {
+                ...state,
+                selected: {
+                    ...state.selected,
+                    data: newData
+                }
+            };
+        }
+
         default:
             return state;
     }

@@ -80,6 +80,8 @@ export const getTextColor = text => {
     return <span className={color}>{text}</span>;
 };
 
+export const blockInvalidChar = e => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
+
 const newRecord = () => {
     return {
         identifier: namor.generate({ words: 1, numbers: 1 }),

@@ -30,6 +30,7 @@ import './alerts.scss';
 import { setModalContent } from '../../redux/modules/modalEvent';
 
 type Props = {
+    loading: Boolean,
     breadcrumb: Array,
     tableColumns: Array,
     tableData: Array,
@@ -40,6 +41,7 @@ type Props = {
 }
 
 function AlertsScreen({
+    loading,
     breadcrumb,
     tableColumns,
     tableData,
@@ -220,9 +222,11 @@ function AlertsScreen({
                                         )}
                                 </div>
                             </div>
-                            {tableColumns === undefined || tableData === undefined
+                            {loading || tableColumns === undefined || tableData === undefined
                                 ? (
-                                    <Spinner />
+                                    <Spinner animation='border' role='status' className='d-flex mx-auto my-5 text-center'>
+                                        <span className='sr-only'>Loading...</span>
+                                    </Spinner>
                                 )
                                 : (
                                     <Table className='alerts__table'

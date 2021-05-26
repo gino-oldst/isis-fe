@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { checkAuthorization } from '../../utils/Auth';
 import BehavioursScreen from './BehavioursScreen';
 import type { Menu } from '../../types';
-import { setBehavioursData, setSelectedBehaviour } from '../../redux/modules/behaviours';
+import { setBehavioursData } from '../../redux/modules/behaviours';
 import { getBehaviours } from '../../api/behaviours';
 
 type Props = {
@@ -42,21 +42,22 @@ export default function BehavioursContainer({
         else loadBehavioursData();
     };
 
-    const loadBehavioursData = () => {
+    const loadBehavioursData = async () => {
         setLoading(true);
 
-        const behaviours = getBehaviours();
+        try {
+            const behaviours = await getBehaviours();
 
-        behaviours
-            .then(res => {
-                dispatch(setBehavioursData(res.data.data));
-                setLoading(false);
-            })
-            .catch(err => console.error(err));
+            dispatch(setBehavioursData(behaviours.data.data));
+        } catch (e) {
+            console.error(e);
+        }
+
+        setLoading(false);
     };
 
     const viewBehaviourDetails = async row => {
-        await dispatch(setSelectedBehaviour(row.original));
+        localStorage.setItem('selectedBehaviourCode', row.original.code);
 
         history.push(`/behaviour/${row.original.internalCode}`);
     };

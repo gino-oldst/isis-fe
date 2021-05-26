@@ -52,12 +52,13 @@ export default function LoginContainer({
                 } else {
                     const { data } = response;
 
+                    localStorage.setItem('userId', data.userId);
                     saveAuthorizationToken(data.token);
                     dispatch(authUser({
                         username: loginForm.username
                     }));
 
-                    history.replace('/dashboard');
+                    window.location.href = '/dashboard';
                 }
             }
         } catch (err) {

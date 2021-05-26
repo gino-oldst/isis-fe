@@ -564,22 +564,22 @@ export default function ReactTable({
                 disableFilters: column.disableFilters,
                 Filter: column.accessor !== 'quantity' ? SelectColumnFilter : RadioColumnFilter,
                 filter: column.accessor !== 'quantity' ? multiSelectFilter : filterGreaterThan,
-                Cell: e => column.accessor === 'date'
+                Cell: e => column.accessor === 'dateCreated'
                     ? <span>{moment(e.value).format('DD/MM/YY')}</span>
                     : <span className={`${column.clickable
                         ? 'color-link-text cursor-pointer'
-                        : ''}`} onClick={() => rootPath === 'alerts' && column.accessor === 'identifier'
-                        ? viewDetails(e.cell.row.original.detail, e.cell.row.original)
+                        : ''}`} onClick={() => rootPath === 'alerts' && column.accessor === 'behaviourCode'
+                        ? viewDetails(e.cell.row.original)
                         : rootPath === 'behaviours' && column.accessor === 'internalCode'
                             ? viewDetails(e.cell.row)
                             : column.accessor === 'name'
-                                ? viewDetails(e.row.values)
+                                ? viewDetails(e.cell.row.original)
                                 : null}>{column.accessor === 'quantity'
                             ? kFormatter(e.value)
                             : column.accessor === 'escalation'
                                 ? <span className='font-weight-bold'>{getTextColor(e.value)}</span>
                                 : column.accessor === 'status'
-                                    ? <Badge status={e.value === 'IN_ACTIVE' ? 'INACTIVE' : e.value} />
+                                    ? <Badge status={e.value} />
                                     : e.value}</span>,
                 sortType: column.accessor === 'date'
                     ? (a, b, c, d) => {

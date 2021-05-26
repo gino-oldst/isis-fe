@@ -5,8 +5,9 @@ import { checkAuthorization } from '../../utils/Auth';
 import { useHistory } from 'react-router-dom';
 import AlertsScreen from './AlertsScreen';
 import type { Menu } from '../../types';
+import { getAlerts } from '../../api/alerts';
 
-import { setSelectedAlert } from '../../redux/modules/alerts';
+import { setAlertsData } from '../../redux/modules/alerts';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -19,7 +20,9 @@ export default function AlertsContainer({
 }: Props): React$Element<any> {
     const history = useHistory();
     const dispatch = useDispatch();
+    const [loading, setLoading] = useState(false);
     const { isRowsSelected } = useSelector(({ table }) => table);
+    const { table } = useSelector(({ alerts }) => alerts);
     const breadcrumb = [
         {
             label: 'Home',
@@ -343,26 +346,34 @@ export default function AlertsContainer({
         const auth = await checkAuthorization();
 
         if (!auth) history.push('/login');
+        else loadAlertsData();
     };
 
-    const viewAlertDetails = async (path, data) => {
-        await dispatch(setSelectedAlert(data)); // redux version
+    const viewAlertDetails = async (row) => {
+        localStorage.setItem('selectedAlertId', row.id);
 
-        // setData({
-        //     ...data,
-        //     selected: {
-        //         ...data.selected,
-        //         data
-        //     }
-        // });
+        history.push(`/alert/${row.behaviourCode}`);
+    };
 
-        history.push(path);
+    const loadAlertsData = async () => {
+        setLoading(true);
+
+        try {
+            const alerts = await getAlerts();
+
+            dispatch(setAlertsData(alerts.data.data));
+        } catch (e) {
+            console.error(e);
+        }
+
+        setLoading(false);
     };
 
     return <AlertsScreen
+        loading={loading}
         breadcrumb={breadcrumb}
-        tableColumns={data.table.columns}
-        tableData={data.table.data}
+        tableColumns={table.columns}
+        tableData={table.data}
         isRowsSelected={isRowsSelected}
         viewAlertDetails={viewAlertDetails}
         handleCloseModal={handleCloseModal}

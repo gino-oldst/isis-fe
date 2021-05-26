@@ -1,147 +1,32 @@
 // @flow
-const FILTER_TABLE = 'SET_LOGGING_OUT';
+import moment from 'moment';
 
-export function updateUserToken(userToken: Object): {userToken: string} {
+const SET_NOTIFICATIONS_DATA = 'SET_NOTIFICATIONS_DATA';
+
+export function setNotifications(data: Array) {
     return {
-        type: FILTER_TABLE,
-        userToken
+        type: SET_NOTIFICATIONS_DATA,
+        data
     };
 }
 
 const initialState = {
-    data: [
-        {
-            identifier: 'MU311',
-            status: 'Open',
-            behaviour: 'Marking the Close',
-            date: new Date('April 20, 2021 02:15:30'),
-            resolved: true,
-            description: 'Jonathan Greene assigned an alert to you'
-        },
-        {
-            identifier: 'MU305',
-            status: 'Open',
-            behaviour: 'Flash Order',
-            date: new Date('August 19, 1975 23:15:30'),
-            resolved: true,
-            description: 'Pamela Johnson assigned an alert to you'
-        },
-        {
-            identifier: 'MU306',
-            status: 'Open',
-            behaviour: 'Flash Order',
-            date: new Date('Feb 8, 1999 13:15:10'),
-            resolved: true,
-            description: 'Pamela Johnson assigned an alert to you'
-        },
-        {
-            identifier: 'MU306',
-            status: 'Open',
-            behaviour: 'Flash Order',
-            date: new Date('Feb 8, 1999 13:15:10'),
-            resolved: true,
-            description: 'Pamela Johnson assigned an alert to you'
-        },
-        {
-            identifier: 'MU306',
-            status: 'Open',
-            behaviour: 'Flash Order',
-            date: new Date('Feb 8, 1999 13:15:10'),
-            resolved: true,
-            description: 'Pamela Johnson assigned an alert to you'
-        },
-        {
-            identifier: 'MU306',
-            status: 'Open',
-            behaviour: 'Flash Order',
-            date: new Date('Feb 8, 1999 13:15:10'),
-            resolved: true,
-            description: 'Pamela Johnson assigned an alert to you'
-        },
-        {
-            identifier: 'MU306',
-            status: 'Open',
-            behaviour: 'Flash Order',
-            date: new Date('Feb 8, 1999 13:15:10'),
-            resolved: true,
-            description: 'Pamela Johnson assigned an alert to you'
-        },
-        {
-            identifier: 'MU306',
-            status: 'Open',
-            behaviour: 'Flash Order',
-            date: new Date('Feb 8, 1999 13:15:10'),
-            resolved: true,
-            description: 'Pamela Johnson assigned an alert to you'
-        },
-        {
-            identifier: 'MU306',
-            status: 'Open',
-            behaviour: 'Flash Order',
-            date: new Date('Feb 8, 1999 13:15:10'),
-            resolved: true,
-            description: 'Pamela Johnson assigned an alert to you'
-        },
-        {
-            identifier: 'MU306',
-            status: 'Open',
-            behaviour: 'Flash Order',
-            date: new Date('Feb 8, 1999 13:15:10'),
-            resolved: true,
-            description: 'Pamela Johnson assigned an alert to you'
-        },
-        {
-            identifier: 'MU306',
-            status: 'Open',
-            behaviour: 'Flash Order',
-            date: new Date('Feb 8, 1999 13:15:10'),
-            resolved: true,
-            description: 'Pamela Johnson assigned an alert to you'
-        },
-        {
-            identifier: 'MU306',
-            status: 'Open',
-            behaviour: 'Flash Order',
-            date: new Date('Feb 8, 1999 13:15:10'),
-            resolved: true,
-            description: 'Pamela Johnson assigned an alert to you'
-        },
-        {
-            identifier: 'MU306',
-            status: 'Open',
-            behaviour: 'Flash Order',
-            date: new Date('Feb 8, 1999 13:15:10'),
-            resolved: true,
-            description: 'Pamela Johnson assigned an alert to you'
-        },
-        {
-            identifier: 'MU306',
-            status: 'Open',
-            behaviour: 'Flash Order',
-            date: new Date('Feb 8, 1999 13:15:10'),
-            resolved: true,
-            description: 'Pamela Johnson assigned an alert to you'
-        },
-        {
-            identifier: 'MU306',
-            status: 'Open',
-            behaviour: 'Flash Order',
-            date: new Date('Feb 8, 1999 13:15:10'),
-            resolved: true,
-            description: 'Pamela Johnson assigned an alert to you'
-        }
-    ]
+    data: {
+        today: [],
+        yesterday: []
+    }
 };
 
-export default function authentication(state: Object = initialState, action: Object):
-  | any
-  | {
-    data: []
-  } {
+export default function notifications(state: Object = initialState, action: Object) {
     switch (action.type) {
-        case FILTER_TABLE:
+        case SET_NOTIFICATIONS_DATA:
             return {
-                state
+                ...state,
+                data: {
+                    ...state.data,
+                    today: action.data.filter(notif => moment(notif.dateCreated).isSame(moment(), 'day')),
+                    yesterday: action.data.filter(notif => !moment(notif.dateCreated).isSame(moment(), 'day'))
+                }
             };
         default:
             return state;

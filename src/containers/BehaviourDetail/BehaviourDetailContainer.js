@@ -5,7 +5,8 @@ import { useHistory } from 'react-router-dom';
 import { checkAuthorization } from '../../utils/Auth';
 import BehaviourDetailScreen from './BehaviourDetailScreen';
 import { setSelectedBehaviour, setParametersData } from '../../redux/modules/behaviours';
-import { getRules, getParameters } from '../../api/behaviours';
+import { getRule, getBehaviourByCode } from '../../api/behaviours';
+import { getParametersByRuleId } from '../../api/parameters';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -49,26 +50,27 @@ export default function BehaviourDetailContainer({
         else loadBehaviourDetails();
     };
 
-    const loadBehaviourDetails = () => {
+    const loadBehaviourDetails = async () => {
         setLoading(true);
+        const behaviourCode = localStorage.getItem('selectedBehaviourCode');
 
-        const rules = getRules();
+        try {
+            const selectedBehaviour = await getBehaviourByCode(behaviourCode);
 
-        rules
-            .then(res => {
-                const parameters = getParameters({
-                    behaviourId: selected.id,
-                    ruleId: res.data.data[0].id
-                });
+            dispatch(setSelectedBehaviour(selectedBehaviour.data));
 
-                parameters
-                    .then(res2 => {
-                        dispatch(setParametersData(res2.data.data));
-                        setLoading(false);
-                    })
-                    .catch(err => console.error(err));
-            })
-            .catch(err => console.error(err));
+            const rules = await getRule(selectedBehaviour.data.id);
+
+            localStorage.setItem('ruleId', rules.data.data[0].id);
+
+            const parameters = await getParametersByRuleId(rules.data.data[0].id);
+
+            dispatch(setParametersData(parameters.data.data));
+        } catch (e) {
+            console.error(e);
+        }
+
+        setLoading(false);
     };
 
     return <BehaviourDetailScreen
