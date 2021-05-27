@@ -20,6 +20,7 @@ import {
     FormGroup,
     FormText,
     FormFeedback,
+    Alert,
     Input,
     Label,
     Spinner
@@ -27,12 +28,14 @@ import {
 import './alert-detail.scss';
 
 import { updateAlert } from '../../api/alerts';
+import { setModalContent } from '../../redux/modules/modalEvent';
 import { replaceAlertDetails } from '../../redux/modules/alerts';
 
 type Props = {
     loading: Boolean,
     breadcrumb: Array,
     sidebarMenu: Array<Menu>,
+    handleCloseModal: Function,
     selectedAlert: Object,
     assignees: Array
 }
@@ -41,6 +44,7 @@ function AlertDetailScreen({
     loading,
     breadcrumb,
     sidebarMenu,
+    handleCloseModal,
     selectedAlert,
     assignees
 }: Props): React$Element<any> {
@@ -54,39 +58,48 @@ function AlertDetailScreen({
         errors: {}
     });
 
+    const showError = errMsg => {
+        dispatch(setModalContent({
+            modalContent: <ErrorMsgModal
+                errMsg={errMsg}
+                handleCloseModal={handleCloseModal} />
+        }));
+    };
+
     const handleUpdateAlert = async () => {
-        if (handleValidation()) {
-            setSubmit(true);
-            const userId = localStorage.getItem('userId');
+        setSubmit(true);
+        const userId = localStorage.getItem('userId');
 
-            const payload = {
-                id: selectedAlert.id,
-                ruleId: selectedAlert.ruleId,
-                currentUserId: userId,
-                behaviourId: selectedAlert.behaviourId,
-                behaviourCode: selectedAlert.behaviourCode,
-                broker: selectedAlert.broker,
-                book: selectedAlert.book,
-                ticker: selectedAlert.ticker,
-                quantity: selectedAlert.quantity,
-                client: selectedAlert.client,
-                orderType: selectedAlert.orderType,
-                details: selectedAlert.details,
-                behaviourDescription: selectedAlert.behaviourDescription,
-                assignedUser: alert.assignedUser === '' ? selectedAlert.assignedUser : alert.assignedUser,
-                escalation: alert.escalation === '' ? selectedAlert.escalation : alert.escalation,
-                status: alert.status === '' ? selectedAlert.status : alert.status,
-                notes: alert.notes === '' ? selectedAlert.notes : alert.notes
-            };
+        const payload = {
+            id: selectedAlert.id,
+            ruleId: selectedAlert.ruleId,
+            currentUserId: userId,
+            behaviourId: selectedAlert.behaviourId,
+            behaviourCode: selectedAlert.behaviourCode,
+            broker: selectedAlert.broker,
+            book: selectedAlert.book,
+            ticker: selectedAlert.ticker,
+            quantity: selectedAlert.quantity,
+            client: selectedAlert.client,
+            orderType: selectedAlert.orderType,
+            details: selectedAlert.details,
+            behaviourDescription: selectedAlert.behaviourDescription,
+            assignedUserId: alert.assignedUser === '' ? null : alert.assignedUser,
+            escalation: alert.escalation === '' ? selectedAlert.escalation : alert.escalation,
+            status: alert.status === '' ? selectedAlert.status : alert.status,
+            notes: alert.notes === '' ? selectedAlert.notes : alert.notes
+        };
 
-            const result = await updateAlert(payload);
+        const result = await updateAlert(payload);
 
-            if (result.data.responseStatus === 'success') {
-                setTimeout(() => {
-                    dispatch(replaceAlertDetails(result.data));
-                    setSubmit(false);
-                }, 1000);
-            }
+        if (result.data.responseStatus === 'success') {
+            setTimeout(() => {
+                dispatch(replaceAlertDetails(result.data));
+                setSubmit(false);
+            }, 1000);
+        } else {
+            showError(result.data.exceptionMessage);
+            setSubmit(false);
         }
     };
 
@@ -98,7 +111,7 @@ function AlertDetailScreen({
             value = e.target.value;
         } else {
             name = option.name;
-            value = e.name;
+            value = option.name === 'assignedUser' ? e.id : e.name;
         }
 
         if (alert.errors[name] !== undefined) alert.errors[name] = false; // remove error msg for a specific input
@@ -113,7 +126,7 @@ function AlertDetailScreen({
         const errors = {};
         let formIsValid = true;
 
-        if (validator.isEmpty(alert.notes)) {
+        if (validator.isEmpty(alert.notes) && validator.isEmpty(selectedAlert.notes)) {
             formIsValid = false;
             errors.notes = true;
             errors.notesErrMsg = 'Notes is required';
@@ -146,7 +159,8 @@ function AlertDetailScreen({
                                 size='lg' />
                             </div>
                             <Row className='mt-4'>
-                                <Col sm={12} md={8}>
+                                <Col sm={12} md={12} lg={12}
+                                    xl={8}>
                                     <div className='alert-detail__information'>
                                         {loading || Object.keys(selectedAlert).length === 0
                                             ? <Spinner animation='border' role='status' className='d-flex mx-auto my-5 text-center'>
@@ -161,7 +175,7 @@ function AlertDetailScreen({
                                                         </div>
                                                         <div className='d-flex align-items-center mb-2'>
                                                             <Typography color='color-3' className='mr-3' weight='semi-bold'>Date & Time</Typography>
-                                                            <Typography color='color-3'>{moment(selectedAlert.dateCreated).format('DD/MM/YY ss:mm A')}</Typography>
+                                                            <Typography color='color-3'>{moment(selectedAlert.dateCreated).format('DD/MM/YY h:mm A')}</Typography>
                                                         </div>
                                                         <div className='d-flex align-items-center mb-2'>
                                                             <Typography color='color-3' className='mr-3' weight='semi-bold'>Broker</Typography>
@@ -234,19 +248,19 @@ function AlertDetailScreen({
                                                                     value: <Badge status={selectedAlert.status}/>
                                                                 }}
                                                                 options={[{
-                                                                    name: 'Open',
+                                                                    name: 'OPEN',
                                                                     label: <Badge status='Open' />,
                                                                     value: <Badge status='Open'/>
                                                                 }, {
-                                                                    name: 'In Review',
+                                                                    name: 'IN_REVIEW',
                                                                     label: <Badge status='In Review' />,
                                                                     value: <Badge status='In Review'/>
                                                                 }, {
-                                                                    name: 'Resolved',
+                                                                    name: 'RESOLVED',
                                                                     label: <Badge status='Resolved' />,
                                                                     value: <Badge status='Resolved'/>
                                                                 }, {
-                                                                    name: 'Archived',
+                                                                    name: 'ARCHIVED',
                                                                     label: <Badge status='Archived' />,
                                                                     value: <Badge status='Archived'/>
                                                                 }]}
@@ -267,22 +281,23 @@ function AlertDetailScreen({
                                                             : <Select
                                                                 name='assignedUser'
                                                                 defaultValue={{
+                                                                    label: selectedAlert.assignedUser,
+                                                                    value: selectedAlert.assignedUser
+                                                                }}
+                                                                options={[{
+                                                                    id: null,
+                                                                    name: 'Unassigned',
                                                                     label: 'Unassigned',
                                                                     value: 'Unassigned'
-                                                                }}
-                                                                options={[
-                                                                    {
-                                                                        name: 'Unassigned',
-                                                                        label: 'Unassigned',
-                                                                        value: 'Unassigned'
-                                                                    },
-                                                                    ...assignees.map(assignee => {
-                                                                        return {
-                                                                            name: assignee.fullName,
-                                                                            label: assignee.fullName,
-                                                                            value: assignee.fullName
-                                                                        };
-                                                                    })]}
+                                                                },
+                                                                ...assignees.map(assignee => {
+                                                                    return {
+                                                                        id: assignee.id,
+                                                                        name: assignee.fullName,
+                                                                        label: assignee.fullName,
+                                                                        value: assignee.fullName
+                                                                    };
+                                                                })]}
                                                                 onChangeHandler={handleChange} />
                                                         }
                                                     </Col>
@@ -297,21 +312,17 @@ function AlertDetailScreen({
                                                             : <Select
                                                                 name='escalation'
                                                                 defaultValue={{
-                                                                    label: 'Unassigned',
-                                                                    value: 'Unassigned'
+                                                                    label: selectedAlert.escalation,
+                                                                    value: selectedAlert.escalation
                                                                 }}
                                                                 options={[{
-                                                                    name: 'Unassigned',
-                                                                    label: 'Unassigned',
-                                                                    value: 'Unassigned'
+                                                                    name: 'BASE',
+                                                                    label: 'BASE',
+                                                                    value: 'BASE'
                                                                 }, {
-                                                                    name: 'Base',
-                                                                    label: 'Base',
-                                                                    value: 'Base'
-                                                                }, {
-                                                                    name: 'Manager',
-                                                                    label: 'Manager',
-                                                                    value: 'Manager'
+                                                                    name: 'MANAGER',
+                                                                    label: 'MANAGER',
+                                                                    value: 'MANAGER'
                                                                 }, {
                                                                     name: 'CO',
                                                                     label: 'CO',
@@ -324,6 +335,7 @@ function AlertDetailScreen({
                                             </CardBody>
                                         </Card>
                                     </div>
+                                    {/* <Typography variant='size-14' className={`playfair-font mt-4 text-danger ${alert.errors.backendErr !== '' ? 'd-block' : 'd-none'}`}>{alert.errors.backendErr}</Typography> */}
                                 </Col>
                                 <Col sm={12} className='mt-4 mt-0-xl mb-2'>
                                     <div className='alert-detail__activities'>
@@ -336,11 +348,11 @@ function AlertDetailScreen({
                                                 {selectedAlert.alertsActivity.data.length === 0 && <Typography color='color-2' variant='size-16' className='playfair-font mb-4'>No data to show.</Typography>}
                                                 {selectedAlert.alertsActivity.data.map(activity => {
                                                     return (
-                                                        <div key={activity.alertId} className='alert-detail__activity-info d-flex align-items-center mb-3'>
-                                                            <span className='activity-icon'><span className='text-light'>J</span></span>
+                                                        <div key={activity.id} className='alert-detail__activity-info d-flex align-items-center mb-3'>
+                                                            <span className='activity-icon'><span className='text-light'>{activity.description.charAt(0).toUpperCase()}</span></span>
                                                             <div className='d-block'>
                                                                 <Typography color='color-3' variant='size-16'>{activity.description}</Typography>
-                                                                <Typography color='color-3' variant='size-12' className='text-muted'>21/12/20 3:12pm</Typography>
+                                                                <Typography color='color-3' variant='size-12' className='text-muted'>{moment(activity.dateCreated).format('DD/MM/YY h:mm a')}</Typography>
                                                             </div>
                                                         </div>
                                                     );
@@ -368,3 +380,29 @@ function AlertDetailScreen({
 const AlertDetail: any = withLoading<React$Element<Props>>(AlertDetailScreen);
 
 export default AlertDetail;
+
+const ErrorMsgModal = ({
+    errMsg,
+    handleCloseModal
+}) => {
+    return (
+        <div className='alert-details__error p-4'>
+            <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right mt-2' icon='times' size='lg'
+                onClick={handleCloseModal} />
+            <Typography variant='size-26' color='color-3'
+                className='mb-5 playfair-font'>
+                Something went wrong
+            </Typography>
+            <Alert color='danger' className='mb-5'>
+                <Typography color='color-3' variant='size-16' className='playfair-font'>{errMsg}</Typography>
+            </Alert>
+            <div className='behaviour-detail__edit-parameter-buttons d-flex justify-content-center'>
+                <Button label='OK' variant='light' className='ok-button px-4 mr-2 py-2'
+                    onClick={() => {
+                        handleCloseModal();
+                        window.location.reload();
+                    }} />
+            </div>
+        </div>
+    );
+};

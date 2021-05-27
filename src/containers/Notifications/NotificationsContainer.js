@@ -1,0 +1,41 @@
+// @flow
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import onClickOutside from 'react-onclickoutside';
+import NotificationsScreen from './NotificationsScreen';
+import { getUserId } from '../../utils/helpers';
+import { getNotifications } from '../../api/notifications';
+import { setNotifications } from '../../redux/modules/notifications';
+
+function NotificationsContainer(): React$Element<any> {
+    const dispatch = useDispatch();
+    const { data } = useSelector(({ notifications }) => notifications);
+    const [isNotifMenuOpen, setNotifMenuOpen] = useState(false);
+
+    const toggleDropdown = (menuOpen) => setNotifMenuOpen(menuOpen);
+
+    NotificationsContainer.handleClickOutside = () => setNotifMenuOpen(false);
+
+    useEffect(() => {
+        loadNotifications();
+    }, []);
+
+    const loadNotifications = async () => {
+        try {
+            const notifications = await getNotifications();
+
+            dispatch(setNotifications(getUserId(), notifications.data.data));
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    return <NotificationsScreen today={data.today} yesterday={data.yesterday} toggleDropdown={toggleDropdown}
+        isNotifMenuOpen={isNotifMenuOpen} />;
+}
+
+const clickOutsideConfig = {
+    handleClickOutside: () => NotificationsContainer.handleClickOutside
+};
+
+export default onClickOutside(NotificationsContainer, clickOutsideConfig);

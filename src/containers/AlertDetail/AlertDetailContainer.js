@@ -10,12 +10,14 @@ import { getUsers } from '../../api/users';
 import { setSelectedAlert, setAssignees } from '../../redux/modules/alerts';
 
 type Props = {
-    sidebarMenu: Array<Menu>
+    sidebarMenu: Array<Menu>,
+    handleCloseModal: Function
 }
 
 export default function AlertDetailContainer({
     match,
-    sidebarMenu
+    sidebarMenu,
+    handleCloseModal
 }: Props): React$Element<any> {
     const history = useHistory();
     const dispatch = useDispatch();
@@ -71,6 +73,7 @@ export default function AlertDetailContainer({
         setLoading={setLoading}
         breadcrumb={breadcrumb}
         sidebarMenu={sidebarMenu}
+        handleCloseModal={handleCloseModal}
         selectedAlert={selected.data}
         assignees={selected.assignees} />;
 }

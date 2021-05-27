@@ -7,6 +7,6 @@ export async function getNotifications() {
     return await makeApiCall(GET_NOTIFICATIONS, 'POST', {});
 }
 
-export async function updateNotification(id: String) {
-    return await makeApiCall(UPDATE_NOTIFICATION, 'PUT');
+export async function updateNotification(data: Object) {
+    return await makeApiCall(UPDATE_NOTIFICATION, 'PUT', data);
 }

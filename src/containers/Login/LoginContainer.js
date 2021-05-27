@@ -63,7 +63,7 @@ export default function LoginContainer({
             }
         } catch (err) {
             dispatch(setFlashNotification({
-                message: 'ERROR',
+                message: 'Invalid username or password.',
                 isError: true
             }));
         }

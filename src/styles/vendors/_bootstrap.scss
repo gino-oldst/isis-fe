@@ -1,14 +1,14 @@
-@import '../utils/_variables';
+@import "../utils/_variables";
 
 $theme-colors: (
-    'primary': $color-brand-1,
-//     'secondary',
-//     'success',
-//     'danger',
-//     'warning',
-//     'info',
-//     'light',
-//     'dark'
+    "primary": #003060,
+    //     'secondary',
+        //     'success',
+        //     'danger',
+        //     'warning',
+        //     'info',
+        //     'light',
+        //     'dark',
 );
 
-@import '~bootstrap/scss/bootstrap';
+@import "~bootstrap/scss/bootstrap";

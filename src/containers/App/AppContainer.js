@@ -1,23 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Switch, Route, useHistory, Redirect } from 'react-router-dom';
+import { Switch, Route, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import moment from 'moment';
 import routes from '../../config/routes';
 import AppLoadingContainer from '../AppLoading/AppLoadingContainer';
 import AppModal from '../../components/base/Modal/Modal';
 import FlashNotification from '../../components/modules/FlashNotification/FlashNotification';
 import WrapperBackground from '../../components/base/WrapperBackground/WrapperBackground';
-import Typography from '../../components/base/Typography/Typography';
-import Badge from '../../components/base/Badge/Badge';
-import Tooltip from '../../components/base/Tooltip/Tooltip';
 import Navbar from '../../components/base/Navbar/Navbar';
+import Notifications from '../../containers/Notifications/NotificationsContainer';
 import { clearModalContent } from '../../redux/modules/modalEvent';
 import { setLoggingOut } from '../../redux/modules/authentication';
 import navbarBrand from '../../assets/logos/mariana_logo.png';
-import bellIcon from '../../assets/images/ic_bell-solid-white.svg';
 import { checkAuthorization } from '../../utils/Auth';
-import { getNotifications } from '../../api/notifications';
-import { setNotifications } from '../../redux/modules/notifications';
 import './app.scss';
 
 import {
@@ -42,9 +36,7 @@ function App() {
     const history = useHistory();
     const dispatch = useDispatch();
     const { modalContent, onToggle, ...modalEvent } = useSelector(({ modalEvent }) => modalEvent);
-    const { data } = useSelector(({ notifications }) => notifications);
     const { isAuthed } = useSelector(({ authentication }) => authentication);
-    const [fetching, setFetching] = useState(false);
 
     useEffect(() => {
         checkAuth();
@@ -54,7 +46,6 @@ function App() {
         const auth = await checkAuthorization();
 
         if (!auth) history.push('/login');
-        else loadNotifications();
     };
 
     const sidebarMenu = [{
@@ -71,20 +62,6 @@ function App() {
         key: 'behaviour'
     }];
 
-    const loadNotifications = async () => {
-        setFetching(true);
-
-        try {
-            const notifications = await getNotifications();
-
-            dispatch(setNotifications(notifications.data.data));
-        } catch (e) {
-            console.error(e);
-        }
-
-        setFetching(false);
-    };
-
     const handleCloseModal = () => {
         dispatch(clearModalContent());
         onToggle && onToggle();
@@ -99,9 +76,7 @@ function App() {
     const NavbarLinks = () => {
         return (
             <Nav className='navlinks-right'>
-                <UncontrolledDropdown nav={true} direction='down' className='d-flex align-self-center mr-4'>
-                    <Notifications loading={fetching} today={data.today} yesterday={data.yesterday} />
-                </UncontrolledDropdown>
+                <Notifications eventTypes='click' />
                 <UncontrolledDropdown nav={true} direction='down' className='mr-4'>
                     <NavbarAccount />
                 </UncontrolledDropdown>
@@ -137,100 +112,7 @@ function App() {
     );
 }
 
-const Notifications = ({
-    loading,
-    today,
-    yesterday
-}) => {
-    return (
-        <div className='navbar__notifications'>
-            <DropdownToggle nav={true} className='d-flex'>
-                <FontAwesomeIcon className='navbar__notification-bell' icon='bell' size='lg'
-                    color='gray' />
-            </DropdownToggle>
-            <DropdownMenu right={true} className='mt-2 navbar__notifications-dropdown'>
-                <div className='navbar__notifications-title px-4 pt-2'>
-                    <Typography color='color-3' weight='semi-bold' variant='size-16'
-                        className='mb-2'>Notifications</Typography>
-                </div>
-                {loading
-                    ? <Spinner animation='border' role='status' className='d-flex mx-auto my-5 text-center'>
-                        <span className='sr-only'>Loading...</span>
-                    </Spinner>
-                    : <>
-                        <div className='navbar__notifications-today'>
-                            {today.length > 0 &&
-                        <div className='navbar__notifications-today-title px-4 py-1'>
-                            <Typography color='color-3' weight='light' variant='size-10'>TODAY</Typography>
-                        </div>
-                            }
-                            {today.map((now, idx) => {
-                                return (
-                                    <DropdownItem key={`today-${idx}`} className='px-4 py-4 d-flex align-items-center'>
-                                        <div className='navbar__notifications__icon'>
-                                            <img src={bellIcon} alt='Notification_Bell_Icon' className='notification_icon' />
-                                        </div>
-                                        <div className='navbar__notifications__details mr-auto'>
-                                            <Typography color='color-3' variant='size-14' weight='semi-bold'
-                                                className='mb-2'>{now.description}</Typography>
-                                            <Typography color='color-3' variant='size-16' className='mb-2'>
-                                                <span className='mr-3'>{now.identifier} | {now.behaviour}</span>
-                                                <Badge status={now.status} />
-                                            </Typography>
-                                            <Typography color='color-3' variant='size-12' className='text-muted'>Today, {moment(now.date).format('hh:mm a')}</Typography>
-                                        </div>
-                                        <div className='navbar__notifications__read-icon mr-2'>
-                                            <FontAwesomeIcon className='navbar__notification-read' icon='circle' size='xs'
-                                                data-tip={true} data-for='notif-1'/>
-                                        </div>
-                                        <Tooltip place='left' id='notif-1'>
-                                            <Typography variant='size-10' weight='light' color='color-3'>{now.resolved ? 'Unread' : 'Mark as read'}</Typography>
-                                        </Tooltip>
-                                    </DropdownItem>
-                                );
-                            })}
-                        </div>
-                        <div className='navbar__notifications-past'>
-                            {yesterday.length > 0 &&
-                        <div className='navbar__notifications-past-title px-4 py-1'>
-                            <Typography color='color-3' weight='light' variant='size-10'>YESTERDAY AND EARLIER</Typography>
-                        </div>
-                            }
-                            {yesterday.map((yes, idx) => {
-                                return (
-                                    <DropdownItem key={`yesterdat-${idx}`} className='px-4 py-4 d-flex align-items-center'>
-                                        <div className='navbar__notifications__icon'>
-                                            <img src={bellIcon} alt='Notification_Bell_Icon' className='notification_icon' />
-                                        </div>
-                                        <div className='navbar__notifications__details mr-auto'>
-                                            <Typography color='color-3' variant='size-12' weight='semi-bold'
-                                                className='mb-2'>{yes.message}</Typography>
-                                            <Typography color='color-3' variant='size-14' className='mb-2'>
-                                                <span className='mr-3'>{yes.behaviorCode} | {yes.behaviorDescription}</span>
-                                                <Badge status={yes.status} />
-                                            </Typography>
-                                            <Typography color='color-3' variant='size-12' className='text-muted'>{moment(yes.dateCreated).format('DD MMM yyyy, hh:mm a')}</Typography>
-                                        </div>
-                                        <div className='navbar__notifications__read-icon mr-2'>
-                                            <FontAwesomeIcon className='navbar__notification-read' icon='circle' size='xs'
-                                                data-tip={true} data-for={yes.id} />
-                                        </div>
-                                        <Tooltip place='left' id={yes.id}>
-                                            <Typography variant='size-10' weight='light' color='color-3'>{yes.status}</Typography>
-                                        </Tooltip>
-                                    </DropdownItem>
-                                );
-                            })}
-                        </div>
-                    </>
-                }
-            </DropdownMenu>
-        </div>
-    );
-};
-
 const NavbarAccount = () => {
-    const history = useHistory();
     const dispatch = useDispatch();
 
     const logout = () => {
@@ -246,9 +128,6 @@ const NavbarAccount = () => {
                     color='gray' />
             </DropdownToggle>
             <DropdownMenu right={true}>
-                <DropdownItem className='px-4 py-2' onClick={() => history.push('/reset-password')}>
-                    Change Password
-                </DropdownItem>
                 <DropdownItem className='px-4 py-2' onClick={logout}>
                     Logout
                 </DropdownItem>

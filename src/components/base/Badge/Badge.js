@@ -24,6 +24,9 @@ export default function Badge({
         case 'in review':
             color = 'bg-badge-violet';
             break;
+        case 'in_review':
+            color = 'bg-badge-violet';
+            break;
         case 'open':
             color = 'bg-badge-orange';
             break;

@@ -1,6 +1,6 @@
 import makeApiCall from '../api/makeApiCall';
 
-const GET_ALERTS = '/measure/alerts/list?pageNumber=0&pageSize=10';
+const GET_ALERTS = '/measure/alerts/list';
 const GET_ALERT = '/measure/alerts';
 const UPDATE_ALERT = '/measure/alerts';
 const BULK_UPDATE_ALERT = '/measure/alerts/bulk-edit';
