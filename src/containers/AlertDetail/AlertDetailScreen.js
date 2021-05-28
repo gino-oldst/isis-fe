@@ -66,6 +66,12 @@ function AlertDetailScreen({
         }));
     };
 
+    const showResolveAlert = () => {
+        dispatch(setModalContent({
+            modalContent: <ResolveAlertModal handleCloseModal={handleCloseModal} />
+        }));
+    };
+
     const handleUpdateAlert = async () => {
         setSubmit(true);
         const userId = localStorage.getItem('userId');
@@ -113,6 +119,8 @@ function AlertDetailScreen({
             name = option.name;
             value = option.name === 'assignedUser' ? e.id : e.name;
         }
+
+        if (e.name === 'RESOLVED') showResolveAlert();
 
         if (alert.errors[name] !== undefined) alert.errors[name] = false; // remove error msg for a specific input
 
@@ -402,6 +410,50 @@ const ErrorMsgModal = ({
                         handleCloseModal();
                         window.location.reload();
                     }} />
+            </div>
+        </div>
+    );
+};
+
+const ResolveAlertModal = ({
+    handleCloseModal
+}) => {
+    return (
+        <div className='alert-details__resolve-alert p-4'>
+            <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
+                onClick={handleCloseModal} />
+            <Typography variant='size-26' color='color-3'
+                className='mb-4 playfair-font'>
+                Resolving Alert
+            </Typography>
+            <FormGroup className='mb-4'>
+                <Label for='reason'>Reason of Resolving Alert</Label>
+                <Select
+                    name='reason'
+                    options={[
+                        {
+                            label: <Badge status='Open' />,
+                            value: <Badge status='Open'/>
+                        },
+                        {
+                            label: <Badge status='In Review' />,
+                            value: <Badge status='In Review'/>
+                        },
+                        {
+                            label: <Badge status='Resolved' />,
+                            value: <Badge status='Resolved'/>
+                        },
+                        {
+                            label: <Badge status='Archived' />,
+                            value: <Badge status='Archived'/>
+                        }
+                    ]} />
+            </FormGroup>
+            <div className='resolve-alert__buttons d-flex justify-content-center'>
+                <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
+                    onClick={handleCloseModal}/>
+                <Button label='Done' variant='primary' className='alerts__save-button px-4 py-2'
+                    onClick={handleCloseModal} />
             </div>
         </div>
     );
