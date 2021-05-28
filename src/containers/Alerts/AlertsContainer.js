@@ -62,7 +62,7 @@ export default function AlertsContainer({
         loading={loading}
         breadcrumb={breadcrumb}
         tableColumns={table.columns}
-        tableData={table.data}
+        tableData={!table.isFiltered ? table.data : table.filtered}
         isRowsSelected={isRowsSelected}
         viewAlertDetails={viewAlertDetails}
         handleCloseModal={handleCloseModal}

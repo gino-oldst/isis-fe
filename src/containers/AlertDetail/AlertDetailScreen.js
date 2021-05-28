@@ -365,13 +365,6 @@ function AlertDetailScreen({
                                                         </div>
                                                     );
                                                 })}
-                                                {/* <div className='alert-detail__activity-info d-flex align-items-center'>
-                                                <span className='activity-icon'><span className='text-light'>J</span></span>
-                                                <div className='d-block'>
-                                                    <Typography color='color-3' variant='size-16'>James Allan changed the status from <strong>Open</strong> to <strong className='color-sidebar-2'>In Review</strong>.</Typography>
-                                                    <Typography color='color-3' variant='size-12' className='text-muted'>20/12/20 3:23pm</Typography>
-                                                </div>
-                                            </div> */}
                                             </>
                                         }
                                     </div>

@@ -1,5 +1,5 @@
 // @flow
-import React, { useState, createRef } from 'react';
+import React, { useState, useEffect, createRef } from 'react';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
 import Table from '../../components/base/Table/Table';
@@ -28,6 +28,7 @@ import {
 import './alerts.scss';
 
 import { setModalContent } from '../../redux/modules/modalEvent';
+import { filterAlertsData } from '../../redux/modules/alerts';
 
 type Props = {
     loading: Boolean,
@@ -60,7 +61,7 @@ function AlertsScreen({
     };
 
     const datepickerOpen = createRef();
-    const [dateRangeFilter, setDateRangeFilter] = useState(1);
+    const [dateRangeFilter, setDateRangeFilter] = useState(0);
     const [dateRangeFilterValues, setDateRangeFilterValues] = useState({
         start: new Date(),
         end: new Date()
@@ -99,6 +100,10 @@ function AlertsScreen({
             [type]: value
         });
     };
+
+    useEffect(() => {
+        dispatch(filterAlertsData(dateRangeFilter, dateRangeValues));
+    }, [dateRangeFilter, dateRangeValues]);
 
     return (
         <div className='alerts'>
@@ -160,7 +165,7 @@ function AlertsScreen({
                                                     </div>
                                                     <DropdownItem divider={true} />
                                                     <Button label={<><Typography weight='light' variant='size-14'>Reset</Typography></>}
-                                                        className='alerts__filter-reset-button float-right mr-2'/>
+                                                        className='alerts__filter-reset-button float-right mr-2' onClick={() => handleDateFilterChange(0)} />
                                                 </CustomDropdown>
                                                 <Typography color='color-3' variant='size-16' className='mx-4'>to</Typography>
                                                 <CustomDropdown tag='span'
@@ -207,7 +212,7 @@ function AlertsScreen({
                                                     </div>
                                                     <DropdownItem divider={true} />
                                                     <Button label={<><Typography weight='light' variant='size-14'>Reset</Typography></>}
-                                                        className='alerts__filter-reset-button float-right mr-2'/>
+                                                        className='alerts__filter-reset-button float-right mr-2' onClick={() => handleDateFilterChange(0)} />
                                                 </CustomDropdown>
                                                 <Button label={<>
                                                     <FontAwesomeIcon className='mr-2' icon='file-download' size='sm' />

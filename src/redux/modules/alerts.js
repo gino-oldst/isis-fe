@@ -1,8 +1,11 @@
 // @flow
+import moment from 'moment';
+
 const SET_ALERTS_DATA = 'SET_ALERTS_DATA';
 const SET_SELECTED_ALERT = 'SET_SELECTED_ALERT';
 const SET_ASSIGNEES = 'SET_ASSIGNEES';
 const REPLACE_ALERT_DETAILS = 'REPLACE_ALERT_DETAILS';
+const FILTER_ALERTS_DATA = 'FILTER_ALERTS_DATA';
 
 export function setSelectedAlert(data: Object) {
     return {
@@ -32,8 +35,20 @@ export function replaceAlertDetails(data: Array) {
     };
 }
 
+export function filterAlertsData(
+    selectedOption: Integer,
+    dateRangeValues: Date
+) {
+    return {
+        type: FILTER_ALERTS_DATA,
+        selectedOption,
+        dateRangeValues
+    };
+}
+
 const initialState = {
     table: {
+        isFiltered: false,
         columns: [
             {
                 header: 'Identifier',
@@ -102,7 +117,8 @@ const initialState = {
                 clickable: false
             }
         ],
-        data: []
+        data: [],
+        filtered: []
     },
     selected: {
         data: {},
@@ -148,6 +164,29 @@ export default function alerts(state: Object = initialState, action: Object):
                     data: action.data
                 }
             };
+
+        case FILTER_ALERTS_DATA: {
+            let filteredData = state.table.data;
+            const { start, end } = action.dateRangeValues;
+
+            if (action.selectedOption === 1) {
+                filteredData = filteredData.filter(data => moment.utc(data.dateCreated).format('DD MM YYYY') === moment.utc().format('DD MM YYYY'));
+            } else if (action.selectedOption === 2) {
+                filteredData = filteredData.filter(data => moment(data.dateCreated).isBetween(moment.utc().subtract(7, 'd'), moment.utc()));
+            } else if (action.selectedOption === 3) {
+                filteredData = filteredData.filter(data => moment.utc(data.dateCreated).isBetween(moment.utc(start), moment.utc(end)));
+            }
+
+            return {
+                ...state,
+                table: {
+                    ...state.table,
+                    isFiltered: action.selectedOption > 0,
+                    filtered: action.selectedOption > 0 ? filteredData : []
+                }
+            };
+        }
+
         default:
             return state;
     }
