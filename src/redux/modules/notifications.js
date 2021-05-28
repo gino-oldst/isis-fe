@@ -21,7 +21,7 @@ const initialState = {
 export default function notifications(state: Object = initialState, action: Object) {
     switch (action.type) {
         case SET_NOTIFICATIONS_DATA: {
-            const filteredNotifs = action.data.filter(notif => notif.userId === parseInt(action.userId) && notif.status.toLowerCase() !== 'archived');
+            const filteredNotifs = action.data.filter(notif => notif.userId === parseInt(action.userId) && notif.status.toLowerCase() === 'unread');
 
             return {
                 ...state,

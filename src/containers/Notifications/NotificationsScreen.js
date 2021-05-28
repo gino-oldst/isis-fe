@@ -49,8 +49,6 @@ export default function NotificationsScreen({
 
         const result = await updateNotification(payload);
 
-        console.log(result);
-
         if (result.data.responseStatus === 'success') dispatch(setNotifications(getUserId(), [result.data]));
     };
 

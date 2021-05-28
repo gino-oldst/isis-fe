@@ -18,6 +18,10 @@ function NotificationsContainer(): React$Element<any> {
 
     useEffect(() => {
         loadNotifications();
+
+        const intervalId = setInterval(() => loadNotifications(), 5000);
+
+        return () => clearInterval(intervalId);
     }, []);
 
     const loadNotifications = async () => {
