@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { checkAuthorization } from '../../utils/Auth';
 import BehaviourDetailScreen from './BehaviourDetailScreen';
 import { setSelectedBehaviour, setParametersData } from '../../redux/modules/behaviours';
 import { getRule, getBehaviourByCode } from '../../api/behaviours';
@@ -19,7 +18,6 @@ export default function BehaviourDetailContainer({
     handleCloseModal
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
-    const history = useHistory();
     const [loading, setLoading] = useState(false);
     const { selected } = useSelector(({ behaviours }) => behaviours);
 
@@ -38,17 +36,9 @@ export default function BehaviourDetailContainer({
         }
     ];
 
-    // check if user is logged in
     useEffect(() => {
-        checkAuth();
+        loadBehaviourDetails();
     }, []);
-
-    const checkAuth = async () => {
-        const auth = await checkAuthorization();
-
-        if (!auth) history.push('/login');
-        else loadBehaviourDetails();
-    };
 
     const loadBehaviourDetails = async () => {
         setLoading(true);

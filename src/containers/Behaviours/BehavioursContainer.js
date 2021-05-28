@@ -32,15 +32,8 @@ export default function BehavioursContainer({
 
     // check if user is logged in
     useEffect(() => {
-        checkAuth();
+        loadBehavioursData();
     }, []);
-
-    const checkAuth = async () => {
-        const auth = await checkAuthorization();
-
-        if (!auth) history.push('/login');
-        else loadBehavioursData();
-    };
 
     const loadBehavioursData = async () => {
         setLoading(true);

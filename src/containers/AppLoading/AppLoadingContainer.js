@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+/* eslint-disable camelcase */
+import jwt_decode from 'jwt-decode';
 import Spinner from 'react-bootstrap/Spinner';
 import { useLocation } from 'react-router-dom';
 
@@ -38,37 +40,15 @@ export default function AppLoadingContainer({
 
             const shouldLoggout = /\/login|\/sign-up|\/forgot-password/.test(location.pathname); // Add other unauthenticated routes here
             const accessToken = Storage.getItem(storageKey.accessToken);
-            let token: Object = shouldLoggout ? null : accessToken ? JSON.parse(accessToken) : null;
+            const token: Object = shouldLoggout ? null : accessToken ? jwt_decode(JSON.parse(accessToken)) : null;
 
-            if (!token || (token && token.expiry && isTokenValid(token.expiry)) || !token.expiry) {
-                // TODO: set right values
-                // let data = null;
-
-                // if ((token && token.refresh_token)) {
-                //     data = await getRefreshToken(token.refresh_token);
-                // } else {
-                //     data = await getAccessToken();
-                // }
-
-                // token = {
-                //     ...data,
-                //     expiry: moment().add(data.expires_in, 'seconds')
-                // };
-
-                token = {
-                    accessToken: 'this-is-an-accesstoken'
-                };
-            }
-
-            dispatch(updateUserToken(token));
-            Storage.setItem(storageKey.accessToken, JSON.stringify(token));
-
-            if ((token && token.refresh_token)) {
-                // const profile = await getProfileData();
+            if (token && token.exp && isTokenValid(token.exp)) {
+                setTimeout(() => {}, 5000);
+                dispatch(updateUserToken(accessToken));
+                Storage.setItem(storageKey.accessToken, accessToken);
 
                 dispatch(authUser({
-                    // TODO: uncomment this
-                    // profile
+                    user: token.sub
                 }));
             }
 

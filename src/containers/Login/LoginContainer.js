@@ -1,12 +1,13 @@
 // @flow
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import Login from './LoginScreen';
+import Storage from '../../utils/Storage';
+import { storageKey } from '../../config/constants';
 import { authUser } from '../../redux/modules/authentication';
 import { userLogin } from '../../api/auth';
-import { saveAuthorizationToken, checkAuthorization } from '../../utils/Auth';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
 
 type Props = {
@@ -25,17 +26,6 @@ export default function LoginContainer({
         password: ''
     });
 
-    // check if user is logged in
-    useEffect(() => {
-        checkAuth();
-    }, []);
-
-    const checkAuth = async () => {
-        const auth = await checkAuthorization();
-
-        if (auth) history.push('/dashboard');
-    };
-
     const onSubmit = async e => {
         setIsLoading(true);
         setErrMsg('');
@@ -53,12 +43,12 @@ export default function LoginContainer({
                     const { data } = response;
 
                     localStorage.setItem('userId', data.userId);
-                    saveAuthorizationToken(data.token);
+                    Storage.setItem(storageKey.accessToken, JSON.stringify(data.token));
                     dispatch(authUser({
                         username: loginForm.username
                     }));
 
-                    window.location.href = '/dashboard';
+                    history.replace('/dashboard');
                 }
             }
         } catch (err) {

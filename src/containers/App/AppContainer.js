@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Switch, Route, useHistory } from 'react-router-dom';
+import React from 'react';
+import { Switch, Route, useHistory, Redirect } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import routes from '../../config/routes';
 import AppLoadingContainer from '../AppLoading/AppLoadingContainer';
@@ -11,7 +11,6 @@ import Notifications from '../../containers/Notifications/NotificationsContainer
 import { clearModalContent } from '../../redux/modules/modalEvent';
 import { setLoggingOut } from '../../redux/modules/authentication';
 import navbarBrand from '../../assets/logos/mariana_logo.png';
-import { checkAuthorization } from '../../utils/Auth';
 import './app.scss';
 
 import {
@@ -37,16 +36,6 @@ function App() {
     const dispatch = useDispatch();
     const { modalContent, onToggle, ...modalEvent } = useSelector(({ modalEvent }) => modalEvent);
     const { isAuthed } = useSelector(({ authentication }) => authentication);
-
-    useEffect(() => {
-        checkAuth();
-    }, []);
-
-    const checkAuth = async () => {
-        const auth = await checkAuthorization();
-
-        if (!auth) history.push('/login');
-    };
 
     const sidebarMenu = [{
         label: 'Dashboard',
@@ -87,7 +76,7 @@ function App() {
     return (
         <AppLoadingContainer>
             <div id='outer-container'>
-                {window.location.pathname !== '/login' && <Navbar navbarBrand={navbarBrand}><NavbarLinks /></Navbar>}
+                {isAuthed && <Navbar navbarBrand={navbarBrand}><NavbarLinks /></Navbar>}
                 <React.Suspense fallback={loading()}>
                     <Switch>
                         {routes.map((route, i) => (
@@ -153,13 +142,12 @@ function RouteWithSubRoutes({ component: Component, handleCloseModal, ...rest })
 function PrivateRoute({ component: Component, isAuthed, sidebarMenu, handleCloseModal, ...rest }) {
     return (
         <Route {...rest} render={(routeProps) => (
-            <Component {...routeProps} sidebarMenu={sidebarMenu} handleCloseModal={handleCloseModal} />
-            // isAuthed
-            //     ? <Component {...routeProps} sidebarMenu={sidebarMenu} handleCloseModal={handleCloseModal} />
-            //     : <Redirect to={{
-            //         pathname: '/login',
-            //         state: { from: routeProps.location }
-            //     }}/>
+            isAuthed
+                ? <Component {...routeProps} sidebarMenu={sidebarMenu} handleCloseModal={handleCloseModal} />
+                : <Redirect to={{
+                    pathname: '/login',
+                    state: { from: routeProps.location }
+                }}/>
         )}/>
     );
 }

@@ -34,17 +34,9 @@ export default function AlertsContainer({
         }
     ];
 
-    // check if user is logged in
     useEffect(() => {
-        checkAuth();
+        loadAlertsData();
     }, []);
-
-    const checkAuth = async () => {
-        const auth = await checkAuthorization();
-
-        if (!auth) history.push('/login');
-        else loadAlertsData();
-    };
 
     const viewAlertDetails = async (row) => {
         localStorage.setItem('selectedAlertId', row.id);

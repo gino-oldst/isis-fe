@@ -1,4 +1,4 @@
-import { AsyncStorage } from 'AsyncStorage';
+import Storage from '../utils/Storage';
 import { storageKey } from '../config/constants';
 /* eslint-disable camelcase */
 import jwt_decode from 'jwt-decode';
@@ -11,7 +11,7 @@ import 'moment-timezone';
  * @returns {Boolean}
  */
 export function isTokenValid(date: string) {
-    const dateObj = new Date(date);
+    const dateObj = new Date(date * 1000);
     const timeZone = moment.tz.guess();
     const momentObj = moment(dateObj).tz(timeZone).format();
 
@@ -19,7 +19,7 @@ export function isTokenValid(date: string) {
 }
 
 export async function checkAuthorization() {
-    const accessToken = await AsyncStorage.getItem(storageKey.accessToken);
+    const accessToken = await Storage.getItem(storageKey.accessToken);
 
     if (accessToken) {
         const data = jwt_decode(accessToken);
@@ -35,7 +35,7 @@ export async function checkAuthorization() {
 }
 
 export async function getAuthToken() {
-    const accessToken = await AsyncStorage.getItem(storageKey.accessToken);
+    const accessToken = await Storage.getItem(storageKey.accessToken);
 
     if (accessToken == null) {
         return null;
@@ -47,5 +47,5 @@ export async function getAuthToken() {
 }
 
 export async function saveAuthorizationToken(authToken) {
-    await AsyncStorage.setItem(storageKey.accessToken, JSON.stringify(authToken));
+    await Storage.setItem(storageKey.accessToken, JSON.stringify(authToken));
 }
