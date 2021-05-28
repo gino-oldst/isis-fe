@@ -421,11 +421,11 @@ function Table({
     const paginationLoopLength = (rows.length % state.pageSize) > 0 ? parseInt(rows.length / state.pageSize + 1) : rows.length / state.pageSize;
     // collect all applied filters from table
 
-    const selectedRows = page.filter(row => row.isSelected === true).length;
+    const selectedRows = page.filter(row => row.isSelected === true);
 
     useEffect(() => {
-        dispatch(setIsRowSelected(selectedRows > 0));
-    }, [selectedRows]);
+        dispatch(setIsRowSelected(selectedRows.length, [...selectedRows.map(row => { return row.original; })]));
+    }, [selectedRows.length]);
 
     return (
         <>

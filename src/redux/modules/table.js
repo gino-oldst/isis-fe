@@ -2,10 +2,14 @@
 const SET_IS_ROW_SELECTED = 'SET_IS_ROW_SELECTED';
 const SET_APPLIED_FILTERS = 'SET_APPLIED_FILTERS';
 
-export function setIsRowSelected(count: Integer): {count: string} {
+export function setIsRowSelected(
+    count: Integer,
+    selectedRows: Array
+) {
     return {
         type: SET_IS_ROW_SELECTED,
-        count
+        count,
+        selectedRows
     };
 }
 
@@ -18,6 +22,7 @@ export function setAppliedFilters(data: Array): {data: Array} {
 
 const initialState = {
     isRowsSelected: false,
+    selectedRows: [],
     appliedFilters: []
 };
 
@@ -26,7 +31,8 @@ export default function table(state: Object = initialState, action: Object) {
         case SET_IS_ROW_SELECTED:
             return {
                 ...state,
-                isRowsSelected: action.count
+                isRowsSelected: action.count,
+                selectedRows: action.selectedRows
             };
         case SET_APPLIED_FILTERS:
             return {
