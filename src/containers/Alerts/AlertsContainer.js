@@ -1,13 +1,13 @@
 // @flow
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { checkAuthorization } from '../../utils/Auth';
 import { useHistory } from 'react-router-dom';
 import AlertsScreen from './AlertsScreen';
 import type { Menu } from '../../types';
 import { getAlerts } from '../../api/alerts';
+import { getUsers } from '../../api/users';
 
-import { setAlertsData } from '../../redux/modules/alerts';
+import { setAlertsData, setAssignees } from '../../redux/modules/alerts';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -15,14 +15,15 @@ type Props = {
 }
 
 export default function AlertsContainer({
+    userId,
     sidebarMenu,
     handleCloseModal
 }: Props): React$Element<any> {
     const history = useHistory();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
-    const { isRowsSelected } = useSelector(({ table }) => table);
-    const { table } = useSelector(({ alerts }) => alerts);
+    const { isRowsSelected, selectedRows } = useSelector(({ table }) => table);
+    const { table, selected } = useSelector(({ alerts }) => alerts);
     const breadcrumb = [
         {
             label: 'Home',
@@ -48,9 +49,8 @@ export default function AlertsContainer({
         setLoading(true);
 
         try {
-            const alerts = await getAlerts();
-
-            dispatch(setAlertsData(alerts.data.data));
+            await loadAlerts();
+            await loadUsers();
         } catch (e) {
             console.error(e);
         }
@@ -58,12 +58,29 @@ export default function AlertsContainer({
         setLoading(false);
     };
 
+    const loadAlerts = async () => {
+        const alerts = await getAlerts();
+
+        dispatch(setAlertsData(alerts.data.data));
+    };
+
+    const loadUsers = async () => {
+        const users = await getUsers();
+        const filteredUsers = users.data.data.filter(user => user.userRegistrationType === 'EMAIL');
+
+        dispatch(setAssignees(filteredUsers));
+    };
+
     return <AlertsScreen
         loading={loading}
+        userId={userId}
         breadcrumb={breadcrumb}
+        loadAlerts={loadAlerts}
         tableColumns={table.columns}
         tableData={!table.isFiltered ? table.data : table.filtered}
         isRowsSelected={isRowsSelected}
+        selectedRows={selectedRows}
+        assignees={selected.assignees}
         viewAlertDetails={viewAlertDetails}
         handleCloseModal={handleCloseModal}
         sidebarMenu={sidebarMenu} />;

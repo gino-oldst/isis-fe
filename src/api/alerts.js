@@ -18,8 +18,8 @@ export async function updateAlert(data: Object) {
     return await makeApiCall(UPDATE_ALERT, 'PUT', data);
 }
 
-export async function bulkUpdateAlert() {
-    return await makeApiCall(BULK_UPDATE_ALERT, 'POST', {});
+export async function bulkUpdateAlert(data: Array) {
+    return await makeApiCall(BULK_UPDATE_ALERT, 'POST', data);
 }
 
 export async function downloadAlertsList() {

@@ -35,7 +35,7 @@ function App() {
     const history = useHistory();
     const dispatch = useDispatch();
     const { modalContent, onToggle, ...modalEvent } = useSelector(({ modalEvent }) => modalEvent);
-    const { isAuthed } = useSelector(({ authentication }) => authentication);
+    const { isAuthed, profileData } = useSelector(({ authentication }) => authentication);
 
     const sidebarMenu = [{
         label: 'Dashboard',
@@ -82,7 +82,7 @@ function App() {
                         {routes.map((route, i) => (
                             route.authedRoute
                                 ? <PrivateRoute key={i} {...route} sidebarMenu={sidebarMenu}
-                                    handleCloseModal={handleCloseModal}
+                                    handleCloseModal={handleCloseModal} userId={profileData.user}
                                     isAuthed={isAuthed} />
                                 : <RouteWithSubRoutes key={i} {...route} handleCloseModal={handleCloseModal} />
                         ))}
@@ -139,11 +139,12 @@ function RouteWithSubRoutes({ component: Component, handleCloseModal, ...rest })
     );
 }
 
-function PrivateRoute({ component: Component, isAuthed, sidebarMenu, handleCloseModal, ...rest }) {
+function PrivateRoute({ component: Component, userId, isAuthed, sidebarMenu, handleCloseModal, ...rest }) {
     return (
         <Route {...rest} render={(routeProps) => (
             isAuthed
-                ? <Component {...routeProps} sidebarMenu={sidebarMenu} handleCloseModal={handleCloseModal} />
+                ? <Component {...routeProps} userId={userId} sidebarMenu={sidebarMenu}
+                    handleCloseModal={handleCloseModal} />
                 : <Redirect to={{
                     pathname: '/login',
                     state: { from: routeProps.location }

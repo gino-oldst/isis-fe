@@ -35,7 +35,7 @@ function NotificationsContainer(): React$Element<any> {
     };
 
     return <NotificationsScreen today={data.today} yesterday={data.yesterday} toggleDropdown={toggleDropdown}
-        isNotifMenuOpen={isNotifMenuOpen} />;
+        isNotifMenuOpen={isNotifMenuOpen} loadNotifications={loadNotifications} />;
 }
 
 const clickOutsideConfig = {

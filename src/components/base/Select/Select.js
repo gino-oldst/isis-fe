@@ -32,7 +32,7 @@ const colourStyles = { // remove default bg color and text color (blue)
     },
     control: (base) => ({
         ...base,
-        fontSize: 16
+        fontSize: 15
     }),
     dropdownIndicator: base => ({
         ...base,

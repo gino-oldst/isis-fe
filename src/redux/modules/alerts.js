@@ -156,6 +156,7 @@ export default function alerts(state: Object = initialState, action: Object):
                     assignees: action.users
                 }
             };
+
         case REPLACE_ALERT_DETAILS:
             return {
                 ...state,

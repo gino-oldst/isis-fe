@@ -1,7 +1,5 @@
 // @flow
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import onClickOutside from 'react-onclickoutside';
 import moment from 'moment';
 import Typography from '../../components/base/Typography/Typography';
 import Badge from '../../components/base/Badge/Badge';
@@ -17,23 +15,22 @@ import {
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { updateNotification } from '../../api/notifications';
-import { setNotifications } from '../../redux/modules/notifications';
 
 type Props = {
     today: Array,
     yesterday: Array,
     isNotifMenuOpen: Boolean,
-    toggleDropdown: Function
+    toggleDropdown: Function,
+    loadNotifications: Function
 }
 
 export default function NotificationsScreen({
     today,
     yesterday,
     toggleDropdown,
-    isNotifMenuOpen
+    isNotifMenuOpen,
+    loadNotifications
 }: Props): React$Element<any> {
-    const dispatch = useDispatch();
-
     const handleReadNotif = async (notif, status) => {
         const payload = {
             id: notif.id,
@@ -49,7 +46,7 @@ export default function NotificationsScreen({
 
         const result = await updateNotification(payload);
 
-        if (result.data.responseStatus === 'success') dispatch(setNotifications(getUserId(), [result.data]));
+        if (result.data.responseStatus === 'success') loadNotifications();
     };
 
     return (

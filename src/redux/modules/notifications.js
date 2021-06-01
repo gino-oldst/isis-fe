@@ -21,14 +21,14 @@ const initialState = {
 export default function notifications(state: Object = initialState, action: Object) {
     switch (action.type) {
         case SET_NOTIFICATIONS_DATA: {
-            const filteredNotifs = action.data.filter(notif => notif.userId === parseInt(action.userId) && notif.status.toLowerCase() === 'unread');
+            const filteredData = action.data.filter(notif => notif.userId === parseInt(action.userId) && notif.status.toLowerCase() === 'unread');
 
             return {
                 ...state,
                 data: {
                     ...state.data,
-                    today: filteredNotifs.filter(notif => moment(notif.dateCreated).isSame(moment(), 'day')),
-                    yesterday: filteredNotifs.filter(notif => !moment(notif.dateCreated).isSame(moment(), 'day'))
+                    today: filteredData.filter(notif => moment(notif.dateCreated).isSame(moment(), 'day')),
+                    yesterday: filteredData.filter(notif => !moment(notif.dateCreated).isSame(moment(), 'day'))
                 }
             };
         }

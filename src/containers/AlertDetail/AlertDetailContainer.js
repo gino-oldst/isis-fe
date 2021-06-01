@@ -4,8 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import AlertDetailScreen from './AlertDetailScreen';
 
 import { getAlert } from '../../api/alerts';
-import { getUsers } from '../../api/users';
-import { setSelectedAlert, setAssignees } from '../../redux/modules/alerts';
+import { setSelectedAlert } from '../../redux/modules/alerts';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -45,11 +44,8 @@ export default function AlertDetailContainer({
 
         try {
             const alerts = await getAlert(alertId);
-            const users = await getUsers();
-            const filteredUsers = users.data.data.filter(user => user.userRegistrationType === 'EMAIL');
 
             dispatch(setSelectedAlert(alerts.data));
-            dispatch(setAssignees(filteredUsers));
         } catch (e) {
             console.error(e);
         }

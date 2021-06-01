@@ -23,31 +23,41 @@ import {
     DropdownItem,
     FormGroup,
     Input,
-    Label
+    Label,
+    Alert
 } from 'reactstrap';
 import './alerts.scss';
 
+import { bulkUpdateAlert } from '../../api/alerts';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import { filterAlertsData } from '../../redux/modules/alerts';
 
 type Props = {
     loading: Boolean,
+    userId: String,
     breadcrumb: Array,
+    loadAlerts: Function,
     tableColumns: Array,
     tableData: Array,
     viewAlertDetails: Function,
+    assignees: Array,
     isRowsSelected: Boolean,
+    selectedRows: Array,
     sidebarMenu: Array<Menu>,
     handleCloseModal: Function
 }
 
 function AlertsScreen({
     loading,
+    userId,
     breadcrumb,
+    loadAlerts,
     tableColumns,
     tableData,
     viewAlertDetails,
+    assignees,
     isRowsSelected,
+    selectedRows,
     sidebarMenu,
     handleCloseModal
 }: Props): React$Element<any> {
@@ -56,7 +66,11 @@ function AlertsScreen({
     const showActionsModal = () => {
         dispatch(setModalContent({
             modalContent: <ActionModal
-                handleCloseModal={handleCloseModal} />
+                userId={userId}
+                loadAlerts={loadAlerts}
+                selectedRows={selectedRows}
+                handleCloseModal={handleCloseModal}
+                assignees={assignees} />
         }));
     };
 
@@ -256,8 +270,71 @@ const Alerts: any = withLoading<React$Element<Props>>(AlertsScreen);
 export default Alerts;
 
 const ActionModal = ({
-    handleCloseModal
+    userId,
+    loadAlerts,
+    handleCloseModal,
+    selectedRows,
+    assignees
 }) => {
+    const dispatch = useDispatch();
+    const [submit, setSubmit] = useState(false);
+    const [alert, setAlert] = useState({
+        notes: null,
+        status: null,
+        assignedTo: null,
+        escalation: null
+    });
+
+    const showError = errMsg => {
+        dispatch(setModalContent({
+            modalContent: <ErrorMsgModal
+                errMsg={errMsg}
+                handleCloseModal={handleCloseModal} />
+        }));
+    };
+
+    const handleChange = (e, option) => {
+        let name, value;
+
+        if (option === undefined) {
+            name = e.target.name;
+            value = e.target.value;
+        } else {
+            name = option.name;
+            value = option.name === 'assignedTo' ? e.id : e.name;
+        }
+
+        setAlert({
+            ...alert,
+            [name]: value
+        });
+    };
+
+    const handleBulkUpdate = async () => {
+        setSubmit(true);
+
+        const payload = selectedRows.map(row => {
+            return {
+                alertId: row.id,
+                currentUserId: 2,
+                ...alert
+            };
+        });
+
+        const result = await bulkUpdateAlert(payload);
+
+        if (result.status === 200) {
+            setTimeout(async () => {
+                if (result.data.length !== undefined && result.data.length > 0) {
+                    showError(result.data[0].exceptionMessage);
+                } else {
+                    await loadAlerts();
+                    handleCloseModal();
+                }
+            }, 1000);
+        }
+    };
+
     return (
         <div className='action-modal p-4'>
             <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
@@ -272,22 +349,22 @@ const ActionModal = ({
                     name='escalation'
                     defaultValue={{
                         label: 'No Change',
-                        value: 'default'
+                        value: null
                     }}
-                    options={[
-                        {
-                            label: 'Base',
-                            value: 'Base'
-                        },
-                        {
-                            label: 'Manager',
-                            value: 'Manager'
-                        },
-                        {
-                            label: 'CO',
-                            value: 'CO'
-                        }
-                    ]} />
+                    options={[{
+                        name: 'BASE',
+                        label: 'BASE',
+                        value: 'BASE'
+                    }, {
+                        name: 'MANAGER',
+                        label: 'MANAGER',
+                        value: 'MANAGER'
+                    }, {
+                        name: 'CO',
+                        label: 'CO',
+                        value: 'CO'
+                    }]}
+                    onChangeHandler={handleChange} />
             </FormGroup>
             <FormGroup className='mb-3'>
                 <Label for='status'>Select Status</Label>
@@ -295,64 +372,88 @@ const ActionModal = ({
                     name='status'
                     defaultValue={{
                         label: 'No Change',
-                        value: 'default'
+                        value: null
                     }}
-                    options={[
-                        {
-                            label: <Badge status='Open' />,
-                            value: <Badge status='Open'/>
-                        },
-                        {
-                            label: <Badge status='In Review' />,
-                            value: <Badge status='In Review'/>
-                        },
-                        {
-                            label: <Badge status='Resolved' />,
-                            value: <Badge status='Resolved'/>
-                        },
-                        {
-                            label: <Badge status='Archived' />,
-                            value: <Badge status='Archived'/>
-                        }
-                    ]} />
+                    options={[{
+                        name: 'OPEN',
+                        label: <Badge status='Open' />,
+                        value: <Badge status='Open'/>
+                    }, {
+                        name: 'IN_REVIEW',
+                        label: <Badge status='In Review' />,
+                        value: <Badge status='In Review'/>
+                    }, {
+                        name: 'RESOLVED',
+                        label: <Badge status='Resolved' />,
+                        value: <Badge status='Resolved'/>
+                    }, {
+                        name: 'ARCHIVED',
+                        label: <Badge status='Archived' />,
+                        value: <Badge status='Archived'/>
+                    }]}
+                    onChangeHandler={handleChange} />
             </FormGroup>
             <FormGroup className='mb-3'>
-                <Label for='assignee'>Select Assignee</Label>
+                <Label for='assignedTo'>Select Assignee</Label>
                 <Select
-                    name='assignee'
+                    name='assignedTo'
                     defaultValue={{
                         label: 'No Change',
-                        value: 'default'
+                        value: null
                     }}
-                    options={[
-                        {
-                            label: 'Person 1',
-                            value: 'Person 1'
-                        },
-                        {
-                            label: 'Person 2',
-                            value: 'Person 2'
-                        },
-                        {
-                            label: 'Person 3',
-                            value: 'Person 3'
-                        },
-                        {
-                            label: 'Person 4',
-                            value: 'Person 4'
-                        }
-                    ]} />
+                    options={[{
+                        id: null,
+                        name: 'Unassigned',
+                        label: 'Unassigned',
+                        value: 'Unassigned'
+                    },
+                    ...assignees.map(assignee => {
+                        return {
+                            id: assignee.id,
+                            name: assignee.fullName,
+                            label: assignee.fullName,
+                            value: assignee.fullName
+                        };
+                    })]}
+                    onChangeHandler={handleChange} />
             </FormGroup>
             <FormGroup className='mb-5'>
                 <Label for='notes'>Notes</Label>
                 <Input type='textarea' rows={5} name='notes'
-                    placeholder='Leave blank if there is no change to apply' />
+                    placeholder='Leave blank if there is no change to apply'
+                    onChange={handleChange} />
             </FormGroup>
             <div className='action-modal__buttons d-flex justify-content-center'>
                 <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
-                    onClick={handleCloseModal}/>
+                    onClick={handleCloseModal} disabled={submit} />
                 <Button label='Apply' variant='secondary' className='alerts__save-button px-4 py-2'
-                    onClick={handleCloseModal} />
+                    onClick={handleBulkUpdate} disabled={submit} />
+            </div>
+        </div>
+    );
+};
+
+const ErrorMsgModal = ({
+    errMsg,
+    handleCloseModal
+}) => {
+    return (
+        <div className='alerts__error p-4'>
+            <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right mt-2' icon='times' size='lg'
+                onClick={handleCloseModal} />
+            <Typography variant='size-26' color='color-3'
+                className='mb-5 playfair-font'>
+                Something went wrong
+            </Typography>
+            <Alert color='danger' className='mb-5'>
+                <Typography color='color-3' variant='size-16' className='playfair-font'>{errMsg}</Typography>
+            </Alert>
+            <div className='d-flex justify-content-center'>
+                <Button label='OK' variant='light' className='ok-button px-4 mr-2 py-2'
+                    onClick={() => {
+                        handleCloseModal();
+                        window.location.reload();
+                    }} />
             </div>
         </div>
     );

@@ -23,7 +23,8 @@
 
     .dropdown-item.active,
     .dropdown-item:active {
-        background-color: black !important;
+        background-color: lighten($color-sidebar-2, 60%) !important;
+        border-color: lighten($color-sidebar-2, 60%) !important;
     }
 
     .dropdown-menu {
