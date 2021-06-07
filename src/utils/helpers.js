@@ -1,5 +1,6 @@
 // @flow
 import namor from 'namor';
+import moment from 'moment';
 
 /**
  * Capitalize a string
@@ -113,3 +114,26 @@ export function makeData(...lens) {
 
     return makeDataLevel();
 }
+
+export const UTCTOUK_DATE = date => {
+    return moment
+        .utc(date, 'YYYY-MM-DDTHH:mm:ss')
+        .clone()
+        .tz('Europe/London')
+        .format('YYYY-MM-DDTHH:mm:ss');
+};
+
+export const UTCTOUK_TIME = time => {
+    return moment
+        .utc(
+        `${moment(new Date()).format('YYYY-MM-DD')}T${time}`,
+        'YYYY-MM-DDTHH:mm:ss'
+        )
+        .clone()
+        .tz('Europe/London')
+        .format('YYYY-MM-DDTHH:mm:ss');
+};
+
+export const DATE_TO_UTC = (date, format = 'YYYY-MM-DDTHH:mm:ss') => {
+    return moment.tz(date, 'Europe/London').utc().format(format);
+};

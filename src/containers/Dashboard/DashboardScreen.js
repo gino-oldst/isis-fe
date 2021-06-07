@@ -62,7 +62,8 @@ Chart.helpers.extend(Chart.controllers.doughnut.prototype, {
 
 function DashboardScreen({
     sidebarMenu,
-    selectedDate,
+    fromDate,
+    toDate,
     handleDateChange
 }: Props): React$Element<any> {
     return (
@@ -86,12 +87,12 @@ function DashboardScreen({
                                                     className='mr-4'>Date Range</Typography>
                                                 <div className='dashboard__date-picker d-flex align-items-center mt-3 mt-lg-0'>
                                                     <DatePicker
-                                                        value={selectedDate}
-                                                        onChange={handleDateChange} />
+                                                        value={fromDate}
+                                                        onChange={e => handleDateChange('from', e)} />
                                                     <Typography color='color-3' variant='size-16' className='mx-4'>to</Typography>
                                                     <DatePicker
-                                                        value={selectedDate}
-                                                        onChange={handleDateChange} />
+                                                        value={toDate}
+                                                        onChange={e => handleDateChange('to', e)} />
                                                 </div>
                                             </div>
                                         </Col>

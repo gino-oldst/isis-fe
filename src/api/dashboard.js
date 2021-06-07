@@ -1,7 +1,7 @@
 import makeApiCall from '../api/makeApiCall';
 
-const GET_DASHBOARD_DATA = '/measure/dashboard/dateFrom/21-05-2021/dateTo/25-05-2021';
+const GET_DASHBOARD_DATA = '/measure/dashboard';
 
-export async function getDashboardData() {
-    return await makeApiCall(GET_DASHBOARD_DATA, 'POST', {});
+export async function getDashboardData(dateFrom, dateTo) {
+    return await makeApiCall(`${GET_DASHBOARD_DATA}/dateFrom/${dateFrom}/dateTo/${dateTo}`, 'GET');
 }
