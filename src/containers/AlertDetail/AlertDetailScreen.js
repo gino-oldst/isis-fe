@@ -49,6 +49,7 @@ function AlertDetailScreen({
     assignees
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
+    const [showNoteInput, setShowNoteInput] = useState(false);
     const [submit, setSubmit] = useState(false);
     const [alert, setAlert] = useState({
         notes: '',
@@ -73,39 +74,45 @@ function AlertDetailScreen({
     };
 
     const handleUpdateAlert = async () => {
-        setSubmit(true);
-        const userId = localStorage.getItem('userId');
+        if (!showNoteInput) {
+            setSubmit(true);
+            const userId = localStorage.getItem('userId');
 
-        const payload = {
-            id: selectedAlert.id,
-            ruleId: selectedAlert.ruleId,
-            currentUserId: userId,
-            behaviourId: selectedAlert.behaviourId,
-            behaviourCode: selectedAlert.behaviourCode,
-            broker: selectedAlert.broker,
-            book: selectedAlert.book,
-            ticker: selectedAlert.ticker,
-            quantity: selectedAlert.quantity,
-            client: selectedAlert.client,
-            orderType: selectedAlert.orderType,
-            details: selectedAlert.details,
-            behaviourDescription: selectedAlert.behaviourDescription,
-            assignedUserId: alert.assignedUser === '' ? null : alert.assignedUser,
-            escalation: alert.escalation === '' ? selectedAlert.escalation : alert.escalation,
-            status: alert.status === '' ? selectedAlert.status : alert.status,
-            notes: alert.notes === '' ? selectedAlert.notes : alert.notes
-        };
+            const payload = {
+                id: selectedAlert.id,
+                ruleId: selectedAlert.ruleId,
+                currentUserId: userId,
+                behaviourId: selectedAlert.behaviourId,
+                behaviourCode: selectedAlert.behaviourCode,
+                broker: selectedAlert.broker,
+                book: selectedAlert.book,
+                ticker: selectedAlert.ticker,
+                quantity: selectedAlert.quantity,
+                client: selectedAlert.client,
+                orderType: selectedAlert.orderType,
+                details: selectedAlert.details,
+                behaviourDescription: selectedAlert.behaviourDescription,
+                assignedUserId: alert.assignedUser === '' ? null : alert.assignedUser,
+                escalation: alert.escalation === '' ? selectedAlert.escalation : alert.escalation,
+                status: alert.status === '' ? selectedAlert.status : alert.status,
+                notes: alert.notes === '' ? selectedAlert.notes : alert.notes
+            };
 
-        const result = await updateAlert(payload);
+            const result = await updateAlert(payload);
 
-        if (result.data.responseStatus === 'success') {
-            setTimeout(() => {
-                dispatch(replaceAlertDetails(result.data));
+            if (result.data.responseStatus === 'success') {
+                setTimeout(() => {
+                    dispatch(replaceAlertDetails(result.data));
+                    setSubmit(false);
+                    setShowNoteInput(!showNoteInput);
+                }, 1000);
+            } else {
+                showError(result.data.exceptionMessage);
                 setSubmit(false);
-            }, 1000);
+                setShowNoteInput(!showNoteInput);
+            }
         } else {
-            showError(result.data.exceptionMessage);
-            setSubmit(false);
+            setShowNoteInput(!showNoteInput);
         }
     };
 
@@ -220,17 +227,39 @@ function AlertDetailScreen({
                                                 <Row className='mt-4'>
                                                     <Col>
                                                         <FormGroup>
-                                                            <Label for='note'><Typography color='color-3' variant='size-16' weight='bold'>Notes</Typography></Label>
-                                                            <Input type='textarea' name='notes' id='notes'
-                                                                rows={4} defaultValue={selectedAlert.notes} placeholder='Write notes...'
-                                                                onChange={handleChange} invalid={alert.errors.notes} />
-                                                            <FormFeedback className={`${alert.errors.notes ? 'd-block' : 'd-none'}`}>
-                                                                {alert.errors.notesErrMsg}
-                                                            </FormFeedback>
-                                                            <Button label={<>
-                                                                <Typography weight='light' className='my-1 mx-2'>{!submit ? 'Save' : 'Saving...'}</Typography>
-                                                            </>} className='alert-detail__save-bote-button float-right px-4 mt-3'
-                                                            size='lg' onClick={handleUpdateAlert} disabled={submit} />
+                                                            {showNoteInput
+                                                                ? (
+                                                                    <>
+                                                                        <Typography color='color-3' variant='size-16' weight='bold'>Notes</Typography>
+                                                                        <Typography color='color-3' variant='size-14' className='my-4'>{selectedAlert.notes}</Typography>
+                                                                    </>
+                                                                )
+                                                                : (
+                                                                    <>
+                                                                        <Label for='note'><Typography color='color-3' variant='size-16' weight='bold'>Notes</Typography></Label>
+                                                                        <Input type='textarea' name='notes' id='notes'
+                                                                            rows={4} defaultValue={selectedAlert.notes.trim()} placeholder='Write notes...'
+                                                                            onChange={handleChange} invalid={alert.errors.notes} />
+                                                                        <FormFeedback className={`${alert.errors.notes ? 'd-block' : 'd-none'}`}>
+                                                                            {alert.errors.notesErrMsg}
+                                                                        </FormFeedback>
+                                                                    </>
+                                                                )}
+                                                            {showNoteInput
+                                                                ? (
+                                                                    <Typography color='color-3' className='float-left cursor-pointer color-link-text'
+                                                                        variant='size-14' onClick={handleUpdateAlert}>
+                                                                        <FontAwesomeIcon icon='edit' size='sm' className='mr-1' />
+                                                                        Edit Note
+                                                                    </Typography>
+                                                                )
+                                                                : (
+                                                                    <Button label={<>
+                                                                        <Typography weight='light' className='my-1 mx-2'>{!submit ? 'Save' : 'Saving...'}</Typography>
+                                                                    </>} className='alert-detail__save-bote-button float-right px-4 mt-3'
+                                                                    size='lg' onClick={handleUpdateAlert} disabled={submit} />
+
+                                                                )}
                                                         </FormGroup>
                                                     </Col>
                                                 </Row>
@@ -345,7 +374,7 @@ function AlertDetailScreen({
                                     </div>
                                     {/* <Typography variant='size-14' className={`playfair-font mt-4 text-danger ${alert.errors.backendErr !== '' ? 'd-block' : 'd-none'}`}>{alert.errors.backendErr}</Typography> */}
                                 </Col>
-                                <Col sm={12} className='mt-4 mt-0-xl mb-2'>
+                                <Col sm={12} className='mt-4 mt-0-xl mb-2 overflow-auto' style={{ height: '400px' }}>
                                     <div className='alert-detail__activities'>
                                         <Typography color='color-3' variant='size-26' className='playfair-font mb-4'>Activity</Typography>
                                         {loading || Object.keys(selectedAlert).length === 0

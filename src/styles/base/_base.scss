@@ -143,7 +143,7 @@ blockquote {
 
 // text colors
 .color-link-text {
-    color: #3366bb;
+    color: $color-link-text !important;
 }
 .color-sidebar-1 {
     color: $color-sidebar-1;
