@@ -122,5 +122,3 @@ columns.forEach(col => {
         if (!filterColumns[camelizedColumn].includes(value) && !excludedKeys.includes(camelizedColumn)) filterColumns[camelizedColumn].push(record[camelizedColumn]);
     });
 });
-
-console.log(filterColumns);

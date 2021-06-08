@@ -30,39 +30,6 @@ export function makeDougnutChartData() {
     return data;
 }
 
-export function lineChartOptions() {
-    return {
-        maintainAspectRatio: false,
-        scales: {
-            xAxes: [{
-                gridLines: {
-                    display: false
-                }
-            }],
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true,
-                    max: 50,
-                    min: 0,
-                    stepSize: 10
-                },
-                scaleLabel: {
-                    display: true,
-                    labelString: 'No. of Alerts'
-                }
-            }]
-        },
-        legend: {
-            display: false
-            // align: 'end',
-            // labels: {
-            //     boxWidth: 3,
-            //     usePointStyle: true
-            // }
-        }
-    };
-}
-
 export function makeLineChartData() {
     const data = {
         labels: ['01/10', '01/11', '01/12', '01/13', '01/14', '01/15', '01/16'],

@@ -1,6 +1,7 @@
 // @flow
 import namor from 'namor';
 import moment from 'moment';
+import _ from 'underscore';
 
 /**
  * Capitalize a string
@@ -136,4 +137,29 @@ export const UTCTOUK_TIME = time => {
 
 export const DATE_TO_UTC = (date, format = 'YYYY-MM-DDTHH:mm:ss') => {
     return moment.tz(date, 'Europe/London').utc().format(format);
+};
+
+export const REMOVE_UTC_CHAR = date => {
+    const char = 'T';
+
+    return date.replace(char, ' ');
+};
+
+export const pluralIdentifier = num => {
+    return parseInt(num) > 1 ? 's' : '';
+};
+
+export const percentageCalculator = (num, outOff) => {
+    if (outOff > 0) return (parseInt(num) * 100) / parseInt(outOff);
+
+    return 0;
+};
+
+export const roundPercentages = (numArr, target) => {
+    const off = target - _.reduce(numArr, function(acc, x) { return acc + Math.round(x); }, 0);
+
+    return _.chain(numArr)
+        .sortBy(function(x) { return Math.round(x) - x; })
+        .map(function(x, i) { return Math.round(x) + (off > i) - (i >= (numArr.length + off)); })
+        .value();
 };

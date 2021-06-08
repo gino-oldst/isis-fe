@@ -1,5 +1,6 @@
 // @flow
 import React from 'react';
+import moment from 'moment';
 import Button from '../../components/base/Button/Button';
 import Typography from '../../components/base/Typography/Typography';
 import CollapsibleSidebar from '../../components/base/CollapsibleSidebar/CollapsibleSidebarContainer';
@@ -14,25 +15,28 @@ import {
     Col,
     Card,
     CardBody,
-    Progress
+    Progress,
+    Spinner
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Line, Doughnut, Chart } from 'react-chartjs-2';
 import {
-    lineChartOptions,
-    doughnutChartOptions,
-    makeLineChartData,
-    makeDougnutChartData,
-    makeAssignedAlertsData,
-    makeBehaviourTypesData,
-    makeStatusLevelAlertsData
+    doughnutChartOptions
 } from '../../utils/charts';
+import {
+    pluralIdentifier,
+    percentageCalculator,
+    roundPercentages
+} from '../../utils/helpers';
 import './dashboard.scss';
 
 type Props = {
+    loading: Boolean,
     sidebarMenu: Array<Menu>,
-    selectedDate: Date,
-    handleDateChange: Function
+    fromDate: Date,
+    toDate: Date,
+    handleDateChange: Function,
+    dashboardData: Object
 }
 
 // for dougnut text inside
@@ -61,11 +65,107 @@ Chart.helpers.extend(Chart.controllers.doughnut.prototype, {
 });
 
 function DashboardScreen({
+    loading,
     sidebarMenu,
     fromDate,
     toDate,
-    handleDateChange
+    handleDateChange,
+    dashboardData
 }: Props): React$Element<any> {
+    const totalAlerts = dashboardData.escalatedToManager + dashboardData.escalatedToCo;
+    const totalStatusLevel = [
+        dashboardData.alertsOpen,
+        dashboardData.alertsInReview,
+        dashboardData.alertsResolved,
+        dashboardData.alertsArchived
+    ].reduce((a, b) => a + b, 0);
+
+    const makeDougnutChartData = () => {
+        const data = {
+            labels: [`${percentageCalculator(dashboardData.escalatedToManager, totalAlerts)}%`, `${percentageCalculator(dashboardData.escalatedToCo, totalAlerts)}%`],
+            datasets: [
+                {
+                    label: '# of Votes',
+                    data: [dashboardData.escalatedToManager, dashboardData.escalatedToCo],
+                    backgroundColor: [
+                        '#d68b5c',
+                        '#3485d5',
+                        '#f3f3f3'
+                    ],
+                    borderWidth: 0
+                }
+            ],
+            text: `${dashboardData.escalatedToCo + dashboardData.escalatedToManager} ALERTS`
+        };
+
+        return data;
+    };
+
+    const makeLineChartData = () => {
+        const data = {
+            labels: dashboardData.alertsPerDateSummary.map(stat => moment(stat.alertDate).format('MM/D')),
+            datasets: [
+                {
+                    label: 'Alerts Received',
+                    data: dashboardData.alertsPerDateSummary.map(stat => stat.count),
+                    borderColor: '#d68b5c',
+                    pointBackgroundColor: '#d68b5c',
+                    hoverBackgroundColor: '#fff',
+                    fill: false,
+                    borderWidth: 2,
+                    pointRadius: 1,
+                    tension: 0
+                },
+                {
+                    label: 'Alerts Resolved',
+                    data: dashboardData.alertsPerDateSummary.map(stat => stat.resolvedCount),
+                    borderColor: '#9ab87a',
+                    pointBackgroundColor: '#9ab87a',
+                    hoverBackgroundColor: '#fff',
+                    fill: false,
+                    borderWidth: 2,
+                    pointRadius: 1,
+                    tension: 0
+                }
+            ]
+        };
+
+        return data;
+    };
+
+    const lineChartOptions = () => {
+        return {
+            maintainAspectRatio: false,
+            scales: {
+                xAxes: [{
+                    gridLines: {
+                        display: false
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        max: Math.round(dashboardData.alertsPerDateSummary.map(stat => stat.count).reduce((a, b) => a + b, 0) + 10),
+                        min: 0,
+                        stepSize: 10
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'No. of Alerts'
+                    }
+                }]
+            },
+            legend: {
+                display: false
+                // align: 'end',
+                // labels: {
+                //     boxWidth: 3,
+                //     usePointStyle: true
+                // }
+            }
+        };
+    };
+
     return (
         <div className='dashboard'>
             <CollapsibleSidebar
@@ -102,8 +202,12 @@ function DashboardScreen({
                                             <Card>
                                                 <CardBody className='d-flex align-items-center justify-content-center'>
                                                     <img src={receivedIcon} alt='Alerts_Received_Icon' className='mr-4' />
-                                                    <Typography className='mr-3 pb-2 playfair-font' color='color-3' weight='semi-bold'
-                                                        variant='size-30'>70</Typography>
+                                                    {loading
+                                                        ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3'>
+                                                            <span className='sr-only'>Loading...</span>
+                                                        </Spinner>
+                                                        : <Typography className='mr-3 pb-2 playfair-font' color='color-3' weight='semi-bold'
+                                                            variant='size-30'>{dashboardData.alertsReceived}</Typography>}
                                                     <Typography color='color-3' weight='light' variant='size-16'>Alerts Received</Typography>
                                                 </CardBody>
                                             </Card>
@@ -112,8 +216,12 @@ function DashboardScreen({
                                             <Card className='mt-xl-0 mt-3'>
                                                 <CardBody className='d-flex align-items-center justify-content-center'>
                                                     <img src={resolvedIcon} alt='Alerts_Received_Icon' className='mr-4' />
-                                                    <Typography className='mr-3 pb-2 playfair-font' color='color-3' weight='semi-bold'
-                                                        variant='size-30'>42</Typography>
+                                                    {loading
+                                                        ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3'>
+                                                            <span className='sr-only'>Loading...</span>
+                                                        </Spinner>
+                                                        : <Typography className='mr-3 pb-2 playfair-font' color='color-3' weight='semi-bold'
+                                                            variant='size-30'>{dashboardData.alertsResolved}</Typography>}
                                                     <Typography color='color-3' weight='light' variant='size-16'>Alerts Resolved</Typography>
                                                 </CardBody>
                                             </Card>
@@ -138,10 +246,15 @@ function DashboardScreen({
                                                     </div>
                                                 </div>
                                                 <div className='dashboard__charts-alert-statistics__chart'>
-                                                    <Line
-                                                        data={makeLineChartData}
-                                                        height={232}
-                                                        options={lineChartOptions()} />
+                                                    {loading || dashboardData.escalatedToCo === undefined
+                                                        ? <Spinner animation='border' role='status' className='d-flex mx-auto text-center'>
+                                                            <span className='sr-only'>Loading...</span>
+                                                        </Spinner>
+                                                        : <Line
+                                                            data={makeLineChartData}
+                                                            height={232}
+                                                            options={lineChartOptions()} />
+                                                    }
                                                 </div>
                                             </div>
                                         </Col>
@@ -153,24 +266,34 @@ function DashboardScreen({
                                                 <div className='dashboard__charts-escalation-level__chart'>
                                                     <Row className='d-flex align-items-center'>
                                                         <Col sm={12} md={4}>
-                                                            <div className='mb-3 mb-md-0'>
-                                                                <Doughnut
-                                                                    data={makeDougnutChartData}
-                                                                    height={180}
-                                                                    width={50}
-                                                                    responsive={true}
-                                                                    options={doughnutChartOptions()} />
-                                                            </div>
+                                                            {loading || dashboardData.escalatedToCo === undefined
+                                                                ? <Spinner animation='border' role='status' className='d-flex mx-auto text-center'>
+                                                                    <span className='sr-only'>Loading...</span>
+                                                                </Spinner>
+                                                                : <div className='mb-3 mb-md-0'>
+                                                                    <Doughnut
+                                                                        data={makeDougnutChartData}
+                                                                        height={180}
+                                                                        width={50}
+                                                                        responsive={true}
+                                                                        options={doughnutChartOptions()} />
+                                                                </div>
+                                                            }
                                                         </Col>
                                                         <Col sm={12} md={4}>
                                                             <div className='dashboard__escalation-level__labels mb-3 mb-md-0'>
                                                                 <div className='dashboard__escalation-level__label1 d-flex align-items-end'>
                                                                     <FontAwesomeIcon className='dashboard__escalation-level__label-icon mr-2 mb-2 pb-1' icon='circle' size='xs'
                                                                         style={{ color: '#d68b5c' }} />
-                                                                    <Typography color='color-3' variant='size-30'>23%</Typography>
+                                                                    {loading || dashboardData.escalatedToManager === undefined
+                                                                        ? <Spinner animation='border' role='status' className='d-flex my-auto text-center'>
+                                                                            <span className='sr-only'>Loading...</span>
+                                                                        </Spinner>
+                                                                        : <Typography color='color-3' variant='size-30'>{percentageCalculator(dashboardData.escalatedToManager, totalAlerts)}%</Typography>
+                                                                    }
                                                                 </div>
                                                                 <div className='dashboard__escalation-level__sublabel1 mt-2'>
-                                                                    <Typography color='color-3' variant='size-14' weight='semi-bold'>16 Alerts</Typography>
+                                                                    <Typography color='color-3' variant='size-14' weight='semi-bold'>{dashboardData.escalatedToManager} Alert{pluralIdentifier(dashboardData.escalatedToManager)}</Typography>
                                                                     <Typography color='color-3' variant='size-14' weight='light'>Moved from Base to Manager</Typography>
                                                                 </div>
                                                             </div>
@@ -180,10 +303,15 @@ function DashboardScreen({
                                                                 <div className='dashboard__escalation-level__label2 d-flex align-items-end'>
                                                                     <FontAwesomeIcon className='dashboard__escalation-level__label-icon mr-2 mb-2 pb-1' icon='circle' size='xs'
                                                                         style={{ color: '#3485d5' }} />
-                                                                    <Typography color='color-3' variant='size-30'>62%</Typography>
+                                                                    {loading || dashboardData.escalatedToCo === undefined
+                                                                        ? <Spinner animation='border' role='status' className='d-flex my-auto text-center'>
+                                                                            <span className='sr-only'>Loading...</span>
+                                                                        </Spinner>
+                                                                        : <Typography color='color-3' variant='size-30'>{percentageCalculator(dashboardData.escalatedToCo, totalAlerts)}%</Typography>
+                                                                    }
                                                                 </div>
                                                                 <div className='dashboard__escalation-level__sub-label2 mt-2'>
-                                                                    <Typography color='color-3' variant='size-14' weight='semi-bold'>43 Alerts</Typography>
+                                                                    <Typography color='color-3' variant='size-14' weight='semi-bold'>{dashboardData.escalatedToCo} Alert{pluralIdentifier(dashboardData.escalatedToCo)}</Typography>
                                                                     <Typography color='color-3' variant='size-14' weight='light'>Moved from Manager to CO</Typography>
                                                                 </div>
                                                             </div>
@@ -204,23 +332,49 @@ function DashboardScreen({
                                             <div className='dashboard__status-level'>
                                                 <Typography color='color-3' variant='size-22' className='playfair-font mb-4'>Current Status Level Alerts</Typography>
                                                 <div className='dashboard__charts-status-level__chart'>
-                                                    <Progress multi={true}>
-                                                        {makeStatusLevelAlertsData().map(data => {
-                                                            return (
-                                                                <>
-                                                                    <Progress key={`progress__${data.id}`} bar={true} className={data.color}
-                                                                        value={data.alerts}
-                                                                        data-tip={true} data-for={`status-level__${data.id}`}>
-                                                                        <Typography variant='size-12' weight='light'>{data.label}</Typography>
-                                                                    </Progress>
-                                                                    <Tooltip key={data.id} id={`status-level__${data.id}`} place='bottom'>
-                                                                        <Typography variant='size-14' weight='semi-bold' color='color-3'>{data.label}</Typography>
-                                                                        <Typography variant='size-10' weight='light' color='color-3'>{data.alerts} Alerts</Typography>
-                                                                    </Tooltip>
-                                                                </>
-                                                            );
-                                                        })}
-                                                    </Progress>
+                                                    {loading || dashboardData.alertsOpen === undefined
+                                                        ? <Spinner animation='border' role='status' className='d-flex mx-auto text-center'>
+                                                            <span className='sr-only'>Loading...</span>
+                                                        </Spinner>
+                                                        : <Progress multi={true}>
+                                                            <Progress key='progress__open' bar={true} className='bg-open'
+                                                                value={dashboardData.alertsOpen} max={totalStatusLevel}
+                                                                data-tip={true} data-for='status-level__open'>
+                                                                <Typography variant='size-12' weight='light'>Open</Typography>
+                                                            </Progress>
+                                                            <Tooltip id='status-level__open' place='bottom'>
+                                                                <Typography variant='size-14' weight='semi-bold' color='color-3'>Open</Typography>
+                                                                <Typography variant='size-10' weight='light' color='color-3'>{dashboardData.alertsOpen} Alert{dashboardData.alertsOpen > 1 ? 's' : ''}</Typography>
+                                                            </Tooltip>
+                                                            <Progress key='progress__inreview' bar={true} className='bg-review'
+                                                                value={dashboardData.alertsInReview} max={totalStatusLevel}
+                                                                data-tip={true} data-for='status-level__inreview'>
+                                                                <Typography variant='size-12' weight='light'>In Review</Typography>
+                                                            </Progress>
+                                                            <Tooltip id='status-level__inreview' place='bottom'>
+                                                                <Typography variant='size-14' weight='semi-bold' color='color-3'>In Review</Typography>
+                                                                <Typography variant='size-10' weight='light' color='color-3'>{dashboardData.alertsInReview} Alert{dashboardData.alertsInReview > 1 ? 's' : ''}</Typography>
+                                                            </Tooltip>
+                                                            <Progress key='progress__resolved' bar={true} className='bg-resolve'
+                                                                value={dashboardData.alertsResolved} max={totalStatusLevel}
+                                                                data-tip={true} data-for='status-level__resolved'>
+                                                                <Typography variant='size-12' weight='light'>Resolved</Typography>
+                                                            </Progress>
+                                                            <Tooltip id='status-level__resolved' place='bottom'>
+                                                                <Typography variant='size-14' weight='semi-bold' color='color-3'>Resolved</Typography>
+                                                                <Typography variant='size-10' weight='light' color='color-3'>{dashboardData.alertsResolved} Alert{dashboardData.alertsResolved > 1 ? 's' : ''}</Typography>
+                                                            </Tooltip>
+                                                            <Progress key='progress__archived' bar={true} className='bg-archived'
+                                                                value={dashboardData.alertsArchived} max={totalStatusLevel}
+                                                                data-tip={true} data-for='status-level__archived'>
+                                                                <Typography variant='size-12' weight='light'>Archived</Typography>
+                                                            </Progress>
+                                                            <Tooltip id='status-level__archived' place='bottom'>
+                                                                <Typography variant='size-14' weight='semi-bold' color='color-3'>Archived</Typography>
+                                                                <Typography variant='size-10' weight='light' color='color-3'>{dashboardData.alertsArchived} Alert{dashboardData.alertsArchived > 1 ? 's' : ''}</Typography>
+                                                            </Tooltip>
+                                                        </Progress>
+                                                    }
                                                 </div>
                                             </div>
                                         </Col>
@@ -234,25 +388,30 @@ function DashboardScreen({
                                             <div className='dashboard__behaviour-types'>
                                                 <Typography color='color-3' variant='size-22' className='playfair-font mb-4'>Current Behaviour Type</Typography>
                                                 <div className='dashboard__charts-behaviour-types__chart'>
-                                                    {makeBehaviourTypesData().map(data => {
-                                                        return (
-                                                            <Row className='d-flex align-items-center mb-2'>
-                                                                <Col xs={7} sm={5} lg={4}
-                                                                    xl={6}
-                                                                    className='text-right'>
-                                                                    <Typography color='color-3' variant='size-14'>{data.label}</Typography>
-                                                                </Col>
-                                                                <Col xs={3} sm={4} lg={6}
-                                                                    xl={4}>
-                                                                    <Progress value={data.assignedAlerts} />
-                                                                </Col>
-                                                                <Col xs={2} sm={2} lg={2}
-                                                                    xl={2}>
-                                                                    <Typography color='color-3' variant='size-14'>{data.assignedAlerts}</Typography>
-                                                                </Col>
-                                                            </Row>
-                                                        );
-                                                    })}
+                                                    {loading || dashboardData.behaviourPerDateSummary === undefined
+                                                        ? <Spinner animation='border' role='status' className='d-flex mx-auto text-center'>
+                                                            <span className='sr-only'>Loading...</span>
+                                                        </Spinner>
+                                                        : dashboardData.behaviourPerDateSummary.map(data => {
+                                                            return (
+                                                                <Row className='d-flex align-items-center mb-2'>
+                                                                    <Col xs={7} sm={5} lg={5}
+                                                                        xl={5}
+                                                                        className='text-right'>
+                                                                        <Typography color='color-3' variant='size-14'>{data.behaviour}</Typography>
+                                                                    </Col>
+                                                                    <Col xs={3} sm={4} lg={5}
+                                                                        xl={5}>
+                                                                        <Progress value={data.count} />
+                                                                    </Col>
+                                                                    <Col xs={2} sm={2} lg={2}
+                                                                        xl={2}>
+                                                                        <Typography color='color-3' variant='size-14'>{data.count}</Typography>
+                                                                    </Col>
+                                                                </Row>
+                                                            );
+                                                        })
+                                                    }
                                                 </div>
                                             </div>
                                         </Col>
@@ -266,14 +425,19 @@ function DashboardScreen({
                                             <div className='dashboard__assigned-alerts'>
                                                 <Typography color='color-3' variant='size-22' className='playfair-font mb-4'>Current Assigned Alerts</Typography>
                                                 <div className='dashboard__charts-assigned-alerts__chart'>
-                                                    {makeAssignedAlertsData().map(data => {
-                                                        return (
-                                                            <div className='d-flex justify-content-between assigned-alert-1 px-3 py-3 mb-2 bg-light'>
-                                                                <Typography color='color-3' variant='size-14'>{data.name}</Typography>
-                                                                <Typography color='color-3' variant='size-14'>{data.assignedAlerts}</Typography>
-                                                            </div>
-                                                        );
-                                                    })}
+                                                    {loading || dashboardData.usersPerDateSummary === undefined
+                                                        ? <Spinner animation='border' role='status' className='d-flex mx-auto text-center'>
+                                                            <span className='sr-only'>Loading...</span>
+                                                        </Spinner>
+                                                        : dashboardData.usersPerDateSummary.map(data => {
+                                                            return (
+                                                                <div className='d-flex justify-content-between assigned-alert-1 px-3 py-3 mb-2 bg-light'>
+                                                                    <Typography color='color-3' variant='size-14'>{data.user}</Typography>
+                                                                    <Typography color='color-3' variant='size-14'>{data.count}</Typography>
+                                                                </div>
+                                                            );
+                                                        })
+                                                    }
                                                 </div>
                                             </div>
                                         </Col>
