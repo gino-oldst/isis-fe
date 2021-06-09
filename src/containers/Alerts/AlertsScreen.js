@@ -452,7 +452,6 @@ const ErrorMsgModal = ({
                 <Button label='OK' variant='light' className='ok-button px-4 mr-2 py-2'
                     onClick={() => {
                         handleCloseModal();
-                        window.location.reload();
                     }} />
             </div>
         </div>

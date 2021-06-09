@@ -49,6 +49,26 @@ export default async function makeApiCall(
         };
     } else if (endpoint.includes('generate-token')) {
         request.headers = {};
+    } else if (endpoint.includes('download')) {
+        fetch(`${config.apiUrl}${endpoint}`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`
+            }
+        })
+            .then(response => {
+                response.blob().then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+
+                    a.href = url;
+                    a.download = 'dashboard.xlsx';
+                    a.click();
+                });
+            })
+            .catch(err => console.error(err));
     } else {
         request.headers = {
             Authorization: `Bearer ${accessToken}`
