@@ -84,7 +84,8 @@ function App() {
                                 ? <PrivateRoute key={i} {...route} sidebarMenu={sidebarMenu}
                                     handleCloseModal={handleCloseModal} userId={profileData.user}
                                     isAuthed={isAuthed} />
-                                : <RouteWithSubRoutes key={i} {...route} handleCloseModal={handleCloseModal} />
+                                : <RouteWithSubRoutes key={i} {...route} isAuthed={isAuthed}
+                                    handleCloseModal={handleCloseModal} />
                         ))}
                     </Switch>
                 </React.Suspense>
@@ -128,13 +129,17 @@ const NavbarAccount = () => {
 // A special wrapper for <Route> that knows how to
 // handle "sub"-routes by passing them in a `routes`
 // prop to the component it renders.
-function RouteWithSubRoutes({ component: Component, handleCloseModal, ...rest }) {
+function RouteWithSubRoutes({ component: Component, isAuthed, handleCloseModal, ...rest }) {
     return (
         <Route
             {...rest}
             render={props => (
-                // pass the sub-routes down to keep nesting
-                <Component {...props} routes={props.routes} handleCloseModal={handleCloseModal} />
+                isAuthed
+                    ? <Redirect to={{
+                        pathname: '/dashboard',
+                        state: { from: props.location }
+                    }}/>
+                    : <Component {...props} routes={props.routes} handleCloseModal={handleCloseModal} />
             )} />
     );
 }
