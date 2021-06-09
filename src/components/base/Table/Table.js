@@ -6,11 +6,9 @@ import { matchSorter } from 'match-sorter';
 import Button from '../../base/Button/Button';
 import Badge from '../../base/Badge/Badge';
 import Typography from '../../base/Typography/Typography';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import CustomDropdown from '../../base/CustomDropdown/CustomDropdown';
 import { kFormatter, getTextColor } from '../../../utils/helpers';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     Table as ReactstrapTable,
     DropdownItem,
@@ -22,7 +20,7 @@ import filterIcon from '../../../assets/images/ic_filter.svg';
 import './table.scss';
 
 import { useTable, useRowSelect, useFilters, useGlobalFilter, usePagination, useSortBy, useAsyncDebounce } from 'react-table';
-import { setIsRowSelected, setAppliedFilters } from '../../../redux/modules/table';
+import { setIsRowSelected, setAppliedFilters, setFilteredRows } from '../../../redux/modules/table';
 
 // Define a default UI for filtering
 function GlobalFilter({
@@ -224,91 +222,6 @@ function RadioColumnFilter({
     );
 }
 
-function DateColumnFilter({
-    column: { setFilter }
-}) {
-    // Calculate the options for filtering
-    // using the preFilteredRows
-    const [dateFilter, setDateFilter] = useState(0);
-    const [defaultDate, setDefaultDate] = useState(new Date());
-    const [selectedDate, setDateChange] = useState(3);
-    const datepickerOpen = React.createRef();
-
-    useEffect(() => {
-        setFilter(dateFilter);
-    }, [dateFilter]);
-
-    useEffect(() => {
-        setFilter(selectedDate);
-    }, [selectedDate]);
-
-    const handleDateFilterChange = (isChecked, value) => {
-        isChecked
-            ? setDateFilter(value)
-            : setDateFilter(0);
-    };
-
-    const handleResetFilter = () => {
-        setFilter(undefined);
-        setDateFilter(3);
-        setDateChange(3);
-        setDefaultDate(new Date());
-    };
-
-    const handleDateChange = value => {
-        setDateChange(value);
-        setDefaultDate(value);
-        setDateFilter(3);
-    };
-
-    return (
-        <CustomDropdown tag='span'
-            toggle={<img className='table__filter-icon cursor-pointer' src={filterIcon} alt='talbe-filter-icon' />}>
-            <DropdownItem header={true} className='text-center'>
-                <img src={filterIcon} alt='talbe-filter-icon' />
-            </DropdownItem>
-            <DropdownItem divider={true} />
-            <div className='table__date-filter-options'>
-                <FormGroup tag='fieldset'>
-                    <FormGroup check={true} className='mb-1'>
-                        <Label check={true}>
-                            <Input type='radio' name='radio'
-                                checked={dateFilter === 1} onChange={e => handleDateFilterChange(e.target.checked, 1)}/>{' '}
-                        Today
-                        </Label>
-                    </FormGroup>
-                    <FormGroup check={true} className='mb-1'>
-                        <Label check={true}>
-                            <Input type='radio' name='radio'
-                                checked={dateFilter === 2} onChange={e => handleDateFilterChange(e.target.checked, 2)} />{' '}
-                        Last 7 Days
-                        </Label>
-                    </FormGroup>
-                    <FormGroup check={true} className='mb-1'>
-                        <Label check={true}>
-                            <Input type='radio' name='radio'
-                                checked={dateFilter === 3} onChange={e => {
-                                    handleDateFilterChange(e.target.checked, 3);
-                                }} onClick={() => datepickerOpen.current.setOpen(true)} />{' '}
-                            <span className='mr-2'>Specific Date</span>
-                        </Label>
-                        <FontAwesomeIcon icon='calendar-alt' size='md' className='date-picker__icon' />
-                        <DatePicker ref={datepickerOpen} selected={defaultDate}
-                            className='table__date-picker'
-                            dateFormat='dd MMM yyyy'
-                            onChange={date => {
-                                handleDateChange(date);
-                            }} />
-                    </FormGroup>
-                </FormGroup>
-            </div>
-            <DropdownItem divider={true} />
-            <Button label={<><Typography weight='light' variant='size-14'>Reset</Typography></>}
-                className='table__filter-reset-button float-right mr-2' onClick={() => handleResetFilter()}/>
-        </CustomDropdown>
-    );
-}
-
 // For row selection
 const IndeterminateCheckbox = React.forwardRef(
     ({ indeterminate, ...rest }, ref) => {
@@ -414,6 +327,7 @@ function Table({
 
     useEffect(() => {
         dispatch(setAppliedFilters(state.filters));
+        dispatch(setFilteredRows(page.map(p => p.original.id)));
     }, [state.filters]);
 
     const dispatch = useDispatch();
@@ -424,7 +338,7 @@ function Table({
     const selectedRows = page.filter(row => row.isSelected === true);
 
     useEffect(() => {
-        dispatch(setIsRowSelected(selectedRows.length, [...selectedRows.map(row => { return row.original; })]));
+        dispatch(setIsRowSelected(selectedRows.length, [...selectedRows.map(row => { return row.original.id; })]));
     }, [selectedRows.length]);
 
     return (

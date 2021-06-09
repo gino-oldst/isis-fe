@@ -56,15 +56,19 @@ export default async function makeApiCall(
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${accessToken}`
-            }
+            },
+            body: endpoint.includes('download-list') ? JSON.stringify(data) : {}
         })
             .then(response => {
                 response.blob().then(blob => {
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
 
+                    /* eslint-disable no-console */
+                    console.log(url);
+
                     a.href = url;
-                    a.download = 'dashboard.xlsx';
+                    a.download = `${endpoint.includes('alerts-record') ? 'alert-record' : endpoint.includes('download-list') ? 'alert-list' : 'dashboard'}.xlsx`;
                     a.click();
                 });
             })
@@ -80,6 +84,9 @@ export default async function makeApiCall(
 
         return response;
     } catch (err) {
+        console.log('error gago')
+        ;
+
         if (err.response) {
             const errData = {};
 

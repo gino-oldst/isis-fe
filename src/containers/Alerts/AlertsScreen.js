@@ -44,7 +44,8 @@ type Props = {
     isRowsSelected: Boolean,
     selectedRows: Array,
     sidebarMenu: Array<Menu>,
-    handleCloseModal: Function
+    handleCloseModal: Function,
+    handleDownloadAlertsList: Function
 }
 
 function AlertsScreen({
@@ -59,7 +60,8 @@ function AlertsScreen({
     isRowsSelected,
     selectedRows,
     sidebarMenu,
-    handleCloseModal
+    handleCloseModal,
+    handleDownloadAlertsList
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
 
@@ -131,114 +133,107 @@ function AlertsScreen({
                             <div className='alerts__header d-flex align-items-center'>
                                 <Typography color='color-3' className='alerts__title mr-auto'>Alerts</Typography>
                                 <div className='alerts__date-picker d-flex align-items-center justify-content-end mb-4'>
-                                    {!isRowsSelected
-                                        ? (
-                                            <>
-                                                <CustomDropdown tag='span'
-                                                    toggle={<DatePicker width='70' inputVariant='outlined' keyboard={true}
-                                                        value={dateRangeValues.start} />}>
-                                                    <DropdownItem header={true} className='text-center'>
-                                                        <img src={filterIcon} alt='talbe-filter-icon' />
-                                                    </DropdownItem>
-                                                    <DropdownItem divider={true} />
-                                                    <div className='alerts__date-filter-options'>
-                                                        <FormGroup tag='fieldset'>
-                                                            <FormGroup check={true} className='mb-1'>
-                                                                <Label check={true}>
-                                                                    <Input type='radio' name='radio1' checked={dateRangeFilter === 1}
-                                                                        onChange={() => handleDateFilterChange(1)} />{' '}
-                                                            Today
-                                                                </Label>
-                                                            </FormGroup>
-                                                            <FormGroup check={true} className='mb-1'>
-                                                                <Label check={true}>
-                                                                    <Input type='radio' name='radio2' checked={dateRangeFilter === 2}
-                                                                        onChange={() => handleDateFilterChange(2)} />{' '}
-                                                            Last 7 Days
-                                                                </Label>
-                                                            </FormGroup>
-                                                            <FormGroup check={true} className='mb-1'>
-                                                                <Label check={true}>
-                                                                    <Input type='radio' name='radio3' checked={dateRangeFilter === 3}
-                                                                        onChange={() => handleDateFilterChange(3)}
-                                                                        onClick={() => datepickerOpen.current.setOpen(true)} />{' '}
-                                                                    <span className='mr-2'>Specific Date</span>
-                                                                </Label>
-                                                                <FontAwesomeIcon icon='calendar-alt' size='md' className='date-picker__icon' />
-                                                                <ReactDatePicker ref={datepickerOpen}
-                                                                    selected={dateRangeValues.start}
-                                                                    className='table__date-picker'
-                                                                    dateFormat='dd MMM yyyy'
-                                                                    onChange={date => {
-                                                                        handleDateChange('start', 3, date);
-                                                                    }} />
-                                                                {/* <DatePicker width={55} value={dateRangeValues.start} className='alerts__date-filter-picker'
-                                                                    inputVariant='outlined' onChange={e => handleDateChange('start', e)} /> */}
-                                                            </FormGroup>
-                                                        </FormGroup>
-                                                    </div>
-                                                    <DropdownItem divider={true} />
-                                                    <Button label={<><Typography weight='light' variant='size-14'>Reset</Typography></>}
-                                                        className='alerts__filter-reset-button float-right mr-2' onClick={() => handleDateFilterChange(0)} />
-                                                </CustomDropdown>
-                                                <Typography color='color-3' variant='size-16' className='mx-4'>to</Typography>
-                                                <CustomDropdown tag='span'
-                                                    toggle={<DatePicker width='70' inputVariant='outlined' keyboard={true}
-                                                        value={dateRangeValues.end} />}>
-                                                    <DropdownItem header={true} className='text-center'>
-                                                        <img src={filterIcon} alt='talbe-filter-icon' />
-                                                    </DropdownItem>
-                                                    <DropdownItem divider={true} />
-                                                    <div className='alerts__date-filter-options'>
-                                                        <FormGroup tag='fieldset'>
-                                                            <FormGroup check={true} className='mb-1'>
-                                                                <Label check={true}>
-                                                                    <Input type='radio' name='radio4' checked={dateRangeFilter === 1} />{' '}
-                                                            Today
-                                                                </Label>
-                                                            </FormGroup>
-                                                            <FormGroup check={true} className='mb-1'>
-                                                                <Label check={true}>
-                                                                    <Input type='radio' name='radio5' checked={dateRangeFilter === 2} />{' '}
-                                                            Last 7 Days
-                                                                </Label>
-                                                            </FormGroup>
-                                                            <FormGroup check={true} className='mb-1'>
-                                                                <Label check={true}>
-                                                                    <Input type='radio' name='radio6' checked={dateRangeFilter === 3}
-                                                                        onChange={() => handleDateFilterChange(3)}
-                                                                        onClick={() => datepickerOpen.current.setOpen(true)} />{' '}
-                                                                    <span className='mr-2'>Specific Date</span>
-                                                                </Label>
-                                                                <FontAwesomeIcon icon='calendar-alt' size='md' className='date-picker__icon' />
-                                                                <ReactDatePicker ref={datepickerOpen}
-                                                                    selected={dateRangeValues.end}
-                                                                    className='table__date-picker'
-                                                                    dateFormat='dd MMM yyyy'
-                                                                    minDate={dateRangeValues.start}
-                                                                    onChange={date => {
-                                                                        handleDateChange('end', 3, date);
-                                                                    }} />
-                                                                {/* <DatePicker width={55} value={dateRangeValues.end} className='alerts__date-filter-picker'
-                                                                    inputVariant='outlined' onChange={e => handleDateChange('end', e)} /> */}
-                                                            </FormGroup>
-                                                        </FormGroup>
-                                                    </div>
-                                                    <DropdownItem divider={true} />
-                                                    <Button label={<><Typography weight='light' variant='size-14'>Reset</Typography></>}
-                                                        className='alerts__filter-reset-button float-right mr-2' onClick={() => handleDateFilterChange(0)} />
-                                                </CustomDropdown>
-                                                <Button label={<>
-                                                    <FontAwesomeIcon className='mr-2' icon='file-download' size='sm' />
-                                                    <Typography weight='light' className='my-1 mx-2'>Download</Typography>
-                                                </>}
-                                                className='ml-4 d-flex align-items-center alerts__download-button'
-                                                size='lg' />
-                                            </>
-                                        )
-                                        : (
-                                            <Button className='alerts__bulk-action-button' label={<Typography weight='light' className='my-1 mx-2'>Bulk Action</Typography>} onClick={showActionsModal}/>
-                                        )}
+                                    <CustomDropdown tag='span'
+                                        toggle={<DatePicker width='70' inputVariant='outlined' keyboard={true}
+                                            value={dateRangeValues.start} />}>
+                                        <DropdownItem header={true} className='text-center'>
+                                            <img src={filterIcon} alt='talbe-filter-icon' />
+                                        </DropdownItem>
+                                        <DropdownItem divider={true} />
+                                        <div className='alerts__date-filter-options'>
+                                            <FormGroup tag='fieldset'>
+                                                <FormGroup check={true} className='mb-1'>
+                                                    <Label check={true}>
+                                                        <Input type='radio' name='radio1' checked={dateRangeFilter === 1}
+                                                            onChange={() => handleDateFilterChange(1)} />{' '}
+                                                Today
+                                                    </Label>
+                                                </FormGroup>
+                                                <FormGroup check={true} className='mb-1'>
+                                                    <Label check={true}>
+                                                        <Input type='radio' name='radio2' checked={dateRangeFilter === 2}
+                                                            onChange={() => handleDateFilterChange(2)} />{' '}
+                                                Last 7 Days
+                                                    </Label>
+                                                </FormGroup>
+                                                <FormGroup check={true} className='mb-1'>
+                                                    <Label check={true}>
+                                                        <Input type='radio' name='radio3' checked={dateRangeFilter === 3}
+                                                            onChange={() => handleDateFilterChange(3)}
+                                                            onClick={() => datepickerOpen.current.setOpen(true)} />{' '}
+                                                        <span className='mr-2'>Specific Date</span>
+                                                    </Label>
+                                                    <FontAwesomeIcon icon='calendar-alt' size='md' className='date-picker__icon' />
+                                                    <ReactDatePicker ref={datepickerOpen}
+                                                        selected={dateRangeValues.start}
+                                                        className='table__date-picker'
+                                                        dateFormat='dd MMM yyyy'
+                                                        onChange={date => {
+                                                            handleDateChange('start', 3, date);
+                                                        }} />
+                                                    {/* <DatePicker width={55} value={dateRangeValues.start} className='alerts__date-filter-picker'
+                                                        inputVariant='outlined' onChange={e => handleDateChange('start', e)} /> */}
+                                                </FormGroup>
+                                            </FormGroup>
+                                        </div>
+                                        <DropdownItem divider={true} />
+                                        <Button label={<><Typography weight='light' variant='size-14'>Reset</Typography></>}
+                                            className='alerts__filter-reset-button float-right mr-2' onClick={() => handleDateFilterChange(0)} />
+                                    </CustomDropdown>
+                                    <Typography color='color-3' variant='size-16' className='mx-4'>to</Typography>
+                                    <CustomDropdown tag='span'
+                                        toggle={<DatePicker width='70' inputVariant='outlined' keyboard={true}
+                                            value={dateRangeValues.end} />}>
+                                        <DropdownItem header={true} className='text-center'>
+                                            <img src={filterIcon} alt='talbe-filter-icon' />
+                                        </DropdownItem>
+                                        <DropdownItem divider={true} />
+                                        <div className='alerts__date-filter-options'>
+                                            <FormGroup tag='fieldset'>
+                                                <FormGroup check={true} className='mb-1'>
+                                                    <Label check={true}>
+                                                        <Input type='radio' name='radio4' checked={dateRangeFilter === 1} />{' '}
+                                                Today
+                                                    </Label>
+                                                </FormGroup>
+                                                <FormGroup check={true} className='mb-1'>
+                                                    <Label check={true}>
+                                                        <Input type='radio' name='radio5' checked={dateRangeFilter === 2} />{' '}
+                                                Last 7 Days
+                                                    </Label>
+                                                </FormGroup>
+                                                <FormGroup check={true} className='mb-1'>
+                                                    <Label check={true}>
+                                                        <Input type='radio' name='radio6' checked={dateRangeFilter === 3}
+                                                            onChange={() => handleDateFilterChange(3)}
+                                                            onClick={() => datepickerOpen.current.setOpen(true)} />{' '}
+                                                        <span className='mr-2'>Specific Date</span>
+                                                    </Label>
+                                                    <FontAwesomeIcon icon='calendar-alt' size='md' className='date-picker__icon' />
+                                                    <ReactDatePicker ref={datepickerOpen}
+                                                        selected={dateRangeValues.end}
+                                                        className='table__date-picker'
+                                                        dateFormat='dd MMM yyyy'
+                                                        minDate={dateRangeValues.start}
+                                                        onChange={date => {
+                                                            handleDateChange('end', 3, date);
+                                                        }} />
+                                                    {/* <DatePicker width={55} value={dateRangeValues.end} className='alerts__date-filter-picker'
+                                                        inputVariant='outlined' onChange={e => handleDateChange('end', e)} /> */}
+                                                </FormGroup>
+                                            </FormGroup>
+                                        </div>
+                                        <DropdownItem divider={true} />
+                                        <Button label={<><Typography weight='light' variant='size-14'>Reset</Typography></>}
+                                            className='alerts__filter-reset-button float-right mr-2' onClick={() => handleDateFilterChange(0)} />
+                                    </CustomDropdown>
+                                    <Button label={<>
+                                        <FontAwesomeIcon className='mr-2' icon='file-download' size='sm' />
+                                        <Typography weight='light' className='my-1 mx-2'>Download</Typography>
+                                    </>}
+                                    className='ml-4 d-flex align-items-center alerts__download-button'
+                                    onClick={() => handleDownloadAlertsList(dateRangeValues)} />
+                                    {isRowsSelected > 0 && <Button className='ml-3 alerts__download-button' label={<Typography weight='light' className='my-1 mx-2'>Bulk Action</Typography>} onClick={showActionsModal}/>}
                                 </div>
                             </div>
                             {loading || tableColumns === undefined || tableData === undefined

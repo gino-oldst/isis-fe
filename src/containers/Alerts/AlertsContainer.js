@@ -2,9 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import moment from 'moment';
 import AlertsScreen from './AlertsScreen';
 import type { Menu } from '../../types';
-import { getAlerts } from '../../api/alerts';
+import { getAlerts, downloadAlertsList } from '../../api/alerts';
 import { getUsers } from '../../api/users';
 
 import { setAlertsData, setAssignees } from '../../redux/modules/alerts';
@@ -22,7 +23,7 @@ export default function AlertsContainer({
     const history = useHistory();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
-    const { isRowsSelected, selectedRows } = useSelector(({ table }) => table);
+    const { isRowsSelected, selectedRows, filteredRows, appliedFilters } = useSelector(({ table }) => table);
     const { table, selected } = useSelector(({ alerts }) => alerts);
     const breadcrumb = [
         {
@@ -71,6 +72,16 @@ export default function AlertsContainer({
         dispatch(setAssignees(filteredUsers));
     };
 
+    const handleDownloadAlertsList = async (date) => {
+        const payload = {
+            alertIds: isRowsSelected > 0 ? selectedRows : filteredRows,
+            dateRange: `${moment(date.start).format('L')} to ${moment(date.end).format('L')}`,
+            filteredApplied: appliedFilters.filter(filter => (filter.id !== 'quantity' && filter.value.length > 0) || (filter.id === 'quantity' && filter.value > 0)).map(filter => `${filter.id}: [${filter.value}]`).join(', ')
+        };
+
+        await downloadAlertsList(payload);
+    };
+
     return <AlertsScreen
         loading={loading}
         userId={userId}
@@ -83,5 +94,6 @@ export default function AlertsContainer({
         assignees={selected.assignees}
         viewAlertDetails={viewAlertDetails}
         handleCloseModal={handleCloseModal}
-        sidebarMenu={sidebarMenu} />;
+        sidebarMenu={sidebarMenu}
+        handleDownloadAlertsList={handleDownloadAlertsList} />;
 }

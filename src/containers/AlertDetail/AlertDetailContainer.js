@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import AlertDetailScreen from './AlertDetailScreen';
 
-import { getAlert } from '../../api/alerts';
+import { getAlert, downloadAlertsRecord } from '../../api/alerts';
 import { setSelectedAlert } from '../../redux/modules/alerts';
 
 type Props = {
@@ -53,6 +53,10 @@ export default function AlertDetailContainer({
         setLoading(false);
     };
 
+    const handleDownloadAlertsRecord = async () => {
+        await downloadAlertsRecord(selected.data.id);
+    };
+
     return <AlertDetailScreen
         loading={loading}
         setLoading={setLoading}
@@ -60,5 +64,6 @@ export default function AlertDetailContainer({
         sidebarMenu={sidebarMenu}
         handleCloseModal={handleCloseModal}
         selectedAlert={selected.data}
-        assignees={selected.assignees} />;
+        assignees={selected.assignees}
+        handleDownloadAlertsRecord={handleDownloadAlertsRecord} />;
 }

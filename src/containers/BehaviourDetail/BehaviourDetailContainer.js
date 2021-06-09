@@ -1,7 +1,6 @@
 // @flow
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import BehaviourDetailScreen from './BehaviourDetailScreen';
 import { setSelectedBehaviour, setParametersData } from '../../redux/modules/behaviours';
 import { getRule, getBehaviourByCode } from '../../api/behaviours';

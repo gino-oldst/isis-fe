@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import moment from 'moment';
-import validator from 'validator';
 import Badge from '../../components/base/Badge/Badge';
 import Button from '../../components/base/Button/Button';
 import Select from '../../components/base/Select/Select';
@@ -37,7 +36,8 @@ type Props = {
     sidebarMenu: Array<Menu>,
     handleCloseModal: Function,
     selectedAlert: Object,
-    assignees: Array
+    assignees: Array,
+    handleDownloadAlertsRecord: Function
 }
 
 function AlertDetailScreen({
@@ -46,7 +46,8 @@ function AlertDetailScreen({
     sidebarMenu,
     handleCloseModal,
     selectedAlert,
-    assignees
+    assignees,
+    handleDownloadAlertsRecord
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const [showNoteInput, setShowNoteInput] = useState(false);
@@ -137,23 +138,23 @@ function AlertDetailScreen({
         });
     };
 
-    const handleValidation = () => {
-        const errors = {};
-        let formIsValid = true;
+    // const handleValidation = () => {
+    //     const errors = {};
+    //     let formIsValid = true;
 
-        if (validator.isEmpty(alert.notes) && validator.isEmpty(selectedAlert.notes)) {
-            formIsValid = false;
-            errors.notes = true;
-            errors.notesErrMsg = 'Notes is required';
-        }
+    //     if (validator.isEmpty(alert.notes) && validator.isEmpty(selectedAlert.notes)) {
+    //         formIsValid = false;
+    //         errors.notes = true;
+    //         errors.notesErrMsg = 'Notes is required';
+    //     }
 
-        setAlert({
-            ...alert,
-            errors
-        });
+    //     setAlert({
+    //         ...alert,
+    //         errors
+    //     });
 
-        return formIsValid;
-    };
+    //     return formIsValid;
+    // };
 
     return (
         <div className='alert-detail'>
@@ -171,7 +172,7 @@ function AlertDetailScreen({
                                     <Typography weight='light' className='my-1 mx-2'>Download</Typography>
                                 </>}
                                 className='ml-4 d-flex align-items-center alert-detail__download-button px-4'
-                                size='lg' />
+                                size='lg' onClick={handleDownloadAlertsRecord} />
                             </div>
                             <Row className='mt-4'>
                                 <Col sm={12} md={12} lg={12}
