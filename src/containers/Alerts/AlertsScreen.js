@@ -311,7 +311,7 @@ const ActionModal = ({
         const payload = selectedRows.map(row => {
             return {
                 alertId: row,
-                currentUserId: 2,
+                currentUserId: userId,
                 ...alert
             };
         });

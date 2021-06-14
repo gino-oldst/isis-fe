@@ -45,6 +45,7 @@ export default function LoginContainer({
                     localStorage.setItem('userId', data.userId);
                     Storage.setItem(storageKey.accessToken, JSON.stringify(data.token));
                     dispatch(authUser({
+                        userId: data.userId,
                         username: loginForm.username
                     }));
 

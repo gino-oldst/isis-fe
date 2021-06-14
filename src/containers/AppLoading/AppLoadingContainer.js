@@ -46,9 +46,11 @@ export default function AppLoadingContainer({
                 setTimeout(() => {}, 5000);
                 dispatch(updateUserToken(accessToken));
                 Storage.setItem(storageKey.accessToken, accessToken);
+                const userId = localStorage.getItem('userId');
 
                 dispatch(authUser({
-                    user: token.sub
+                    user: token.sub,
+                    userId: userId
                 }));
             }
 

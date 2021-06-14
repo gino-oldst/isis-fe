@@ -82,7 +82,7 @@ function App() {
                         {routes.map((route, i) => (
                             route.authedRoute
                                 ? <PrivateRoute key={i} {...route} sidebarMenu={sidebarMenu}
-                                    handleCloseModal={handleCloseModal} userId={profileData.user}
+                                    handleCloseModal={handleCloseModal} userId={profileData.userId}
                                     isAuthed={isAuthed} />
                                 : <RouteWithSubRoutes key={i} {...route} isAuthed={isAuthed}
                                     handleCloseModal={handleCloseModal} />
