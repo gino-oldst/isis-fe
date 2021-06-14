@@ -27,8 +27,8 @@ export default function notifications(state: Object = initialState, action: Obje
                 ...state,
                 data: {
                     ...state.data,
-                    today: filteredData.filter(notif => moment(notif.dateCreated).isSame(moment(), 'day')),
-                    yesterday: filteredData.filter(notif => !moment(notif.dateCreated).isSame(moment(), 'day'))
+                    today: filteredData.filter(notif => moment(notif.dateCreated).isSame(moment(), 'day')).sort((a, b) => moment(b.dateCreated) - moment(a.dateCreated)),
+                    yesterday: filteredData.filter(notif => !moment(notif.dateCreated).isSame(moment(), 'day')).sort((a, b) => moment(b.dateCreated) - moment(a.dateCreated))
                 }
             };
         }
