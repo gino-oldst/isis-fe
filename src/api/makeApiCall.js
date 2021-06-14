@@ -84,9 +84,6 @@ export default async function makeApiCall(
 
         return response;
     } catch (err) {
-        console.log('error gago')
-        ;
-
         if (err.response) {
             const errData = {};
 
