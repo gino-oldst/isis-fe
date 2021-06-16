@@ -286,7 +286,7 @@ function AlertDetailScreen({
                                                                 {selectedAlert.status.toLowerCase() === 'resolved' &&
                                                                     <>
                                                                         <strong className='text-dark mr-1'>
-                                                                            Reason:
+                                                                            {selectedAlert.resolveReason !== '' && selectedAlert.resolveReason !== undefined ? 'Reason:' : ''}
                                                                         </strong>
                                                                         <span>
                                                                             {selectedAlert.resolveReason}

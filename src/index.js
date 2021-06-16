@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fab } from '@fortawesome/free-brands-svg-icons';
-import { faBell, faCircle, faEdit, faCircleNotch, faUserCircle, faFilter, faFileDownload, faCalendarAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faCircle, faSort, faEdit, faCircleNotch, faUserCircle, faFilter, faFileDownload, faCalendarAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import configureStore, { history } from './redux/store';
@@ -13,7 +13,7 @@ import './styles/styles.scss';
 
 const store = configureStore();
 
-library.add(fab, faBell, faEdit, faCircle, faCircleNotch, faUserCircle, faFilter, faFileDownload, faCalendarAlt, faTimes);
+library.add(fab, faBell, faSort, faEdit, faCircle, faCircleNotch, faUserCircle, faFilter, faFileDownload, faCalendarAlt, faTimes);
 
 ReactDOM.render(
     <React.StrictMode>

@@ -51,16 +51,10 @@ const initialState = {
         isFiltered: false,
         columns: [
             {
-                header: 'Identifier',
+                header: 'Alert Type',
                 accessor: 'behaviourCode',
                 disableFilters: true,
                 clickable: true
-            },
-            {
-                header: 'Alert Type',
-                accessor: 'behaviourDescription',
-                disableFilters: false,
-                clickable: false
             },
             {
                 header: 'Date',
