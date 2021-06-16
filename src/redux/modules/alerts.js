@@ -53,8 +53,8 @@ const initialState = {
             {
                 header: 'Alert Type',
                 accessor: 'behaviourCode',
-                disableFilters: true,
-                clickable: true
+                disableFilters: false,
+                clickable: false
             },
             {
                 header: 'Date',

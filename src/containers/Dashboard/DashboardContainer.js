@@ -8,7 +8,7 @@ import {
     DATE_TO_UTC
 } from '../../utils/helpers';
 import { getDashboardData, downloadDashboardData } from '../../api/dashboard';
-import { setDashboardData } from '../../redux/modules/dashboard';
+import { setDashboardData, setDashboardDateRange } from '../../redux/modules/dashboard';
 
 type Props = {
     sidebarMenu: Array<Menu>
@@ -19,17 +19,15 @@ export default function DashboardContainer({
     sidebarMenu
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
-    const { data } = useSelector(({ dashboard }) => dashboard);
+    const { data, dateRange } = useSelector(({ dashboard }) => dashboard);
     const [loading, setLoading] = useState(false);
-    const [fromDate, setFromDate] = useState(`${DATE_TO_UTC(moment()).split('T')[0]} 00:00:00`);
-    const [toDate, setToDate] = useState(`${DATE_TO_UTC(moment()).split('T')[0]} 23:59:00`);
 
     useEffect(() => {
         loadDashboardData(
-            `${DATE_TO_UTC(fromDate).split('T')[0]} 00:00:00`,
-            `${DATE_TO_UTC(toDate).split('T')[0]} 23:59:00`
+            `${DATE_TO_UTC(dateRange.from).split('T')[0]} 00:00:00`,
+            `${DATE_TO_UTC(dateRange.to).split('T')[0]} 23:59:00`
         );
-    }, [toDate, fromDate]);
+    }, [dateRange.from, dateRange.to]);
 
     const loadDashboardData = async (dateFrom, dateTo) => {
         setLoading(true);
@@ -43,31 +41,31 @@ export default function DashboardContainer({
 
     const handleDateChange = async (type, date) => {
         if (type === 'from') {
-            if (moment(date).isAfter(moment(toDate))) {
+            if (moment(date).isAfter(moment(dateRange.to))) {
                 alert('FROM cannot be greater than TO');
             } else {
-                setFromDate(`${DATE_TO_UTC(date).split('T')[0]} 00:00:00`);
+                dispatch(setDashboardDateRange('from', `${DATE_TO_UTC(date).split('T')[0]} 00:00:00`));
             }
         } else {
-            if (moment(date).isBefore(moment(fromDate))) {
+            if (moment(date).isBefore(moment(dateRange.from))) {
                 alert('TO cannot be less than FROM');
             } else {
-                setToDate(`${DATE_TO_UTC(date).split('T')[0]} 23:59:00`);
+                dispatch(setDashboardDateRange('to', `${DATE_TO_UTC(date).split('T')[0]} 23:59:00`));
             }
         }
     };
 
     const handleDashboardDownload = async () => {
         await downloadDashboardData(
-            `${DATE_TO_UTC(fromDate).split('T')[0]} 00:00:00`,
-            `${DATE_TO_UTC(toDate).split('T')[0]} 23:59:00`
+            `${DATE_TO_UTC(dateRange.from).split('T')[0]} 00:00:00`,
+            `${DATE_TO_UTC(dateRange.to).split('T')[0]} 23:59:00`
         );
     };
 
     return <DashboardScreen
         loading={loading}
-        fromDate={fromDate}
-        toDate={toDate}
+        fromDate={dateRange.from}
+        toDate={dateRange.to}
         handleDateChange={handleDateChange}
         handleDashboardDownload={handleDashboardDownload}
         sidebarMenu={sidebarMenu}
