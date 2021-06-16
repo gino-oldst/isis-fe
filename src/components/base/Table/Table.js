@@ -8,6 +8,7 @@ import Badge from '../../base/Badge/Badge';
 import Typography from '../../base/Typography/Typography';
 import 'react-datepicker/dist/react-datepicker.css';
 import CustomDropdown from '../../base/CustomDropdown/CustomDropdown';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { kFormatter, getTextColor } from '../../../utils/helpers';
 import {
     Table as ReactstrapTable,
@@ -371,7 +372,7 @@ function Table({
                                             ? column.isSortedDesc
                                                 ? ' 🔽'
                                                 : ' 🔼'
-                                            : ''
+                                            : sortable && typeof column.render('Header') === 'string' && <FontAwesomeIcon icon='sort' size='sm' className='table__sort-icon' />
                                         }
                                     </span>
                                     {column.canFilter ? column.render('Filter') : null}

@@ -9,6 +9,12 @@
         font-size: 1rem;
     }
 
+    &__sort-icon {
+        margin-left: 0.5rem;
+        color: $color-sidebar-2;
+        font-size: 1rem;
+    }
+
     &__filter-options {
         max-height: 130px;
         padding: 0.2rem 1.5rem;
