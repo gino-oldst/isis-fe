@@ -8,12 +8,14 @@ import { setSelectedAlert } from '../../redux/modules/alerts';
 
 type Props = {
     sidebarMenu: Array<Menu>,
+    useMediaQuery: Function,
     handleCloseModal: Function
 }
 
 export default function AlertDetailContainer({
     match,
     sidebarMenu,
+    useMediaQuery,
     handleCloseModal
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
@@ -62,6 +64,7 @@ export default function AlertDetailContainer({
         setLoading={setLoading}
         breadcrumb={breadcrumb}
         sidebarMenu={sidebarMenu}
+        useMediaQuery={useMediaQuery}
         handleCloseModal={handleCloseModal}
         selectedAlert={selected.data}
         assignees={selected.assignees}

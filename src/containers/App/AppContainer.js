@@ -1,6 +1,7 @@
 import React from 'react';
 import { Switch, Route, useHistory, Redirect } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { useMediaQuery } from 'react-responsive';
 import routes from '../../config/routes';
 import AppLoadingContainer from '../AppLoading/AppLoadingContainer';
 import AppModal from '../../components/base/Modal/Modal';
@@ -83,7 +84,7 @@ function App() {
                             route.authedRoute
                                 ? <PrivateRoute key={i} {...route} sidebarMenu={sidebarMenu}
                                     handleCloseModal={handleCloseModal} userId={profileData.userId}
-                                    isAuthed={isAuthed} />
+                                    useMediaQuery={useMediaQuery} isAuthed={isAuthed} />
                                 : <RouteWithSubRoutes key={i} {...route} isAuthed={isAuthed}
                                     handleCloseModal={handleCloseModal} />
                         ))}
@@ -144,12 +145,12 @@ function RouteWithSubRoutes({ component: Component, isAuthed, handleCloseModal, 
     );
 }
 
-function PrivateRoute({ component: Component, userId, isAuthed, sidebarMenu, handleCloseModal, ...rest }) {
+function PrivateRoute({ component: Component, userId, useMediaQuery, isAuthed, sidebarMenu, handleCloseModal, ...rest }) {
     return (
         <Route {...rest} render={(routeProps) => (
             isAuthed
                 ? <Component {...routeProps} userId={userId} sidebarMenu={sidebarMenu}
-                    handleCloseModal={handleCloseModal} />
+                    useMediaQuery={useMediaQuery}handleCloseModal={handleCloseModal} />
                 : <Redirect to={{
                     pathname: '/login',
                     state: { from: routeProps.location }

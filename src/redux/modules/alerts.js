@@ -153,7 +153,7 @@ export default function alerts(state: Object = initialState, action: Object):
                 ...state,
                 selected: {
                     ...state.selected,
-                    assignees: action.users
+                    assignees: action.users.filter(user => user.fullName.toLowerCase() !== 'admin' || user.username.toLowerCase() !== 'admin')
                 }
             };
 
