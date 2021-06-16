@@ -1,5 +1,6 @@
 // @flow
 import * as React from 'react';
+import { useMediaQuery } from 'react-responsive';
 import CollapsibleSidebar from './CollapsibleSidebar';
 import Storage from '../../../utils/Storage';
 import { usePathname } from '../../../utils/Route';
@@ -15,6 +16,7 @@ type Props = {
 export default function CollapsibleSidebarContainer(props: Props): React$Element<any> {
     const pathName = usePathname();
 
+    const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1199px)' });
     const [isOpen, setToggleOpen] = React.useState(true);
 
     const handleToggleSidebar = () => {
@@ -29,6 +31,7 @@ export default function CollapsibleSidebarContainer(props: Props): React$Element
             {...props}
             pathName={pathName}
             handleToggleSidebar={handleToggleSidebar}
-            isOpen={isOpen} />
+            isOpen={isOpen}
+            isTabletOrMobile={isTabletOrMobile} />
     );
 }
