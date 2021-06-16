@@ -4,8 +4,13 @@
 .date-picker {
 }
 
+.MuiInputBase-input {
+    font-family: $font-family-3 !important;
+}
+
 .MuiOutlinedInput-input {
     padding: 12px 0 !important;
+    font-family: $font-family-3 !important;
 }
 
 .MuiOutlinedInput-root {
