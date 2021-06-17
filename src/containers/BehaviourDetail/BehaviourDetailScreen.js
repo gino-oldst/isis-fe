@@ -96,7 +96,7 @@ function BehaviourDetailScreen({
                             <Typography color='color-3' variant='size-16' className='mb-4'>
                                 {selectedBehaviour.identifier}
                             </Typography>
-                            {loading || tableData.length === 0
+                            {loading || tableData === undefined
                                 ? <Spinner animation='border' role='status' className='d-flex mx-auto my-5 text-center'>
                                     <span className='sr-only'>Loading...</span>
                                 </Spinner>
@@ -141,7 +141,8 @@ const UpdateParameterModal = ({
                 behaviourId: params.behaviourId,
                 description: params.description,
                 value: params.value,
-                name: params.name
+                name: params.name,
+                dateCreated: rowData.dateCreated
             };
 
             const result = await updateParameter(payload);
