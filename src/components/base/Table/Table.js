@@ -8,7 +8,6 @@ import Badge from '../../base/Badge/Badge';
 import Typography from '../../base/Typography/Typography';
 import 'react-datepicker/dist/react-datepicker.css';
 import CustomDropdown from '../../base/CustomDropdown/CustomDropdown';
-import Select from '../../base/Select/Select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { kFormatter, getTextColor } from '../../../utils/helpers';
 import {

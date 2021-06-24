@@ -1,0 +1,126 @@
+@import "../../styles/utils/_variables";
+@import "../../styles/utils/_mixins";
+
+.restricted-list {
+    height: 100%;
+    display: flex;
+
+    &__content {
+        padding: 0.6rem 2rem;
+        margin-bottom: 80px;
+    }
+
+    &__title {
+        margin-top: 0.35rem;
+        margin-bottom: 2rem;
+        font-size: 2rem !important;
+        font-family: $font-family-2;
+    }
+
+    &__date-filter-options {
+        max-height: 130px;
+        padding: 0.2rem 1.5rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+
+        .form-check {
+            padding-bottom: 0.2rem;
+        }
+    }
+
+    &__date-picker {
+        .btn-group {
+            width: 25%;
+        }
+    }
+
+    .MuiInputAdornment-root.MuiInputAdornment-positionEnd {
+        display: none;
+    }
+
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .dropdown-menu {
+        width: 300px;
+
+        .dropdown-divider {
+            border-top: 1px solid #dee2e6;
+        }
+    }
+
+    &__filter-reset-button {
+        border: $bg-download-button;
+        background-color: $bg-download-button;
+        border-radius: 0.2rem;
+
+        &:hover,
+        &:focus,
+        &:active {
+            background-color: darken($bg-download-button, 10%) !important;
+            border-color: darken($bg-download-button, 10%) !important;
+        }
+    }
+
+    &__download-button,
+    &__save-button,
+    &__bulk-action-button {
+        border: $bg-download-button;
+        background-color: $bg-download-button;
+        border-radius: 0.2rem;
+
+        &:hover,
+        &:focus,
+        &:active {
+            background-color: darken($bg-download-button, 10%) !important;
+            border-color: darken($bg-download-button, 10%) !important;
+        }
+    }
+
+    .table-responsive {
+        min-height: 350px;
+    }
+
+    .table {
+        min-width: 1000px;
+
+        thead {
+            font-size: 1.2rem;
+
+            th {
+                border-top: 0;
+                text-align: left;
+            }
+        }
+
+        tbody {
+            td {
+                padding: 1.1rem 0 1.1rem 0.8rem;
+                text-align: left;
+                font-size: 1.1rem;
+            }
+        }
+
+        .selected-row {
+            background: rgba(0, 74, 147, 0.075);
+        }
+    }
+
+    @media (max-width: 1200px) {
+        &__header {
+            display: block !important;
+        }
+    }
+
+    .date-picker__icon {
+        position: absolute;
+        top: 6px;
+        left: 120px;
+        z-index: 100;
+    }
+
+    .react-datepicker-wrapper {
+        width: 60%;
+    }
+}

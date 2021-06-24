@@ -50,6 +50,10 @@ function App() {
         label: 'Behaviours',
         onClick: () => history.push('/behaviours'),
         key: 'behaviour'
+    }, {
+        label: 'Restricted List',
+        onClick: () => history.push('/restricted_list'),
+        key: 'restricted_list'
     }];
 
     const handleCloseModal = () => {

@@ -5,4 +5,5 @@ export { default as flashNotification } from './modules/flashNotification';
 export { default as notifications } from './modules/notifications';
 export { default as alerts } from './modules/alerts';
 export { default as behaviours } from './modules/behaviours';
+export { default as restrictedList } from './modules/restrictedList';
 export { default as table } from './modules/table';

@@ -7,6 +7,7 @@ const Alerts = React.lazy(() => import('../containers/Alerts/AlertsContainer'));
 const Behaviours = React.lazy(() => import('../containers/Behaviours/BehavioursContainer'));
 const AlertDetail = React.lazy(() => import('../containers/AlertDetail/AlertDetailContainer'));
 const BehaviourDetail = React.lazy(() => import('../containers/BehaviourDetail/BehaviourDetailContainer'));
+const RestrictedList = React.lazy(() => import('../containers/RestrictedList/RestrictedListContainer'));
 // ROUTE IMPORT CODE GENERATOR INDICATOR DO NOT DELETE
 
 const routes = [{
@@ -43,6 +44,11 @@ const routes = [{
     path: '/behaviour/:id',
     name: 'BehaviourDetail',
     component: BehaviourDetail,
+    authedRoute: true
+}, {
+    path: '/restricted_list',
+    name: 'RestrictedList',
+    component: RestrictedList,
     authedRoute: true
 }, // ROUTE ENTRY CODE GENERATOR INDICATOR DO NOT DELETE
 {

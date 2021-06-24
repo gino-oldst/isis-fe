@@ -53,6 +53,14 @@
         }
     }
 
+    thead > tr > th:nth-child(1) > div > div {
+        margin-left: -55px !important;
+    } // margin for first column filter dropdown (resitrcted list)
+
+    thead > tr > th:nth-child(2) > div > div {
+        margin-left: -135px !important;
+    } // margin for first column filter dropdown (alerts)
+
     .dropdown-date-type-header .form-group {
         width: 230px !important;
         position: relative;
