@@ -446,6 +446,7 @@ function Table({
                             <Input
                                 type='number'
                                 size='md'
+                                min='0'
                                 defaultValue={pageIndex + 1}
                                 style={{ width: '80px' }}
                                 className='ml-2'

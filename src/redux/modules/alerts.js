@@ -75,12 +75,6 @@ const initialState = {
                 clickable: false
             },
             {
-                header: 'Parameter',
-                accessor: 'parameterValues',
-                disableFilters: false,
-                clickable: false
-            },
-            {
                 header: 'Book',
                 accessor: 'book',
                 disableFilters: false,
@@ -113,6 +107,12 @@ const initialState = {
             {
                 header: 'Status',
                 accessor: 'status',
+                disableFilters: false,
+                clickable: false
+            },
+            {
+                header: 'Parameter',
+                accessor: 'parameterValues',
                 disableFilters: false,
                 clickable: false
             }
