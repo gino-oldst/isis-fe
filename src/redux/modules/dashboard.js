@@ -21,7 +21,7 @@ export function setDashboardDateRange(target: String, date: String) {
 
 const initialState = {
     dateRange: {
-        from: moment(),
+        from: moment().subtract(7, 'd'),
         to: moment()
     },
     data: {}

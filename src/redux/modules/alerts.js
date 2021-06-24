@@ -58,7 +58,7 @@ const initialState = {
             },
             {
                 header: 'Date',
-                accessor: 'dateCreated',
+                accessor: 'alertDate',
                 disableFilters: true,
                 clickable: false
             },
@@ -71,6 +71,12 @@ const initialState = {
             {
                 header: 'Ticker',
                 accessor: 'ticker',
+                disableFilters: false,
+                clickable: false
+            },
+            {
+                header: 'Parameter',
+                accessor: 'parameterValues',
                 disableFilters: false,
                 clickable: false
             },

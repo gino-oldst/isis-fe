@@ -96,11 +96,11 @@
     }
 }
 
-.pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 1.5rem;
+.pagination-pagesize {
+    float: left;
+}
 
+.pagination {
     span {
         color: black;
         float: left;
@@ -111,20 +111,23 @@
         margin-right: 10px;
         width: 40px;
         height: 40px;
-        padding: 8px 12px;
+        padding: 8px 16px;
         background: #fff;
         text-align: center;
 
         &.active {
             border: 1px solid $color-sidebar-2;
         }
-
-        &:first-child,
-        &:last-child {
-            font-size: 0.9rem !important;
-            padding: 10px 6px 6px 6px !important;
-            margin-left: 10px !important;
-            margin-right: 10px !important;
-        }
     }
+
+    .pagination-navigate {
+        font-size: 0.9rem !important;
+        padding: 10px 6px 6px 6px !important;
+        margin-left: 10px !important;
+        margin-right: 10px !important;
+    }
+}
+
+.pagination-goto-page {
+    float: right;
 }

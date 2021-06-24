@@ -8,6 +8,7 @@ import Badge from '../../base/Badge/Badge';
 import Typography from '../../base/Typography/Typography';
 import 'react-datepicker/dist/react-datepicker.css';
 import CustomDropdown from '../../base/CustomDropdown/CustomDropdown';
+import Select from '../../base/Select/Select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { kFormatter, getTextColor } from '../../../utils/helpers';
 import {
@@ -15,7 +16,9 @@ import {
     DropdownItem,
     FormGroup,
     Input,
-    Label
+    Label,
+    Row,
+    Col
 } from 'reactstrap';
 import filterIcon from '../../../assets/images/ic_filter.svg';
 import './table.scss';
@@ -289,11 +292,14 @@ function Table({
         preGlobalFilteredRows,
         setGlobalFilter,
         page,
+        pageCount,
         gotoPage,
         previousPage,
         nextPage,
         canPreviousPage,
-        canNextPage
+        canNextPage,
+        setPageSize,
+        state: { pageIndex, pageSize }
     } = useTable(
         {
             columns,
@@ -406,15 +412,52 @@ function Table({
                 </tbody>
             </ReactstrapTable>
             {pagination &&
-                <div className='pagination'>
-                    <span className={`cursor-pointer ${!canPreviousPage ? 'text-muted' : ''}`} onClick={() => previousPage()}>Prev</span>
-                    {Array.from(Array(paginationLoopLength), (_, i) => {
-                        const dynamicPageIndex = state.pageIndex > maxPage ? state.pageIndex - 2 + i : i + 1;
+                <Row className='mt-5 align-items-center'>
+                    <Col md={12} lg={3} className='mr-auto'>
+                        <div className='pagination-pagesize'>
+                            <Input type='select'
+                                value={pageSize}
+                                onChange={e => {
+                                    setPageSize(Number(e.target.value));
+                                }}>
+                                {[10, 25, 50, 100].map(pageSize => (
+                                    <option key={pageSize} value={pageSize}>
+                            Show {pageSize}
+                                    </option>
+                                ))}
+                            </Input>
+                        </div>
+                    </Col>
+                    <Col md={12} lg={6}>
+                        <div className='pagination d-flex justify-content-center'>
+                            <span className={`cursor-pointer pagination-navigate ${!canPreviousPage ? 'text-muted' : ''}`} onClick={() => gotoPage(0)}>First</span>
+                            <span className={`cursor-pointer pagination-navigate ${!canPreviousPage ? 'text-muted' : ''}`} onClick={() => previousPage()}>Prev</span>
+                            {Array.from(Array(paginationLoopLength), (_, i) => {
+                                const dynamicPageIndex = state.pageIndex > maxPage ? state.pageIndex - 2 + i : i + 1;
 
-                        return i <= maxPage && <span className={`cursor-pointer ${state.pageIndex + 1 === dynamicPageIndex ? 'active' : ''}`} onClick={() => gotoPage(dynamicPageIndex - 1)}>{dynamicPageIndex}</span>;
-                    })}
-                    <span className={`cursor-pointer ${!canNextPage ? 'text-muted' : ''}`} onClick={() => nextPage()}>Next</span>
-                </div>
+                                return i <= maxPage && <span className={`cursor-pointer ${state.pageIndex + 1 === dynamicPageIndex ? 'active' : ''}`} onClick={() => gotoPage(dynamicPageIndex - 1)}>{dynamicPageIndex}</span>;
+                            })}
+                            <span className={`cursor-pointer pagination-navigate ${!canNextPage ? 'text-muted' : ''}`} onClick={() => nextPage()}>Next</span>
+                            <span className={`cursor-pointer pagination-navigate ${!canNextPage ? 'text-muted' : ''}`} onClick={() => gotoPage(pageCount - 1)}>Last</span>
+                        </div>
+                    </Col>
+                    <Col md={12} lg={3} className='ml-auto'>
+                        <div className='pagination-goto-page  d-flex align-items-center'>
+                        Go to page:
+                            <Input
+                                type='number'
+                                size='md'
+                                defaultValue={pageIndex + 1}
+                                style={{ width: '80px' }}
+                                className='ml-2'
+                                onChange={e => {
+                                    const page = e.target.value ? Number(e.target.value) - 1 : 0;
+
+                                    gotoPage(page);
+                                }} />
+                        </div>
+                    </Col>
+                </Row>
             }
         </>
     );
@@ -479,7 +522,7 @@ export default function ReactTable({
                 disableFilters: column.disableFilters,
                 Filter: column.accessor !== 'quantity' ? SelectColumnFilter : RadioColumnFilter,
                 filter: column.accessor !== 'quantity' ? multiSelectFilter : filterGreaterThan,
-                Cell: e => column.accessor === 'dateCreated'
+                Cell: e => column.accessor === 'alertDate'
                     ? <span>{moment(e.value).format('DD/MM/YY')}</span>
                     : <span className={`${column.clickable
                         ? 'color-link-text cursor-pointer'
@@ -495,7 +538,9 @@ export default function ReactTable({
                                 ? <span className='font-weight-bold'>{getTextColor(e.value)}</span>
                                 : column.accessor === 'status'
                                     ? <Badge status={e.value} />
-                                    : e.value}</span>,
+                                    : column.accessor === 'parameterValues'
+                                        ? e.value.split(',').map(val => <div>{val.replace(':', ': ')}</div>)
+                                        : e.value}</span>,
                 sortType: column.accessor === 'date'
                     ? (a, b, c, d) => {
                         a = new Date(a.values.date).getTime();
