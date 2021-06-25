@@ -52,4 +52,25 @@
             }
         }
     }
+
+    &__download-button {
+        border: $bg-download-button;
+        background-color: $bg-download-button;
+        border-radius: 0.2rem;
+
+        &:hover,
+        &:focus,
+        &:active {
+            background-color: darken($bg-download-button, 10%) !important;
+            border-color: darken($bg-download-button, 10%) !important;
+        }
+    }
+
+    &__date-picker {
+        width: 100%;
+        padding-left: 10px;
+        font-size: 1.1rem;
+        border-radius: 5px;
+        border: solid 2px rgb(141, 141, 141);
+    }
 }

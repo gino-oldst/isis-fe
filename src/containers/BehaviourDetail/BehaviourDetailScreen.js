@@ -1,5 +1,6 @@
 // @flow
 import React, { useState } from 'react';
+import moment from 'moment';
 import { useDispatch } from 'react-redux';
 import Toggle from 'react-toggle';
 import validator from 'validator';
@@ -8,6 +9,7 @@ import Table from '../../components/base/Table/Table';
 import Button from '../../components/base/Button/Button';
 import Typography from '../../components/base/Typography/Typography';
 import Breadcrumbs from '../../components/base/Breadcrumbs/Breadcrumbs';
+import ReactDatePicker from 'react-datepicker';
 import CollapsibleSidebar from '../../components/base/CollapsibleSidebar/CollapsibleSidebarContainer';
 import withLoading from '../../components/modules/withLoading/withLoading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -26,7 +28,7 @@ import './behaviour-detail.scss';
 
 import { setModalContent } from '../../redux/modules/modalEvent';
 import { updateParameter } from '../../api/parameters';
-import { updateBehaviour } from '../../api/behaviours';
+import { updateBehaviour, processBehaviourByDate } from '../../api/behaviours';
 import { replaceParameterStatus, replaceParametersData } from '../../redux/modules/behaviours';
 
 type Props = {
@@ -58,6 +60,13 @@ function BehaviourDetailScreen({
         }));
     };
 
+    const showRunBehavioursModal = () => {
+        dispatch(setModalContent({
+            modalContent: <RunBehavioursModal
+                handleCloseModal={handleCloseModal} />
+        }));
+    };
+
     const handleToggleCheck = async (e) => {
         const userId = localStorage.getItem('userId');
 
@@ -84,13 +93,17 @@ function BehaviourDetailScreen({
                         <CardBody>
                             <div className='behaviour-detail__header d-flex'>
                                 <Typography color='color-3' className='behaviour-detail__title mr-auto'>{selectedBehaviour.behaviour}</Typography>
-                                <div className='d-flex mt-2'>
-                                    <Typography color='color-3' className='mr-3' variant='size-18'
-                                        weight='light'>{selectedBehaviour.status}</Typography>
-                                    <Toggle
-                                        icons={false}
-                                        checked={selectedBehaviour.status.toLowerCase() === 'active'}
-                                        onChange={handleToggleCheck} />
+                                <div className='d-flex align-items-center mt-2'>
+                                    <div className='d-flex align-items-center justify-content-end'>
+                                        <Button label={<><Typography weight='light' className='my-1 mx-2'>Run Behaviours</Typography></>}
+                                            className='ml-4 mr-4 d-flex align-items-center behaviour-detail__download-button' onClick={showRunBehavioursModal} />
+                                        <Typography color='color-3' className='mr-3' variant='size-18'
+                                            weight='light'>{selectedBehaviour.status}</Typography>
+                                        <Toggle
+                                            icons={false}
+                                            checked={selectedBehaviour.status.toLowerCase() === 'active'}
+                                            onChange={handleToggleCheck} />
+                                    </div>
                                 </div>
                             </div>
                             <Typography color='color-3' variant='size-16' className='mb-4'>
@@ -246,6 +259,59 @@ const UpdateParameterModal = ({
                     onClick={handleCloseModal} disabled={loading} />
                 <Button label={!loading ? 'Save' : 'Saving...'} variant='primary' className='save-button px-5 py-2'
                     onClick={handleUpdate} disabled={loading} />
+            </div>
+        </div>
+    );
+};
+
+const RunBehavioursModal = ({
+    handleCloseModal
+}) => {
+    const [loading, setLoading] = useState(false);
+    const [fromDate, setFromDate] = useState(new Date());
+
+    const handleDateChange = date => {
+        setFromDate(date);
+    };
+
+    const runBehaviours = async () => {
+        setLoading(true);
+
+        const payload = {
+            importDate: moment(fromDate).format('YYYY-MM-DD'),
+            internalCode: localStorage.getItem('selectedBehaviourCode')
+        };
+
+        const result = await processBehaviourByDate(payload);
+
+        if (result.status === 200) {
+            setTimeout(() => {
+                handleCloseModal();
+            }, 1000);
+        }
+    };
+
+    return (
+        <div className='behaviour-detail__run-behaviours p-4'>
+            <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
+                onClick={handleCloseModal} />
+            <Typography variant='size-26' color='color-3'
+                className='mb-4 playfair-font'>
+                Run Behaviours
+            </Typography>
+            <FormGroup className='my-5 d-flex align-items-center'>
+                <Label for='note'><Typography color='color-3' variant='size-16' className='mr-3'>Target Date</Typography></Label>
+                <ReactDatePicker
+                    selected={fromDate}
+                    className='behaviour-detail__date-picker'
+                    dateFormat='dd MMM yyyy'
+                    onChange={handleDateChange} />
+            </FormGroup>
+            <div className='behaviour-detail__run-behaviours-buttons d-flex justify-content-center'>
+                <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
+                    onClick={handleCloseModal} disabled={loading} />
+                <Button label={!loading ? 'OK' : 'Running...'} variant='primary' className='save-button px-5 py-2'
+                    onClick={runBehaviours} disabled={loading} />
             </div>
         </div>
     );

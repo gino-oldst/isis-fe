@@ -5,6 +5,7 @@ const UPDATE_BEHAVIOUR = '/measure/behaviour';
 const GET_RULE = '/measure/rules/list';
 const GET_RULES = '/measure/rules/list?pageNumber=0&pageSize=10';
 const GET_BEHAVIOUR_BY_CODE = '/measure/behaviour/code/';
+const PROCESS_BEHAVIOUR_BY_DATE = '/measure/behaviour/processBehaviour';
 
 export async function getBehaviours() {
     return await makeApiCall(GET_BEHAVIOURS, 'POST', {});
@@ -24,4 +25,8 @@ export async function getRule(behaviourId: String) {
 
 export async function getBehaviourByCode(code: String) {
     return await makeApiCall(`${GET_BEHAVIOUR_BY_CODE}${code}`, 'GET');
+}
+
+export async function processBehaviourByDate(data: Object) {
+    return await makeApiCall(`${PROCESS_BEHAVIOUR_BY_DATE}`, 'POST', data);
 }

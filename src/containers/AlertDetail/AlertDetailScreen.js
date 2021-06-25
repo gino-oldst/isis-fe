@@ -125,7 +125,9 @@ function AlertDetailScreen({
             status: alert.status === '' ? selectedAlert.status : alert.status,
             notes: alert.notes === '' ? selectedAlert.notes : alert.notes,
             resolveReason: alert.resolveReason === '' ? selectedAlert.resolveReason : alert.resolveReason,
-            dateCreated: selectedAlert.dateCreated
+            parameterValues: selectedAlert.parameterValues,
+            dateCreated: selectedAlert.dateCreated,
+            alertDate: selectedAlert.alertDate
         };
 
         const result = await updateAlert(payload);
@@ -227,6 +229,10 @@ function AlertDetailScreen({
                                                         <div className='d-flex align-items-center mb-2'>
                                                             <Typography color='color-3' className='mr-3' weight='semi-bold'>Details</Typography>
                                                             <Typography color='color-3'>{selectedAlert.resolveReason}</Typography>
+                                                        </div>
+                                                        <div className='d-flex align-items-center mb-2'>
+                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Parameter Values</Typography>
+                                                            <Typography color='color-3'>{selectedAlert.parameterValues}</Typography>
                                                         </div>
                                                     </Col>
                                                 </Row>
