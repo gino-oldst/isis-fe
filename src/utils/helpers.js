@@ -163,3 +163,15 @@ export const roundPercentages = (numArr, target) => {
         .map(function(x, i) { return Math.round(x) + (off > i) - (i >= (numArr.length + off)); })
         .value();
 };
+
+export const getDatesBetweenDates = (startDate, endDate) => {
+    const now = startDate.clone();
+    const dates = [];
+
+    while (now.isSameOrBefore(endDate)) {
+        dates.push(now.format('MM-DD-YYYY'));
+        now.add(1, 'days');
+    }
+
+    return dates;
+};

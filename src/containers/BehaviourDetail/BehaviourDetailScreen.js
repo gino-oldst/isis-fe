@@ -13,7 +13,7 @@ import ReactDatePicker from 'react-datepicker';
 import CollapsibleSidebar from '../../components/base/CollapsibleSidebar/CollapsibleSidebarContainer';
 import withLoading from '../../components/modules/withLoading/withLoading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { blockInvalidChar } from '../../utils/helpers';
+import { blockInvalidChar, getDatesBetweenDates } from '../../utils/helpers';
 import type { Menu } from '../../types';
 import {
     Card,
@@ -269,26 +269,46 @@ const RunBehavioursModal = ({
 }) => {
     const [loading, setLoading] = useState(false);
     const [fromDate, setFromDate] = useState(new Date());
+    const [toDate, setToDate] = useState(new Date());
 
-    const handleDateChange = date => {
-        setFromDate(date);
+    const handleDateChange = async (type, date) => {
+        if (type === 'from') {
+            if (moment(date).isAfter(moment(toDate))) {
+                alert('FROM cannot be greater than TO');
+            } else {
+                setFromDate(date);
+            }
+        } else {
+            if (moment(date).isBefore(moment(fromDate))) {
+                alert('TO cannot be less than FROM');
+            } else {
+                setToDate(date);
+            }
+        }
     };
 
     const runBehaviours = async () => {
         setLoading(true);
 
-        const payload = {
-            importDate: moment(fromDate).format('YYYY-MM-DD'),
-            internalCode: localStorage.getItem('selectedBehaviourCode')
-        };
+        const dates = getDatesBetweenDates(moment(fromDate), moment(toDate));
 
-        const result = await processBehaviourByDate(payload);
+        dates.forEach(async (date, idx) => {
+            const payload = {
+                importDate: moment(date).format('YYYY-MM-DD'),
+                internalCode: localStorage.getItem('selectedBehaviourCode')
+            };
 
-        if (result.status === 200) {
-            setTimeout(() => {
-                handleCloseModal();
-            }, 1000);
-        }
+            const result = await processBehaviourByDate(payload);
+
+            if (result.status === 200) {
+                if ((idx + 1) === dates.length) {
+                    handleCloseModal();
+                }
+            } else {
+                setLoading(false);
+                alert('Something went wrong.');
+            }
+        });
     };
 
     return (
@@ -299,14 +319,26 @@ const RunBehavioursModal = ({
                 className='mb-4 playfair-font'>
                 Run Behaviour
             </Typography>
-            <FormGroup className='my-5 d-flex align-items-center'>
-                <Label for='note'><Typography color='color-3' variant='size-16' className='mr-3'>Target Date</Typography></Label>
+            <Typography variant='size-16' color='color-3'
+                className='mt-4 playfair-font'>
+                Select date range
+            </Typography>
+            <div className='mt-3 mb-5 d-flex align-items-center'>
+                <Label for='fromDate'><Typography color='color-3' variant='size-16' className='mr-3 playfair-font'>From</Typography></Label>
                 <ReactDatePicker
+                    id='fromDate'
                     selected={fromDate}
                     className='behaviour-detail__date-picker'
                     dateFormat='dd MMM yyyy'
-                    onChange={handleDateChange} />
-            </FormGroup>
+                    onChange={e => handleDateChange('from', e)} />
+                <Label for='toDate'><Typography color='color-3' variant='size-16' className='mr-3 playfair-font'>To</Typography></Label>
+                <ReactDatePicker
+                    id='toDate'
+                    selected={toDate}
+                    className='behaviour-detail__date-picker'
+                    dateFormat='dd MMM yyyy'
+                    onChange={e => handleDateChange('to', e)} />
+            </div>
             <div className='behaviour-detail__run-behaviours-buttons d-flex justify-content-center'>
                 <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
                     onClick={handleCloseModal} disabled={loading} />
