@@ -95,7 +95,7 @@ function BehaviourDetailScreen({
                                 <Typography color='color-3' className='behaviour-detail__title mr-auto'>{selectedBehaviour.behaviour}</Typography>
                                 <div className='d-flex align-items-center mt-2'>
                                     <div className='d-flex align-items-center justify-content-end'>
-                                        <Button label={<><Typography weight='light' className='my-1 mx-2'>Run Behaviours</Typography></>}
+                                        <Button label={<><Typography weight='light' className='my-1 mx-2'>Run Behaviour</Typography></>}
                                             className='ml-4 mr-4 d-flex align-items-center behaviour-detail__download-button' onClick={showRunBehavioursModal} />
                                         <Typography color='color-3' className='mr-3' variant='size-18'
                                             weight='light'>{selectedBehaviour.status}</Typography>
@@ -297,7 +297,7 @@ const RunBehavioursModal = ({
                 onClick={handleCloseModal} />
             <Typography variant='size-26' color='color-3'
                 className='mb-4 playfair-font'>
-                Run Behaviours
+                Run Behaviour
             </Typography>
             <FormGroup className='my-5 d-flex align-items-center'>
                 <Label for='note'><Typography color='color-3' variant='size-16' className='mr-3'>Target Date</Typography></Label>
