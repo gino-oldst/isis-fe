@@ -39,6 +39,12 @@ const initialState = {
                 clickable: false
             },
             {
+                header: 'Ticker',
+                accessor: 'ticker',
+                disableFilters: false,
+                clickable: false
+            },
+            {
                 header: 'Restricted Date',
                 accessor: 'restrictedDate',
                 disableFilters: false,
