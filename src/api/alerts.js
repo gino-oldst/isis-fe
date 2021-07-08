@@ -8,7 +8,7 @@ const DOWNLOAD_ALERTS_LIST = '/measure/alerts/download-list';
 const DOWNLOAD_ALERTS_RECORD = '/measure/alerts/download-alerts-record';
 
 export async function getAlerts() {
-    return await makeApiCall(`${GET_ALERTS}?pageNumber=0&pageSize=50000`, 'POST', {});
+    return await makeApiCall(`${GET_ALERTS}?`, 'POST', {});
 }
 
 export async function getAlert(id: String) {
