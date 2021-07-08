@@ -338,44 +338,49 @@ function DashboardScreen({
                                                         ? <Spinner animation='border' role='status' className='d-flex mx-auto text-center'>
                                                             <span className='sr-only'>Loading...</span>
                                                         </Spinner>
-                                                        : <Progress multi={true}>
-                                                            <Progress key='progress__open' bar={true} className='bg-open'
-                                                                value={dashboardData.alertsOpen} max={totalStatusLevel}
-                                                                data-tip={true} data-for='status-level__open'>
-                                                                <Typography variant='size-12' weight='light'>Open</Typography>
+                                                        : dashboardData.alertsOpen < 1 &&
+                                                        dashboardData.alertsInReview < 1 &&
+                                                        dashboardData.alertsResolved < 1 &&
+                                                        dashboardData.alertsArchived < 1
+                                                            ? <span>No data</span>
+                                                            : <Progress multi={true}>
+                                                                <Progress key='progress__open' bar={true} className='bg-open'
+                                                                    value={dashboardData.alertsOpen} max={totalStatusLevel}
+                                                                    data-tip={true} data-for='status-level__open'>
+                                                                    <Typography variant='size-12' weight='light'>Open</Typography>
+                                                                </Progress>
+                                                                <Tooltip id='status-level__open' place='bottom'>
+                                                                    <Typography variant='size-14' weight='semi-bold' color='color-3'>Open</Typography>
+                                                                    <Typography variant='size-10' weight='light' color='color-3'>{dashboardData.alertsOpen} Alert{dashboardData.alertsOpen > 1 ? 's' : ''}</Typography>
+                                                                </Tooltip>
+                                                                <Progress key='progress__inreview' bar={true} className='bg-review'
+                                                                    value={dashboardData.alertsInReview} max={totalStatusLevel}
+                                                                    data-tip={true} data-for='status-level__inreview'>
+                                                                    <Typography variant='size-12' weight='light'>In Review</Typography>
+                                                                </Progress>
+                                                                <Tooltip id='status-level__inreview' place='bottom'>
+                                                                    <Typography variant='size-14' weight='semi-bold' color='color-3'>In Review</Typography>
+                                                                    <Typography variant='size-10' weight='light' color='color-3'>{dashboardData.alertsInReview} Alert{dashboardData.alertsInReview > 1 ? 's' : ''}</Typography>
+                                                                </Tooltip>
+                                                                <Progress key='progress__resolved' bar={true} className='bg-resolve'
+                                                                    value={dashboardData.alertsResolved} max={totalStatusLevel}
+                                                                    data-tip={true} data-for='status-level__resolved'>
+                                                                    <Typography variant='size-12' weight='light'>Resolved</Typography>
+                                                                </Progress>
+                                                                <Tooltip id='status-level__resolved' place='bottom'>
+                                                                    <Typography variant='size-14' weight='semi-bold' color='color-3'>Resolved</Typography>
+                                                                    <Typography variant='size-10' weight='light' color='color-3'>{dashboardData.alertsResolved} Alert{dashboardData.alertsResolved > 1 ? 's' : ''}</Typography>
+                                                                </Tooltip>
+                                                                <Progress key='progress__archived' bar={true} className='bg-archived'
+                                                                    value={dashboardData.alertsArchived} max={totalStatusLevel}
+                                                                    data-tip={true} data-for='status-level__archived'>
+                                                                    <Typography variant='size-12' weight='light'>Archived</Typography>
+                                                                </Progress>
+                                                                <Tooltip id='status-level__archived' place='bottom'>
+                                                                    <Typography variant='size-14' weight='semi-bold' color='color-3'>Archived</Typography>
+                                                                    <Typography variant='size-10' weight='light' color='color-3'>{dashboardData.alertsArchived} Alert{dashboardData.alertsArchived > 1 ? 's' : ''}</Typography>
+                                                                </Tooltip>
                                                             </Progress>
-                                                            <Tooltip id='status-level__open' place='bottom'>
-                                                                <Typography variant='size-14' weight='semi-bold' color='color-3'>Open</Typography>
-                                                                <Typography variant='size-10' weight='light' color='color-3'>{dashboardData.alertsOpen} Alert{dashboardData.alertsOpen > 1 ? 's' : ''}</Typography>
-                                                            </Tooltip>
-                                                            <Progress key='progress__inreview' bar={true} className='bg-review'
-                                                                value={dashboardData.alertsInReview} max={totalStatusLevel}
-                                                                data-tip={true} data-for='status-level__inreview'>
-                                                                <Typography variant='size-12' weight='light'>In Review</Typography>
-                                                            </Progress>
-                                                            <Tooltip id='status-level__inreview' place='bottom'>
-                                                                <Typography variant='size-14' weight='semi-bold' color='color-3'>In Review</Typography>
-                                                                <Typography variant='size-10' weight='light' color='color-3'>{dashboardData.alertsInReview} Alert{dashboardData.alertsInReview > 1 ? 's' : ''}</Typography>
-                                                            </Tooltip>
-                                                            <Progress key='progress__resolved' bar={true} className='bg-resolve'
-                                                                value={dashboardData.alertsResolved} max={totalStatusLevel}
-                                                                data-tip={true} data-for='status-level__resolved'>
-                                                                <Typography variant='size-12' weight='light'>Resolved</Typography>
-                                                            </Progress>
-                                                            <Tooltip id='status-level__resolved' place='bottom'>
-                                                                <Typography variant='size-14' weight='semi-bold' color='color-3'>Resolved</Typography>
-                                                                <Typography variant='size-10' weight='light' color='color-3'>{dashboardData.alertsResolved} Alert{dashboardData.alertsResolved > 1 ? 's' : ''}</Typography>
-                                                            </Tooltip>
-                                                            <Progress key='progress__archived' bar={true} className='bg-archived'
-                                                                value={dashboardData.alertsArchived} max={totalStatusLevel}
-                                                                data-tip={true} data-for='status-level__archived'>
-                                                                <Typography variant='size-12' weight='light'>Archived</Typography>
-                                                            </Progress>
-                                                            <Tooltip id='status-level__archived' place='bottom'>
-                                                                <Typography variant='size-14' weight='semi-bold' color='color-3'>Archived</Typography>
-                                                                <Typography variant='size-10' weight='light' color='color-3'>{dashboardData.alertsArchived} Alert{dashboardData.alertsArchived > 1 ? 's' : ''}</Typography>
-                                                            </Tooltip>
-                                                        </Progress>
                                                     }
                                                 </div>
                                             </div>
@@ -394,25 +399,27 @@ function DashboardScreen({
                                                         ? <Spinner animation='border' role='status' className='d-flex mx-auto text-center'>
                                                             <span className='sr-only'>Loading...</span>
                                                         </Spinner>
-                                                        : dashboardData.behaviourPerDateSummary.map(data => {
-                                                            return (
-                                                                <Row className='d-flex align-items-center mb-2'>
-                                                                    <Col xs={7} sm={5} lg={5}
-                                                                        xl={5}
-                                                                        className='text-right'>
-                                                                        <Typography color='color-3' variant='size-14'>{data.behaviour}</Typography>
-                                                                    </Col>
-                                                                    <Col xs={3} sm={4} lg={5}
-                                                                        xl={5}>
-                                                                        <Progress value={data.count} />
-                                                                    </Col>
-                                                                    <Col xs={2} sm={2} lg={2}
-                                                                        xl={2}>
-                                                                        <Typography color='color-3' variant='size-14'>{data.count}</Typography>
-                                                                    </Col>
-                                                                </Row>
-                                                            );
-                                                        })
+                                                        : dashboardData.behaviourPerDateSummary > 0
+                                                            ? dashboardData.behaviourPerDateSummary.map(data => {
+                                                                return (
+                                                                    <Row className='d-flex align-items-center mb-2'>
+                                                                        <Col xs={7} sm={5} lg={5}
+                                                                            xl={5}
+                                                                            className='text-right'>
+                                                                            <Typography color='color-3' variant='size-14'>{data.behaviour}</Typography>
+                                                                        </Col>
+                                                                        <Col xs={3} sm={4} lg={5}
+                                                                            xl={5}>
+                                                                            <Progress value={data.count} />
+                                                                        </Col>
+                                                                        <Col xs={2} sm={2} lg={2}
+                                                                            xl={2}>
+                                                                            <Typography color='color-3' variant='size-14'>{data.count}</Typography>
+                                                                        </Col>
+                                                                    </Row>
+                                                                );
+                                                            })
+                                                            : <span>No data</span>
                                                     }
                                                 </div>
                                             </div>
@@ -431,14 +438,16 @@ function DashboardScreen({
                                                         ? <Spinner animation='border' role='status' className='d-flex mx-auto text-center'>
                                                             <span className='sr-only'>Loading...</span>
                                                         </Spinner>
-                                                        : dashboardData.usersPerDateSummary.map(data => {
-                                                            return (
-                                                                <div className='d-flex justify-content-between assigned-alert-1 px-3 py-3 mb-2 bg-light'>
-                                                                    <Typography color='color-3' variant='size-14'>{data.user}</Typography>
-                                                                    <Typography color='color-3' variant='size-14'>{data.count}</Typography>
-                                                                </div>
-                                                            );
-                                                        })
+                                                        : dashboardData.behaviourPerDateSummary > 0
+                                                            ? dashboardData.usersPerDateSummary.map(data => {
+                                                                return (
+                                                                    <div className='d-flex justify-content-between assigned-alert-1 px-3 py-3 mb-2 bg-light'>
+                                                                        <Typography color='color-3' variant='size-14'>{data.user}</Typography>
+                                                                        <Typography color='color-3' variant='size-14'>{data.count}</Typography>
+                                                                    </div>
+                                                                );
+                                                            })
+                                                            : <span>No data</span>
                                                     }
                                                 </div>
                                             </div>

@@ -147,6 +147,7 @@ const UpdateParameterModal = ({
 
         if (handleValidation()) {
             const userId = localStorage.getItem('userId');
+            const internalCode = localStorage.getItem('selectedInternalCode');
             const payload = {
                 id: params.id,
                 currentUserId: userId,
@@ -155,6 +156,7 @@ const UpdateParameterModal = ({
                 description: params.description,
                 value: params.value,
                 name: params.name,
+                internalCode: internalCode,
                 dateCreated: rowData.dateCreated
             };
 
