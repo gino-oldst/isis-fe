@@ -95,7 +95,7 @@ export default function NotificationsScreen({
                                                     size='xs'
                                                     data-tip={true} data-for={tod.id} onClick={() => handleReadNotif(tod, tod.status.toLowerCase())} />
                                             </div>
-                                            <Tooltip place='left' id={tod.id}>
+                                            <Tooltip place='left' id={`today-${tod.id}`}>
                                                 <Typography variant='size-10' weight='light' color='color-3'>{tod.status.toLowerCase() === 'unread' ? 'Mark as read' : 'Mark as unread'}</Typography>
                                             </Tooltip>
                                         </DropdownItem>
@@ -130,7 +130,7 @@ export default function NotificationsScreen({
                                                         size='xs'
                                                         data-tip={true} data-for={yes.id} onClick={() => handleReadNotif(yes, yes.status.toLowerCase())} />
                                                 </div>
-                                                <Tooltip place='left' id={yes.id}>
+                                                <Tooltip place='left' id={`yesterday-${yes.id}`}>
                                                     <Typography variant='size-10' weight='light' color='color-3'>{yes.status.toLowerCase() === 'unread' ? 'Mark as read' : 'Mark as unread'}</Typography>
                                                 </Tooltip>
                                             </DropdownItem>
