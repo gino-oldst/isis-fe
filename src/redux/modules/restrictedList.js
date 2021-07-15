@@ -4,10 +4,12 @@ import moment from 'moment';
 const SET_RESTRICTED_LIST_DATA = 'SET_RESTRICTED_LIST_DATA';
 const FILTER_RESTRICTED_LIST_DATA = 'FILTER_RESTRICTED_LIST_DATA';
 
-export function setRestrictedListData(data: Array) {
+export function setRestrictedListData(data: Array, totalNoOfRecords: String, totalPages: String) {
     return {
         type: SET_RESTRICTED_LIST_DATA,
-        data
+        data,
+        totalNoOfRecords,
+        totalPages
     };
 }
 
@@ -52,7 +54,9 @@ const initialState = {
             }
         ],
         data: [],
-        filtered: []
+        filtered: [],
+        totalNoOfRecords: null,
+        totalPages: null
     }
 };
 
@@ -62,7 +66,9 @@ export default function notifications(state: Object = initialState, action: Obje
             return {
                 table: {
                     ...state.table,
-                    data: action.data
+                    data: action.data,
+                    totalNoOfRecords: action.totalNoOfRecords,
+                    totalPages: action.totalPages
                 }
             };
 

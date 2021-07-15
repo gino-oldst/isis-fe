@@ -1,7 +1,7 @@
 // @flow
 import React, { useState, useEffect, createRef } from 'react';
 import moment from 'moment';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Table from '../../components/base/Table/Table';
 import Button from '../../components/base/Button/Button';
 import Select from '../../components/base/Select/Select';
@@ -30,7 +30,6 @@ import './alerts.scss';
 
 import { bulkUpdateAlert } from '../../api/alerts';
 import { setModalContent } from '../../redux/modules/modalEvent';
-import { filterAlertsData } from '../../redux/modules/alerts';
 
 type Props = {
     loading: Boolean,
@@ -55,6 +54,7 @@ function AlertsScreen({
     loadAlerts,
     tableColumns,
     tableData,
+    tableTotalPages,
     viewAlertDetails,
     assignees,
     isRowsSelected,
@@ -64,6 +64,8 @@ function AlertsScreen({
     handleDownloadAlertsList
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
+    const { pageSize, activePage } = useSelector(({ table }) => table);
+    const { table } = useSelector(({ alerts }) => alerts);
 
     const showActionsModal = () => {
         dispatch(setModalContent({
@@ -77,13 +79,13 @@ function AlertsScreen({
     };
 
     const datepickerOpen = createRef();
-    const [dateRangeFilter, setDateRangeFilter] = useState(0);
+    const [dateRangeFilter, setDateRangeFilter] = useState(2);
     const [dateRangeFilterValues, setDateRangeFilterValues] = useState({
-        start: new Date(),
+        start: moment().subtract(7, 'days')._d,
         end: new Date()
     });
     const [dateRangeValues, setDateRangeValues] = useState({
-        start: new Date(),
+        start: moment().subtract(7, 'days')._d,
         end: new Date()
     });
 
@@ -118,8 +120,8 @@ function AlertsScreen({
     };
 
     useEffect(() => {
-        dispatch(filterAlertsData(dateRangeFilter, dateRangeValues));
-    }, [dateRangeFilter, dateRangeValues]);
+        loadAlerts(activePage, pageSize, dateRangeValues.start.toISOString(), dateRangeValues.end.toISOString());
+    }, [dateRangeFilter, dateRangeValues, pageSize, activePage]);
 
     return (
         <div className='alerts'>
@@ -246,6 +248,8 @@ function AlertsScreen({
                                     <Table className='alerts__table'
                                         tableData={tableData}
                                         tableColumns={tableColumns}
+                                        tablePagination={table.totalPages}
+                                        activePage={activePage}
                                         selectableRows={true}
                                         globalFilter={false}
                                         pagination={true}

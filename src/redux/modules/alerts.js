@@ -14,10 +14,12 @@ export function setSelectedAlert(data: Object) {
     };
 }
 
-export function setAlertsData(data: Array) {
+export function setAlertsData(data: Array, totalNoOfRecords: Integer, totalPages: Integer) {
     return {
         type: SET_ALERTS_DATA,
-        data
+        data,
+        totalNoOfRecords,
+        totalPages
     };
 }
 
@@ -118,7 +120,9 @@ const initialState = {
             }
         ],
         data: [],
-        filtered: []
+        filtered: [],
+        totalNoOfRecords: null,
+        totalPages: null
     },
     selected: {
         data: {},
@@ -137,7 +141,9 @@ export default function alerts(state: Object = initialState, action: Object):
                 ...state,
                 table: {
                     ...state.table,
-                    data: action.data
+                    data: action.data,
+                    totalNoOfRecords: action.totalNoOfRecords,
+                    totalPages: action.totalPages
                 }
             };
         case SET_SELECTED_ALERT:

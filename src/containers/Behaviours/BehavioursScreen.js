@@ -1,5 +1,6 @@
 // @flow
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import Table from '../../components/base/Table/Table';
 import CollapsibleSidebar from '../../components/base/CollapsibleSidebar/CollapsibleSidebarContainer';
 import Typography from '../../components/base/Typography/Typography';
@@ -28,8 +29,16 @@ function BehavioursScreen({
     sidebarMenu,
     tableColumns,
     tableData,
+    loadBehavioursData,
     viewBehaviourDetails
 }: Props): React$Element<any> {
+    const { pageSize, activePage } = useSelector(({ table }) => table);
+    const { table } = useSelector(({ behaviours }) => behaviours);
+
+    useEffect(() => {
+        loadBehavioursData(activePage, pageSize);
+    }, [pageSize, activePage]);
+
     return (
         <div className='behaviours'>
             <CollapsibleSidebar
@@ -47,6 +56,8 @@ function BehavioursScreen({
                                 : <Table className='behaviours__table'
                                     tableColumns={tableColumns}
                                     tableData={tableData}
+                                    tablePagination={table.totalPages}
+                                    activePage={activePage}
                                     pagination={true}
                                     viewDetails={viewBehaviourDetails} />
                             }

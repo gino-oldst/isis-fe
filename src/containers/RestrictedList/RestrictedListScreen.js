@@ -1,7 +1,7 @@
 // @flow
 import React, { useState, useEffect, createRef } from 'react';
 import moment from 'moment';
-import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Table from '../../components/base/Table/Table';
 import Button from '../../components/base/Button/Button';
 import DatePicker from '../../components/base/DatePicker/DatePicker';
@@ -25,8 +25,6 @@ import {
 } from 'reactstrap';
 import './restricted-list.scss';
 
-import { filterRestrictedListData } from '../../redux/modules/restrictedList';
-
 type Props = {
     loading: Boolean,
     userId: String,
@@ -40,7 +38,8 @@ type Props = {
     selectedRows: Array,
     sidebarMenu: Array<Menu>,
     handleCloseModal: Function,
-    handleDownloadAlertsList: Function
+    handleDownloadAlertsList: Function,
+    loadRestrictedList: Function
 }
 
 function RestrictedListScreen({
@@ -56,18 +55,20 @@ function RestrictedListScreen({
     selectedRows,
     sidebarMenu,
     handleCloseModal,
-    handleDownloadAlertsList
+    handleDownloadAlertsList,
+    loadRestrictedList
 }: Props): React$Element<any> {
-    const dispatch = useDispatch();
+    const { pageSize, activePage } = useSelector(({ table }) => table);
+    const { table } = useSelector(({ restrictedList }) => restrictedList);
 
     const datepickerOpen = createRef();
     const [dateRangeFilter, setDateRangeFilter] = useState(0);
     const [dateRangeFilterValues, setDateRangeFilterValues] = useState({
-        start: new Date(),
+        start: moment().subtract(7, 'days')._d,
         end: new Date()
     });
     const [dateRangeValues, setDateRangeValues] = useState({
-        start: new Date(),
+        start: moment().subtract(7, 'days')._d,
         end: new Date()
     });
 
@@ -101,9 +102,13 @@ function RestrictedListScreen({
         });
     };
 
+    // useEffect(() => {
+    //     dispatch(filterRestrictedListData(dateRangeFilter, dateRangeValues));
+    // }, [dateRangeFilter, dateRangeValues]);
+
     useEffect(() => {
-        dispatch(filterRestrictedListData(dateRangeFilter, dateRangeValues));
-    }, [dateRangeFilter, dateRangeValues]);
+        loadRestrictedList(activePage, pageSize, dateRangeValues.start.toISOString(), dateRangeValues.end.toISOString());
+    }, [dateRangeFilter, dateRangeValues, pageSize, activePage]);
 
     return (
         <div className='restricted-list'>
@@ -223,6 +228,8 @@ function RestrictedListScreen({
                                     <Table className='restricted-list__table'
                                         tableData={tableData}
                                         tableColumns={tableColumns}
+                                        tablePagination={table.totalPages}
+                                        activePage={activePage}
                                         selectableRows={false}
                                         globalFilter={false}
                                         pagination={true}

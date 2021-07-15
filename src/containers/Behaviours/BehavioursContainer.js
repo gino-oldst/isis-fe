@@ -1,5 +1,5 @@
 // @flow
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import BehavioursScreen from './BehavioursScreen';
@@ -29,18 +29,14 @@ export default function BehavioursContainer({
         }
     ];
 
-    // check if user is logged in
-    useEffect(() => {
-        loadBehavioursData();
-    }, []);
-
-    const loadBehavioursData = async () => {
+    const loadBehavioursData = async (activePage, pageSize) => {
         setLoading(true);
 
         try {
             const behaviours = await getBehaviours();
+            const { data, totalNoOfRecords, totalPages } = behaviours.data;
 
-            dispatch(setBehavioursData(behaviours.data.data));
+            dispatch(setBehavioursData(data, totalNoOfRecords, totalPages));
         } catch (e) {
             console.error(e);
         }
@@ -59,6 +55,7 @@ export default function BehavioursContainer({
         breadcrumb={breadcrumb}
         tableColumns={table.columns}
         tableData={table.data}
+        loadBehavioursData={loadBehavioursData}
         viewBehaviourDetails={viewBehaviourDetails}
         sidebarMenu={sidebarMenu} />;
 }

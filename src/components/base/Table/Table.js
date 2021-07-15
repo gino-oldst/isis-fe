@@ -23,7 +23,7 @@ import filterIcon from '../../../assets/images/ic_filter.svg';
 import './table.scss';
 
 import { useTable, useRowSelect, useFilters, useGlobalFilter, usePagination, useSortBy, useAsyncDebounce } from 'react-table';
-import { setIsRowSelected, setAppliedFilters, setFilteredRows } from '../../../redux/modules/table';
+import { setIsRowSelected, setTablePageSize, setActivePage, setAppliedFilters, setFilteredRows } from '../../../redux/modules/table';
 
 // Define a default UI for filtering
 function GlobalFilter({
@@ -247,6 +247,8 @@ const IndeterminateCheckbox = React.forwardRef(
 function Table({
     columns,
     data,
+    tablePagination,
+    activePage,
     selectableRows,
     globalFilter,
     pagination,
@@ -294,11 +296,8 @@ function Table({
         pageCount,
         gotoPage,
         previousPage,
-        nextPage,
-        canPreviousPage,
-        canNextPage,
         setPageSize,
-        state: { pageIndex, pageSize }
+        state: { pageSize }
     } = useTable(
         {
             columns,
@@ -338,14 +337,21 @@ function Table({
 
     const dispatch = useDispatch();
     const maxPage = 3; // max page for pagination button
-    const paginationLoopLength = (rows.length % state.pageSize) > 0 ? parseInt(rows.length / state.pageSize + 1) : rows.length / state.pageSize;
-    // collect all applied filters from table
 
     const selectedRows = rows.filter(row => row.isSelected === true);
 
     useEffect(() => {
         dispatch(setIsRowSelected(selectedRows.length, [...selectedRows.map(row => { return row.original.id; })]));
     }, [selectedRows.length]);
+
+    // set pageSize to redux that triggers alerts list api call
+    useEffect(() => {
+        dispatch(setTablePageSize(pageSize));
+    }, [pageSize]);
+
+    const setTableActivePage = page => {
+        dispatch(setActivePage(page));
+    };
 
     return (
         <>
@@ -429,15 +435,29 @@ function Table({
                     </Col>
                     <Col md={12} lg={6}>
                         <div className='pagination d-flex justify-content-center'>
-                            <span className={`cursor-pointer pagination-navigate ${!canPreviousPage ? 'text-muted' : ''}`} onClick={() => gotoPage(0)}>First</span>
-                            <span className={`cursor-pointer pagination-navigate ${!canPreviousPage ? 'text-muted' : ''}`} onClick={() => previousPage()}>Prev</span>
-                            {Array.from(Array(paginationLoopLength), (_, i) => {
-                                const dynamicPageIndex = state.pageIndex > maxPage ? state.pageIndex - 2 + i : i + 1;
+                            <span className={`cursor-pointer pagination-navigate ${activePage === 0 ? 'text-muted' : ''}`} onClick={() => {
+                                gotoPage(0);
+                                setTableActivePage(0);
+                            }}>First</span>
+                            <span className={`cursor-pointer pagination-navigate ${activePage === 0 ? 'text-muted' : ''}`} onClick={() => {
+                                previousPage();
+                                if (activePage !== 0) setTableActivePage(activePage - 1);
+                            }}>Prev</span>
+                            {Array.from(Array(tablePagination), (_, i) => {
+                                const dynamicPageIndex = activePage > maxPage ? activePage - 2 + i : i + 1;
 
-                                return i <= maxPage && <span className={`cursor-pointer ${state.pageIndex + 1 === dynamicPageIndex ? 'active' : ''}`} onClick={() => gotoPage(dynamicPageIndex - 1)}>{dynamicPageIndex}</span>;
+                                return i <= maxPage && <span key={i} className={`cursor-pointer ${activePage + 1 === dynamicPageIndex ? 'active' : ''}`} onClick={() => {
+                                    gotoPage(dynamicPageIndex - 1);
+                                    setTableActivePage(dynamicPageIndex - 1);
+                                }}>{dynamicPageIndex}</span>;
                             })}
-                            <span className={`cursor-pointer pagination-navigate ${!canNextPage ? 'text-muted' : ''}`} onClick={() => nextPage()}>Next</span>
-                            <span className={`cursor-pointer pagination-navigate ${!canNextPage ? 'text-muted' : ''}`} onClick={() => gotoPage(pageCount - 1)}>Last</span>
+                            <span className={`cursor-pointer pagination-navigate ${activePage + 1 === tablePagination || tablePagination === 0 ? 'text-muted' : ''}`} onClick={() => {
+                                if (activePage + 1 !== tablePagination && tablePagination > 0) setTableActivePage(activePage + 1);
+                            }}>Next</span>
+                            <span className={`cursor-pointer pagination-navigate ${activePage + 1 === tablePagination || tablePagination === 0 ? 'text-muted' : ''}`} onClick={() => {
+                                gotoPage(pageCount - 1);
+                                if (activePage + 1 !== tablePagination && tablePagination > 0) setTableActivePage(tablePagination - 1);
+                            }}>Last</span>
                         </div>
                     </Col>
                     <Col md={12} lg={3} className='ml-auto'>
@@ -447,12 +467,14 @@ function Table({
                                 type='number'
                                 size='md'
                                 min='0'
-                                defaultValue={pageIndex + 1}
+                                value={activePage + 1}
+                                defaultValue={activePage + 1}
                                 style={{ width: '80px' }}
                                 className='ml-2'
                                 onChange={e => {
                                     const page = e.target.value ? Number(e.target.value) - 1 : 0;
 
+                                    setTableActivePage(page);
                                     gotoPage(page);
                                 }} />
                         </div>
@@ -506,6 +528,8 @@ export default function ReactTable({
     className = '',
     tableData,
     tableColumns,
+    tablePagination,
+    activePage,
     selectableRows = false,
     globalFilter = false,
     pagination = false,
@@ -557,6 +581,8 @@ export default function ReactTable({
     return (
         <div className={`w-100 ${className}`}>
             <Table columns={columns} data={tableData}
+                tablePagination={tablePagination}
+                activePage={activePage}
                 selectableRows={selectableRows}
                 globalFilter={globalFilter}
                 pagination={pagination}

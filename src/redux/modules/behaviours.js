@@ -12,10 +12,12 @@ export function setSelectedBehaviour(data: Object) {
     };
 }
 
-export function setBehavioursData(data: Array) {
+export function setBehavioursData(data: Array, totalNoOfRecords: String, totalPages: String) {
     return {
         type: SET_BEHAVIOURS_DATA,
-        data
+        data,
+        totalNoOfRecords,
+        totalPages
     };
 }
 
@@ -62,7 +64,9 @@ const initialState = {
                 clickable: false
             }
         ],
-        data: []
+        data: [],
+        totalNoOfRecords: null,
+        totalPages: null
     },
     selected: {
         id: null,
@@ -117,7 +121,9 @@ export default function behaviours(state: Object = initialState, action: Object)
                 ...state,
                 table: {
                     ...state.table,
-                    data: action.data
+                    data: action.data,
+                    totalNoOfRecords: action.totalNoOfRecords,
+                    totalPages: action.totalPages
                 }
             };
         case SET_PARAMETERS_DATA:

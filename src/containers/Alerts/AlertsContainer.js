@@ -50,7 +50,6 @@ export default function AlertsContainer({
         setLoading(true);
 
         try {
-            await loadAlerts();
             await loadUsers();
         } catch (e) {
             console.error(e);
@@ -59,10 +58,11 @@ export default function AlertsContainer({
         setLoading(false);
     };
 
-    const loadAlerts = async () => {
-        const alerts = await getAlerts();
+    const loadAlerts = async (page, size, fromDate, toDate) => {
+        const alerts = await getAlerts(page, size, fromDate, toDate);
+        const { data, totalNoOfRecords, totalPages } = alerts.data;
 
-        dispatch(setAlertsData(alerts.data.data));
+        dispatch(setAlertsData(data, totalNoOfRecords, totalPages));
     };
 
     const loadUsers = async () => {
@@ -89,6 +89,7 @@ export default function AlertsContainer({
         loadAlerts={loadAlerts}
         tableColumns={table.columns}
         tableData={!table.isFiltered ? table.data : table.filtered}
+        tableTotalPages={table.data.totalPages !== null}
         isRowsSelected={isRowsSelected}
         selectedRows={selectedRows}
         assignees={selected.assignees}

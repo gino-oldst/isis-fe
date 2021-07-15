@@ -1,5 +1,5 @@
 // @flow
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import RestrictedListScreen from './RestrictedListScreen';
 
@@ -32,17 +32,14 @@ export default function RestrictedListContainer({
         }
     ];
 
-    useEffect(() => {
-        loadRestrictedList();
-    }, []);
-
-    const loadRestrictedList = async () => {
+    const loadRestrictedList = async (page, size, fromDate, toDate) => {
         setLoading(true);
 
         try {
             const restrictedList = await getRestrictedList();
+            const { data, totalNoOfRecords, totalPages } = restrictedList.data;
 
-            dispatch(setRestrictedListData(restrictedList.data.data));
+            dispatch(setRestrictedListData(data, totalNoOfRecords, totalPages));
         } catch (e) {
             console.error(e);
         }
@@ -58,5 +55,6 @@ export default function RestrictedListContainer({
         useMediaQuery={useMediaQuery}
         handleCloseModal={handleCloseModal}
         tableColumns={table.columns}
-        tableData={!table.isFiltered ? table.data : table.filtered} />;
+        tableData={!table.isFiltered ? table.data : table.filtered}
+        loadRestrictedList={loadRestrictedList} />;
 }

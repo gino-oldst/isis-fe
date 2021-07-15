@@ -399,7 +399,7 @@ function DashboardScreen({
                                                         ? <Spinner animation='border' role='status' className='d-flex mx-auto text-center'>
                                                             <span className='sr-only'>Loading...</span>
                                                         </Spinner>
-                                                        : dashboardData.behaviourPerDateSummary > 0
+                                                        : dashboardData.behaviourPerDateSummary.length > 0
                                                             ? dashboardData.behaviourPerDateSummary.map(data => {
                                                                 return (
                                                                     <Row className='d-flex align-items-center mb-2'>
@@ -438,7 +438,7 @@ function DashboardScreen({
                                                         ? <Spinner animation='border' role='status' className='d-flex mx-auto text-center'>
                                                             <span className='sr-only'>Loading...</span>
                                                         </Spinner>
-                                                        : dashboardData.behaviourPerDateSummary > 0
+                                                        : dashboardData.behaviourPerDateSummary.length > 0
                                                             ? dashboardData.usersPerDateSummary.map(data => {
                                                                 return (
                                                                     <div className='d-flex justify-content-between assigned-alert-1 px-3 py-3 mb-2 bg-light'>
