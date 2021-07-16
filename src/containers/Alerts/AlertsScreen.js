@@ -30,6 +30,7 @@ import './alerts.scss';
 
 import { bulkUpdateAlert } from '../../api/alerts';
 import { setModalContent } from '../../redux/modules/modalEvent';
+import { setLoading } from '../../redux/modules/alerts';
 
 type Props = {
     loading: Boolean,
@@ -120,6 +121,7 @@ function AlertsScreen({
     };
 
     useEffect(() => {
+        dispatch(setLoading());
         loadAlerts(activePage, pageSize, dateRangeValues.start.toISOString(), dateRangeValues.end.toISOString());
     }, [dateRangeFilter, dateRangeValues, pageSize, activePage]);
 
@@ -137,7 +139,8 @@ function AlertsScreen({
                                 <div className='alerts__date-picker d-flex align-items-center justify-content-end mb-4'>
                                     <CustomDropdown tag='span'
                                         toggle={<DatePicker width='70' inputVariant='outlined' keyboard={true}
-                                            value={dateRangeValues.start} />}>
+                                            value={dateRangeValues.start}
+                                            disabled={table.loading} />}>
                                         <DropdownItem header={true} className='text-center'>
                                             <img src={filterIcon} alt='talbe-filter-icon' />
                                         </DropdownItem>
@@ -185,7 +188,8 @@ function AlertsScreen({
                                     <Typography color='color-3' variant='size-16' className='mx-4'>to</Typography>
                                     <CustomDropdown tag='span'
                                         toggle={<DatePicker width='70' inputVariant='outlined' keyboard={true}
-                                            value={dateRangeValues.end} />}>
+                                            value={dateRangeValues.end}
+                                            disabled={table.loading} />}>
                                         <DropdownItem header={true} className='text-center'>
                                             <img src={filterIcon} alt='talbe-filter-icon' />
                                         </DropdownItem>
@@ -233,6 +237,7 @@ function AlertsScreen({
                                         <FontAwesomeIcon className='mr-2' icon='file-download' size='sm' />
                                         <Typography weight='light' className='my-1 mx-2'>Download</Typography>
                                     </>}
+                                    disabled={table.loading}
                                     className='ml-4 d-flex align-items-center alerts__download-button'
                                     onClick={() => handleDownloadAlertsList(dateRangeValues)} />
                                     {isRowsSelected > 0 && <Button className='ml-3 alerts__download-button' label={<Typography weight='light' className='my-1 mx-2'>Bulk Action</Typography>} onClick={showActionsModal}/>}
@@ -254,6 +259,7 @@ function AlertsScreen({
                                         globalFilter={false}
                                         pagination={true}
                                         sortable={true}
+                                        fetching={table.loading}
                                         viewDetails={viewAlertDetails} />
                                 )}
                         </CardBody>

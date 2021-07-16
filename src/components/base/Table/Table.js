@@ -198,7 +198,7 @@ function RadioColumnFilter({
                 </FormGroup>
                 <FormGroup check={true}>
                     <Label check={true}>
-                        <Input type='radio' name='radio2'
+                        <Input type='radio' name='radiotwo'
                             checked={radioFilter === 2} onChange={e => handleRadioFilterChange(e, 2)} />{' '}
                         100K - 500K
                     </Label>
@@ -252,7 +252,8 @@ function Table({
     selectableRows,
     globalFilter,
     pagination,
-    sortable
+    sortable,
+    fetching
 }) {
     const filterTypes = useMemo(
         () => ({
@@ -422,6 +423,7 @@ function Table({
                         <div className='pagination-pagesize'>
                             <Input type='select'
                                 value={pageSize}
+                                disabled={fetching}
                                 onChange={e => {
                                     setPageSize(Number(e.target.value));
                                 }}>
@@ -435,29 +437,49 @@ function Table({
                     </Col>
                     <Col md={12} lg={6}>
                         <div className='pagination d-flex justify-content-center'>
-                            <span className={`cursor-pointer pagination-navigate ${activePage === 0 ? 'text-muted' : ''}`} onClick={() => {
+                            <span className={`cursor-pointer pagination-navigate
+                                ${activePage === 0 || fetching ? 'text-muted' : ''}`}
+                            onClick={() => {
                                 gotoPage(0);
                                 setTableActivePage(0);
-                            }}>First</span>
-                            <span className={`cursor-pointer pagination-navigate ${activePage === 0 ? 'text-muted' : ''}`} onClick={() => {
+                            }}>
+                                First
+                            </span>
+                            <span className={`cursor-pointer pagination-navigate
+                            ${activePage === 0 || fetching ? 'text-muted' : ''}`}
+                            onClick={() => {
                                 previousPage();
-                                if (activePage !== 0) setTableActivePage(activePage - 1);
-                            }}>Prev</span>
+                                if (activePage !== 0 && !fetching) setTableActivePage(activePage - 1);
+                            }}>
+                                Prev
+                            </span>
                             {Array.from(Array(tablePagination), (_, i) => {
                                 const dynamicPageIndex = activePage > maxPage ? activePage - 2 + i : i + 1;
 
-                                return i <= maxPage && <span key={i} className={`cursor-pointer ${activePage + 1 === dynamicPageIndex ? 'active' : ''}`} onClick={() => {
-                                    gotoPage(dynamicPageIndex - 1);
-                                    setTableActivePage(dynamicPageIndex - 1);
-                                }}>{dynamicPageIndex}</span>;
+                                return i <= maxPage && <span key={i}
+                                    className={`cursor-pointer ${activePage + 1 === dynamicPageIndex ? 'active' : ''} ${fetching ? 'text-muted' : ''}`}
+                                    onClick={() => {
+                                        gotoPage(dynamicPageIndex - 1);
+                                        if (!fetching) setTableActivePage(dynamicPageIndex - 1);
+                                    }}>
+                                    {dynamicPageIndex}
+                                </span>;
                             })}
-                            <span className={`cursor-pointer pagination-navigate ${activePage + 1 === tablePagination || tablePagination === 0 ? 'text-muted' : ''}`} onClick={() => {
-                                if (activePage + 1 !== tablePagination && tablePagination > 0) setTableActivePage(activePage + 1);
-                            }}>Next</span>
-                            <span className={`cursor-pointer pagination-navigate ${activePage + 1 === tablePagination || tablePagination === 0 ? 'text-muted' : ''}`} onClick={() => {
+                            <span className={`cursor-pointer pagination-navigate
+                            ${activePage + 1 === tablePagination || tablePagination === 0 || fetching ? 'text-muted' : ''}`}
+                            onClick={() => {
+                                if (activePage + 1 !== tablePagination && tablePagination > 0 && !fetching) setTableActivePage(activePage + 1);
+                            }}>
+                                Next
+                            </span>
+                            <span className={`cursor-pointer pagination-navigate
+                            ${activePage + 1 === tablePagination || tablePagination === 0 || fetching ? 'text-muted' : ''}`}
+                            onClick={() => {
                                 gotoPage(pageCount - 1);
-                                if (activePage + 1 !== tablePagination && tablePagination > 0) setTableActivePage(tablePagination - 1);
-                            }}>Last</span>
+                                if (activePage + 1 !== tablePagination && tablePagination > 0 && !fetching) setTableActivePage(tablePagination - 1);
+                            }}>
+                                Last
+                            </span>
                         </div>
                     </Col>
                     <Col md={12} lg={3} className='ml-auto'>
@@ -470,6 +492,7 @@ function Table({
                                 value={activePage + 1}
                                 defaultValue={activePage + 1}
                                 style={{ width: '80px' }}
+                                disabled={fetching}
                                 className='ml-2'
                                 onChange={e => {
                                     const page = e.target.value ? Number(e.target.value) - 1 : 0;
@@ -534,6 +557,7 @@ export default function ReactTable({
     globalFilter = false,
     pagination = false,
     sortable = false,
+    fetching,
     viewDetails
 }: Props): React$Element<any> {
     const columns = useMemo(
@@ -586,7 +610,8 @@ export default function ReactTable({
                 selectableRows={selectableRows}
                 globalFilter={globalFilter}
                 pagination={pagination}
-                sortable={sortable} />
+                sortable={sortable}
+                fetching={fetching} />
         </div>
     );
 }

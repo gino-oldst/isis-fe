@@ -6,6 +6,7 @@ const SET_SELECTED_ALERT = 'SET_SELECTED_ALERT';
 const SET_ASSIGNEES = 'SET_ASSIGNEES';
 const REPLACE_ALERT_DETAILS = 'REPLACE_ALERT_DETAILS';
 const FILTER_ALERTS_DATA = 'FILTER_ALERTS_DATA';
+const SET_LOADING = 'SET_LOADING';
 
 export function setSelectedAlert(data: Object) {
     return {
@@ -48,8 +49,15 @@ export function filterAlertsData(
     };
 }
 
+export function setLoading() {
+    return {
+        type: SET_LOADING
+    };
+}
+
 const initialState = {
     table: {
+        loading: false,
         isFiltered: false,
         columns: [
             {
@@ -136,6 +144,14 @@ export default function alerts(state: Object = initialState, action: Object):
     table: {}
   } {
     switch (action.type) {
+        case SET_LOADING:
+            return {
+                ...state,
+                table: {
+                    ...state.table,
+                    loading: true
+                }
+            };
         case SET_ALERTS_DATA:
             return {
                 ...state,
@@ -143,7 +159,8 @@ export default function alerts(state: Object = initialState, action: Object):
                     ...state.table,
                     data: action.data,
                     totalNoOfRecords: action.totalNoOfRecords,
-                    totalPages: action.totalPages
+                    totalPages: action.totalPages,
+                    loading: false
                 }
             };
         case SET_SELECTED_ALERT:
