@@ -1,6 +1,6 @@
 // @flow
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Table from '../../components/base/Table/Table';
 import CollapsibleSidebar from '../../components/base/CollapsibleSidebar/CollapsibleSidebarContainer';
 import Typography from '../../components/base/Typography/Typography';
@@ -13,6 +13,8 @@ import {
     Spinner
 } from 'reactstrap';
 import './behaviours.scss';
+
+import { setLoading } from '../../redux/modules/behaviours';
 
 type Props = {
     loading: Boolean,
@@ -32,10 +34,12 @@ function BehavioursScreen({
     loadBehavioursData,
     viewBehaviourDetails
 }: Props): React$Element<any> {
+    const dispatch = useDispatch();
     const { pageSize, activePage } = useSelector(({ table }) => table);
     const { table } = useSelector(({ behaviours }) => behaviours);
 
     useEffect(() => {
+        dispatch(setLoading());
         loadBehavioursData(activePage, pageSize);
     }, [pageSize, activePage]);
 
@@ -59,6 +63,7 @@ function BehavioursScreen({
                                     tablePagination={table.totalPages}
                                     activePage={activePage}
                                     pagination={true}
+                                    fetching={table.loading}
                                     viewDetails={viewBehaviourDetails} />
                             }
                         </CardBody>

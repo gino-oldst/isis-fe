@@ -4,6 +4,7 @@ const SET_BEHAVIOURS_DATA = 'SET_BEHAVIOURS_DATA';
 const SET_PARAMETERS_DATA = 'SET_PARAMETERS_DATA';
 const REPLACE_PARAMETER_STATUS = 'REPLACE_PARAMETER_STATUS';
 const REPLACE_PARAMETERS_DATA = 'REPLACE_PARAMETERS_DATA';
+const SET_LOADING = 'SET_LOADING';
 
 export function setSelectedBehaviour(data: Object) {
     return {
@@ -21,10 +22,12 @@ export function setBehavioursData(data: Array, totalNoOfRecords: String, totalPa
     };
 }
 
-export function setParametersData(data: Array) {
+export function setParametersData(data: Array, totalNoOfRecords: String, totalPages: String) {
     return {
         type: SET_PARAMETERS_DATA,
-        data
+        data,
+        totalNoOfRecords,
+        totalPages
     };
 }
 
@@ -42,8 +45,15 @@ export function replaceParametersData(data: Object) {
     };
 }
 
+export function setLoading() {
+    return {
+        type: SET_LOADING
+    };
+}
+
 const initialState = {
     table: {
+        loading: false,
         columns: [
             {
                 header: 'Identifier',
@@ -74,6 +84,7 @@ const initialState = {
         identifier: '',
         behaviour: '',
         status: '',
+        loading: false,
         columns: [
             {
                 header: 'Code',
@@ -94,7 +105,9 @@ const initialState = {
                 clickable: false
             }
         ],
-        data: []
+        data: [],
+        totalNoOfRecords: null,
+        totalPages: null
     }
 };
 
@@ -104,6 +117,18 @@ export default function behaviours(state: Object = initialState, action: Object)
     table: {}
   } {
     switch (action.type) {
+        case SET_LOADING:
+            return {
+                ...state,
+                table: {
+                    ...state.table,
+                    loading: true
+                },
+                selected: {
+                    ...state.selected,
+                    loading: true
+                }
+            };
         case SET_SELECTED_BEHAVIOUR:
             return {
                 ...state,
@@ -123,7 +148,8 @@ export default function behaviours(state: Object = initialState, action: Object)
                     ...state.table,
                     data: action.data,
                     totalNoOfRecords: action.totalNoOfRecords,
-                    totalPages: action.totalPages
+                    totalPages: action.totalPages,
+                    loading: false
                 }
             };
         case SET_PARAMETERS_DATA:
@@ -131,7 +157,10 @@ export default function behaviours(state: Object = initialState, action: Object)
                 ...state,
                 selected: {
                     ...state.selected,
-                    data: action.data
+                    data: action.data,
+                    totalNoOfRecords: action.totalNoOfRecords,
+                    totalPages: action.totalPages,
+                    loading: false
                 }
             };
         case REPLACE_PARAMETER_STATUS:

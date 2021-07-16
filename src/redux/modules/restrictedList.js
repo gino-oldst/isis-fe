@@ -3,6 +3,7 @@ import moment from 'moment';
 
 const SET_RESTRICTED_LIST_DATA = 'SET_RESTRICTED_LIST_DATA';
 const FILTER_RESTRICTED_LIST_DATA = 'FILTER_RESTRICTED_LIST_DATA';
+const SET_LOADING = 'SET_LOADING';
 
 export function setRestrictedListData(data: Array, totalNoOfRecords: String, totalPages: String) {
     return {
@@ -24,9 +25,16 @@ export function filterRestrictedListData(
     };
 }
 
+export function setLoading() {
+    return {
+        type: SET_LOADING
+    };
+}
+
 const initialState = {
     table: {
         isFiltered: false,
+        loading: false,
         columns: [
             {
                 header: 'ISIN',
@@ -62,13 +70,22 @@ const initialState = {
 
 export default function notifications(state: Object = initialState, action: Object) {
     switch (action.type) {
+        case SET_LOADING:
+            return {
+                ...state,
+                table: {
+                    ...state.table,
+                    loading: true
+                }
+            };
         case SET_RESTRICTED_LIST_DATA:
             return {
                 table: {
                     ...state.table,
                     data: action.data,
                     totalNoOfRecords: action.totalNoOfRecords,
-                    totalPages: action.totalPages
+                    totalPages: action.totalPages,
+                    loading: false
                 }
             };
 

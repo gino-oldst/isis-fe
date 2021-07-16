@@ -1,7 +1,7 @@
 // @flow
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import moment from 'moment';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Toggle from 'react-toggle';
 import validator from 'validator';
 import 'react-toggle/style.css';
@@ -29,11 +29,12 @@ import './behaviour-detail.scss';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import { updateParameter } from '../../api/parameters';
 import { updateBehaviour, processBehaviourByDate } from '../../api/behaviours';
-import { replaceParameterStatus, replaceParametersData } from '../../redux/modules/behaviours';
+import { replaceParameterStatus, replaceParametersData, setLoading } from '../../redux/modules/behaviours';
 
 type Props = {
     loading: Boolean,
     breadcrumb: Array,
+    loadBehaviourDetails: Function,
     sidebarMenu: Array<Menu>,
     tableColumns: Array,
     tableData: Array,
@@ -44,6 +45,7 @@ type Props = {
 function BehaviourDetailScreen({
     loading,
     breadcrumb,
+    loadBehaviourDetails,
     sidebarMenu,
     tableColumns,
     tableData,
@@ -51,6 +53,13 @@ function BehaviourDetailScreen({
     handleCloseModal
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
+    const { pageSize, activePage } = useSelector(({ table }) => table);
+    const { selected } = useSelector(({ behaviours }) => behaviours);
+
+    useEffect(() => {
+        dispatch(setLoading());
+        loadBehaviourDetails(activePage, pageSize);
+    }, [pageSize, activePage]);
 
     const showUpdateParameterModal = rowData => {
         dispatch(setModalContent({
@@ -116,7 +125,10 @@ function BehaviourDetailScreen({
                                 : <Table className='behaviours__table'
                                     tableColumns={tableColumns}
                                     tableData={tableData}
+                                    tablePagination={selected.totalPages}
+                                    activePage={activePage}
                                     pagination={true}
+                                    fetching={selected.loading}
                                     viewDetails={showUpdateParameterModal} />
                             }
                         </CardBody>

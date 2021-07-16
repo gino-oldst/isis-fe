@@ -1,5 +1,5 @@
 // @flow
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import BehaviourDetailScreen from './BehaviourDetailScreen';
 import { setSelectedBehaviour, setParametersData } from '../../redux/modules/behaviours';
@@ -35,16 +35,12 @@ export default function BehaviourDetailContainer({
         }
     ];
 
-    useEffect(() => {
-        loadBehaviourDetails();
-    }, []);
-
     const loadBehaviourDetails = async () => {
         setLoading(true);
-        const behaviourCode = localStorage.getItem('selectedBehaviourCode');
+        // const behaviourCode = localStorage.getItem('selectedBehaviourCode');
 
         try {
-            const selectedBehaviour = await getBehaviourByCode(behaviourCode);
+            const selectedBehaviour = await getBehaviourByCode(match.params.id);
 
             dispatch(setSelectedBehaviour(selectedBehaviour.data));
 
@@ -53,8 +49,9 @@ export default function BehaviourDetailContainer({
             localStorage.setItem('ruleId', rules.data.data[0].id);
 
             const parameters = await getParametersByRuleId(rules.data.data[0].id);
+            const { data, totalNoOfRecords, totalPages } = parameters.data;
 
-            dispatch(setParametersData(parameters.data.data));
+            dispatch(setParametersData(data, totalNoOfRecords, totalPages));
         } catch (e) {
             console.error(e);
         }
@@ -65,6 +62,7 @@ export default function BehaviourDetailContainer({
     return <BehaviourDetailScreen
         loading={loading}
         breadcrumb={breadcrumb}
+        loadBehaviourDetails={loadBehaviourDetails}
         tableColumns={selected.columns}
         tableData={selected.data}
         selectedBehaviour={selected}

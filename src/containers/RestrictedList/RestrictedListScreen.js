@@ -233,6 +233,7 @@ function RestrictedListScreen({
                                         selectableRows={false}
                                         globalFilter={false}
                                         pagination={true}
+                                        fetching={table.loading}
                                         sortable={true} />
                                 )}
                         </CardBody>
