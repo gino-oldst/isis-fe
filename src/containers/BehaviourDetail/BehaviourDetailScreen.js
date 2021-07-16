@@ -126,6 +126,7 @@ function BehaviourDetailScreen({
                                     tableColumns={tableColumns}
                                     tableData={tableData}
                                     tablePagination={selected.totalPages}
+                                    totalNoOfRecords={selected.totalNoOfRecords}
                                     activePage={activePage}
                                     pagination={true}
                                     fetching={selected.loading}

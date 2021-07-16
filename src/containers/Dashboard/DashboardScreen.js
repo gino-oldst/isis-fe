@@ -146,7 +146,7 @@ function DashboardScreen({
                 yAxes: [{
                     ticks: {
                         beginAtZero: true,
-                        max: Math.round(dashboardData.alertsPerDateSummary.map(stat => stat.count).reduce((a, b) => a + b, 0) + 10),
+                        max: Math.round(dashboardData.alertsPerDateSummary.map(stat => stat.count).reduce((a, b) => a + b, 0)),
                         min: 0,
                         stepSize: 10
                     },

@@ -106,6 +106,10 @@
 
 .pagination-pagesize {
     float: left;
+
+    .form-control {
+        width: auto !important;
+    }
 }
 
 .pagination {

@@ -61,6 +61,7 @@ function BehavioursScreen({
                                     tableColumns={tableColumns}
                                     tableData={tableData}
                                     tablePagination={table.totalPages}
+                                    totalNoOfRecords={table.totalNoOfRecords}
                                     activePage={activePage}
                                     pagination={true}
                                     fetching={table.loading}

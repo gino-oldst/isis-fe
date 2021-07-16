@@ -254,6 +254,7 @@ function AlertsScreen({
                                         tableData={tableData}
                                         tableColumns={tableColumns}
                                         tablePagination={table.totalPages}
+                                        totalNoOfRecords={table.totalNoOfRecords}
                                         activePage={activePage}
                                         selectableRows={true}
                                         globalFilter={false}

@@ -248,6 +248,7 @@ function Table({
     columns,
     data,
     tablePagination,
+    totalNoOfRecords,
     activePage,
     selectableRows,
     globalFilter,
@@ -421,11 +422,14 @@ function Table({
                 <Row className='mt-5 align-items-center'>
                     <Col md={12} lg={3} className='mr-auto'>
                         <div className='pagination-pagesize'>
+                            <span>Showing {rows.length} of {totalNoOfRecords} items</span>
                             <Input type='select'
+                                className='mt-2'
                                 value={pageSize}
                                 disabled={fetching}
                                 onChange={e => {
                                     setPageSize(Number(e.target.value));
+                                    setTableActivePage(0);
                                 }}>
                                 {[10, 25, 50, 100].map(pageSize => (
                                     <option key={pageSize} value={pageSize}>
@@ -552,6 +556,7 @@ export default function ReactTable({
     tableData,
     tableColumns,
     tablePagination,
+    totalNoOfRecords,
     activePage,
     selectableRows = false,
     globalFilter = false,
@@ -606,6 +611,7 @@ export default function ReactTable({
         <div className={`w-100 ${className}`}>
             <Table columns={columns} data={tableData}
                 tablePagination={tablePagination}
+                totalNoOfRecords={totalNoOfRecords}
                 activePage={activePage}
                 selectableRows={selectableRows}
                 globalFilter={globalFilter}
