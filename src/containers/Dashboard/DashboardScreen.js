@@ -81,6 +81,8 @@ function DashboardScreen({
         dashboardData.alertsArchived
     ].reduce((a, b) => a + b, 0);
 
+    console.log(dashboardData.alertsPerDateSummary);
+
     const makeDougnutChartData = () => {
         const data = {
             labels: [`${percentageCalculator(dashboardData.escalatedToManager, totalAlerts)}%`, `${percentageCalculator(dashboardData.escalatedToCo, totalAlerts)}%`],
@@ -146,7 +148,7 @@ function DashboardScreen({
                 yAxes: [{
                     ticks: {
                         beginAtZero: true,
-                        max: Math.round(dashboardData.alertsPerDateSummary.map(stat => stat.count).reduce((a, b) => a + b, 0)),
+                        max: Math.max.apply(null, dashboardData.alertsPerDateSummary.map(stat => stat.count)),
                         min: 0,
                         stepSize: 10
                     },
