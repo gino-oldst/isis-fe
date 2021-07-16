@@ -81,8 +81,6 @@ function DashboardScreen({
         dashboardData.alertsArchived
     ].reduce((a, b) => a + b, 0);
 
-    console.log(dashboardData.alertsPerDateSummary);
-
     const makeDougnutChartData = () => {
         const data = {
             labels: [`${percentageCalculator(dashboardData.escalatedToManager, totalAlerts)}%`, `${percentageCalculator(dashboardData.escalatedToCo, totalAlerts)}%`],

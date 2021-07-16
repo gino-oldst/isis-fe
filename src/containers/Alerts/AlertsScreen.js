@@ -74,6 +74,10 @@ function AlertsScreen({
                 userId={userId}
                 loadAlerts={loadAlerts}
                 selectedRows={selectedRows}
+                activePage={activePage}
+                pageSize={pageSize}
+                dateFrom={dateRangeValues.start.toISOString()}
+                dateTo={dateRangeValues.end.toISOString()}
                 handleCloseModal={handleCloseModal}
                 assignees={assignees} />
         }));
@@ -280,6 +284,10 @@ const ActionModal = ({
     loadAlerts,
     handleCloseModal,
     selectedRows,
+    activePage,
+    pageSize,
+    dateFrom,
+    dateTo,
     assignees
 }) => {
     const dispatch = useDispatch();
@@ -334,7 +342,7 @@ const ActionModal = ({
                 if (result.data.length !== undefined && result.data.length > 0) {
                     showError(result.data[0].exceptionMessage);
                 } else {
-                    await loadAlerts();
+                    await loadAlerts(activePage, pageSize, dateFrom, dateTo);
                     handleCloseModal();
                 }
             }, 1000);
