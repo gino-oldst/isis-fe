@@ -5,9 +5,11 @@ import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import AlertsScreen from './AlertsScreen';
 import type { Menu } from '../../types';
+import { getBehaviours } from '../../api/behaviours';
 import { getAlerts, downloadAlertsList } from '../../api/alerts';
 import { getUsers } from '../../api/users';
 
+import { setBehavioursData } from '../../redux/modules/behaviours';
 import { setAlertsData, setAssignees } from '../../redux/modules/alerts';
 
 type Props = {
@@ -50,6 +52,7 @@ export default function AlertsContainer({
         setLoading(true);
 
         try {
+            await loadBehavioursData();
             await loadUsers();
         } catch (e) {
             console.error(e);
@@ -58,8 +61,8 @@ export default function AlertsContainer({
         setLoading(false);
     };
 
-    const loadAlerts = async (page, size, fromDate, toDate) => {
-        const alerts = await getAlerts(page, size, fromDate, toDate);
+    const loadAlerts = async (page, size, fromDate, toDate, appliedFilters) => {
+        const alerts = await getAlerts(page, size, fromDate, toDate, appliedFilters);
         const { data, totalNoOfRecords, totalPages } = alerts.data;
 
         dispatch(setAlertsData(data, totalNoOfRecords, totalPages));
@@ -70,6 +73,12 @@ export default function AlertsContainer({
         const filteredUsers = users.data.data.filter(user => user.userRegistrationType === 'EMAIL');
 
         dispatch(setAssignees(filteredUsers));
+    };
+
+    const loadBehavioursData = async (activePage, pageSize) => {
+        const behaviours = await getBehaviours();
+
+        dispatch(setBehavioursData(behaviours.data.data, null, null));
     };
 
     const handleDownloadAlertsList = async (date) => {

@@ -7,11 +7,25 @@ const BULK_UPDATE_ALERT = '/measure/alerts/bulk-edit';
 const DOWNLOAD_ALERTS_LIST = '/measure/alerts/download-list';
 const DOWNLOAD_ALERTS_RECORD = '/measure/alerts/download-alerts-record';
 
-export async function getAlerts(page: String, size: String, dateFrom: String, dateTo: String) {
-    return await makeApiCall(`${GET_ALERTS}?page=${page}&size=${size}`, 'POST', {
+export async function getAlerts(
+    page: String,
+    size: String,
+    dateFrom: String,
+    dateTo: String,
+    filters: Array
+) {
+    const relevantFilters = filters.filter(item => item.value.length > 0);
+
+    const filterBody = {
         alertDateFromRange: dateFrom,
         alertDateToRange: dateTo
-    });
+    };
+
+    relevantFilters.map(body => (
+        filterBody[body.id] = body.value.join(',')
+    ));
+
+    return await makeApiCall(`${GET_ALERTS}?page=${page}&size=${size}`, 'POST', filterBody);
 }
 
 export async function getAlert(id: String) {

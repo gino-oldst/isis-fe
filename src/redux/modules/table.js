@@ -1,6 +1,7 @@
 // @flow
 const SET_IS_ROW_SELECTED = 'SET_IS_ROW_SELECTED';
 const SET_APPLIED_FILTERS = 'SET_APPLIED_FILTERS';
+const RESET_APPLIED_FILTERS = 'RESET_APPLIED_FILTERS';
 const SET_FILTERED_ROWS = 'SET_FILTERED_ROWS';
 const SET_PAGE_SIZE = 'SET_PAGE_SIZE';
 const SET_ACTIVE_PAGE = 'SET_ACTIVE_PAGE';
@@ -17,10 +18,24 @@ export function setIsRowSelected(
     };
 }
 
-export function setAppliedFilters(data: Array): {data: Array} {
+export function setAppliedFilters(
+    id: String,
+    value: String,
+    isChecked: Boolean,
+    isArray: Boolean): {id: Array, value: String, isChecked: Boolean, isArray: Boolean} {
     return {
         type: SET_APPLIED_FILTERS,
-        data
+        id,
+        value,
+        isChecked,
+        isArray
+    };
+}
+
+export function resetAppliedFilters(id: String): { id: String } {
+    return {
+        type: RESET_APPLIED_FILTERS,
+        id
     };
 }
 
@@ -55,7 +70,40 @@ const initialState = {
     isRowsSelected: false,
     selectedRows: [],
     filteredRows: [],
-    appliedFilters: [],
+    appliedFilters: [
+        {
+            id: 'behaviourCode',
+            value: []
+        },
+        {
+            id: 'broker',
+            value: []
+        },
+        {
+            id: 'ticker',
+            value: []
+        },
+        {
+            id: 'book',
+            value: []
+        },
+        {
+            id: 'client',
+            value: []
+        },
+        {
+            id: 'escalation',
+            value: []
+        },
+        {
+            id: 'assignedUser',
+            value: []
+        },
+        {
+            id: 'status',
+            value: []
+        }
+    ],
     pageSize: 10,
     activePage: 0
 };
@@ -68,11 +116,53 @@ export default function table(state: Object = initialState, action: Object) {
                 isRowsSelected: action.count,
                 selectedRows: action.selectedRows
             };
-        case SET_APPLIED_FILTERS:
+
+        case SET_APPLIED_FILTERS: {
+            const toUpdateIndex = state.appliedFilters.findIndex(param => param.id === action.id);
+
+            const newData = [...state.appliedFilters];
+
+            const value = action.isArray
+                ? [
+                    ...newData[toUpdateIndex].value,
+                    action.value
+                ]
+                : [action.value];
+
+            if (action.isChecked) {
+                newData[toUpdateIndex] = {
+                    id: action.id,
+                    value
+                };
+            } else {
+                newData[toUpdateIndex] = {
+                    id: action.id,
+                    value: newData[toUpdateIndex].value.filter(val => val !== action.value)
+                };
+            }
+
             return {
                 ...state,
-                appliedFilters: action.data
+                appliedFilters: newData
             };
+        }
+
+        case RESET_APPLIED_FILTERS: {
+            const toUpdateIndex = state.appliedFilters.findIndex(param => param.id === action.id);
+
+            const newData = [...state.appliedFilters];
+
+            newData[toUpdateIndex] = {
+                id: action.id,
+                value: []
+            };
+
+            return {
+                ...state,
+                appliedFilters: newData
+            };
+        }
+
         case SET_FILTERED_ROWS:
             return {
                 ...state,

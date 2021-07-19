@@ -1,6 +1,6 @@
 // @flow
 import React, { useMemo, useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import { matchSorter } from 'match-sorter';
 import Button from '../../base/Button/Button';
@@ -23,7 +23,7 @@ import filterIcon from '../../../assets/images/ic_filter.svg';
 import './table.scss';
 
 import { useTable, useRowSelect, useFilters, useGlobalFilter, usePagination, useSortBy, useAsyncDebounce } from 'react-table';
-import { setIsRowSelected, setTablePageSize, setActivePage, setAppliedFilters, setFilteredRows } from '../../../redux/modules/table';
+import { setIsRowSelected, setTablePageSize, setActivePage, setAppliedFilters, resetAppliedFilters, setFilteredRows } from '../../../redux/modules/table';
 
 // Define a default UI for filtering
 function GlobalFilter({
@@ -87,15 +87,10 @@ function SelectColumnFilter({
     // using the preFilteredRows
     const [selectFilter, setSelectFilter] = useState([]);
     const [searchFilter, setSearchFilter] = useState('');
-    const options = useMemo(() => {
-        const options = new Set();
-
-        preFilteredRows.forEach(row => {
-            options.add(row.values[id]);
-        });
-
-        return [...options.values()];
-    }, [id, preFilteredRows]);
+    const { selected } = useSelector(({ alerts }) => alerts);
+    const { table } = useSelector(({ behaviours }) => behaviours);
+    const columnsWithCheckbox = ['behaviourCode', 'escalation', 'assignedUser', 'status'];
+    const dispatch = useDispatch();
 
     useEffect(() => {
         setFilter(selectFilter);
@@ -104,15 +99,21 @@ function SelectColumnFilter({
     const handleFilterChange = (e, value) => {
         const isChecked = e.target.checked;
 
-        isChecked
-            ? setSelectFilter([
+        if (isChecked) {
+            setSelectFilter([
                 ...selectFilter,
                 value
-            ])
-            : setSelectFilter([...selectFilter.filter(val => val !== value)]);
+            ]);
+        } else {
+            setSelectFilter([...selectFilter.filter(val => val !== value)]);
+        }
+
+        dispatch(setAppliedFilters(id, value.toUpperCase(), isChecked, columnsWithCheckbox.includes(id)));
     };
 
     const handleSearch = value => {
+        dispatch(setAppliedFilters(id, value, true, columnsWithCheckbox.includes(id)));
+
         setSearchFilter(value);
     };
 
@@ -120,10 +121,10 @@ function SelectColumnFilter({
         setFilter([]);
         setSelectFilter([]);
         setSearchFilter('');
+        dispatch(resetAppliedFilters(id));
     };
 
-    // filtered column options
-    const choices = options.filter(opt => opt.toString().toLowerCase().includes(searchFilter.toLowerCase()));
+    const header = Header.toLowerCase();
 
     // Render a multi-select box
     return (
@@ -138,14 +139,44 @@ function SelectColumnFilter({
                     bsSize='md' value={searchFilter} onChange={e => handleSearch(e.target.value)} />
             </DropdownItem>
             <div className='table__filter-options overflow-auto'>
-                {choices.map((option, i) => (
-                    <FormGroup key={i} check={true}>
-                        <Label check={true}>
-                            <Input type='checkbox' checked={selectFilter.includes(option.toString())} onChange={e => handleFilterChange(e, option.toString())}/>
-                            {option.toString()}
-                        </Label>
-                    </FormGroup>
-                ))}
+                {header === 'alert type'
+                    ? table.data.map((alert, i) => (
+                        <FormGroup key={alert.code} check={true}>
+                            <Label check={true}>
+                                <Input type='checkbox' checked={selectFilter.includes(alert.code)} onChange={e => handleFilterChange(e, alert.code)}/>
+                                {alert.code}
+                            </Label>
+                        </FormGroup>
+                    ))
+                    : header === 'escalation'
+                        ? ['Base', 'Manager', 'CO'].map((escalation, i) => (
+                            <FormGroup key={escalation} check={true}>
+                                <Label check={true}>
+                                    <Input type='checkbox' checked={selectFilter.includes(escalation)} onChange={e => handleFilterChange(e, escalation)}/>
+                                    {escalation}
+                                </Label>
+                            </FormGroup>
+                        ))
+                        : header === 'assigned'
+                            ? selected.assignees.map((assignee, i) => (
+                                <FormGroup key={assignee.fullName} check={true}>
+                                    <Label check={true}>
+                                        <Input type='checkbox' checked={selectFilter.includes(assignee.fullName)} onChange={e => handleFilterChange(e, assignee.fullName)}/>
+                                        {assignee.fullName}
+                                    </Label>
+                                </FormGroup>
+                            ))
+                            : header === 'status'
+                                ? ['OPEN', 'IN_REVIEW', 'RESOLVED', 'ARCHIVED'].map((status, i) => (
+                                    <FormGroup key={status} check={true}>
+                                        <Label check={true}>
+                                            <Input type='checkbox' checked={selectFilter.includes(status)} onChange={e => handleFilterChange(e, status)}/>
+                                            {status}
+                                        </Label>
+                                    </FormGroup>
+                                ))
+                                : null}
+
             </div>
             <DropdownItem divider={true} />
             <Button label={<><Typography weight='light' variant='size-14'>Reset</Typography></>}
@@ -156,74 +187,74 @@ function SelectColumnFilter({
 
 // This is a custom filter UI for selecting
 // a unique option from a list
-function RadioColumnFilter({
-    column: { setFilter }
-}) {
-    // Calculate the options for filtering
-    // using the preFilteredRows
-    const [radioFilter, setRadioFilter] = useState(0);
+// function RadioColumnFilter({
+//     column: { setFilter }
+// }) {
+//     // Calculate the options for filtering
+//     // using the preFilteredRows
+//     const [radioFilter, setRadioFilter] = useState(0);
 
-    useEffect(() => {
-        setFilter(radioFilter);
-    }, [radioFilter]);
+//     useEffect(() => {
+//         setFilter(radioFilter);
+//     }, [radioFilter]);
 
-    const handleRadioFilterChange = (e, value) => {
-        const isChecked = e.target.checked;
+//     const handleRadioFilterChange = (e, value) => {
+//         const isChecked = e.target.checked;
 
-        isChecked
-            ? setRadioFilter(value)
-            : setRadioFilter(0);
-    };
+//         isChecked
+//             ? setRadioFilter(value)
+//             : setRadioFilter(0);
+//     };
 
-    const handleResetFilter = () => {
-        setFilter(undefined);
-        setRadioFilter(0);
-    };
+//     const handleResetFilter = () => {
+//         setFilter(undefined);
+//         setRadioFilter(0);
+//     };
 
-    // Render a multi-select box
-    return (
-        <CustomDropdown tag='span'
-            toggle={<img className='table__filter-icon cursor-pointer' src={filterIcon} alt='talbe-filter-icon' />}>
-            <DropdownItem header={true} className='text-center'>
-                <img src={filterIcon} alt='talbe-filter-icon' />
-            </DropdownItem>
-            <DropdownItem divider={true} />
-            <div className='table__quantity-filter-options'>
-                <FormGroup check={true}>
-                    <Label check={true}>
-                        <Input type='radio' name='radio1'
-                            checked={radioFilter === 1} onChange={e => handleRadioFilterChange(e, 1)} />{' '}
-                        Below 100K
-                    </Label>
-                </FormGroup>
-                <FormGroup check={true}>
-                    <Label check={true}>
-                        <Input type='radio' name='radiotwo'
-                            checked={radioFilter === 2} onChange={e => handleRadioFilterChange(e, 2)} />{' '}
-                        100K - 500K
-                    </Label>
-                </FormGroup>
-                <FormGroup check={true}>
-                    <Label check={true}>
-                        <Input type='radio' name='radio3'
-                            checked={radioFilter === 3} onChange={e => handleRadioFilterChange(e, 3)} />{' '}
-                        501K - 1M
-                    </Label>
-                </FormGroup>
-                <FormGroup check={true}>
-                    <Label check={true}>
-                        <Input type='radio' name='radio4'
-                            checked={radioFilter === 4} onChange={e => handleRadioFilterChange(e, 4)} />{' '}
-                        Above 1M
-                    </Label>
-                </FormGroup>
-            </div>
-            <DropdownItem divider={true} />
-            <Button label={<><Typography weight='light' variant='size-14'>Reset</Typography></>}
-                className='table__filter-reset-button float-right mr-2' onClick={() => handleResetFilter()}/>
-        </CustomDropdown>
-    );
-}
+//     // Render a multi-select box
+//     return (
+//         <CustomDropdown tag='span'
+//             toggle={<img className='table__filter-icon cursor-pointer' src={filterIcon} alt='talbe-filter-icon' />}>
+//             <DropdownItem header={true} className='text-center'>
+//                 <img src={filterIcon} alt='talbe-filter-icon' />
+//             </DropdownItem>
+//             <DropdownItem divider={true} />
+//             <div className='table__quantity-filter-options'>
+//                 <FormGroup check={true}>
+//                     <Label check={true}>
+//                         <Input type='radio' name='radio1'
+//                             checked={radioFilter === 1} onChange={e => handleRadioFilterChange(e, 1)} />{' '}
+//                         Below 100K
+//                     </Label>
+//                 </FormGroup>
+//                 <FormGroup check={true}>
+//                     <Label check={true}>
+//                         <Input type='radio' name='radiotwo'
+//                             checked={radioFilter === 2} onChange={e => handleRadioFilterChange(e, 2)} />{' '}
+//                         100K - 500K
+//                     </Label>
+//                 </FormGroup>
+//                 <FormGroup check={true}>
+//                     <Label check={true}>
+//                         <Input type='radio' name='radio3'
+//                             checked={radioFilter === 3} onChange={e => handleRadioFilterChange(e, 3)} />{' '}
+//                         501K - 1M
+//                     </Label>
+//                 </FormGroup>
+//                 <FormGroup check={true}>
+//                     <Label check={true}>
+//                         <Input type='radio' name='radio4'
+//                             checked={radioFilter === 4} onChange={e => handleRadioFilterChange(e, 4)} />{' '}
+//                         Above 1M
+//                     </Label>
+//                 </FormGroup>
+//             </div>
+//             <DropdownItem divider={true} />
+//             <Button label={<><Typography weight='light' variant='size-14'>Reset</Typography></>}
+//                 className='table__filter-reset-button float-right mr-2' onClick={() => handleResetFilter()}/>
+//         </CustomDropdown>
+//     );
+// }
 
 // For row selection
 const IndeterminateCheckbox = React.forwardRef(
@@ -333,7 +364,7 @@ function Table({
     );
 
     useEffect(() => {
-        dispatch(setAppliedFilters(state.filters));
+        // dispatch(setAppliedFilters(state.filters));
         dispatch(setFilteredRows(page.map(p => p.original.id)));
     }, [state.filters]);
 
@@ -519,26 +550,26 @@ function multiSelectFilter(rows, columnIds, filterValue) {
 }
 
 // Quantity custom filter function!
-function filterGreaterThan(rows, id, filterValue) {
-    const result = rows.filter(row => {
-        const rowValue = row.values[id];
+// function filterGreaterThan(rows, id, filterValue) {
+//     const result = rows.filter(row => {
+//         const rowValue = row.values[id];
 
-        switch (filterValue) {
-            case 1:
-                return rowValue <= 100000;
-            case 2:
-                return rowValue > 100000 && rowValue <= 500000;
-            case 3:
-                return rowValue > 500001 && rowValue <= 1000000;
-            case 4:
-                return rowValue > 1000000;
-            default:
-                return rowValue;
-        }
-    });
+//         switch (filterValue) {
+//             case 1:
+//                 return rowValue <= 100000;
+//             case 2:
+//                 return rowValue > 100000 && rowValue <= 500000;
+//             case 3:
+//                 return rowValue > 500001 && rowValue <= 1000000;
+//             case 4:
+//                 return rowValue > 1000000;
+//             default:
+//                 return rowValue;
+//         }
+//     });
 
-    return result;
-}
+//     return result;
+// }
 
 type Props = {
     children?: string | React.Node,
@@ -573,8 +604,8 @@ export default function ReactTable({
                 Header: column.header,
                 accessor: column.accessor,
                 disableFilters: column.disableFilters,
-                Filter: column.accessor !== 'quantity' ? SelectColumnFilter : RadioColumnFilter,
-                filter: column.accessor !== 'quantity' ? multiSelectFilter : filterGreaterThan,
+                Filter: SelectColumnFilter,
+                filter: multiSelectFilter,
                 Cell: e => column.accessor === 'alertDate'
                     ? <span>{moment(e.value).format('DD/MM/YY')}</span>
                     : <span className={`${column.clickable

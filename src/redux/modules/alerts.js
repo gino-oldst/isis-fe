@@ -93,7 +93,7 @@ const initialState = {
             {
                 header: 'Quantity',
                 accessor: 'quantity',
-                disableFilters: false,
+                disableFilters: true,
                 clickable: false
             },
             {
@@ -123,7 +123,7 @@ const initialState = {
             {
                 header: 'Parameter',
                 accessor: 'parameterValues',
-                disableFilters: false,
+                disableFilters: true,
                 clickable: false
             }
         ],

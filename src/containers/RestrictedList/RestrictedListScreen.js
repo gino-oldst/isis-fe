@@ -107,7 +107,12 @@ function RestrictedListScreen({
     // }, [dateRangeFilter, dateRangeValues]);
 
     useEffect(() => {
-        loadRestrictedList(activePage, pageSize, dateRangeValues.start.toISOString(), dateRangeValues.end.toISOString());
+        loadRestrictedList(
+            activePage,
+            pageSize,
+            `${dateRangeValues.start.toISOString().split('T')[0]}T00:00:00Z`,
+            `${dateRangeValues.end.toISOString().split('T')[0]}T23:59:59Z`
+        );
     }, [dateRangeFilter, dateRangeValues, pageSize, activePage]);
 
     return (
