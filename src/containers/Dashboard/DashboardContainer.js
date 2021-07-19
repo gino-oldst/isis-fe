@@ -44,13 +44,13 @@ export default function DashboardContainer({
             if (moment(date).isAfter(moment(dateRange.to))) {
                 alert('FROM cannot be greater than TO');
             } else {
-                dispatch(setDashboardDateRange('from', `${DATE_TO_UTC(date).split('T')[0]} 00:00:00`));
+                dispatch(setDashboardDateRange('from', moment(date)));
             }
         } else {
             if (moment(date).isBefore(moment(dateRange.from))) {
                 alert('TO cannot be less than FROM');
             } else {
-                dispatch(setDashboardDateRange('to', `${DATE_TO_UTC(date).split('T')[0]} 23:59:00`));
+                dispatch(setDashboardDateRange('to', moment(date)));
             }
         }
     };

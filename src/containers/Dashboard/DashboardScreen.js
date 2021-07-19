@@ -102,6 +102,8 @@ function DashboardScreen({
         return data;
     };
 
+    console.log(dashboardData.alertsPerDateSummary);
+
     const makeLineChartData = () => {
         const data = {
             labels: dashboardData.alertsPerDateSummary.map(stat => moment(stat.alertDate).format('MM/D')),
