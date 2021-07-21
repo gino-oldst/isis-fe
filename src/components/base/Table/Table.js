@@ -108,7 +108,7 @@ function SelectColumnFilter({
             setSelectFilter([...selectFilter.filter(val => val !== value)]);
         }
 
-        dispatch(setAppliedFilters(id, value.toUpperCase(), isChecked, columnsWithCheckbox.includes(id)));
+        dispatch(setAppliedFilters(id, value, isChecked, columnsWithCheckbox.includes(id)));
     };
 
     const handleSearch = value => {
@@ -134,16 +134,18 @@ function SelectColumnFilter({
                 <img src={filterIcon} alt='talbe-filter-icon' />
             </DropdownItem>
             <DropdownItem divider={true} />
-            <DropdownItem header={true}>
-                <Input type='text' name='search' placeholder='Search...'
-                    bsSize='md' value={searchFilter} onChange={e => handleSearch(e.target.value)} />
-            </DropdownItem>
+            {!columnsWithCheckbox.includes(id) &&
+                <DropdownItem header={true}>
+                    <Input type='text' name='search' placeholder='Search...'
+                        bsSize='md' value={searchFilter} onChange={e => handleSearch(e.target.value)} />
+                </DropdownItem>
+            }
             <div className='table__filter-options overflow-auto'>
                 {header === 'alert type'
                     ? table.data.map((alert, i) => (
                         <FormGroup key={alert.code} check={true}>
                             <Label check={true}>
-                                <Input type='checkbox' checked={selectFilter.includes(alert.code)} onChange={e => handleFilterChange(e, alert.code)}/>
+                                <Input type='checkbox' checked={selectFilter.includes(alert.id)} onChange={e => handleFilterChange(e, alert.id)}/>
                                 {alert.code}
                             </Label>
                         </FormGroup>
@@ -152,7 +154,7 @@ function SelectColumnFilter({
                         ? ['Base', 'Manager', 'CO'].map((escalation, i) => (
                             <FormGroup key={escalation} check={true}>
                                 <Label check={true}>
-                                    <Input type='checkbox' checked={selectFilter.includes(escalation)} onChange={e => handleFilterChange(e, escalation)}/>
+                                    <Input type='checkbox' checked={selectFilter.includes(escalation.toUpperCase())} onChange={e => handleFilterChange(e, escalation.toUpperCase())}/>
                                     {escalation}
                                 </Label>
                             </FormGroup>
@@ -161,7 +163,7 @@ function SelectColumnFilter({
                             ? selected.assignees.map((assignee, i) => (
                                 <FormGroup key={assignee.fullName} check={true}>
                                     <Label check={true}>
-                                        <Input type='checkbox' checked={selectFilter.includes(assignee.fullName)} onChange={e => handleFilterChange(e, assignee.fullName)}/>
+                                        <Input type='checkbox' checked={selectFilter.includes(assignee.id)} onChange={e => handleFilterChange(e, assignee.id)}/>
                                         {assignee.fullName}
                                     </Label>
                                 </FormGroup>
@@ -170,7 +172,7 @@ function SelectColumnFilter({
                                 ? ['OPEN', 'IN_REVIEW', 'RESOLVED', 'ARCHIVED'].map((status, i) => (
                                     <FormGroup key={status} check={true}>
                                         <Label check={true}>
-                                            <Input type='checkbox' checked={selectFilter.includes(status)} onChange={e => handleFilterChange(e, status)}/>
+                                            <Input type='checkbox' checked={selectFilter.includes(status.toUpperCase())} onChange={e => handleFilterChange(e, status.toUpperCase())}/>
                                             {status}
                                         </Label>
                                     </FormGroup>
