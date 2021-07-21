@@ -175,7 +175,8 @@ function DashboardScreen({
                 <div className='dashboard__header d-block d-md-flex align-items-center mb-4'>
                     <Typography color='color-3' className='dashboard__title mr-auto mb-4 mb-md-0'>MAR Alerts Overview</Typography>
                     <Button label={<><FontAwesomeIcon className='mr-3' icon='file-download' size='sm' /><span className='font-weight-light'>Download</span></>}
-                        className='dashboard__download-button' size='lg' onClick={handleDashboardDownload} />
+                        disabled={loading} className='dashboard__download-button' size='lg'
+                        onClick={handleDashboardDownload} />
                 </div>
                 <div>
                     <Row>
