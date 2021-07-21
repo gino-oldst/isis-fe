@@ -27,6 +27,7 @@ export default function AlertsContainer({
     const [loading, setLoading] = useState(false);
     const { isRowsSelected, selectedRows, filteredRows, appliedFilters } = useSelector(({ table }) => table);
     const { table, selected } = useSelector(({ alerts }) => alerts);
+    const behaviours = useSelector(({ behaviours }) => behaviours);
     const breadcrumb = [
         {
             label: 'Home',
@@ -85,7 +86,14 @@ export default function AlertsContainer({
         const payload = {
             alertIds: isRowsSelected > 0 ? selectedRows : filteredRows,
             dateRange: `${moment(date.start).format('L')} to ${moment(date.end).format('L')}`,
-            filteredApplied: appliedFilters.filter(filter => (filter.id !== 'quantity' && filter.value.length > 0) || (filter.id === 'quantity' && filter.value > 0)).map(filter => `${filter.id}: [${filter.value}]`).join(', ')
+            filteredApplied: appliedFilters.filter(filter =>
+                (filter.id !== 'quantity' && filter.value.length > 0) ||
+                (filter.id === 'quantity' && filter.value > 0)
+            ).map(filter => `${filter.id}: [${filter.id.toLowerCase() === 'behaviourcode'
+                    ? filter.value.map(val => behaviours.table.data.filter(code => code.id === val)[0].code)
+                    : filter.id.toLowerCase() === 'assigneduser'
+                        ? filter.value.map(val => selected.assignees.filter(user => user.id === val)[0].fullName)
+                        : filter.value}]`).join(',')
         };
 
         await downloadAlertsList(payload);

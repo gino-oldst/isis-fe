@@ -57,7 +57,7 @@ const initialState = {
             {
                 header: 'Restricted Date',
                 accessor: 'restrictedDate',
-                disableFilters: false,
+                disableFilters: true,
                 clickable: false
             }
         ],

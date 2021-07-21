@@ -21,9 +21,33 @@ export async function getAlerts(
         alertDateToRange: dateTo
     };
 
-    relevantFilters.map(body => (
-        filterBody[body.id] = body.value.join(',')
-    ));
+    relevantFilters.map(body => {
+        let key = '';
+        let value = body.value;
+
+        switch (body.id.toLowerCase()) {
+            case 'behaviourcode':
+                key = 'behaviourIdList';
+                break;
+            case 'escalation':
+                key = 'escalationList';
+                break;
+            case 'assigneduser':
+                key = 'assignedUserIdList';
+                break;
+            case 'status':
+                key = 'statusList';
+                break;
+            default:
+                key = body.id;
+                value = body.value.join(',');
+                break;
+        }
+
+        filterBody[key] = value;
+
+        return null;
+    });
 
     return await makeApiCall(`${GET_ALERTS}?page=${page}&size=${size}`, 'POST', filterBody);
 }
