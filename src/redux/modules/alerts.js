@@ -73,20 +73,8 @@ const initialState = {
                 clickable: false
             },
             {
-                header: 'Broker',
-                accessor: 'broker',
-                disableFilters: false,
-                clickable: false
-            },
-            {
                 header: 'Ticker',
                 accessor: 'ticker',
-                disableFilters: false,
-                clickable: false
-            },
-            {
-                header: 'Book',
-                accessor: 'book',
                 disableFilters: false,
                 clickable: false
             },
@@ -99,6 +87,18 @@ const initialState = {
             {
                 header: 'Client',
                 accessor: 'client',
+                disableFilters: false,
+                clickable: false
+            },
+            {
+                header: 'Client Broker',
+                accessor: 'broker',
+                disableFilters: false,
+                clickable: false
+            },
+            {
+                header: 'Book',
+                accessor: 'book',
                 disableFilters: false,
                 clickable: false
             },
