@@ -454,9 +454,9 @@ function Table({
                         )
                         : (
                             <tr>
-                                <th className='text-muted'>
+                                <td className='text-muted' colSpan={12}>
                                     No data available
-                                </th>
+                                </td>
                             </tr>
                         )}
                 </tbody>
