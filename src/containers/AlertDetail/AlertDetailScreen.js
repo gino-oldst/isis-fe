@@ -1,6 +1,7 @@
 // @flow
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import validator from 'validator';
 import moment from 'moment';
 import Badge from '../../components/base/Badge/Badge';
 import Button from '../../components/base/Button/Button';
@@ -79,9 +80,11 @@ function AlertDetailScreen({
     const showResolveAlert = () => {
         dispatch(setModalContent({
             modalContent: <ResolveAlertModal submit={submit} selectedAlert={selectedAlert} handleCloseModal={handleCloseModal}
-                handleUpdateAlert={handleUpdateAlert} handleChange={handleChange} />
+                handleUpdateAlert={handleUpdateAlert} alert={alert} handleChange={handleChange} />
         }));
     };
+
+    console.log(alert);
 
     const handleChange = (e, option) => {
         let name, value;
@@ -149,10 +152,10 @@ function AlertDetailScreen({
     //     const errors = {};
     //     let formIsValid = true;
 
-    //     if (validator.isEmpty(alert.notes) && validator.isEmpty(selectedAlert.notes)) {
+    //     if (validator.isEmpty(alert.resolveReason) || typeof alert.resolveReason === 'undefined') {
     //         formIsValid = false;
-    //         errors.notes = true;
-    //         errors.notesErrMsg = 'Notes is required';
+    //         errors.resolveReason = true;
+    //         errors.resolveReasonErrMsg = 'Reason is required';
     //     }
 
     //     setAlert({
@@ -442,6 +445,7 @@ const ResolveAlertModal = ({
     selectedAlert,
     handleCloseModal,
     handleUpdateAlert,
+    alert,
     handleChange
 }) => {
     return (
@@ -454,25 +458,12 @@ const ResolveAlertModal = ({
             </Typography>
             <FormGroup className='mb-4'>
                 <Label for='resolveReason'>Reason of Resolving Alert</Label>
-                <Select
-                    name='resolveReason'
-                    defaultValue={{
-                        label: selectedAlert.resolveReason,
-                        value: selectedAlert.resolveReason
-                    }}
-                    options={[
-                        {
-                            name: 'FALSE_ALARM',
-                            label: 'FALSE_ALARM',
-                            value: 'FALSE_ALARM'
-                        },
-                        {
-                            name: 'INVESTIGATED',
-                            label: 'INVESTIGATED',
-                            value: 'INVESTIGATED'
-                        }
-                    ]}
-                    onChangeHandler={handleChange} />
+                <Input type='textarea' name='resolveReason' id='resolveReason'
+                    rows={4} placeholder='Reason...' onChange={handleChange}
+                    invalid={alert.errors.resolveReason} />
+                <FormFeedback className={`${alert.errors.resolveReason ? 'd-block' : 'd-none'}`}>
+                    {alert.errors.resolveReasonErrMsg}
+                </FormFeedback>
             </FormGroup>
             <div className='resolve-alert__buttons d-flex justify-content-center'>
                 <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'

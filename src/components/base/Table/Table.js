@@ -454,7 +454,7 @@ function Table({
                         )
                         : (
                             <tr>
-                                <td className='text-muted' colSpan={12}>
+                                <td className='text-muted text-center' colSpan={12}>
                                     No data available
                                 </td>
                             </tr>

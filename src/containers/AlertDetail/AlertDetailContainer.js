@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import AlertDetailScreen from './AlertDetailScreen';
 
+import { getUsers } from '../../api/users';
 import { getAlert, downloadAlertsRecord } from '../../api/alerts';
-import { setSelectedAlert } from '../../redux/modules/alerts';
+import { setAssignees, setSelectedAlert } from '../../redux/modules/alerts';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -38,6 +39,7 @@ export default function AlertDetailContainer({
 
     useEffect(() => {
         loadAlertDetails();
+        loadUsers();
     }, []);
 
     const loadAlertDetails = async () => {
@@ -53,6 +55,13 @@ export default function AlertDetailContainer({
         }
 
         setLoading(false);
+    };
+
+    const loadUsers = async () => {
+        const users = await getUsers();
+        const filteredUsers = users.data.data.filter(user => user.userRegistrationType === 'EMAIL');
+
+        dispatch(setAssignees(filteredUsers));
     };
 
     const handleDownloadAlertsRecord = async () => {
