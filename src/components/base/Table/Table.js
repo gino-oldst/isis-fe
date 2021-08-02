@@ -81,6 +81,7 @@ fuzzyTextFilterFn.autoRemove = val => !val;
 // This is a custom filter UI for selecting
 // a unique option from a list
 function SelectColumnFilter({
+    column,
     column: { Header, filterValue, setFilter, preFilteredRows, id }
 }) {
     // Calculate the options for filtering
@@ -89,6 +90,7 @@ function SelectColumnFilter({
     const [searchFilter, setSearchFilter] = useState('');
     const { selected } = useSelector(({ alerts }) => alerts);
     const { table } = useSelector(({ behaviours }) => behaviours);
+    const { appliedFilters } = useSelector(({ table }) => table);
     const columnsWithCheckbox = ['behaviourCode', 'escalation', 'assignedUser', 'status'];
     const dispatch = useDispatch();
 
@@ -124,12 +126,20 @@ function SelectColumnFilter({
         dispatch(resetAppliedFilters(id));
     };
 
+    const columnIsFiltered = () => {
+        const hasFilterOn = appliedFilters.filter(filter => filter.id === id && filter.value.length > 0);
+
+        if (hasFilterOn.length > 0) return <FontAwesomeIcon className='table__filter-icon-active cursor-pointer' icon='filter' />;
+
+        return <img className='table__filter-icon cursor-pointer' src={filterIcon} alt='talbe-filter-icon' />;
+    };
+
     const header = Header.toLowerCase();
 
     // Render a multi-select box
     return (
         <CustomDropdown tag='span'
-            toggle={<img className='table__filter-icon cursor-pointer' src={filterIcon} alt='talbe-filter-icon' />}>
+            toggle={columnIsFiltered()}>
             <DropdownItem header={true} className='text-center'>
                 <img src={filterIcon} alt='talbe-filter-icon' />
             </DropdownItem>

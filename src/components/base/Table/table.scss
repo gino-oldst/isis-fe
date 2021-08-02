@@ -7,6 +7,13 @@
         margin-bottom: 0.3rem;
         color: $color-sidebar-2;
         font-size: 1rem;
+
+        &-active {
+            margin-left: 0.5rem;
+            margin-bottom: 0;
+            color: $color-sidebar-2;
+            font-size: 1rem;
+        }
     }
 
     &__sort-icon {
