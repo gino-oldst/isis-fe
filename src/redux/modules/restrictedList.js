@@ -43,14 +43,14 @@ const initialState = {
                 clickable: false
             },
             {
-                header: 'Summary',
-                accessor: 'summary',
+                header: 'Ticker',
+                accessor: 'ticker',
                 disableFilters: false,
                 clickable: false
             },
             {
-                header: 'Ticker',
-                accessor: 'ticker',
+                header: 'Summary',
+                accessor: 'summary',
                 disableFilters: false,
                 clickable: false
             },

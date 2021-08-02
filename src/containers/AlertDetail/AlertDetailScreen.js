@@ -1,7 +1,6 @@
 // @flow
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import validator from 'validator';
 import moment from 'moment';
 import Badge from '../../components/base/Badge/Badge';
 import Button from '../../components/base/Button/Button';
@@ -83,8 +82,6 @@ function AlertDetailScreen({
                 handleUpdateAlert={handleUpdateAlert} alert={alert} handleChange={handleChange} />
         }));
     };
-
-    console.log(alert);
 
     const handleChange = (e, option) => {
         let name, value;
