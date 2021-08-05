@@ -466,7 +466,7 @@ const ErrorMsgModal = ({
                 onClick={handleCloseModal} />
             <Typography variant='size-26' color='color-3'
                 className='mb-5 playfair-font'>
-                Something went wrong
+                Error
             </Typography>
             <Alert color='danger' className='mb-5'>
                 <Typography color='color-3' variant='size-16' className='playfair-font'>{errMsg}</Typography>
