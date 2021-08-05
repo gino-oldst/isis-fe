@@ -65,7 +65,7 @@ function AlertsScreen({
     handleDownloadAlertsList
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
-    const { pageSize, activePage, appliedFilters } = useSelector(({ table }) => table);
+    const { pageSize, activePage, appliedFilters, sort } = useSelector(({ table }) => table);
     const { table } = useSelector(({ alerts }) => alerts);
 
     const showActionsModal = () => {
@@ -133,9 +133,10 @@ function AlertsScreen({
             pageSize,
             `${dateRangeValues.start.toISOString().split('T')[0]}T00:00:00Z`,
             `${dateRangeValues.end.toISOString().split('T')[0]}T23:59:59Z`,
-            appliedFilters
+            appliedFilters,
+            sort
         );
-    }, [dateRangeFilter, dateRangeValues, pageSize, activePage, appliedFilters]);
+    }, [dateRangeFilter, dateRangeValues, pageSize, activePage, appliedFilters, sort]);
 
     return (
         <div className='alerts'>

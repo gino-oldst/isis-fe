@@ -62,8 +62,8 @@ export default function AlertsContainer({
         setLoading(false);
     };
 
-    const loadAlerts = async (page, size, fromDate, toDate, appliedFilters) => {
-        const alerts = await getAlerts(page, size, fromDate, toDate, appliedFilters);
+    const loadAlerts = async (page, size, fromDate, toDate, appliedFilters, sort) => {
+        const alerts = await getAlerts(page, size, fromDate, toDate, appliedFilters, sort);
         const { data, totalNoOfRecords, totalPages } = alerts.data;
 
         dispatch(setAlertsData(data, totalNoOfRecords, totalPages));

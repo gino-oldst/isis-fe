@@ -12,7 +12,8 @@ export async function getAlerts(
     size: String,
     dateFrom: String,
     dateTo: String,
-    filters: Array
+    filters: Array,
+    sort: Object
 ) {
     const relevantFilters = filters.filter(item => item.value.length > 0);
 
@@ -49,7 +50,9 @@ export async function getAlerts(
         return null;
     });
 
-    return await makeApiCall(`${GET_ALERTS}?page=${page}&size=${size}`, 'POST', filterBody);
+    const withSorting = () => sort.column !== '' && sort.type !== '' ? `&sort=${sort.column},${sort.type}` : '';
+
+    return await makeApiCall(`${GET_ALERTS}?page=${page}&size=${size}${withSorting()}`, 'POST', filterBody);
 }
 
 export async function getAlert(id: String) {
