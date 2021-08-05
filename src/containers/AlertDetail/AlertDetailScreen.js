@@ -66,7 +66,7 @@ function AlertDetailScreen({
 
     useEffect(() => {
         if (alert.status === 'RESOLVED') showResolveAlert();
-    }, [submit, alert]);
+    }, [alert.status]);
 
     const showError = errMsg => {
         dispatch(setModalContent({
@@ -78,7 +78,7 @@ function AlertDetailScreen({
 
     const showResolveAlert = () => {
         dispatch(setModalContent({
-            modalContent: <ResolveAlertModal submit={submit} selectedAlert={selectedAlert} handleCloseModal={handleCloseModal}
+            modalContent: <ResolveAlertModal selectedAlert={selectedAlert} handleCloseModal={handleCloseModal}
                 handleUpdateAlert={handleUpdateAlert} alert={alert} handleChange={handleChange} />
         }));
     };
@@ -421,7 +421,7 @@ const ErrorMsgModal = ({
                 onClick={handleCloseModal} />
             <Typography variant='size-26' color='color-3'
                 className='mb-5 playfair-font'>
-                Something went wrong
+                Error
             </Typography>
             <Alert color='danger' className='mb-5'>
                 <Typography color='color-3' variant='size-16' className='playfair-font'>{errMsg}</Typography>
@@ -438,13 +438,14 @@ const ErrorMsgModal = ({
 };
 
 const ResolveAlertModal = ({
-    submit,
     selectedAlert,
     handleCloseModal,
     handleUpdateAlert,
     alert,
     handleChange
 }) => {
+    const [submit, setSubmit] = useState(false);
+
     return (
         <div className='alert-details__resolve-alert p-4'>
             <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
@@ -466,7 +467,10 @@ const ResolveAlertModal = ({
                 <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
                     onClick={handleCloseModal}/>
                 <Button label={`${!submit ? 'Done' : 'Saving...'}`} variant='primary' className='alerts__save-button px-4 py-2'
-                    disabled={submit} onClick={handleUpdateAlert} />
+                    disabled={submit} onClick={() => {
+                        setSubmit(true);
+                        handleUpdateAlert();
+                    }} />
             </div>
         </div>
     );
