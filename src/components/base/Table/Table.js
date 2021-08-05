@@ -23,7 +23,7 @@ import filterIcon from '../../../assets/images/ic_filter.svg';
 import './table.scss';
 
 import { useTable, useRowSelect, useFilters, useGlobalFilter, usePagination, useSortBy, useAsyncDebounce } from 'react-table';
-import { setIsRowSelected, setTablePageSize, setActivePage, setAppliedFilters, resetAppliedFilters, setFilteredRows } from '../../../redux/modules/table';
+import { setIsRowSelected, setTablePageSize, setActivePage, setAppliedFilters, resetAppliedFilters, setFilteredRows, setSortedColumn } from '../../../redux/modules/table';
 
 // Define a default UI for filtering
 function GlobalFilter({
@@ -299,6 +299,9 @@ function Table({
     sortable,
     fetching
 }) {
+    const [isAsc, setIsAsc] = useState(true);
+    const [sortBy, setSortBy] = useState('id');
+
     const filterTypes = useMemo(
         () => ({
             fuzzyText: fuzzyTextFilterFn,
@@ -398,6 +401,22 @@ function Table({
         dispatch(setActivePage(page));
     };
 
+    const handleSort = (key) => {
+        if (key === sortBy) {
+            setIsAsc(!isAsc);
+            dispatch(setSortedColumn(key, !isAsc ? 'ASC' : 'DESC'));
+        } else {
+            setSortBy(key);
+            setIsAsc(true);
+            dispatch(setSortedColumn(key, 'ASC'));
+        }
+    };
+
+    const renderSortControl = (key) =>
+        sortBy === key
+            ? isAsc ? ' 🔼' : ' 🔽'
+            : <FontAwesomeIcon icon='sort' size='sm' className='table__sort-icon' />;
+
     return (
         <>
             <ReactstrapTable responsive={true} {...getTableProps()}>
@@ -421,15 +440,9 @@ function Table({
                             {headerGroup.headers.map(column => (
                                 <th {...column.getHeaderProps()}>
                                     {/* Render the columns filter UI */}
-                                    <span {...column.getHeaderProps(sortable && column.getSortByToggleProps())}>
+                                    <span onClick={() => handleSort(column.id)} className='cursor-pointer'>
                                         {column.render('Header')}
-                                        {sortable &&
-                                            column.isSorted
-                                            ? column.isSortedDesc
-                                                ? ' 🔽'
-                                                : ' 🔼'
-                                            : sortable && typeof column.render('Header') === 'string' && <FontAwesomeIcon icon='sort' size='sm' className='table__sort-icon' />
-                                        }
+                                        {column.id !== 'selection' && renderSortControl(column.id)}
                                     </span>
                                     {column.canFilter ? column.render('Filter') : null}
                                 </th>

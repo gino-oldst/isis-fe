@@ -3,6 +3,7 @@ const SET_IS_ROW_SELECTED = 'SET_IS_ROW_SELECTED';
 const SET_APPLIED_FILTERS = 'SET_APPLIED_FILTERS';
 const RESET_APPLIED_FILTERS = 'RESET_APPLIED_FILTERS';
 const SET_FILTERED_ROWS = 'SET_FILTERED_ROWS';
+const SET_SORTED_COLUMN = 'SET_SORTED_COLUMN';
 const SET_PAGE_SIZE = 'SET_PAGE_SIZE';
 const SET_ACTIVE_PAGE = 'SET_ACTIVE_PAGE';
 const RESET_STATE = 'RESET_STATE';
@@ -29,6 +30,14 @@ export function setAppliedFilters(
         value,
         isChecked,
         isArray
+    };
+}
+
+export function setSortedColumn(column: String, sortType: String): { column: String, sortType: String } {
+    return {
+        type: SET_SORTED_COLUMN,
+        column,
+        sortType
     };
 }
 
@@ -104,6 +113,10 @@ const initialState = {
             value: []
         }
     ],
+    sort: {
+        column: '',
+        sortType: ''
+    },
     pageSize: 10,
     activePage: 0
 };
@@ -115,6 +128,14 @@ export default function table(state: Object = initialState, action: Object) {
                 ...state,
                 isRowsSelected: action.count,
                 selectedRows: action.selectedRows
+            };
+        case SET_SORTED_COLUMN:
+            return {
+                ...state,
+                sort: {
+                    column: action.column,
+                    type: action.sortType
+                }
             };
 
         case SET_APPLIED_FILTERS: {
