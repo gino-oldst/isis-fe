@@ -36,7 +36,7 @@ export default function RestrictedListContainer({
         setLoading(true);
 
         try {
-            const restrictedList = await getRestrictedList();
+            const restrictedList = await getRestrictedList(page, size, fromDate, toDate);
             const { data, totalNoOfRecords, totalPages } = restrictedList.data;
 
             dispatch(setRestrictedListData(data, totalNoOfRecords, totalPages));
