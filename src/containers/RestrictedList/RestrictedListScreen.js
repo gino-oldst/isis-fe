@@ -1,7 +1,7 @@
 // @flow
 import React, { useState, useEffect, createRef } from 'react';
 import moment from 'moment';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Table from '../../components/base/Table/Table';
 import Button from '../../components/base/Button/Button';
 import DatePicker from '../../components/base/DatePicker/DatePicker';
@@ -24,6 +24,8 @@ import {
     Label
 } from 'reactstrap';
 import './restricted-list.scss';
+
+import { setLoading } from '../../redux/modules/restrictedList';
 
 type Props = {
     loading: Boolean,
@@ -58,7 +60,8 @@ function RestrictedListScreen({
     handleDownloadAlertsList,
     loadRestrictedList
 }: Props): React$Element<any> {
-    const { pageSize, activePage } = useSelector(({ table }) => table);
+    const dispatch = useDispatch();
+    const { pageSize, activePage, appliedFilters, sort } = useSelector(({ table }) => table);
     const { table } = useSelector(({ restrictedList }) => restrictedList);
 
     const datepickerOpen = createRef();
@@ -102,18 +105,18 @@ function RestrictedListScreen({
         });
     };
 
-    // useEffect(() => {
-    //     dispatch(filterRestrictedListData(dateRangeFilter, dateRangeValues));
-    // }, [dateRangeFilter, dateRangeValues]);
-
     useEffect(() => {
+        dispatch(setLoading());
+
         loadRestrictedList(
             activePage,
             pageSize,
             `${dateRangeValues.start.toISOString().split('T')[0]}T00:00:00Z`,
-            `${dateRangeValues.end.toISOString().split('T')[0]}T23:59:59Z`
+            `${dateRangeValues.end.toISOString().split('T')[0]}T23:59:59Z`,
+            appliedFilters,
+            sort
         );
-    }, [dateRangeFilter, dateRangeValues, pageSize, activePage]);
+    }, [dateRangeFilter, dateRangeValues, pageSize, activePage, appliedFilters, sort]);
 
     return (
         <div className='restricted-list'>
