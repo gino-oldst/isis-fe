@@ -38,6 +38,7 @@ type Props = {
     handleCloseModal: Function,
     selectedAlert: Object,
     assignees: Array,
+    alertSpecifics: Object,
     handleDownloadAlertsRecord: Function
 }
 
@@ -49,6 +50,7 @@ function AlertDetailScreen({
     handleCloseModal,
     selectedAlert,
     assignees,
+    alertSpecifics,
     handleDownloadAlertsRecord
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
@@ -183,7 +185,7 @@ function AlertDetailScreen({
                             </div>
                             <Row className='mt-4'>
                                 <Col sm={12} md={12} lg={12}
-                                    xl={7}>
+                                    xl={8}>
                                     <div className='alert-detail__information'>
                                         {loading || Object.keys(selectedAlert).length === 0
                                             ? <Spinner animation='border' role='status' className='d-flex mx-auto my-5 text-center'>
@@ -192,48 +194,236 @@ function AlertDetailScreen({
                                             : <>
                                                 <Row>
                                                     <Col lg={12} xl={!isLaptopScreen ? 6 : 12}>
-                                                        <div className='d-flex align-items-center mb-2'>
-                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Alert Type</Typography>
-                                                            <Typography color='color-3'>{selectedAlert.behaviourDescription}</Typography>
-                                                        </div>
-                                                        <div className='d-flex align-items-center mb-2'>
-                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Date & Time</Typography>
-                                                            <Typography color='color-3'>{moment(selectedAlert.dateCreated).format('DD/MM/YY h:mm A')}</Typography>
-                                                        </div>
-                                                        <div className='d-flex align-items-center mb-2'>
-                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Broker</Typography>
-                                                            <Typography color='color-3'>{selectedAlert.broker}</Typography>
-                                                        </div>
-                                                        <div className='d-flex align-items-center mb-2'>
-                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Ticker</Typography>
-                                                            <Typography color='color-3'>{selectedAlert.ticker}</Typography>
-                                                        </div>
-                                                        <div className='d-flex align-items-center mb-2'>
-                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Quantity</Typography>
-                                                            <Typography color='color-3'>{selectedAlert.quantity}</Typography>
-                                                        </div>
+                                                        <table>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Alert Type</Typography>
+                                                                    </td>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3'>{selectedAlert.behaviourDescription || '—'}</Typography>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Date & Time</Typography>
+                                                                    </td>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3'>{moment(selectedAlert.dateCreated).format('DD/MM/YY h:mm A') || '—'}</Typography>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Broker</Typography>
+                                                                    </td>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3'>{selectedAlert.broker || '—'}</Typography>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Ticker</Typography>
+                                                                    </td>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3'>{selectedAlert.ticker || '—'}</Typography>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Quantity</Typography>
+                                                                    </td>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3'>{selectedAlert.quantity || '—'}</Typography>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Client</Typography>
+                                                                    </td>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3'>{selectedAlert.client || '—'}</Typography>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Order Type</Typography>
+                                                                    </td>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3'>{selectedAlert.orderType || '—'}</Typography>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Reason for Flag</Typography>
+                                                                    </td>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3'>{selectedAlert.reasonForFlag || '—'}</Typography>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Details</Typography>
+                                                                    </td>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3'>{selectedAlert.resolveReason || '—'}</Typography>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Parameter Values</Typography>
+                                                                    </td>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3'>{selectedAlert.parameterValues || '—'}</Typography>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
                                                     </Col>
                                                     <Col lg={12} xl={!isLaptopScreen ? 6 : 12}>
-                                                        <div className='d-flex align-items-center mb-2'>
-                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Client</Typography>
-                                                            <Typography color='color-3'>{selectedAlert.client}</Typography>
-                                                        </div>
-                                                        <div className='d-flex align-items-center mb-2'>
-                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Order Type</Typography>
-                                                            <Typography color='color-3'>{selectedAlert.orderType}</Typography>
-                                                        </div>
-                                                        <div className='d-flex align-items-center mb-2'>
-                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Reason for Flag</Typography>
-                                                            <Typography color='color-3'>{selectedAlert.reasonForFlag}</Typography>
-                                                        </div>
-                                                        <div className='d-flex align-items-center mb-2'>
-                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Details</Typography>
-                                                            <Typography color='color-3'>{selectedAlert.resolveReason}</Typography>
-                                                        </div>
-                                                        <div className='d-flex align-items-center mb-2'>
-                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Parameter Values</Typography>
-                                                            <Typography color='color-3'>{selectedAlert.parameterValues}</Typography>
-                                                        </div>
+                                                        <table>
+                                                            <tbody>
+                                                                {selectedAlert.behaviourCode === 'FLASH' && typeof alertSpecifics !== 'undefined' &&
+                                                                    <>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Buy Time</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{moment(alertSpecifics.buyTime).format('DD/MM/YY h:mm A') || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Buy Volume</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.buyVolume || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Buy Price</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.buyPrice || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Buy Fill ID</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.buyFillId || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Sell Time</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{moment(alertSpecifics.sellTime).format('DD/MM/YY h:mm A') || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Sell Volume</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.sellVolume || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Sell Price</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.sellPrice || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Sell Fill ID</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.sellFillId || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </>
+                                                                }
+                                                                {selectedAlert.behaviourCode === 'LARGE_ORDER' && typeof alertSpecifics !== 'undefined' &&
+                                                                    <>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.difference || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Volume</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.volume || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Direction</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.direction || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Historic High Volume</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.historicHighVolume || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Trade ID</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.tradeId || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </>
+                                                                }
+                                                                {selectedAlert.behaviourCode === 'HIGH_VOLUME' && typeof alertSpecifics !== 'undefined' &&
+                                                                    <>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Total Volume</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.totalVolume || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Historic Average Volume</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.historicAverageVolume || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.difference || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </>
+                                                                }
+                                                            </tbody>
+                                                        </table>
                                                     </Col>
                                                 </Row>
                                                 <Row className='mt-4'>
@@ -253,7 +443,7 @@ function AlertDetailScreen({
                                         }
                                     </div>
                                 </Col>
-                                <Col lg={12} xl={5} className='mt-4 mt-xl-0'>
+                                <Col lg={12} xl={4} className='mt-4 mt-xl-0'>
                                     <div className='alert-detail__assignees'>
                                         <Card>
                                             <CardBody>
