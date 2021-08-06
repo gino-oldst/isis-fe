@@ -123,7 +123,7 @@ const initialState = {
     ],
     sort: {
         column: '',
-        sortType: ''
+        sort: ''
     },
     pageSize: 10,
     activePage: 0
