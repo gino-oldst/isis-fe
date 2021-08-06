@@ -489,7 +489,7 @@ function Table({
                                 }}>
                                 {[10, 25, 50, 100].map(pageSize => (
                                     <option key={pageSize} value={pageSize}>
-                            Show {pageSize}
+                                        Show {pageSize}
                                     </option>
                                 ))}
                             </Input>

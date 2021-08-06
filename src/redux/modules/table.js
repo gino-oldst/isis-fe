@@ -111,6 +111,14 @@ const initialState = {
         {
             id: 'status',
             value: []
+        },
+        {
+            id: 'isin',
+            value: []
+        },
+        {
+            id: 'summary',
+            value: []
         }
     ],
     sort: {

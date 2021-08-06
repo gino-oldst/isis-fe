@@ -61,7 +61,7 @@ function RestrictedListScreen({
     loadRestrictedList
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
-    const { pageSize, activePage, appliedFilters, sort } = useSelector(({ restrictedListTable }) => restrictedListTable);
+    const { pageSize, activePage, appliedFilters, sort } = useSelector(({ table }) => table);
     const { table } = useSelector(({ restrictedList }) => restrictedList);
 
     const datepickerOpen = createRef();
@@ -104,10 +104,6 @@ function RestrictedListScreen({
             [type]: value
         });
     };
-
-    // useEffect(() => {
-    //     dispatch(filterRestrictedListData(dateRangeFilter, dateRangeValues));
-    // }, [dateRangeFilter, dateRangeValues]);
 
     useEffect(() => {
         dispatch(setLoading());

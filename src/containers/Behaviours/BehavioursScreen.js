@@ -35,7 +35,7 @@ function BehavioursScreen({
     viewBehaviourDetails
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
-    const { pageSize, activePage, sort } = useSelector(({ behavioursTable }) => behavioursTable);
+    const { pageSize, activePage, sort } = useSelector(({ table }) => table);
     const { table } = useSelector(({ behaviours }) => behaviours);
 
     useEffect(() => {
