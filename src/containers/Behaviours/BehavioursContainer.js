@@ -29,11 +29,11 @@ export default function BehavioursContainer({
         }
     ];
 
-    const loadBehavioursData = async (activePage, pageSize) => {
+    const loadBehavioursData = async (activePage, pageSize, sort) => {
         setLoading(true);
 
         try {
-            const behaviours = await getBehaviours();
+            const behaviours = await getBehaviours(activePage, pageSize, sort);
             const { data, totalNoOfRecords, totalPages } = behaviours.data;
 
             dispatch(setBehavioursData(data, totalNoOfRecords, totalPages));

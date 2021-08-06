@@ -35,13 +35,14 @@ function BehavioursScreen({
     viewBehaviourDetails
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
-    const { pageSize, activePage } = useSelector(({ table }) => table);
+    const { pageSize, activePage, sort } = useSelector(({ behavioursTable }) => behavioursTable);
     const { table } = useSelector(({ behaviours }) => behaviours);
 
     useEffect(() => {
         dispatch(setLoading());
-        loadBehavioursData(activePage, pageSize);
-    }, [pageSize, activePage]);
+
+        loadBehavioursData(activePage, pageSize, sort);
+    }, [pageSize, activePage, sort]);
 
     return (
         <div className='behaviours'>
