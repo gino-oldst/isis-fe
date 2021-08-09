@@ -282,8 +282,8 @@ function AlertDetailScreen({
                                                     <Col lg={12} xl={!isLaptopScreen ? 6 : 12}>
                                                         <table>
                                                             <tbody>
-                                                                {selectedAlert.behaviourCode === 'FLASH' &&
-                                                                typeof alertSpecifics !== 'undefined' &&
+                                                                {typeof alertSpecifics !== 'undefined' &&
+                                                                    selectedAlert.behaviourCode === 'FLASH' &&
                                                                     <>
                                                                         <tr>
                                                                             <td className='pb-2'>
@@ -351,9 +351,88 @@ function AlertDetailScreen({
                                                                         </tr>
                                                                     </>
                                                                 }
+                                                                {selectedAlert.behaviourCode === 'WASH_TRADES' &&
+                                                                    <>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Ticker</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.ticker || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Buy Volume</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.buyVolume || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Sell Volume</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.sellVolume || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Buy Trade ID</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.buyTradeId || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Sell Trade ID</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.sellTradeId || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </>
+                                                                }
+                                                                {selectedAlert.behaviourCode === 'RESTRICTED' &&
+                                                                    <>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Ticker</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.ticker || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Volume</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.volume || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Direction</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.direction || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Trade ID</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.tradeId || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </>
+                                                                }
                                                                 {(selectedAlert.behaviourCode === 'LARGE_ORDER' ||
                                                                 selectedAlert.behaviourCode === 'LARGE_ORDER_MUFP') &&
-                                                                typeof alertSpecifics !== 'undefined' &&
                                                                     <>
                                                                         <tr>
                                                                             <td className='pb-2'>
@@ -398,8 +477,9 @@ function AlertDetailScreen({
                                                                     </>
                                                                 }
                                                                 {(selectedAlert.behaviourCode === 'HIGH_VOLUME' ||
-                                                                selectedAlert.behaviourCode === 'HIGH_VOLUME_MUFP') &&
-                                                                typeof alertSpecifics !== 'undefined' &&
+                                                                selectedAlert.behaviourCode === 'HIGH_VOLUME_MUFP' ||
+                                                                selectedAlert.behaviourCode === 'HIGH_ORDER' ||
+                                                                selectedAlert.behaviourCode === 'HIGH_ORDER_MUFP') &&
                                                                     <>
                                                                         <tr>
                                                                             <td className='pb-2'>
