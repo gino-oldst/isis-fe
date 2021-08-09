@@ -282,7 +282,8 @@ function AlertDetailScreen({
                                                     <Col lg={12} xl={!isLaptopScreen ? 6 : 12}>
                                                         <table>
                                                             <tbody>
-                                                                {selectedAlert.behaviourCode === 'FLASH' && typeof alertSpecifics !== 'undefined' &&
+                                                                {selectedAlert.behaviourCode === 'FLASH' &&
+                                                                typeof alertSpecifics !== 'undefined' &&
                                                                     <>
                                                                         <tr>
                                                                             <td className='pb-2'>
@@ -350,7 +351,9 @@ function AlertDetailScreen({
                                                                         </tr>
                                                                     </>
                                                                 }
-                                                                {selectedAlert.behaviourCode === 'LARGE_ORDER' && typeof alertSpecifics !== 'undefined' &&
+                                                                {(selectedAlert.behaviourCode === 'LARGE_ORDER' ||
+                                                                selectedAlert.behaviourCode === 'LARGE_ORDER_MUFP') &&
+                                                                typeof alertSpecifics !== 'undefined' &&
                                                                     <>
                                                                         <tr>
                                                                             <td className='pb-2'>
@@ -394,7 +397,9 @@ function AlertDetailScreen({
                                                                         </tr>
                                                                     </>
                                                                 }
-                                                                {selectedAlert.behaviourCode === 'HIGH_VOLUME' && typeof alertSpecifics !== 'undefined' &&
+                                                                {(selectedAlert.behaviourCode === 'HIGH_VOLUME' ||
+                                                                selectedAlert.behaviourCode === 'HIGH_VOLUME_MUFP') &&
+                                                                typeof alertSpecifics !== 'undefined' &&
                                                                     <>
                                                                         <tr>
                                                                             <td className='pb-2'>
