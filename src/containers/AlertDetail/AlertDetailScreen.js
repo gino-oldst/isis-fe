@@ -194,7 +194,7 @@ function AlertDetailScreen({
                                             : <>
                                                 <Row>
                                                     <Col lg={12} xl={!isLaptopScreen ? 6 : 12}>
-                                                        <table>
+                                                        <table className='alert-detail__information-table'>
                                                             <tbody>
                                                                 <tr>
                                                                     <td className='pb-2'>
@@ -280,7 +280,7 @@ function AlertDetailScreen({
                                                         </table>
                                                     </Col>
                                                     <Col lg={12} xl={!isLaptopScreen ? 6 : 12}>
-                                                        <table>
+                                                        <table className='alert-detail__information-table__specifics'>
                                                             <tbody>
                                                                 {typeof alertSpecifics !== 'undefined' &&
                                                                     selectedAlert.behaviourCode === 'FLASH' &&
@@ -395,7 +395,7 @@ function AlertDetailScreen({
                                                                         </tr>
                                                                     </>
                                                                 }
-                                                                {selectedAlert.behaviourCode === 'RESTRICTED' &&
+                                                                {selectedAlert.behaviourCode === 'RESTRICTED_LIST' &&
                                                                     <>
                                                                         <tr>
                                                                             <td className='pb-2'>
@@ -563,18 +563,6 @@ function AlertDetailScreen({
                                                                     value: <Badge status='Archived'/>
                                                                 }]}
                                                                 onChangeHandler={handleChange} />
-                                                            <FormText color='muted'>
-                                                                {selectedAlert.status.toLowerCase() === 'resolved' &&
-                                                                    <>
-                                                                        <strong className='text-dark mr-1'>
-                                                                            {selectedAlert.resolveReason !== '' && selectedAlert.resolveReason !== undefined ? 'Reason:' : ''}
-                                                                        </strong>
-                                                                        <span>
-                                                                            {selectedAlert.resolveReason}
-                                                                        </span>
-                                                                    </>
-                                                                }
-                                                            </FormText>
                                                             </>
                                                         }
                                                     </Col>
