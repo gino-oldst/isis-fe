@@ -23,7 +23,7 @@ export async function getRestrictedList(
         return null;
     });
 
-    const withSorting = () => sort.column !== '' && sort.type !== '' ? `&sort=${sort.column},${sort.type}` : '';
+    const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sort.column},${sort.type}` : '';
 
     return await makeApiCall(`${GET_RESTRICTED_LIST}?page=${page}&size=${size}${withSorting()}`, 'POST', filterBody);
 }

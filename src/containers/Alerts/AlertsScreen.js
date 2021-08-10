@@ -80,7 +80,8 @@ function AlertsScreen({
                 dateTo={dateRangeValues.end.toISOString()}
                 handleCloseModal={handleCloseModal}
                 assignees={assignees}
-                appliedFilters={appliedFilters} />
+                appliedFilters={appliedFilters}
+                sort={sort} />
         }));
     };
 
@@ -298,7 +299,8 @@ const ActionModal = ({
     dateFrom,
     dateTo,
     assignees,
-    appliedFilters
+    appliedFilters,
+    sort
 }) => {
     const dispatch = useDispatch();
     const [submit, setSubmit] = useState(false);
@@ -352,7 +354,7 @@ const ActionModal = ({
                 if (result.data.length !== undefined && result.data.length > 0) {
                     showError(result.data[0].exceptionMessage);
                 } else {
-                    await loadAlerts(activePage, pageSize, dateFrom, dateTo, appliedFilters);
+                    await loadAlerts(activePage, pageSize, dateFrom, dateTo, appliedFilters, sort);
                     handleCloseModal();
                 }
             }, 1000);
