@@ -68,7 +68,7 @@ function AlertDetailScreen({
 
     useEffect(() => {
         if (alert.status === 'RESOLVED') showResolveAlert();
-    }, [alert.status]);
+    }, [alert]);
 
     const showError = errMsg => {
         dispatch(setModalContent({
@@ -206,26 +206,58 @@ function AlertDetailScreen({
                                                                 </tr>
                                                                 <tr>
                                                                     <td className='pb-2'>
-                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Date & Time</Typography>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Date</Typography>
                                                                     </td>
                                                                     <td className='pb-2'>
-                                                                        <Typography color='color-3'>{moment(selectedAlert.dateCreated).format('DD/MM/YY h:mm A') || '—'}</Typography>
+                                                                        <Typography color='color-3'>{selectedAlert.dateCreated ? moment(selectedAlert.dateCreated).format('DD/MM/YY h:mm A') : '—'}</Typography>
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Mariana Broker</Typography>
+                                                                    </td>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3'>{selectedAlert.behaviourDescription || '—'}</Typography>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Mariana Branch</Typography>
+                                                                    </td>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3'>{selectedAlert.behaviourDescription || '—'}</Typography>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Client ID</Typography>
+                                                                    </td>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3'>{selectedAlert.behaviourDescription || '—'}</Typography>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Client Name</Typography>
+                                                                    </td>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3'>{selectedAlert.behaviourDescription || '—'}</Typography>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Client Trader</Typography>
+                                                                    </td>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3'>{selectedAlert.behaviourDescription || '—'}</Typography>
+                                                                    </td>
+                                                                </tr>
+                                                                {/* <tr>
                                                                     <td className='pb-2'>
                                                                         <Typography color='color-3' className='mr-3' weight='semi-bold'>Broker</Typography>
                                                                     </td>
                                                                     <td className='pb-2'>
                                                                         <Typography color='color-3'>{selectedAlert.broker || '—'}</Typography>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Ticker</Typography>
-                                                                    </td>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3'>{selectedAlert.ticker || '—'}</Typography>
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
@@ -275,7 +307,7 @@ function AlertDetailScreen({
                                                                     <td className='pb-2'>
                                                                         <Typography color='color-3'>{selectedAlert.parameterValues || '—'}</Typography>
                                                                     </td>
-                                                                </tr>
+                                                                </tr> */}
                                                             </tbody>
                                                         </table>
                                                     </Col>
@@ -287,10 +319,18 @@ function AlertDetailScreen({
                                                                     <>
                                                                         <tr>
                                                                             <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Ticker</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{selectedAlert.ticker || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Buy Time</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{moment(alertSpecifics.buyTime).format('DD/MM/YY h:mm A') || '—'}</Typography>
+                                                                                <Typography color='color-3'>{alertSpecifics.buyTime ? moment(alertSpecifics.buyTime).format('DD/MM/YY h:mm A') : '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -322,7 +362,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Sell Time</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{moment(alertSpecifics.sellTime).format('DD/MM/YY h:mm A') || '—'}</Typography>
+                                                                                <Typography color='color-3'>{alertSpecifics.sellTime ? moment(alertSpecifics.sellTime).format('DD/MM/YY h:mm A') : '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -358,7 +398,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Ticker</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.ticker || '—'}</Typography>
+                                                                                <Typography color='color-3'>{selectedAlert.ticker || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -402,7 +442,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Ticker</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.ticker || '—'}</Typography>
+                                                                                <Typography color='color-3'>{selectedAlert.ticker || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -436,10 +476,10 @@ function AlertDetailScreen({
                                                                     <>
                                                                         <tr>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference</Typography>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Ticker</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.difference || '—'}</Typography>
+                                                                                <Typography color='color-3'>{selectedAlert.ticker || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -468,6 +508,14 @@ function AlertDetailScreen({
                                                                         </tr>
                                                                         <tr>
                                                                             <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.difference || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Trade ID</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
@@ -481,6 +529,14 @@ function AlertDetailScreen({
                                                                 selectedAlert.behaviourCode === 'HIGH_ORDER' ||
                                                                 selectedAlert.behaviourCode === 'HIGH_ORDER_MUFP') &&
                                                                     <>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Ticker</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{selectedAlert.ticker || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
                                                                         <tr>
                                                                             <td className='pb-2'>
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Total Volume</Typography>
