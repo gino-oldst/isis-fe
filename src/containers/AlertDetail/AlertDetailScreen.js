@@ -216,7 +216,7 @@ function AlertDetailScreen({
                                                                         <Typography color='color-3' className='mr-3' weight='semi-bold'>Mariana Broker</Typography>
                                                                     </td>
                                                                     <td className='pb-2'>
-                                                                        <Typography color='color-3'>{selectedAlert.behaviourDescription || '—'}</Typography>
+                                                                        <Typography color='color-3'>{selectedAlert.broker || '—'}</Typography>
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
@@ -224,89 +224,66 @@ function AlertDetailScreen({
                                                                         <Typography color='color-3' className='mr-3' weight='semi-bold'>Mariana Branch</Typography>
                                                                     </td>
                                                                     <td className='pb-2'>
-                                                                        <Typography color='color-3'>{selectedAlert.behaviourDescription || '—'}</Typography>
+                                                                        <Typography color='color-3'>{selectedAlert.book || '—'}</Typography>
                                                                     </td>
                                                                 </tr>
-                                                                <tr>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Client ID</Typography>
-                                                                    </td>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3'>{selectedAlert.behaviourDescription || '—'}</Typography>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Client Name</Typography>
-                                                                    </td>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3'>{selectedAlert.behaviourDescription || '—'}</Typography>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Client Trader</Typography>
-                                                                    </td>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3'>{selectedAlert.behaviourDescription || '—'}</Typography>
-                                                                    </td>
-                                                                </tr>
-                                                                {/* <tr>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Broker</Typography>
-                                                                    </td>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3'>{selectedAlert.broker || '—'}</Typography>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Quantity</Typography>
-                                                                    </td>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3'>{selectedAlert.quantity || '—'}</Typography>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Client</Typography>
-                                                                    </td>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3'>{selectedAlert.client || '—'}</Typography>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Order Type</Typography>
-                                                                    </td>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3'>{selectedAlert.orderType || '—'}</Typography>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Reason for Flag</Typography>
-                                                                    </td>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3'>{selectedAlert.reasonForFlag || '—'}</Typography>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Details</Typography>
-                                                                    </td>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3'>{selectedAlert.resolveReason || '—'}</Typography>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Parameter Values</Typography>
-                                                                    </td>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3'>{selectedAlert.parameterValues || '—'}</Typography>
-                                                                    </td>
-                                                                </tr> */}
+                                                                {
+                                                                    (selectedAlert.behaviourCode === 'LARGE_ORDER_MUFP' ||
+                                                                    selectedAlert.behaviourCode === 'HIGH_VOLUME_MUFP' ||
+                                                                    selectedAlert.behaviourCode === 'HIGH_ORDER_MUFP')
+                                                                        ? <>
+                                                                            <tr>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3' className='mr-3' weight='semi-bold'>Client ID</Typography>
+                                                                                </td>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3'>{alertSpecifics.clientIds || '—'}</Typography>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3' className='mr-3' weight='semi-bold'>Client Name</Typography>
+                                                                                </td>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3'>{alertSpecifics.clientTraders || '—'}</Typography>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3' className='mr-3' weight='semi-bold'>Client Trader</Typography>
+                                                                                </td>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3'>{'—'}</Typography>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </>
+                                                                        : <>
+                                                                            <tr>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3' className='mr-3' weight='semi-bold'>Client ID</Typography>
+                                                                                </td>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3'>{selectedAlert.client || '—'}</Typography>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3' className='mr-3' weight='semi-bold'>Client Name</Typography>
+                                                                                </td>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3'>{selectedAlert.clientTrader || '—'}</Typography>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3' className='mr-3' weight='semi-bold'>Client Trader</Typography>
+                                                                                </td>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3'>{'—'}</Typography>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </>
+                                                                }
                                                             </tbody>
                                                         </table>
                                                     </Col>
