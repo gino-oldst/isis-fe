@@ -5,17 +5,12 @@ const GET_RESTRICTED_LIST = '/measure/restricted-isin/list';
 export async function getRestrictedList(
     page: String,
     size: String,
-    dateFrom: String,
-    dateTo: String,
     filters: Array,
     sort: Object
 ) {
     const relevantFilters = filters.filter(item => item.value.length > 0);
 
-    const filterBody = {
-        alertDateFromRange: dateFrom,
-        alertDateToRange: dateTo
-    };
+    const filterBody = {};
 
     relevantFilters.map(body => {
         filterBody[body.id] = body.value.join(',');
