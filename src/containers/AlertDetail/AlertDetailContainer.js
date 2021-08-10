@@ -70,6 +70,8 @@ export default function AlertDetailContainer({
         const alertId = localStorage.getItem('selectedAlertId');
         const alertSpecific = await getAlertSpecifics(alertId);
 
+        console.log(alertSpecific);
+
         if (alertSpecific.status === 200) dispatch(setAlertSpecificsData(alertSpecific.data));
     };
 
