@@ -29,19 +29,15 @@ export default function BehavioursContainer({
         }
     ];
 
-    const loadBehavioursData = async (activePage, pageSize) => {
-        setLoading(true);
-
+    const loadBehavioursData = async (activePage, pageSize, sort) => {
         try {
-            const behaviours = await getBehaviours();
+            const behaviours = await getBehaviours(activePage, pageSize, sort);
             const { data, totalNoOfRecords, totalPages } = behaviours.data;
 
             dispatch(setBehavioursData(data, totalNoOfRecords, totalPages));
         } catch (e) {
             console.error(e);
         }
-
-        setLoading(false);
     };
 
     const viewBehaviourDetails = async row => {

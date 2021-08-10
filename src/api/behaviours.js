@@ -1,14 +1,20 @@
 import makeApiCall from '../api/makeApiCall';
 
-const GET_BEHAVIOURS = '/measure/behaviour/list?pageNumber=0&pageSize=10';
+const GET_BEHAVIOURS = '/measure/behaviour/list';
 const UPDATE_BEHAVIOUR = '/measure/behaviour';
 const GET_RULE = '/measure/rules/list';
 const GET_RULES = '/measure/rules/list?pageNumber=0&pageSize=10';
 const GET_BEHAVIOUR_BY_CODE = '/measure/behaviour/code/';
 const PROCESS_BEHAVIOUR_BY_DATE = '/measure/behaviour/processBehaviour';
 
-export async function getBehaviours() {
-    return await makeApiCall(GET_BEHAVIOURS, 'POST', {});
+export async function getBehaviours(
+    page: String,
+    size: String,
+    sort: Object
+) {
+    const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sort.column},${sort.type}` : '';
+
+    return await makeApiCall(`${GET_BEHAVIOURS}?page=${page}&size=${size}${withSorting()}`, 'POST', {});
 }
 
 export async function updateBehaviour(data: Object) {

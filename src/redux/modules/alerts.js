@@ -2,6 +2,7 @@
 import moment from 'moment';
 
 const SET_ALERTS_DATA = 'SET_ALERTS_DATA';
+const SET_ALERT_SPECIFICS_DATA = 'SET_ALERT_SPECIFICS_DATA';
 const SET_SELECTED_ALERT = 'SET_SELECTED_ALERT';
 const SET_ASSIGNEES = 'SET_ASSIGNEES';
 const REPLACE_ALERT_DETAILS = 'REPLACE_ALERT_DETAILS';
@@ -21,6 +22,13 @@ export function setAlertsData(data: Array, totalNoOfRecords: Integer, totalPages
         data,
         totalNoOfRecords,
         totalPages
+    };
+}
+
+export function setAlertSpecificsData(data: Object) {
+    return {
+        type: SET_ALERT_SPECIFICS_DATA,
+        data
     };
 }
 
@@ -134,7 +142,8 @@ const initialState = {
     },
     selected: {
         data: {},
-        assignees: []
+        assignees: [],
+        alertSpecifics: {}
     }
 };
 
@@ -169,6 +178,14 @@ export default function alerts(state: Object = initialState, action: Object):
                 selected: {
                     ...state.selected,
                     data: action.data
+                }
+            };
+        case SET_ALERT_SPECIFICS_DATA:
+            return {
+                ...state,
+                selected: {
+                    ...state.selected,
+                    alertSpecifics: action.data
                 }
             };
         case SET_ASSIGNEES:

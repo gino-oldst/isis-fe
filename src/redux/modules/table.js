@@ -111,11 +111,19 @@ const initialState = {
         {
             id: 'status',
             value: []
+        },
+        {
+            id: 'isin',
+            value: []
+        },
+        {
+            id: 'summary',
+            value: []
         }
     ],
     sort: {
         column: '',
-        sortType: ''
+        sort: ''
     },
     pageSize: 10,
     activePage: 0

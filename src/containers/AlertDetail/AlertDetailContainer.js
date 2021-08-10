@@ -5,7 +5,8 @@ import AlertDetailScreen from './AlertDetailScreen';
 
 import { getUsers } from '../../api/users';
 import { getAlert, downloadAlertsRecord } from '../../api/alerts';
-import { setAssignees, setSelectedAlert } from '../../redux/modules/alerts';
+import { getAlertSpecifics } from '../../api/alertSpecifics';
+import { setAssignees, setSelectedAlert, setAlertSpecificsData } from '../../redux/modules/alerts';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -40,6 +41,7 @@ export default function AlertDetailContainer({
     useEffect(() => {
         loadAlertDetails();
         loadUsers();
+        loadAlertSpecifics();
     }, []);
 
     const loadAlertDetails = async () => {
@@ -64,6 +66,13 @@ export default function AlertDetailContainer({
         dispatch(setAssignees(filteredUsers));
     };
 
+    const loadAlertSpecifics = async () => {
+        const alertId = localStorage.getItem('selectedAlertId');
+        const alertSpecific = await getAlertSpecifics(alertId);
+
+        if (alertSpecific.status === 200) dispatch(setAlertSpecificsData(alertSpecific.data));
+    };
+
     const handleDownloadAlertsRecord = async () => {
         await downloadAlertsRecord(selected.data.id);
     };
@@ -77,5 +86,6 @@ export default function AlertDetailContainer({
         handleCloseModal={handleCloseModal}
         selectedAlert={selected.data}
         assignees={selected.assignees}
+        alertSpecifics={selected.alertSpecifics}
         handleDownloadAlertsRecord={handleDownloadAlertsRecord} />;
 }

@@ -81,7 +81,6 @@ fuzzyTextFilterFn.autoRemove = val => !val;
 // This is a custom filter UI for selecting
 // a unique option from a list
 function SelectColumnFilter({
-    column,
     column: { Header, filterValue, setFilter, preFilteredRows, id }
 }) {
     // Calculate the options for filtering
@@ -402,6 +401,8 @@ function Table({
     };
 
     const handleSort = (key) => {
+        setTableActivePage(0);
+
         if (key === sortBy) {
             setIsAsc(!isAsc);
             dispatch(setSortedColumn(key, !isAsc ? 'ASC' : 'DESC'));
@@ -440,7 +441,7 @@ function Table({
                             {headerGroup.headers.map(column => (
                                 <th {...column.getHeaderProps()}>
                                     {/* Render the columns filter UI */}
-                                    <span onClick={() => handleSort(column.id)} className='cursor-pointer'>
+                                    <span onClick={() => column.id !== 'selection' && handleSort(column.id)} className='cursor-pointer'>
                                         {column.render('Header')}
                                         {column.id !== 'selection' && renderSortControl(column.id)}
                                     </span>
@@ -478,7 +479,7 @@ function Table({
                 <Row className='mt-5 align-items-center'>
                     <Col md={12} lg={3} className='mr-auto'>
                         <div className='pagination-pagesize'>
-                            <span>Showing {rows.length} of {totalNoOfRecords} items</span>
+                            <span>Showing {((activePage + 1) * pageSize + 1) - pageSize}-{(activePage + 1) * pageSize > totalNoOfRecords ? totalNoOfRecords : (activePage + 1) * pageSize} of {totalNoOfRecords} items</span>
                             <Input type='select'
                                 className='mt-2'
                                 value={pageSize}
@@ -489,7 +490,7 @@ function Table({
                                 }}>
                                 {[10, 25, 50, 100].map(pageSize => (
                                     <option key={pageSize} value={pageSize}>
-                            Show {pageSize}
+                                        Show {pageSize}
                                     </option>
                                 ))}
                             </Input>
@@ -552,7 +553,7 @@ function Table({
                                 value={activePage + 1}
                                 defaultValue={activePage + 1}
                                 style={{ width: '80px' }}
-                                disabled={fetching}
+                                disabled={fetching || (activePage + 1) === tablePagination}
                                 className='ml-2'
                                 onChange={e => {
                                     const page = e.target.value ? Number(e.target.value) - 1 : 0;
