@@ -12,7 +12,7 @@ export async function getBehaviours(
     size: String,
     sort: Object
 ) {
-    const withSorting = () => sort.column !== '' && sort.type !== '' ? `&sort=${sort.column},${sort.type}` : '';
+    const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sort.column},${sort.type}` : '';
 
     return await makeApiCall(`${GET_BEHAVIOURS}?page=${page}&size=${size}${withSorting()}`, 'POST', {});
 }
