@@ -63,6 +63,8 @@ export default function AlertsContainer({
     };
 
     const loadAlerts = async (page, size, fromDate, toDate, appliedFilters, sort) => {
+        await loadBehavioursData();
+        await loadUsers();
         const alerts = await getAlerts(page, size, fromDate, toDate, appliedFilters, sort);
         const { data, totalNoOfRecords, totalPages } = alerts.data;
 
@@ -71,6 +73,7 @@ export default function AlertsContainer({
 
     const loadUsers = async () => {
         const users = await getUsers();
+
         const filteredUsers = users.data.data.filter(user => user.userRegistrationType === 'EMAIL');
 
         dispatch(setAssignees(filteredUsers));
