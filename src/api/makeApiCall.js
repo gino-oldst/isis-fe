@@ -64,9 +64,6 @@ export default async function makeApiCall(
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
 
-                    /* eslint-disable no-console */
-                    console.log(url);
-
                     a.href = url;
                     a.download = `${endpoint.includes('alerts-record') ? 'alert-record' : endpoint.includes('download-list') ? 'alert-list' : 'dashboard'}.xlsx`;
                     a.click();
