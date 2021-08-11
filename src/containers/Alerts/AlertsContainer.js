@@ -8,7 +8,9 @@ import type { Menu } from '../../types';
 import { getBehaviours } from '../../api/behaviours';
 import { getAlerts, downloadAlertsList } from '../../api/alerts';
 import { getUsers } from '../../api/users';
-
+import {
+    DATE_TO_UTC
+} from '../../utils/helpers';
 import { setBehavioursData } from '../../redux/modules/behaviours';
 import { setAlertsData, setAssignees } from '../../redux/modules/alerts';
 
@@ -88,8 +90,8 @@ export default function AlertsContainer({
     const handleDownloadAlertsList = async (date) => {
         const payload = {
             alertIds: isRowsSelected > 0 ? selectedRows : [],
-            dateFrom: date.start.toISOString(),
-            dateTo: date.end.toISOString(),
+            dateFrom: `${DATE_TO_UTC(date.start).split('T')[0]}T00:00:00Z`,
+            dateTo: `${DATE_TO_UTC(date.end).split('T')[0]}T23:59:59Z`,
             dateRange: `${moment(date.start).format('L')} to ${moment(date.end).format('L')}`,
             filteredApplied: appliedFilters.filter(filter =>
                 (filter.id !== 'quantity' && filter.value.length > 0) ||
