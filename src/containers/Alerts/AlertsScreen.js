@@ -245,7 +245,7 @@ function AlertsScreen({
                                         </div>
                                         <DropdownItem divider={true} />
                                         <Button label={<><Typography weight='light' variant='size-14'>Reset</Typography></>}
-                                            className='alerts__filter-reset-button float-right mr-2' onClick={() => handleDateFilterChange(0)} />
+                                            className='alerts__filter-reset-button float-right mr-2' onClick={() => handleDateFilterChange(2)} />
                                     </CustomDropdown>
                                     <Button label={<>
                                         <FontAwesomeIcon className='mr-2' icon='file-download' size='sm' />
