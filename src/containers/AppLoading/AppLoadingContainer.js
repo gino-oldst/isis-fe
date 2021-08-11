@@ -12,7 +12,7 @@ import Typography from '../../components/base/Typography/Typography';
 import Storage from '../../utils/Storage';
 import { isTokenValid } from '../../utils/Auth';
 import { storageKey } from '../../config/constants';
-import { updateUserToken, authUser } from '../../redux/modules/authentication';
+import { updateUserToken, authUser, setLoggingOut } from '../../redux/modules/authentication';
 import './app-loading.scss';
 
 type Props = {
@@ -32,7 +32,7 @@ export default function AppLoadingContainer({
 
     useEffect(() => {
         checkAuth();
-    }, []);
+    }, [location]);
 
     const checkAuth = async () => {
         try {
@@ -52,6 +52,9 @@ export default function AppLoadingContainer({
                     user: token.sub,
                     userId: userId
                 }));
+            } else {
+                localStorage.clear();
+                dispatch(setLoggingOut());
             }
 
             setAppReady(true);
