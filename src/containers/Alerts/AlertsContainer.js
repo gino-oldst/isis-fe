@@ -68,9 +68,9 @@ export default function AlertsContainer({
         await loadBehavioursData();
         await loadUsers();
         const alerts = await getAlerts(page, size, fromDate, toDate, appliedFilters, sort);
-        const { data, totalNoOfRecords, totalPages } = alerts.data;
+        const { data, alertIds, totalNoOfRecords, totalPages } = alerts.data;
 
-        dispatch(setAlertsData(data, totalNoOfRecords, totalPages));
+        dispatch(setAlertsData(data, alertIds, totalNoOfRecords, totalPages));
     };
 
     const loadUsers = async () => {
@@ -89,7 +89,7 @@ export default function AlertsContainer({
 
     const handleDownloadAlertsList = async (date) => {
         const payload = {
-            alertIds: isRowsSelected > 0 ? selectedRows : [],
+            alertIds: isRowsSelected > 0 ? selectedRows : table.alertIds,
             dateFrom: `${DATE_TO_UTC(date.start).split('T')[0]}T00:00:00Z`,
             dateTo: `${DATE_TO_UTC(date.end).split('T')[0]}T23:59:59Z`,
             dateRange: `${moment(date.start).format('L')} to ${moment(date.end).format('L')}`,

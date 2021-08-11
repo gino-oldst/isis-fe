@@ -16,10 +16,11 @@ export function setSelectedAlert(data: Object) {
     };
 }
 
-export function setAlertsData(data: Array, totalNoOfRecords: Integer, totalPages: Integer) {
+export function setAlertsData(data: Array, alertIds: Array, totalNoOfRecords: Integer, totalPages: Integer) {
     return {
         type: SET_ALERTS_DATA,
         data,
+        alertIds,
         totalNoOfRecords,
         totalPages
     };
@@ -136,6 +137,7 @@ const initialState = {
             }
         ],
         data: [],
+        alertIds: [],
         filtered: [],
         totalNoOfRecords: null,
         totalPages: null
@@ -167,6 +169,7 @@ export default function alerts(state: Object = initialState, action: Object):
                 table: {
                     ...state.table,
                     data: action.data,
+                    alertIds: action.alertIds,
                     totalNoOfRecords: action.totalNoOfRecords,
                     totalPages: action.totalPages,
                     loading: false
