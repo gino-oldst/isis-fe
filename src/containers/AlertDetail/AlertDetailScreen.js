@@ -1,5 +1,5 @@
 // @flow
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import moment from 'moment';
 import Badge from '../../components/base/Badge/Badge';
@@ -65,10 +65,6 @@ function AlertDetailScreen({
         errors: {}
     });
 
-    useEffect(() => {
-        if (alert.status === 'RESOLVED') showResolveAlert();
-    }, [alert]);
-
     const showError = errMsg => {
         dispatch(setModalContent({
             modalContent: <ErrorMsgModal
@@ -93,6 +89,8 @@ function AlertDetailScreen({
         } else {
             name = option.name;
             value = option.name === 'assignedUser' ? e.id : e.name;
+
+            if (value === 'RESOLVED') showResolveAlert();
         }
 
         if (alert.errors[name] !== undefined) alert.errors[name] = false; // remove error msg for a specific input
@@ -106,6 +104,7 @@ function AlertDetailScreen({
     const handleUpdateAlert = async () => {
         setSubmit(true);
         const userId = localStorage.getItem('userId');
+        const resolveReason = localStorage.getItem('resolveReason');
 
         const payload = {
             id: selectedAlert.id,
@@ -125,7 +124,7 @@ function AlertDetailScreen({
             escalation: alert.escalation === '' ? selectedAlert.escalation : alert.escalation,
             status: alert.status === '' ? selectedAlert.status : alert.status,
             notes: alert.notes === '' ? selectedAlert.notes : alert.notes,
-            resolveReason: alert.resolveReason === '' ? selectedAlert.resolveReason : alert.resolveReason,
+            resolveReason: resolveReason === '' ? selectedAlert.resolveReason : resolveReason,
             parameterValues: selectedAlert.parameterValues,
             dateCreated: selectedAlert.dateCreated,
             alertDate: selectedAlert.alertDate
@@ -752,7 +751,10 @@ const ResolveAlertModal = ({
             <FormGroup className='mb-4'>
                 <Label for='resolveReason'>Reason of Resolving Alert</Label>
                 <Input type='textarea' name='resolveReason' id='resolveReason'
-                    rows={4} placeholder='Reason...' onChange={handleChange}
+                    rows={4} placeholder='Reason...' onChange={(e, option) => {
+                        handleChange(e, option);
+                        localStorage.setItem('resolveReason', e.target.value);
+                    }}
                     invalid={alert.errors.resolveReason} />
                 <FormFeedback className={`${alert.errors.resolveReason ? 'd-block' : 'd-none'}`}>
                     {alert.errors.resolveReasonErrMsg}
