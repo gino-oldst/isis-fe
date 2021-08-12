@@ -19,7 +19,7 @@ export default function RestrictedListContainer({
     handleCloseModal
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const { table } = useSelector(({ restrictedList }) => restrictedList);
     const breadcrumb = [
         {
@@ -33,6 +33,8 @@ export default function RestrictedListContainer({
     ];
 
     const loadRestrictedList = async (page, size, appliedFilters, sort) => {
+        setLoading(true);
+
         try {
             const restrictedList = await getRestrictedList(page, size, appliedFilters, sort);
             const { data, totalNoOfRecords, totalPages } = restrictedList.data;
@@ -41,6 +43,8 @@ export default function RestrictedListContainer({
         } catch (e) {
             console.error(e);
         }
+
+        setLoading(false);
     };
 
     return <RestrictedListScreen

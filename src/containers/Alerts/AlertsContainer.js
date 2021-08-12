@@ -26,7 +26,7 @@ export default function AlertsContainer({
 }: Props): React$Element<any> {
     const history = useHistory();
     const dispatch = useDispatch();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const { isRowsSelected, selectedRows, appliedFilters } = useSelector(({ table }) => table);
     const { table, selected } = useSelector(({ alerts }) => alerts);
     const behaviours = useSelector(({ behaviours }) => behaviours);
@@ -52,8 +52,6 @@ export default function AlertsContainer({
     };
 
     const loadAlertsData = async () => {
-        setLoading(true);
-
         try {
             await loadBehavioursData();
             await loadUsers();
@@ -65,12 +63,16 @@ export default function AlertsContainer({
     };
 
     const loadAlerts = async (page, size, fromDate, toDate, appliedFilters, sort) => {
+        setLoading(true);
+
         await loadBehavioursData();
         await loadUsers();
         const alerts = await getAlerts(page, size, fromDate, toDate, appliedFilters, sort);
         const { data, alertIds, totalNoOfRecords, totalPages } = alerts.data;
 
         dispatch(setAlertsData(data, alertIds, totalNoOfRecords, totalPages));
+
+        setLoading(false);
     };
 
     const loadUsers = async () => {

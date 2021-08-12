@@ -9,8 +9,7 @@ import withLoading from '../../components/modules/withLoading/withLoading';
 import type { Menu } from '../../types';
 import {
     Card,
-    CardBody,
-    Spinner
+    CardBody
 } from 'reactstrap';
 import './behaviours.scss';
 
@@ -54,20 +53,16 @@ function BehavioursScreen({
                     <Card className='px-4 py-2'>
                         <CardBody>
                             <Typography color='color-3' className='behaviours__title'>Behaviours</Typography>
-                            {loading || tableData.length === 0
-                                ? <Spinner animation='border' role='status' className='d-flex mx-auto my-5 text-center'>
-                                    <span className='sr-only'>Loading...</span>
-                                </Spinner>
-                                : <Table className='behaviours__table'
-                                    tableColumns={tableColumns}
-                                    tableData={tableData}
-                                    tablePagination={table.totalPages}
-                                    totalNoOfRecords={table.totalNoOfRecords}
-                                    activePage={activePage}
-                                    pagination={true}
-                                    fetching={table.loading}
-                                    viewDetails={viewBehaviourDetails} />
-                            }
+                            <Table className='behaviours__table'
+                                loading={loading}
+                                tableColumns={tableColumns}
+                                tableData={tableData}
+                                tablePagination={table.totalPages}
+                                totalNoOfRecords={table.totalNoOfRecords}
+                                activePage={activePage}
+                                pagination={true}
+                                fetching={table.loading}
+                                viewDetails={viewBehaviourDetails} />
                         </CardBody>
                     </Card>
                 </div>

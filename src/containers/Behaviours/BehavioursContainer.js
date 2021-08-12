@@ -16,7 +16,7 @@ export default function BehavioursContainer({
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const history = useHistory();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const { table } = useSelector(({ behaviours }) => behaviours);
     const breadcrumb = [
         {
@@ -30,6 +30,8 @@ export default function BehavioursContainer({
     ];
 
     const loadBehavioursData = async (activePage, pageSize, sort) => {
+        setLoading(true);
+
         try {
             const behaviours = await getBehaviours(activePage, pageSize, sort);
             const { data, totalNoOfRecords, totalPages } = behaviours.data;
@@ -38,6 +40,8 @@ export default function BehavioursContainer({
         } catch (e) {
             console.error(e);
         }
+
+        setLoading(false);
     };
 
     const viewBehaviourDetails = async row => {

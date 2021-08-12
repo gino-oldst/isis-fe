@@ -287,6 +287,7 @@ const IndeterminateCheckbox = React.forwardRef(
 
 // Our table component
 function Table({
+    loading,
     columns,
     data,
     tablePagination,
@@ -452,8 +453,15 @@ function Table({
                     ))}
                 </thead>
                 <tbody {...getTableBodyProps()}>
-                    {page.length > 0
+                    {!page.length
                         ? (
+                            <tr>
+                                <td className='text-muted text-center' colSpan={12}>
+                                    {loading ? 'Fetching data...' : 'No data found'}
+                                </td>
+                            </tr>
+                        )
+                        : (
                             page.map((row, i) => {
                                 prepareRow(row);
 
@@ -465,13 +473,6 @@ function Table({
                                     </tr>
                                 );
                             })
-                        )
-                        : (
-                            <tr>
-                                <td className='text-muted text-center' colSpan={12}>
-                                    No data available
-                                </td>
-                            </tr>
                         )}
                 </tbody>
             </ReactstrapTable>
@@ -598,6 +599,7 @@ function multiSelectFilter(rows, columnIds, filterValue) {
 // }
 
 type Props = {
+    loading?: boolean,
     children?: string | React.Node,
     className?: string,
     tableData: Array,
@@ -608,6 +610,7 @@ type Props = {
 }
 
 export default function ReactTable({
+    loading,
     children,
     className = '',
     tableData,
@@ -666,7 +669,7 @@ export default function ReactTable({
 
     return (
         <div className={`w-100 ${className}`}>
-            <Table columns={columns} data={tableData}
+            <Table loading={loading} columns={columns} data={tableData}
                 tablePagination={tablePagination}
                 totalNoOfRecords={totalNoOfRecords}
                 activePage={activePage}

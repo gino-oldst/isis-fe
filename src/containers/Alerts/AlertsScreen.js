@@ -19,7 +19,6 @@ import type { Menu } from '../../types';
 import {
     Card,
     CardBody,
-    Spinner,
     DropdownItem,
     FormGroup,
     Input,
@@ -238,8 +237,6 @@ function AlertsScreen({
                                                         onChange={date => {
                                                             handleDateChange('end', 3, date);
                                                         }} />
-                                                    {/* <DatePicker width={55} value={dateRangeValues.end} className='alerts__date-filter-picker'
-                                                        inputVariant='outlined' onChange={e => handleDateChange('end', e)} /> */}
                                                 </FormGroup>
                                             </FormGroup>
                                         </div>
@@ -257,26 +254,19 @@ function AlertsScreen({
                                     {isRowsSelected > 0 && <Button className='ml-3 alerts__download-button' label={<Typography weight='light' className='my-1 mx-2'>Bulk Action</Typography>} onClick={showActionsModal}/>}
                                 </div>
                             </div>
-                            {loading || tableColumns === undefined || tableData === undefined
-                                ? (
-                                    <Spinner animation='border' role='status' className='d-flex mx-auto my-5 text-center'>
-                                        <span className='sr-only'>Loading...</span>
-                                    </Spinner>
-                                )
-                                : (
-                                    <Table className='alerts__table'
-                                        tableData={tableData}
-                                        tableColumns={tableColumns}
-                                        tablePagination={table.totalPages}
-                                        totalNoOfRecords={table.totalNoOfRecords}
-                                        activePage={activePage}
-                                        selectableRows={true}
-                                        globalFilter={false}
-                                        pagination={true}
-                                        sortable={true}
-                                        fetching={table.loading}
-                                        viewDetails={viewAlertDetails} />
-                                )}
+                            <Table className='alerts__table'
+                                loading={loading}
+                                tableData={tableData}
+                                tableColumns={tableColumns}
+                                tablePagination={table.totalPages}
+                                totalNoOfRecords={table.totalNoOfRecords}
+                                activePage={activePage}
+                                selectableRows={true}
+                                globalFilter={false}
+                                pagination={true}
+                                sortable={true}
+                                fetching={table.loading}
+                                viewDetails={viewAlertDetails} />
                         </CardBody>
                     </Card>
                 </div>

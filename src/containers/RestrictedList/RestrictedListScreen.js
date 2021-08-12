@@ -9,8 +9,7 @@ import withLoading from '../../components/modules/withLoading/withLoading';
 import type { Menu } from '../../types';
 import {
     Card,
-    CardBody,
-    Spinner
+    CardBody
 } from 'reactstrap';
 import './restricted-list.scss';
 
@@ -76,25 +75,18 @@ function RestrictedListScreen({
                             <div className='restricted-list__header d-flex align-items-center'>
                                 <Typography color='color-3' className='restricted-list__title mr-auto'>Restricted List</Typography>
                             </div>
-                            {loading || tableColumns === undefined || tableData === undefined
-                                ? (
-                                    <Spinner animation='border' role='status' className='d-flex mx-auto my-5 text-center'>
-                                        <span className='sr-only'>Loading...</span>
-                                    </Spinner>
-                                )
-                                : (
-                                    <Table className='restricted-list__table'
-                                        tableData={tableData}
-                                        tableColumns={tableColumns}
-                                        tablePagination={table.totalPages}
-                                        totalNoOfRecords={table.totalNoOfRecords}
-                                        activePage={activePage}
-                                        selectableRows={false}
-                                        globalFilter={false}
-                                        pagination={true}
-                                        fetching={table.loading}
-                                        sortable={true} />
-                                )}
+                            <Table className='restricted-list__table'
+                                loading={loading}
+                                tableData={tableData}
+                                tableColumns={tableColumns}
+                                tablePagination={table.totalPages}
+                                totalNoOfRecords={table.totalNoOfRecords}
+                                activePage={activePage}
+                                selectableRows={false}
+                                globalFilter={false}
+                                pagination={true}
+                                fetching={table.loading}
+                                sortable={true} />
                         </CardBody>
                     </Card>
                 </div>
