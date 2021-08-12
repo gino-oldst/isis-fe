@@ -1,6 +1,6 @@
 import makeApiCall from '../api/makeApiCall';
 
-const GET_USERS = '/measure/users/list?pageNumber=0&pageSize=10';
+const GET_USERS = '/measure/users/list?pageNumber=0&pageSize=10&sort=fullName,ASC';
 
 export async function getUsers() {
     return await makeApiCall(GET_USERS, 'POST', {});
