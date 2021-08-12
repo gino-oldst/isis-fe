@@ -6,6 +6,7 @@ import NotificationsScreen from './NotificationsScreen';
 import { getUserId } from '../../utils/helpers';
 import { getNotifications } from '../../api/notifications';
 import { setNotifications } from '../../redux/modules/notifications';
+import { setLoggingOut } from '../../redux/modules/authentication';
 
 function NotificationsContainer(): React$Element<any> {
     const dispatch = useDispatch();
@@ -30,7 +31,11 @@ function NotificationsContainer(): React$Element<any> {
 
             dispatch(setNotifications(getUserId(), notifications.data.data));
         } catch (e) {
-            console.error(e);
+            if (e.status === 403) {
+                localStorage.clear();
+                dispatch(setLoggingOut());
+                window.location.href = '/login';
+            }
         }
     };
 
