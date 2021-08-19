@@ -207,7 +207,7 @@ function AlertDetailScreen({
                                                                         <Typography color='color-3' className='mr-3' weight='semi-bold'>Date</Typography>
                                                                     </td>
                                                                     <td className='pb-2'>
-                                                                        <Typography color='color-3'>{selectedAlert.dateCreated ? moment(selectedAlert.dateCreated).format('DD/MM/YY') : '—'}</Typography>
+                                                                        <Typography color='color-3'>{selectedAlert.alertDate ? moment(selectedAlert.alertDate).format('DD/MM/YY') : '—'}</Typography>
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
@@ -486,7 +486,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.difference || '—'}</Typography>
+                                                                                <Typography color='color-3'>{alertSpecifics.difference ? alertSpecifics.difference.toFixed(2) + '%' : '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -533,7 +533,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.difference || '—'}</Typography>
+                                                                                <Typography color='color-3'>{alertSpecifics.difference ? alertSpecifics.difference.toFixed(2) + '%' : '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                     </>
