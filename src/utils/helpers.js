@@ -175,3 +175,14 @@ export const getDatesBetweenDates = (startDate, endDate) => {
 
     return dates;
 };
+
+export const setDashboardDateRangeLocal = (dateFrom, dateTo) => {
+    localStorage.setItem('dashboard', JSON.stringify({
+        from: dateFrom,
+        to: dateTo
+    }));
+};
+
+export const getDashboardDateRangeLocal = (dateFrom, dateTo) => {
+    return JSON.parse(localStorage.getItem('dashboard'));
+};

@@ -5,7 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import type { Menu } from '../../types';
 import DashboardScreen from './DashboardScreen';
 import {
-    DATE_TO_UTC
+    DATE_TO_UTC,
+    setDashboardDateRangeLocal,
+    getDashboardDateRangeLocal
 } from '../../utils/helpers';
 import { getDashboardData, downloadDashboardData } from '../../api/dashboard';
 import { setDashboardData, setDashboardDateRange } from '../../redux/modules/dashboard';
@@ -33,18 +35,15 @@ export default function DashboardContainer({
     const loadDashboardData = async (dateFrom, dateTo, isRefresh) => {
         setLoading(true);
 
-        const currentRange = JSON.parse(localStorage.getItem('dashboard'));
+        const currentRange = getDashboardDateRangeLocal(dateFrom, dateTo);
 
         // run if refresh button is clicked
-        if (isRefresh) {
+        if (isRefresh || !currentRange) {
             const dashboard = await getDashboardData(`${DATE_TO_UTC(dateRange.from).split('T')[0]} 00:00:00`, `${DATE_TO_UTC(dateRange.to).split('T')[0]} 23:59:59`);
 
             dispatch(setDashboardData(dashboard.data));
 
-            localStorage.setItem('dashboard', JSON.stringify({
-                from: dateFrom,
-                to: dateTo
-            }));
+            setDashboardDateRangeLocal(dateFrom, dateTo);
 
             setLoading(false);
 
@@ -57,10 +56,7 @@ export default function DashboardContainer({
 
             dispatch(setDashboardData(dashboard.data));
 
-            localStorage.setItem('dashboard', JSON.stringify({
-                from: dateFrom,
-                to: dateTo
-            }));
+            setDashboardDateRangeLocal(dateFrom, dateTo);
 
             setLoading(false);
 
