@@ -24,17 +24,48 @@ export default function DashboardContainer({
 
     useEffect(() => {
         loadDashboardData(
-            `${DATE_TO_UTC(dateRange.from).split('T')[0]} 00:00:00`,
-            `${DATE_TO_UTC(dateRange.to).split('T')[0]} 23:59:59`
+            dateRange.from,
+            dateRange.to,
+            false
         );
     }, [dateRange.from, dateRange.to]);
 
-    const loadDashboardData = async (dateFrom, dateTo) => {
+    const loadDashboardData = async (dateFrom, dateTo, isRefresh) => {
         setLoading(true);
 
-        const dashboard = await getDashboardData(dateFrom, dateTo);
+        const currentRange = JSON.parse(localStorage.getItem('dashboard'));
 
-        dispatch(setDashboardData(dashboard.data));
+        // run if refresh button is clicked
+        if (isRefresh) {
+            const dashboard = await getDashboardData(`${DATE_TO_UTC(dateRange.from).split('T')[0]} 00:00:00`, `${DATE_TO_UTC(dateRange.to).split('T')[0]} 23:59:59`);
+
+            dispatch(setDashboardData(dashboard.data));
+
+            localStorage.setItem('dashboard', JSON.stringify({
+                from: dateFrom,
+                to: dateTo
+            }));
+
+            setLoading(false);
+
+            return;
+        }
+
+        // run if date range is changed
+        if (!moment(currentRange.from).isSame(moment(dateFrom)) || !moment(currentRange.to).isSame(moment(dateTo))) {
+            const dashboard = await getDashboardData(`${DATE_TO_UTC(dateRange.from).split('T')[0]} 00:00:00`, `${DATE_TO_UTC(dateRange.to).split('T')[0]} 23:59:59`);
+
+            dispatch(setDashboardData(dashboard.data));
+
+            localStorage.setItem('dashboard', JSON.stringify({
+                from: dateFrom,
+                to: dateTo
+            }));
+
+            setLoading(false);
+
+            return;
+        }
 
         setLoading(false);
     };
@@ -66,6 +97,7 @@ export default function DashboardContainer({
         loading={loading}
         fromDate={dateRange.from}
         toDate={dateRange.to}
+        loadDashboardData={loadDashboardData}
         handleDateChange={handleDateChange}
         handleDashboardDownload={handleDashboardDownload}
         sidebarMenu={sidebarMenu}

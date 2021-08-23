@@ -34,6 +34,7 @@ type Props = {
     sidebarMenu: Array<Menu>,
     fromDate: Date,
     toDate: Date,
+    loadDashboardData: Function,
     handleDateChange: Function,
     handleDashboardDownload: Function,
     dashboardData: Object
@@ -69,6 +70,7 @@ function DashboardScreen({
     sidebarMenu,
     fromDate,
     toDate,
+    loadDashboardData,
     handleDateChange,
     handleDashboardDownload,
     dashboardData
@@ -80,6 +82,8 @@ function DashboardScreen({
         dashboardData.alertsResolved,
         dashboardData.alertsArchived
     ].reduce((a, b) => a + b, 0);
+
+    const totalBehaviourTypeNumber = dashboardData.behaviourPerDateSummary && dashboardData.behaviourPerDateSummary.map(({ count }) => count).sort();
 
     const makeDougnutChartData = () => {
         const data = {
@@ -196,6 +200,8 @@ function DashboardScreen({
                                                     <DatePicker
                                                         value={toDate}
                                                         onChange={e => handleDateChange('to', e)} />
+                                                    <Button label='Refresh' disabled={loading} className='dashboard__download-button ml-4'
+                                                        size='lg' onClick={() => loadDashboardData(fromDate, toDate, true)} />
                                                 </div>
                                             </div>
                                         </Col>
@@ -411,7 +417,7 @@ function DashboardScreen({
                                                                         </Col>
                                                                         <Col xs={3} sm={4} lg={5}
                                                                             xl={5}>
-                                                                            <Progress value={data.count} />
+                                                                            <Progress value={data.count} max={totalBehaviourTypeNumber[0]} />
                                                                         </Col>
                                                                         <Col xs={2} sm={2} lg={2}
                                                                             xl={2}>
