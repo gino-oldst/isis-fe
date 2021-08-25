@@ -364,6 +364,14 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3'>{alertSpecifics.sellFillId || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Trade ID</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.flexbookTradeId || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
                                                                     </>
                                                                 }
                                                                 {selectedAlert.behaviourCode === 'WASH_TRADES' &&
@@ -408,6 +416,14 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3'>{alertSpecifics.sellTradeId || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Trade ID</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.flexbookTradeId || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
                                                                     </>
                                                                 }
                                                                 {selectedAlert.behaviourCode === 'RESTRICTED_LIST' &&
@@ -441,7 +457,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Trade ID</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.tradeId || '—'}</Typography>
+                                                                                <Typography color='color-3'>{alertSpecifics.flexbookTradeId || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                     </>
@@ -494,7 +510,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Trade ID</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.tradeId || '—'}</Typography>
+                                                                                <Typography color='color-3'>{alertSpecifics.flexbookTradeId || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                     </>
@@ -534,6 +550,14 @@ function AlertDetailScreen({
                                                                             </td>
                                                                             <td className='pb-2'>
                                                                                 <Typography color='color-3'>{alertSpecifics.difference ? alertSpecifics.difference.toFixed(2) + '%' : '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Trade ID</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{alertSpecifics.flexbookTradeId || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                     </>
