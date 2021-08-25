@@ -369,7 +369,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Trade ID</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.flexbookTradeId || '—'}</Typography>
+                                                                                <Typography color='color-3'>{selectedAlert.flexbookTradeId || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                     </>
@@ -421,7 +421,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Trade ID</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.flexbookTradeId || '—'}</Typography>
+                                                                                <Typography color='color-3'>{selectedAlert.flexbookTradeId || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                     </>
@@ -457,7 +457,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Trade ID</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.flexbookTradeId || '—'}</Typography>
+                                                                                <Typography color='color-3'>{selectedAlert.flexbookTradeId || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                     </>
@@ -510,7 +510,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Trade ID</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.flexbookTradeId || '—'}</Typography>
+                                                                                <Typography color='color-3'>{selectedAlert.flexbookTradeId || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                     </>
@@ -557,7 +557,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Trade ID</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.flexbookTradeId || '—'}</Typography>
+                                                                                <Typography color='color-3'>{selectedAlert.flexbookTradeId || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                     </>
