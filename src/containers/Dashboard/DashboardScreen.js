@@ -83,7 +83,7 @@ function DashboardScreen({
         dashboardData.alertsArchived
     ].reduce((a, b) => a + b, 0);
 
-    const totalBehaviourTypeNumber = dashboardData.behaviourPerDateSummary && dashboardData.behaviourPerDateSummary.map(({ count }) => count).sort();
+    const totalBehaviourTypeNumber = dashboardData.behaviourPerDateSummary && dashboardData.behaviourPerDateSummary.map(({ count }) => count).sort((a, b) => b - a);
 
     const makeDougnutChartData = () => {
         const data = {
