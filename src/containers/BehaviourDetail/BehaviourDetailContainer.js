@@ -37,7 +37,6 @@ export default function BehaviourDetailContainer({
 
     const loadBehaviourDetails = async () => {
         setLoading(true);
-        // const behaviourCode = localStorage.getItem('selectedBehaviourCode');
 
         try {
             const selectedBehaviour = await getBehaviourByCode(match.params.id);

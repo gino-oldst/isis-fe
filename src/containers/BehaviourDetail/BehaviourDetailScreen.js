@@ -53,6 +53,7 @@ function BehaviourDetailScreen({
     handleCloseModal
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
+    const { profileData: { userId } } = useSelector(({ authentication }) => authentication);
     const { pageSize, activePage } = useSelector(({ table }) => table);
     const { selected } = useSelector(({ behaviours }) => behaviours);
 
@@ -77,8 +78,6 @@ function BehaviourDetailScreen({
     };
 
     const handleToggleCheck = async (e) => {
-        const userId = localStorage.getItem('userId');
-
         const result = await updateBehaviour({
             id: selectedBehaviour.id,
             code: selectedBehaviour.code,
@@ -149,18 +148,19 @@ const UpdateParameterModal = ({
     handleCloseModal
 }) => {
     const dispatch = useDispatch();
+    const { profileData: { userId } } = useSelector(({ authentication }) => authentication);
     const [loading, setLoading] = useState(false);
     const [params, setParams] = useState({
         ...rowData,
         errors: {}
     });
 
+    console.log(userId);
+
     const handleUpdate = async () => {
         setLoading(true);
 
         if (handleValidation()) {
-            const userId = localStorage.getItem('userId');
-
             const payload = {
                 id: params.id,
                 currentUserId: userId,

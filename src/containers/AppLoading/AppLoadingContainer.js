@@ -1,7 +1,7 @@
 // @flow
 
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 /* eslint-disable camelcase */
 import jwt_decode from 'jwt-decode';
 import Spinner from 'react-bootstrap/Spinner';
@@ -26,6 +26,7 @@ export default function AppLoadingContainer({
 }: Props): any | React$Element<"div"> {
     const dispatch = useDispatch();
     const location = useLocation();
+    const { profileData: { userId } } = useSelector(({ authentication }) => authentication);
 
     const [isAppReady, setAppReady] = useState(false);
     const [isErrorLoaded, setErrorLoaded] = useState(false);
@@ -41,16 +42,18 @@ export default function AppLoadingContainer({
             const shouldLoggout = /\/login|\/sign-up|\/forgot-password/.test(location.pathname); // Add other unauthenticated routes here
             const accessToken = Storage.getItem(storageKey.accessToken);
             const token: Object = shouldLoggout ? null : accessToken ? jwt_decode(JSON.parse(accessToken)) : null;
+            const user = JSON.parse(Storage.getItem(storageKey.user));
 
             if (token && token.exp && isTokenValid(token.exp)) {
                 setTimeout(() => {}, 5000);
                 dispatch(updateUserToken(accessToken));
                 Storage.setItem(storageKey.accessToken, accessToken);
-                const userId = localStorage.getItem('userId');
+
+                console.log(user);
 
                 dispatch(authUser({
                     user: token.sub,
-                    userId: userId
+                    userId: user.userId
                 }));
             } else {
                 localStorage.clear();

@@ -1,6 +1,6 @@
 // @flow
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import Badge from '../../components/base/Badge/Badge';
 import Button from '../../components/base/Button/Button';
@@ -28,6 +28,7 @@ import './alert-detail.scss';
 import { updateAlert } from '../../api/alerts';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import { replaceAlertDetails } from '../../redux/modules/alerts';
+import { useIsMount } from '../../hooks/useIsMount';
 
 type Props = {
     loading: Boolean,
@@ -53,9 +54,11 @@ function AlertDetailScreen({
     handleDownloadAlertsRecord
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
+    const { profileData: { userId } } = useSelector(({ authentication }) => authentication);
     const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1199px)' });
     const isLaptopScreen = useMediaQuery({ query: '(max-width: 1450px)' });
     const [submit, setSubmit] = useState(false);
+    const isMount = useIsMount();
     const [alert, setAlert] = useState({
         notes: '',
         status: '',
@@ -64,6 +67,10 @@ function AlertDetailScreen({
         resolveReason: '',
         errors: {}
     });
+
+    useEffect(() => {
+        if (!isMount) showResolveAlert();
+    }, [alert.resolveReason]);
 
     const showError = errMsg => {
         dispatch(setModalContent({
@@ -103,8 +110,6 @@ function AlertDetailScreen({
 
     const handleUpdateAlert = async () => {
         setSubmit(true);
-        const userId = localStorage.getItem('userId');
-        const resolveReason = localStorage.getItem('resolveReason');
 
         const payload = {
             id: selectedAlert.id,
@@ -124,7 +129,7 @@ function AlertDetailScreen({
             escalation: alert.escalation === '' ? selectedAlert.escalation : alert.escalation,
             status: alert.status === '' ? selectedAlert.status : alert.status,
             notes: alert.notes === '' ? selectedAlert.notes : alert.notes,
-            resolveReason: resolveReason === '' ? selectedAlert.resolveReason : resolveReason,
+            resolveReason: alert.resolveReason === '' ? selectedAlert.resolveReason : alert.resolveReason,
             parameterValues: selectedAlert.parameterValues,
             dateCreated: selectedAlert.dateCreated,
             alertDate: selectedAlert.alertDate
@@ -144,24 +149,6 @@ function AlertDetailScreen({
             setSubmit(false);
         }
     };
-
-    // const handleValidation = () => {
-    //     const errors = {};
-    //     let formIsValid = true;
-
-    //     if (validator.isEmpty(alert.resolveReason) || typeof alert.resolveReason === 'undefined') {
-    //         formIsValid = false;
-    //         errors.resolveReason = true;
-    //         errors.resolveReasonErrMsg = 'Reason is required';
-    //     }
-
-    //     setAlert({
-    //         ...alert,
-    //         errors
-    //     });
-
-    //     return formIsValid;
-    // };
 
     return (
         <div className='alert-detail'>
@@ -777,7 +764,6 @@ const ResolveAlertModal = ({
                 <Input type='textarea' name='resolveReason' id='resolveReason'
                     rows={4} placeholder='Reason...' onChange={(e, option) => {
                         handleChange(e, option);
-                        localStorage.setItem('resolveReason', e.target.value);
                     }}
                     invalid={alert.errors.resolveReason} />
                 <FormFeedback className={`${alert.errors.resolveReason ? 'd-block' : 'd-none'}`}>

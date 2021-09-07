@@ -46,10 +46,9 @@ export default function AlertDetailContainer({
 
     const loadAlertDetails = async () => {
         setLoading(true);
-        const alertId = localStorage.getItem('selectedAlertId');
 
         try {
-            const alerts = await getAlert(alertId);
+            const alerts = await getAlert(match.params.id);
 
             dispatch(setSelectedAlert(alerts.data));
         } catch (e) {

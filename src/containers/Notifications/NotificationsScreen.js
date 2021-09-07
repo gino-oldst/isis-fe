@@ -5,7 +5,6 @@ import Typography from '../../components/base/Typography/Typography';
 import Badge from '../../components/base/Badge/Badge';
 import Tooltip from '../../components/base/Tooltip/Tooltip';
 import bellIcon from '../../assets/images/ic_bell-solid-white.svg';
-import { getUserId } from '../../utils/helpers';
 import './notifications.scss';
 import {
     UncontrolledDropdown,
@@ -15,6 +14,7 @@ import {
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { updateNotification } from '../../api/notifications';
+import { useSelector } from 'react-redux';
 
 type Props = {
     today: Array,
@@ -31,10 +31,12 @@ export default function NotificationsScreen({
     isNotifMenuOpen,
     loadNotifications
 }: Props): React$Element<any> {
+    const { profileData: { userId } } = useSelector(({ authentication }) => authentication);
+
     const handleReadNotif = async (notif, status) => {
         const payload = {
             id: notif.id,
-            userId: getUserId(),
+            userId: userId,
             alertId: notif.alertId,
             alertStatus: notif.alertStatus,
             behaviorId: notif.behaviorId,

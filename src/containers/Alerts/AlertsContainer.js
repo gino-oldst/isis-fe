@@ -48,7 +48,7 @@ export default function AlertsContainer({
     const viewAlertDetails = async (row) => {
         localStorage.setItem('selectedAlertId', row.id);
 
-        history.push(`/alert/${row.behaviourCode}`);
+        history.push(`/alert/${row.id}`);
     };
 
     const loadAlertsData = async () => {

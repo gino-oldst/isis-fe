@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import onClickOutside from 'react-onclickoutside';
 import NotificationsScreen from './NotificationsScreen';
-import { getUserId } from '../../utils/helpers';
 import { getNotifications } from '../../api/notifications';
 import { setNotifications } from '../../redux/modules/notifications';
 import { setLoggingOut } from '../../redux/modules/authentication';
@@ -11,6 +10,7 @@ import { setLoggingOut } from '../../redux/modules/authentication';
 function NotificationsContainer(): React$Element<any> {
     const dispatch = useDispatch();
     const { data } = useSelector(({ notifications }) => notifications);
+    const { profileData: { userId } } = useSelector(({ authentication }) => authentication);
     const [isNotifMenuOpen, setNotifMenuOpen] = useState(false);
 
     const toggleDropdown = (menuOpen) => setNotifMenuOpen(menuOpen);
@@ -29,7 +29,7 @@ function NotificationsContainer(): React$Element<any> {
         try {
             const notifications = await getNotifications();
 
-            dispatch(setNotifications(getUserId(), notifications.data.data));
+            dispatch(setNotifications(userId, notifications.data.data));
         } catch (e) {
             if (e.status === 403) {
                 localStorage.clear();
