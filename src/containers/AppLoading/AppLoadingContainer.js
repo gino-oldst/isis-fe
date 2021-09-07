@@ -1,7 +1,7 @@
 // @flow
 
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 /* eslint-disable camelcase */
 import jwt_decode from 'jwt-decode';
 import Spinner from 'react-bootstrap/Spinner';
@@ -26,7 +26,6 @@ export default function AppLoadingContainer({
 }: Props): any | React$Element<"div"> {
     const dispatch = useDispatch();
     const location = useLocation();
-    const { profileData: { userId } } = useSelector(({ authentication }) => authentication);
 
     const [isAppReady, setAppReady] = useState(false);
     const [isErrorLoaded, setErrorLoaded] = useState(false);
