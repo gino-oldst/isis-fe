@@ -45,8 +45,6 @@ export default function BehavioursContainer({
     };
 
     const viewBehaviourDetails = async row => {
-        localStorage.setItem('selectedBehaviourCode', row.original.code);
-
         history.push(`/behaviour/${row.original.internalCode}`);
     };
 

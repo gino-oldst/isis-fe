@@ -155,8 +155,6 @@ const UpdateParameterModal = ({
         errors: {}
     });
 
-    console.log(userId);
-
     const handleUpdate = async () => {
         setLoading(true);
 
@@ -285,6 +283,7 @@ const RunBehavioursModal = ({
     const [loading, setLoading] = useState(false);
     const [fromDate, setFromDate] = useState(new Date());
     const [toDate, setToDate] = useState(new Date());
+    const { selected } = useSelector(({ behaviours }) => behaviours);
 
     const handleDateChange = async (type, date) => {
         if (type === 'from') {
@@ -310,7 +309,7 @@ const RunBehavioursModal = ({
         dates.forEach(async (date, idx) => {
             const payload = {
                 importDate: moment(date).format('YYYY-MM-DD'),
-                internalCode: localStorage.getItem('selectedBehaviourCode')
+                internalCode: selected.code
             };
 
             const result = await processBehaviourByDate(payload);

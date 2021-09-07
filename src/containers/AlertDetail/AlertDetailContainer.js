@@ -66,8 +66,7 @@ export default function AlertDetailContainer({
     };
 
     const loadAlertSpecifics = async () => {
-        const alertId = localStorage.getItem('selectedAlertId');
-        const alertSpecific = await getAlertSpecifics(alertId);
+        const alertSpecific = await getAlertSpecifics(match.params.id);
 
         if (alertSpecific.status === 200) dispatch(setAlertSpecificsData(alertSpecific.data));
     };

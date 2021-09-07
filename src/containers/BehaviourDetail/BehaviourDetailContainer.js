@@ -45,8 +45,6 @@ export default function BehaviourDetailContainer({
 
             const rules = await getRule(selectedBehaviour.data.id);
 
-            localStorage.setItem('ruleId', rules.data.data[0].id);
-
             const parameters = await getParametersByRuleId(rules.data.data[0].id);
             const { data, totalNoOfRecords, totalPages } = parameters.data;
 

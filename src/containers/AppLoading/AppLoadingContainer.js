@@ -49,8 +49,6 @@ export default function AppLoadingContainer({
                 dispatch(updateUserToken(accessToken));
                 Storage.setItem(storageKey.accessToken, accessToken);
 
-                console.log(user);
-
                 dispatch(authUser({
                     user: token.sub,
                     userId: user.userId
