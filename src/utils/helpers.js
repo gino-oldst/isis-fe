@@ -84,8 +84,6 @@ export const getTextColor = text => {
 
 export const blockInvalidChar = e => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault();
 
-export const getUserId = () => localStorage.getItem('userId');
-
 const newRecord = () => {
     return {
         identifier: namor.generate({ words: 1, numbers: 1 }),
