@@ -482,7 +482,14 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{typeof alertSpecifics.difference !== 'undefined' || typeof alertSpecifics.difference !== 'object' ? Math.round(alertSpecifics.difference) + '%' : '—'}</Typography>
+                                                                                <Typography color='color-3'>
+                                                                                    {alertSpecifics.difference
+                                                                                        ? typeof alertSpecifics.difference !== 'undefined' || typeof alertSpecifics.difference !== 'object'
+                                                                                            ? Math.round(alertSpecifics.difference) + '%'
+                                                                                            : '—'
+                                                                                        : '—'
+                                                                                    }
+                                                                                </Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -557,7 +564,14 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{typeof alertSpecifics.difference !== 'undefined' || typeof alertSpecifics.difference !== 'object' ? Math.round(alertSpecifics.difference) + '%' : '—'}</Typography>
+                                                                                <Typography color='color-3'>
+                                                                                    {alertSpecifics.difference
+                                                                                        ? typeof alertSpecifics.difference !== 'undefined' || typeof alertSpecifics.difference !== 'object'
+                                                                                            ? Math.round(alertSpecifics.difference) + '%'
+                                                                                            : '—'
+                                                                                        : '—'
+                                                                                    }
+                                                                                </Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
