@@ -10,6 +10,7 @@ const config = {
 
 // keys for localstorage
 const storageKey = {
+    user: 'user',
     accessToken: 'accessToken',
     onboard: 'onboard',
     tokenValidUntil: 'tokenValidUntil',

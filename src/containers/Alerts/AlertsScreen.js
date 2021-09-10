@@ -66,13 +66,14 @@ function AlertsScreen({
     handleDownloadAlertsList
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
+    const { profileData } = useSelector(({ authentication }) => authentication);
     const { pageSize, activePage, appliedFilters, sort } = useSelector(({ table }) => table);
     const { table } = useSelector(({ alerts }) => alerts);
 
     const showActionsModal = () => {
         dispatch(setModalContent({
             modalContent: <ActionModal
-                userId={userId}
+                userId={profileData.userId}
                 loadAlerts={loadAlerts}
                 selectedRows={selectedRows}
                 activePage={activePage}

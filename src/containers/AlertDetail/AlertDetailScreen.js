@@ -97,8 +97,6 @@ function AlertDetailScreen({
         } else {
             name = option.name;
             value = option.name === 'assignedUser' ? e.id : e.name;
-
-            if (value === 'RESOLVED') showResolveAlert();
         }
 
         if (alert.errors[name] !== undefined) alert.errors[name] = false; // remove error msg for a specific input
@@ -107,9 +105,11 @@ function AlertDetailScreen({
             ...alert,
             [name]: value
         });
+
+        if (value === 'RESOLVED') showResolveAlert();
     };
 
-    const handleUpdateAlert = async () => {
+    const handleUpdateAlert = async (resolve = false) => {
         setSubmit(true);
 
         const payload = {
@@ -128,7 +128,7 @@ function AlertDetailScreen({
             behaviourDescription: selectedAlert.behaviourDescription,
             assignedUserId: alert.assignedUser === '' ? null : alert.assignedUser,
             escalation: alert.escalation === '' ? selectedAlert.escalation : alert.escalation,
-            status: alert.status === '' ? selectedAlert.status : alert.status,
+            status: resolve ? 'RESOLVED' : alert.status === '' ? selectedAlert.status : alert.status,
             notes: alert.notes === '' ? selectedAlert.notes : alert.notes,
             resolveReason: alert.resolveReason === '' ? selectedAlert.resolveReason : alert.resolveReason,
             parameterValues: selectedAlert.parameterValues,
@@ -285,7 +285,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Buy Volume</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{numberWithCommas(alertSpecifics.buyVolume) || '—'}</Typography>
+                                                                                <Typography color='color-3'>{numberWithCommas(Math.round(alertSpecifics.buyVolume)) || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -293,7 +293,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Buy Price</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.buyPrice.toFixed(2) || '—'}</Typography>
+                                                                                <Typography color='color-3'>{alertSpecifics.buyPrice ? alertSpecifics.buyPrice.toFixed(2) : '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -317,7 +317,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Sell Volume</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{numberWithCommas(alertSpecifics.sellVolume) || '—'}</Typography>
+                                                                                <Typography color='color-3'>{numberWithCommas(Math.round(alertSpecifics.sellVolume)) || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -325,7 +325,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Sell Price</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.sellPrice.toFixed(2) || '—'}</Typography>
+                                                                                <Typography color='color-3'>{alertSpecifics.sellPrice ? alertSpecifics.sellPrice.toFixed(2) : '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -361,7 +361,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Buy Volume</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{numberWithCommas(alertSpecifics.buyVolume) || '—'}</Typography>
+                                                                                <Typography color='color-3'>{numberWithCommas(Math.round(alertSpecifics.buyVolume)) || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -369,7 +369,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Sell Volume</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{numberWithCommas(alertSpecifics.sellVolume) || '—'}</Typography>
+                                                                                <Typography color='color-3'>{numberWithCommas(Math.round(alertSpecifics.sellVolume)) || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -413,7 +413,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Volume</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{numberWithCommas(alertSpecifics.volume) || '—'}</Typography>
+                                                                                <Typography color='color-3'>{numberWithCommas(Math.round(alertSpecifics.volume)) || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -450,7 +450,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Volume</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{numberWithCommas(alertSpecifics.volume) || '—'}</Typography>
+                                                                                <Typography color='color-3'>{numberWithCommas(Math.round(alertSpecifics.volume)) || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -524,7 +524,7 @@ function AlertDetailScreen({
                                                                                         <Typography color='color-3' className='mr-3' weight='semi-bold'>Total Volume</Typography>
                                                                                     </td>
                                                                                     <td className='pb-2'>
-                                                                                        <Typography color='color-3'>{numberWithCommas(alertSpecifics.totalVolume) || '—'}</Typography>
+                                                                                        <Typography color='color-3'>{numberWithCommas(Math.round(alertSpecifics.totalVolume)) || '—'}</Typography>
                                                                                     </td>
                                                                                 </tr>
                                                                                 <tr>
@@ -711,7 +711,7 @@ function AlertDetailScreen({
                                     <Button label={<>
                                         <Typography weight='light' className='my-1 mx-2'>{!submit ? 'Save' : 'Saving...'}</Typography>
                                     </>} className={`alert-detail__save-bote-button ${!isTabletOrMobile && 'align-button-bottom'} float-right px-4 mt-3`}
-                                    size='lg' onClick={handleUpdateAlert} disabled={submit} />
+                                    size='lg' onClick={() => handleUpdateAlert(false)} disabled={submit} />
                                     {/* <Typography variant='size-14' className={`playfair-font mt-4 text-danger ${alert.errors.backendErr !== '' ? 'd-block' : 'd-none'}`}>{alert.errors.backendErr}</Typography> */}
                                 </Col>
                                 <Col sm={12} className='mt-4 mt-0-xl mb-2 '>
@@ -811,7 +811,7 @@ const ResolveAlertModal = ({
                 <Button label={`${!submit ? 'Done' : 'Saving...'}`} variant='primary' className='alerts__save-button px-4 py-2'
                     disabled={submit} onClick={() => {
                         setSubmit(true);
-                        handleUpdateAlert();
+                        handleUpdateAlert(true);
                     }} />
             </div>
         </div>

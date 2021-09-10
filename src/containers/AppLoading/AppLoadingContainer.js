@@ -12,7 +12,7 @@ import Typography from '../../components/base/Typography/Typography';
 import Storage from '../../utils/Storage';
 import { isTokenValid } from '../../utils/Auth';
 import { storageKey } from '../../config/constants';
-import { updateUserToken, authUser, setLoggingOut } from '../../redux/modules/authentication';
+import { updateUserToken, authUser } from '../../redux/modules/authentication';
 import './app-loading.scss';
 
 type Props = {
@@ -43,7 +43,7 @@ export default function AppLoadingContainer({
             const token: Object = shouldLoggout ? null : accessToken ? jwt_decode(JSON.parse(accessToken)) : null;
             const user = JSON.parse(Storage.getItem(storageKey.user));
 
-            if (token && token.exp && isTokenValid(token.exp)) {
+            if (user && token && isTokenValid(token.exp)) {
                 setTimeout(() => {}, 5000);
                 dispatch(updateUserToken(accessToken));
                 Storage.setItem(storageKey.accessToken, accessToken);
@@ -54,7 +54,6 @@ export default function AppLoadingContainer({
                 }));
             } else {
                 localStorage.clear();
-                dispatch(setLoggingOut());
             }
 
             setAppReady(true);
