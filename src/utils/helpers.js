@@ -184,3 +184,7 @@ export const setDashboardDateRangeLocal = (dateFrom, dateTo) => {
 export const getDashboardDateRangeLocal = (dateFrom, dateTo) => {
     return JSON.parse(localStorage.getItem('dashboard'));
 };
+
+export const numberWithCommas = (value) => {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
