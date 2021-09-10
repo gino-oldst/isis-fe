@@ -489,7 +489,7 @@ function Table({
                         ? (
                             <tr>
                                 <td className='text-muted text-center' colSpan={12}>
-                                    {loading && 'Fetching data...'}
+                                    {loading ? 'Fetching data...' : 'No data found'}
                                 </td>
                             </tr>
                         )
