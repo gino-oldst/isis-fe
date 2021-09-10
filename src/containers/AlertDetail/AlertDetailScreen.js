@@ -293,7 +293,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Buy Price</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.buyPrice || '—'}</Typography>
+                                                                                <Typography color='color-3'>{alertSpecifics.buyPrice.toFixed(2) || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -325,7 +325,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Sell Price</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.sellPrice || '—'}</Typography>
+                                                                                <Typography color='color-3'>{alertSpecifics.sellPrice.toFixed(2) || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -458,7 +458,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Price</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.price || '—'}</Typography>
+                                                                                <Typography color='color-3'>{numberWithCommas(Math.round(selectedAlert.tradePrice)) || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -482,7 +482,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.difference ? Math.round(alertSpecifics.difference) + '%' : '—'}</Typography>
+                                                                                <Typography color='color-3'>{typeof alertSpecifics.difference !== 'undefined' || typeof alertSpecifics.difference !== 'object' ? Math.round(alertSpecifics.difference) + '%' : '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -508,28 +508,56 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3'>{selectedAlert.ticker || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
-                                                                        <tr>
-                                                                            <td className='pb-2'>
-                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Total Volume</Typography>
-                                                                            </td>
-                                                                            <td className='pb-2'>
-                                                                                <Typography color='color-3'>{numberWithCommas(alertSpecifics.totalVolume) || '—'}</Typography>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td className='pb-2'>
-                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Historic Average Volume</Typography>
-                                                                            </td>
-                                                                            <td className='pb-2'>
-                                                                                <Typography color='color-3'>{numberWithCommas(Math.round(alertSpecifics.historicAverageVolume)) || '—'}</Typography>
-                                                                            </td>
-                                                                        </tr>
+                                                                        {
+                                                                            (selectedAlert.behaviourCode === 'HIGH_VOLUME' ||
+                                                                            selectedAlert.behaviourCode === 'HIGH_VOLUME_MUFP') &&
+                                                                            <>
+                                                                                <tr>
+                                                                                    <td className='pb-2'>
+                                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Total Volume</Typography>
+                                                                                    </td>
+                                                                                    <td className='pb-2'>
+                                                                                        <Typography color='color-3'>{numberWithCommas(alertSpecifics.totalVolume) || '—'}</Typography>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td className='pb-2'>
+                                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Historic Average Volume</Typography>
+                                                                                    </td>
+                                                                                    <td className='pb-2'>
+                                                                                        <Typography color='color-3'>{numberWithCommas(Math.round(alertSpecifics.historicAverageVolume)) || '—'}</Typography>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </>
+                                                                        }
+                                                                        {
+                                                                            (selectedAlert.behaviourCode === 'HIGH_ORDER' ||
+                                                                            selectedAlert.behaviourCode === 'HIGH_ORDER_MUFP') &&
+                                                                            <>
+                                                                                <tr>
+                                                                                    <td className='pb-2'>
+                                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Total Orders</Typography>
+                                                                                    </td>
+                                                                                    <td className='pb-2'>
+                                                                                        <Typography color='color-3'>{numberWithCommas(alertSpecifics.totalOrders) || '—'}</Typography>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td className='pb-2'>
+                                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Historic Average Orders</Typography>
+                                                                                    </td>
+                                                                                    <td className='pb-2'>
+                                                                                        <Typography color='color-3'>{numberWithCommas(Math.round(alertSpecifics.historicAverageOrders)) || '—'}</Typography>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </>
+                                                                        }
                                                                         <tr>
                                                                             <td className='pb-2'>
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alertSpecifics.difference ? Math.round(alertSpecifics.difference) + '%' : '—'}</Typography>
+                                                                                <Typography color='color-3'>{typeof alertSpecifics.difference !== 'undefined' || typeof alertSpecifics.difference !== 'object' ? Math.round(alertSpecifics.difference) + '%' : '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
