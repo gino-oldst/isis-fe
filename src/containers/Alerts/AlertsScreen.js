@@ -29,6 +29,7 @@ import './alerts.scss';
 
 import { bulkUpdateAlert } from '../../api/alerts';
 import { setModalContent } from '../../redux/modules/modalEvent';
+import { resetTableState } from '../../redux/modules/table';
 import { setLoading } from '../../redux/modules/alerts';
 
 type Props = {
@@ -61,6 +62,7 @@ function AlertsScreen({
     selectedRows,
     sidebarMenu,
     handleCloseModal,
+    tableIsFiltered,
     handleDownloadAlertsList
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
@@ -189,8 +191,6 @@ function AlertsScreen({
                                                         onChange={date => {
                                                             handleDateChange('start', 3, date);
                                                         }} />
-                                                    {/* <DatePicker width={55} value={dateRangeValues.start} className='alerts__date-filter-picker'
-                                                        inputVariant='outlined' onChange={e => handleDateChange('start', e)} /> */}
                                                 </FormGroup>
                                             </FormGroup>
                                         </div>
@@ -245,13 +245,20 @@ function AlertsScreen({
                                             className='alerts__filter-reset-button float-right mr-2' onClick={() => handleDateFilterChange(2)} />
                                     </CustomDropdown>
                                     <Button label={<>
-                                        <FontAwesomeIcon className='mr-2' icon='file-download' size='sm' />
+                                        <FontAwesomeIcon className='mr-1' icon='file-download' size='sm' />
                                         <Typography weight='light' className='my-1 mx-2'>Download</Typography>
                                     </>}
                                     disabled={table.loading}
                                     className='ml-4 d-flex align-items-center alerts__download-button'
                                     onClick={() => handleDownloadAlertsList(dateRangeValues)} />
-                                    {isRowsSelected > 0 && <Button className='ml-3 alerts__download-button' label={<Typography weight='light' className='my-1 mx-2'>Bulk Action</Typography>} onClick={showActionsModal}/>}
+                                    {tableIsFiltered() && <Button label={<>
+                                        <FontAwesomeIcon className='mr-1' icon='sync' size='sm' />
+                                        <Typography weight='light' className='my-1 mx-2'>Reset Filters</Typography>
+                                    </>}
+                                    disabled={table.loading}
+                                    className='ml-2 d-flex align-items-center alerts__download-button'
+                                    onClick={() => dispatch(resetTableState())} />}
+                                    {isRowsSelected > 0 && <Button className='ml-2  d-flex align-items-center alerts__download-button' label={<Typography weight='light' className='my-1 mx-2'>Bulk Action</Typography>} onClick={showActionsModal}/>}
                                 </div>
                             </div>
                             <Table className='alerts__table'

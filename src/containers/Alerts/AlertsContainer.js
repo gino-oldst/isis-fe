@@ -106,6 +106,10 @@ export default function AlertsContainer({
         await downloadAlertsList(payload);
     };
 
+    const tableIsFiltered = () => {
+        return !!appliedFilters.filter(filter => filter.value.length > 0).length;
+    };
+
     return <AlertsScreen
         loading={loading}
         userId={userId}
@@ -120,5 +124,6 @@ export default function AlertsContainer({
         viewAlertDetails={viewAlertDetails}
         handleCloseModal={handleCloseModal}
         sidebarMenu={sidebarMenu}
+        tableIsFiltered={tableIsFiltered}
         handleDownloadAlertsList={handleDownloadAlertsList} />;
 }

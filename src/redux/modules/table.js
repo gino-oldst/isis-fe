@@ -79,6 +79,7 @@ const initialState = {
     isRowsSelected: false,
     selectedRows: [],
     filteredRows: [],
+    filtersReset: false,
     appliedFilters: [
         {
             id: 'behaviourCode',
@@ -172,7 +173,8 @@ export default function table(state: Object = initialState, action: Object) {
 
             return {
                 ...state,
-                appliedFilters: newData
+                appliedFilters: newData,
+                filtersReset: false
             };
         }
 
@@ -208,7 +210,10 @@ export default function table(state: Object = initialState, action: Object) {
                 activePage: action.activePage
             };
         case RESET_STATE:
-            return initialState;
+            return {
+                ...initialState,
+                filtersReset: true
+            };
         default:
             return state;
     }

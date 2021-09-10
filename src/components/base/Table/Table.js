@@ -87,15 +87,25 @@ function SelectColumnFilter({
     // using the preFilteredRows
     const [selectFilter, setSelectFilter] = useState([]);
     const [searchFilter, setSearchFilter] = useState('');
+    const [isCheckAll, setIsCheckAll] = useState(false);
     const { selected } = useSelector(({ alerts }) => alerts);
     const { table } = useSelector(({ behaviours }) => behaviours);
-    const { appliedFilters } = useSelector(({ table }) => table);
+    const { appliedFilters, filtersReset } = useSelector(({ table }) => table);
     const columnsWithCheckbox = ['behaviourCode', 'escalation', 'assignedUser', 'status'];
     const dispatch = useDispatch();
 
     useEffect(() => {
         setFilter(selectFilter);
     }, [selectFilter]);
+
+    useEffect(() => {
+        if (filtersReset) {
+            setFilter([]);
+            setSearchFilter('');
+            setSelectFilter([]);
+            setIsCheckAll(false);
+        }
+    }, [filtersReset]);
 
     const handleFilterChange = (e, value) => {
         const isChecked = e.target.checked;
@@ -112,6 +122,19 @@ function SelectColumnFilter({
         dispatch(setAppliedFilters(id, value, isChecked, columnsWithCheckbox.includes(id)));
     };
 
+    const handleSelectAll = () => {
+        setIsCheckAll(!isCheckAll);
+        setSelectFilter(table.data.map((alert) => {
+            dispatch(setAppliedFilters(id, alert.id, true, columnsWithCheckbox.includes(id)));
+
+            return alert.id;
+        }));
+
+        if (isCheckAll) {
+            setSelectFilter([]);
+        }
+    };
+
     const handleSearch = value => {
         dispatch(setAppliedFilters(id, value, true, columnsWithCheckbox.includes(id)));
 
@@ -122,6 +145,7 @@ function SelectColumnFilter({
         setFilter([]);
         setSelectFilter([]);
         setSearchFilter('');
+        setIsCheckAll(false);
         dispatch(resetAppliedFilters(id));
     };
 
@@ -151,14 +175,22 @@ function SelectColumnFilter({
             }
             <div className='table__filter-options overflow-auto'>
                 {header === 'alert type'
-                    ? table.data.map((alert, i) => (
-                        <FormGroup key={alert.code} check={true}>
+                    ? <>
+                        <FormGroup key={'select_all'} check={true}>
                             <Label check={true}>
-                                <Input type='checkbox' checked={selectFilter.includes(alert.id)} onChange={e => handleFilterChange(e, alert.id)}/>
-                                {alert.code}
+                                <Input type='checkbox' checked={isCheckAll} onChange={handleSelectAll}/>
+                                Select all
                             </Label>
                         </FormGroup>
-                    ))
+                        {table.data.map((alert, i) => (
+                            <FormGroup key={alert.code} check={true}>
+                                <Label check={true}>
+                                    <Input type='checkbox' checked={selectFilter.includes(alert.id)} onChange={e => handleFilterChange(e, alert.id)}/>
+                                    {alert.code}
+                                </Label>
+                            </FormGroup>
+                        ))}
+                    </>
                     : header === 'escalation'
                         ? ['Base', 'Manager', 'CO'].map((escalation, i) => (
                             <FormGroup key={escalation} check={true}>
@@ -457,7 +489,7 @@ function Table({
                         ? (
                             <tr>
                                 <td className='text-muted text-center' colSpan={12}>
-                                    {loading ? 'Fetching data...' : 'No data found'}
+                                    {loading && 'Fetching data...'}
                                 </td>
                             </tr>
                         )
