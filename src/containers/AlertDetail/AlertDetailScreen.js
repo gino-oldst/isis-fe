@@ -458,7 +458,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Price</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{numberWithCommas(Math.round(selectedAlert.tradePrice)) || '—'}</Typography>
+                                                                                <Typography color='color-3'>{numberWithCommas(selectedAlert.tradePrice.toFixed(2)) || '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
