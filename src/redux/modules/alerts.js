@@ -100,12 +100,6 @@ const initialState = {
                 clickable: false
             },
             {
-                header: 'Client Broker',
-                accessor: 'broker',
-                disableFilters: false,
-                clickable: false
-            },
-            {
                 header: 'Book',
                 accessor: 'book',
                 disableFilters: false,
