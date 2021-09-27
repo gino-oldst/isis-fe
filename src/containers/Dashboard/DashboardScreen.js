@@ -25,7 +25,8 @@ import {
 } from '../../utils/charts';
 import {
     pluralIdentifier,
-    percentageCalculator
+    percentageCalculator,
+    numberWithCommas
 } from '../../utils/helpers';
 import './dashboard.scss';
 
@@ -211,12 +212,12 @@ function DashboardScreen({
                                             <Card>
                                                 <CardBody className='d-flex align-items-center justify-content-center'>
                                                     <img src={receivedIcon} alt='Alerts_Received_Icon' className='mr-4' />
-                                                    {loading
+                                                    {loading || dashboardData.alertsReceived === undefined
                                                         ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3'>
                                                             <span className='sr-only'>Loading...</span>
                                                         </Spinner>
                                                         : <Typography className='mr-3 pb-2 playfair-font' color='color-3' weight='semi-bold'
-                                                            variant='size-30'>{dashboardData.alertsReceived}</Typography>}
+                                                            variant='size-30'>{numberWithCommas(dashboardData.alertsReceived)}</Typography>}
                                                     <Typography color='color-3' weight='light' variant='size-16'>Alerts Received</Typography>
                                                 </CardBody>
                                             </Card>
@@ -225,12 +226,12 @@ function DashboardScreen({
                                             <Card className='mt-xl-0 mt-3'>
                                                 <CardBody className='d-flex align-items-center justify-content-center'>
                                                     <img src={resolvedIcon} alt='Alerts_Received_Icon' className='mr-4' />
-                                                    {loading
+                                                    {loading || dashboardData.alertsResolved === undefined
                                                         ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3'>
                                                             <span className='sr-only'>Loading...</span>
                                                         </Spinner>
                                                         : <Typography className='mr-3 pb-2 playfair-font' color='color-3' weight='semi-bold'
-                                                            variant='size-30'>{dashboardData.alertsResolved}</Typography>}
+                                                            variant='size-30'>{numberWithCommas(dashboardData.alertsResolved)}</Typography>}
                                                     <Typography color='color-3' weight='light' variant='size-16'>Alerts Resolved</Typography>
                                                 </CardBody>
                                             </Card>
@@ -410,17 +411,17 @@ function DashboardScreen({
                                                             ? dashboardData.behaviourPerDateSummary.map(data => {
                                                                 return (
                                                                     <Row className='d-flex align-items-center mb-2'>
-                                                                        <Col xs={7} sm={5} lg={5}
+                                                                        <Col xs={5} sm={5} lg={5}
                                                                             xl={5}
                                                                             className='text-right'>
                                                                             <Typography color='color-3' variant='size-14'>{data.behaviour}</Typography>
                                                                         </Col>
-                                                                        <Col xs={3} sm={4} lg={5}
-                                                                            xl={5}>
+                                                                        <Col xs={4} sm={3} lg={3}
+                                                                            xl={4}>
                                                                             <Progress value={data.count} max={totalBehaviourTypeNumber[0]} />
                                                                         </Col>
-                                                                        <Col xs={2} sm={2} lg={2}
-                                                                            xl={2}>
+                                                                        <Col xs={2} sm={4} lg={4}
+                                                                            xl={3}>
                                                                             <Typography color='color-3' variant='size-14'>{data.count}</Typography>
                                                                         </Col>
                                                                     </Row>
@@ -450,7 +451,7 @@ function DashboardScreen({
                                                                 return (
                                                                     <div className='d-flex justify-content-between assigned-alert-1 px-3 py-3 mb-2 bg-light'>
                                                                         <Typography color='color-3' variant='size-14'>{data.user}</Typography>
-                                                                        <Typography color='color-3' variant='size-14'>{data.count}</Typography>
+                                                                        <Typography color='color-3' variant='size-14'>{numberWithCommas(data.count)}</Typography>
                                                                     </div>
                                                                 );
                                                             })
