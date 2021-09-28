@@ -73,12 +73,6 @@ function App() {
     const handleCloseModal = () => {
         dispatch(clearModalContent());
         onToggle && onToggle();
-
-        // To show modal, do this something like this:
-        // dispatch(setModalContent({
-        //     modalContent: <LoginContainer />,
-        //     title: 'Login'
-        // }));
     };
 
     const NavbarLinks = () => {

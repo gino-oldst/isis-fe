@@ -19,6 +19,16 @@ export default function CollapsibleSidebarContainer(props: Props): React$Element
     const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1199px)' });
     const [isOpen, setToggleOpen] = React.useState(true);
 
+    React.useEffect(() => {
+        if (isTabletOrMobile) {
+            setToggleOpen(false);
+            Storage.setItem(storageKey.sidebarState, JSON.stringify(false));
+        } else {
+            setToggleOpen(true);
+            Storage.setItem(storageKey.sidebarState, JSON.stringify(true));
+        }
+    }, [isTabletOrMobile]);
+
     const handleToggleSidebar = () => {
         const updateState = !isOpen;
 
@@ -31,7 +41,6 @@ export default function CollapsibleSidebarContainer(props: Props): React$Element
             {...props}
             pathName={pathName}
             handleToggleSidebar={handleToggleSidebar}
-            isOpen={isOpen}
-            isTabletOrMobile={isTabletOrMobile} />
+            isOpen={isOpen} />
     );
 }
