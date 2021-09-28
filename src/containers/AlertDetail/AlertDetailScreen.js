@@ -346,7 +346,7 @@ function AlertDetailScreen({
                                                                         </tr>
                                                                     </>
                                                                 }
-                                                                {selectedAlert.behaviourCode === 'WASH_TRADES' &&
+                                                                {selectedAlert.behaviourCode === 'WASH_TRADE' &&
                                                                     <>
                                                                         <tr>
                                                                             <td className='pb-2'>
