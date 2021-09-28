@@ -23,8 +23,10 @@ import {
     FormGroup,
     Input,
     Label,
-    Alert
+    Alert,
+    FormFeedback
 } from 'reactstrap';
+import { useIsMount } from '../../hooks/useIsMount';
 import './alerts.scss';
 
 import { bulkUpdateAlert } from '../../api/alerts';
@@ -69,11 +71,43 @@ function AlertsScreen({
     const { profileData } = useSelector(({ authentication }) => authentication);
     const { pageSize, activePage, appliedFilters, sort } = useSelector(({ table }) => table);
     const { table } = useSelector(({ alerts }) => alerts);
+    const isMount = useIsMount();
+    const [activeModal, setActiveModal] = useState('bulk');
+    const [alert, setAlert] = useState({
+        notes: null,
+        status: null,
+        assignedTo: null,
+        escalation: null,
+        resolveReason: null
+    });
+
+    useEffect(() => {
+        if (!isMount && activeModal === 'bulk') {
+            if (alert.notes || alert.status || alert.assignedTo || alert.escalation || alert.resolveReason) {
+                showActionsModal();
+            }
+        }
+    }, [alert, activeModal]);
+
+    const handleCloseResolveAlert = () => {
+        handleCloseModal();
+        showActionsModal();
+        setActiveModal('bulk');
+    };
+
+    const handleResolveReasonChange = value => {
+        setAlert({
+            ...alert,
+            status: 'RESOLVED',
+            resolveReason: value
+        });
+    };
 
     const showActionsModal = () => {
         dispatch(setModalContent({
             modalContent: <ActionModal
                 userId={profileData.userId}
+                activeModal={activeModal}
                 loadAlerts={loadAlerts}
                 selectedRows={selectedRows}
                 activePage={activePage}
@@ -81,9 +115,14 @@ function AlertsScreen({
                 dateFrom={dateRangeValues.start.toISOString()}
                 dateTo={dateRangeValues.end.toISOString()}
                 handleCloseModal={handleCloseModal}
+                handleCloseResolveAlert={handleCloseResolveAlert}
                 assignees={assignees}
                 appliedFilters={appliedFilters}
-                sort={sort} />
+                sort={sort}
+                alert={alert}
+                setAlert={setAlert}
+                setActiveModal={setActiveModal}
+                handleResolveReasonChange={handleResolveReasonChange} />
         }));
     };
 
@@ -289,8 +328,10 @@ export default Alerts;
 
 const ActionModal = ({
     userId,
+    activeModal,
     loadAlerts,
     handleCloseModal,
+    handleCloseResolveAlert,
     selectedRows,
     activePage,
     pageSize,
@@ -298,16 +339,22 @@ const ActionModal = ({
     dateTo,
     assignees,
     appliedFilters,
-    sort
+    sort,
+    alert,
+    setAlert,
+    setActiveModal,
+    handleResolveReasonChange
 }) => {
     const dispatch = useDispatch();
     const [submit, setSubmit] = useState(false);
-    const [alert, setAlert] = useState({
-        notes: null,
-        status: null,
-        assignedTo: null,
-        escalation: null
-    });
+
+    const showResolveAlert = () => {
+        setActiveModal('resolve');
+        dispatch(setModalContent({
+            modalContent: <ResolveAlertModal handleCloseModal={handleCloseModal} handleCloseResolveAlert={handleCloseResolveAlert}
+                alert={alert} setAlert={setAlert} handleResolveReasonChange={handleResolveReasonChange} />
+        }));
+    };
 
     const showError = errMsg => {
         dispatch(setModalContent({
@@ -330,8 +377,11 @@ const ActionModal = ({
 
         setAlert({
             ...alert,
-            [name]: value
+            [name]: value,
+            resolveReason: name === 'status' && value !== 'RESOLVED' ? null : alert.resolveReason
         });
+
+        if (value === 'RESOLVED') showResolveAlert();
     };
 
     const handleBulkUpdate = async () => {
@@ -355,16 +405,27 @@ const ActionModal = ({
                     await loadAlerts(activePage, pageSize,
                         `${dateFrom.split('T')[0]}T00:00:00Z`,
                         `${dateTo.split('T')[0]}T23:59:59Z`, appliedFilters, sort);
-                    handleCloseModal();
+                    handleClose();
                 }
             }, 1000);
         }
     };
 
+    const handleClose = () => {
+        handleCloseModal();
+        setAlert({
+            notes: null,
+            status: null,
+            assignedTo: null,
+            escalation: null,
+            resolveReason: null
+        });
+    };
+
     return (
         <div className='action-modal p-4'>
             <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
-                onClick={handleCloseModal} />
+                onClick={handleClose} />
             <Typography variant='size-26' color='color-3'
                 className='mb-4 playfair-font'>
                 Bulk Action
@@ -373,10 +434,16 @@ const ActionModal = ({
                 <Label for='escalation'>Select Escalation</Label>
                 <Select
                     name='escalation'
-                    defaultValue={{
-                        label: 'No Change',
-                        value: null
-                    }}
+                    value={alert.escalation === null
+                        ? {
+                            label: 'No Change',
+                            value: null
+                        }
+                        : {
+                            name: alert.escalation,
+                            label: alert.escalation,
+                            value: alert.escalation
+                        }}
                     options={[{
                         name: 'BASE',
                         label: 'BASE',
@@ -396,10 +463,16 @@ const ActionModal = ({
                 <Label for='status'>Select Status</Label>
                 <Select
                     name='status'
-                    defaultValue={{
-                        label: 'No Change',
-                        value: null
-                    }}
+                    value={alert.status === null
+                        ? {
+                            label: 'No Change',
+                            value: null
+                        }
+                        : {
+                            name: alert.status,
+                            label: <Badge status={alert.status} />,
+                            value: <Badge status={alert.status}/>
+                        }}
                     options={[{
                         name: 'OPEN',
                         label: <Badge status='Open' />,
@@ -418,15 +491,27 @@ const ActionModal = ({
                         value: <Badge status='Archived'/>
                     }]}
                     onChangeHandler={handleChange} />
+                {alert.resolveReason && <div>Reason: {alert.resolveReason}</div>}
             </FormGroup>
             <FormGroup className='mb-3'>
                 <Label for='assignedTo'>Select Assignee</Label>
                 <Select
                     name='assignedTo'
-                    defaultValue={{
-                        label: 'No Change',
-                        value: null
-                    }}
+                    value={alert.assignedTo === null
+                        ? {
+                            label: 'No Change',
+                            value: null
+                        }
+                        : assignees.map(assignee => {
+                            if (assignee.id === alert.assignedTo) {
+                                return {
+                                    id: assignee.id,
+                                    name: assignee.fullName,
+                                    label: assignee.fullName,
+                                    value: assignee.fullName
+                                };
+                            }
+                        })}
                     options={[{
                         id: null,
                         name: 'Unassigned',
@@ -446,12 +531,12 @@ const ActionModal = ({
             <FormGroup className='mb-5'>
                 <Label for='notes'>Notes</Label>
                 <Input type='textarea' rows={5} name='notes'
-                    placeholder='Leave blank if there is no change to apply'
+                    placeholder='Leave blank if there is no change to apply' value={alert.notes}
                     onChange={handleChange} />
             </FormGroup>
             <div className='action-modal__buttons d-flex justify-content-center'>
                 <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
-                    onClick={handleCloseModal} disabled={submit} />
+                    onClick={handleClose} disabled={submit} />
                 <Button label='Apply' variant='secondary' className='alerts__save-button px-4 py-2'
                     onClick={handleBulkUpdate} disabled={submit} />
             </div>
@@ -478,6 +563,41 @@ const ErrorMsgModal = ({
                 <Button label='OK' variant='light' className='ok-button px-4 mr-2 py-2'
                     onClick={() => {
                         handleCloseModal();
+                    }} />
+            </div>
+        </div>
+    );
+};
+
+const ResolveAlertModal = ({
+    handleCloseModal,
+    handleCloseResolveAlert,
+    handleResolveReasonChange
+}) => {
+    const [submit, setSubmit] = useState(false);
+
+    return (
+        <div className='alert-details__resolve-alert p-4'>
+            <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
+                onClick={handleCloseModal} />
+            <Typography variant='size-26' color='color-3'
+                className='mb-4 playfair-font'>
+                Resolving Alert
+            </Typography>
+            <FormGroup className='mb-4'>
+                <Label for='resolveReason'>Reason of Resolving Alert</Label>
+                <Input type='textarea' name='resolveReason' id='resolveReason'
+                    rows={4} placeholder='Reason...' onChange={(e, option) => {
+                        handleResolveReasonChange(e.target.value);
+                    }}/>
+            </FormGroup>
+            <div className='resolve-alert__buttons d-flex justify-content-center'>
+                <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
+                    onClick={handleCloseResolveAlert}/>
+                <Button label={`${!submit ? 'Done' : 'Saving...'}`} variant='primary' className='alerts__save-button px-4 py-2'
+                    disabled={submit} onClick={() => {
+                        setSubmit(true);
+                        handleCloseResolveAlert();
                     }} />
             </div>
         </div>
