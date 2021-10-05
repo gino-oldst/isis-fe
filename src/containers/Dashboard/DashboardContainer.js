@@ -6,8 +6,8 @@ import type { Menu } from '../../types';
 import DashboardScreen from './DashboardScreen';
 import {
     DATE_TO_UTC,
-    setDashboardDateRangeLocal,
-    getDashboardDateRangeLocal
+    setDateRangeLocal,
+    getDateRangeLocal
 } from '../../utils/helpers';
 import { getDashboardData, downloadDashboardData } from '../../api/dashboard';
 import { setDashboardData, setDashboardDateRange } from '../../redux/modules/dashboard';
@@ -35,7 +35,7 @@ export default function DashboardContainer({
     const loadDashboardData = async (dateFrom, dateTo, isRefresh) => {
         setLoading(true);
 
-        const currentRange = getDashboardDateRangeLocal(dateFrom, dateTo);
+        const currentRange = getDateRangeLocal('dashboard');
 
         // run if refresh button is clicked
         if (isRefresh || !currentRange) {
@@ -43,7 +43,7 @@ export default function DashboardContainer({
 
             dispatch(setDashboardData(dashboard.data));
 
-            setDashboardDateRangeLocal(dateFrom, dateTo);
+            setDateRangeLocal(dateFrom, dateTo, 'dashboard');
 
             setLoading(false);
 
@@ -56,7 +56,7 @@ export default function DashboardContainer({
 
             dispatch(setDashboardData(dashboard.data));
 
-            setDashboardDateRangeLocal(dateFrom, dateTo);
+            setDateRangeLocal(dateFrom, dateTo, 'dashboard');
 
             setLoading(false);
 
