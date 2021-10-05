@@ -1,5 +1,6 @@
 // @flow
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import './breadcrumbs.scss';
 import { Spinner, Breadcrumb, BreadcrumbItem } from 'reactstrap';
 
@@ -14,6 +15,8 @@ export default function Breadcrumbs({
     isLoading = false,
     className = ''
 }: Props): React$Element<any> {
+    const history = useHistory();
+
     return (
         <div className={`breadcrumbs ${className}`} >
             <Breadcrumb className='w-100'>
@@ -23,7 +26,7 @@ export default function Breadcrumbs({
                     )
                     : (
                         links.map((link, idx) => {
-                            return <BreadcrumbItem key={idx} active={links.length === idx + 1}><a href={link.path}>{link.label}</a></BreadcrumbItem>;
+                            return <BreadcrumbItem key={idx} active={links.length === idx + 1}><a href='#' onClick={() => history.push(`${link.path}`)}>{link.label}</a></BreadcrumbItem>;
                         })
                     )}
             </Breadcrumb>
