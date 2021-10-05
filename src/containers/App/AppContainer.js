@@ -14,8 +14,6 @@ import { setLoggingOut } from '../../redux/modules/authentication';
 import navbarBrand from '../../assets/logos/mariana_logo.png';
 import './app.scss';
 
-import { resetTableState } from '../../redux/modules/table';
-
 import {
     Nav,
     UncontrolledDropdown,
@@ -44,28 +42,24 @@ function App() {
         label: 'Dashboard',
         onClick: () => {
             history.push('/dashboard');
-            dispatch(resetTableState());
         },
         key: 'dashboard'
     }, {
         label: 'Alerts',
         onClick: () => {
             history.push('/alerts');
-            dispatch(resetTableState());
         },
         key: 'alert'
     }, {
         label: 'Behaviours',
         onClick: () => {
             history.push('/behaviours');
-            dispatch(resetTableState());
         },
         key: 'behaviour'
     }, {
         label: 'Restricted List',
         onClick: () => {
             history.push('/restricted_list');
-            dispatch(resetTableState());
         },
         key: 'restricted_list'
     }];

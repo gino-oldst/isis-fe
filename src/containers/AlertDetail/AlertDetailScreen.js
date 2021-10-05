@@ -217,7 +217,7 @@ function AlertDetailScreen({
                                                                 {
                                                                     (selectedAlert.behaviourCode === 'LARGE_ORDER_MUFP' ||
                                                                     selectedAlert.behaviourCode === 'HIGH_VOLUME_MUFP' ||
-                                                                    selectedAlert.behaviourCode === 'HIGH_ORDER_MUFP')
+                                                                    selectedAlert.behaviourCode === 'HIGH_ORDER_COUNT_MUFP')
                                                                         ? <>
                                                                             <tr>
                                                                                 <td className='pb-2'>
@@ -504,8 +504,8 @@ function AlertDetailScreen({
                                                                 }
                                                                 {(selectedAlert.behaviourCode === 'HIGH_VOLUME' ||
                                                                 selectedAlert.behaviourCode === 'HIGH_VOLUME_MUFP' ||
-                                                                selectedAlert.behaviourCode === 'HIGH_ORDER' ||
-                                                                selectedAlert.behaviourCode === 'HIGH_ORDER_MUFP') &&
+                                                                selectedAlert.behaviourCode === 'HIGH_ORDER_COUNT' ||
+                                                                selectedAlert.behaviourCode === 'HIGH_ORDER_COUNT_MUFP') &&
                                                                     <>
                                                                         <tr>
                                                                             <td className='pb-2'>
@@ -538,8 +538,8 @@ function AlertDetailScreen({
                                                                             </>
                                                                         }
                                                                         {
-                                                                            (selectedAlert.behaviourCode === 'HIGH_ORDER' ||
-                                                                            selectedAlert.behaviourCode === 'HIGH_ORDER_MUFP') &&
+                                                                            (selectedAlert.behaviourCode === 'HIGH_ORDER_COUNT' ||
+                                                                            selectedAlert.behaviourCode === 'HIGH_ORDER_COUNT_MUFP') &&
                                                                             <>
                                                                                 <tr>
                                                                                     <td className='pb-2'>
