@@ -26,12 +26,16 @@ import {
     Alert
 } from 'reactstrap';
 import { useIsMount } from '../../hooks/useIsMount';
+import {
+    setDateRangeLocal,
+    getDateRangeLocal
+} from '../../utils/helpers';
 import './alerts.scss';
 
 import { bulkUpdateAlert } from '../../api/alerts';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import { resetTableState } from '../../redux/modules/table';
-import { setLoading } from '../../redux/modules/alerts';
+import { setLoading, setAlertsDateRange } from '../../redux/modules/alerts';
 
 type Props = {
     loading: Boolean,
@@ -69,7 +73,7 @@ function AlertsScreen({
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
     const { pageSize, activePage, appliedFilters, sort } = useSelector(({ table }) => table);
-    const { table } = useSelector(({ alerts }) => alerts);
+    const { table, dateRange } = useSelector(({ alerts }) => alerts);
     const isMount = useIsMount();
     const [activeModal, setActiveModal] = useState('bulk');
     const [alert, setAlert] = useState({
@@ -164,19 +168,45 @@ function AlertsScreen({
             ...dateRangeValues,
             [type]: value
         });
+
+        dispatch(setAlertsDateRange(type, moment(value)));
     };
 
     useEffect(() => {
-        dispatch(setLoading());
+        const currentRange = getDateRangeLocal('alerts');
 
-        loadAlerts(
-            activePage,
-            pageSize,
-            `${dateRangeValues.start.toISOString().split('T')[0]}T00:00:00Z`,
-            `${dateRangeValues.end.toISOString().split('T')[0]}T23:59:59Z`,
-            appliedFilters,
-            sort
-        );
+        if (!currentRange) {
+            dispatch(setLoading());
+
+            loadAlerts(
+                activePage,
+                pageSize,
+                `${dateRange.start.toISOString().split('T')[0]}T00:00:00Z`,
+                `${dateRange.end.toISOString().split('T')[0]}T23:59:59Z`,
+                appliedFilters,
+                sort
+            );
+
+            setDateRangeLocal(dateRangeValues.start, dateRangeValues.end, 'alerts');
+
+            return;
+        }
+
+        // run if date range is changed
+        if (!moment(currentRange.start).isSame(moment(dateRange.start)) || !moment(currentRange.end).isSame(moment(dateRange.end))) {
+            dispatch(setLoading());
+
+            loadAlerts(
+                activePage,
+                pageSize,
+                `${dateRange.start.toISOString().split('T')[0]}T00:00:00Z`,
+                `${dateRange.end.toISOString().split('T')[0]}T23:59:59Z`,
+                appliedFilters,
+                sort
+            );
+
+            setDateRangeLocal(dateRangeValues.start, dateRangeValues.end, 'alerts');
+        }
     }, [dateRangeFilter, dateRangeValues, pageSize, activePage, appliedFilters, sort]);
 
     return (
@@ -193,7 +223,7 @@ function AlertsScreen({
                                 <div className='alerts__date-picker d-flex align-items-center justify-content-end mb-4'>
                                     <CustomDropdown tag='span'
                                         toggle={<DatePicker width='70' inputVariant='outlined' keyboard={true}
-                                            value={dateRangeValues.start}
+                                            value={dateRange.start}
                                             disabled={table.loading} />}>
                                         <DropdownItem header={true} className='text-center'>
                                             <img src={filterIcon} alt='talbe-filter-icon' />
@@ -240,7 +270,7 @@ function AlertsScreen({
                                     <Typography color='color-3' variant='size-16' className='mx-4'>to</Typography>
                                     <CustomDropdown tag='span'
                                         toggle={<DatePicker width='70' inputVariant='outlined' keyboard={true}
-                                            value={dateRangeValues.end}
+                                            value={dateRange.end}
                                             disabled={table.loading} />}>
                                         <DropdownItem header={true} className='text-center'>
                                             <img src={filterIcon} alt='talbe-filter-icon' />
