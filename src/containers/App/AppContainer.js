@@ -11,6 +11,8 @@ import Navbar from '../../components/base/Navbar/Navbar';
 import Notifications from '../../containers/Notifications/NotificationsContainer';
 import { clearModalContent } from '../../redux/modules/modalEvent';
 import { setLoggingOut } from '../../redux/modules/authentication';
+import { resetTableState } from '../../redux/modules/table';
+
 import navbarBrand from '../../assets/logos/mariana_logo.png';
 import './app.scss';
 
@@ -41,6 +43,7 @@ function App() {
     const sidebarMenu = [{
         label: 'Dashboard',
         onClick: () => {
+            dispatch(resetTableState());
             history.push('/dashboard');
         },
         key: 'dashboard'
@@ -53,12 +56,14 @@ function App() {
     }, {
         label: 'Behaviours',
         onClick: () => {
+            dispatch(resetTableState());
             history.push('/behaviours');
         },
         key: 'behaviour'
     }, {
         label: 'Restricted List',
         onClick: () => {
+            dispatch(resetTableState());
             history.push('/restricted_list');
         },
         key: 'restricted_list'
