@@ -186,5 +186,5 @@ export const getDateRangeLocal = (key) => {
 };
 
 export const numberWithCommas = (value) => {
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : value;
 };
