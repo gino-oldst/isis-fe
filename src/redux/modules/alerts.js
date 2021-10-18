@@ -8,7 +8,6 @@ const SET_ASSIGNEES = 'SET_ASSIGNEES';
 const REPLACE_ALERT_DETAILS = 'REPLACE_ALERT_DETAILS';
 const FILTER_ALERTS_DATA = 'FILTER_ALERTS_DATA';
 const SET_LOADING = 'SET_LOADING';
-const RESET_STATE = 'RESET_STATE';
 const SET_ALERTS_DATE_RANGE = 'SET_ALERTS_DATE_RANGE';
 
 export function setSelectedAlert(data: Object) {
@@ -71,12 +70,6 @@ export function setAlertsDateRange(target: String, date: String) {
 export function setLoading() {
     return {
         type: SET_LOADING
-    };
-}
-
-export function resetAlertsTableState() {
-    return {
-        type: RESET_STATE
     };
 }
 
@@ -252,11 +245,6 @@ export default function alerts(state: Object = initialState, action: Object):
                     ...state.dateRange,
                     [action.target]: action.date
                 }
-            };
-
-        case RESET_STATE:
-            return {
-                ...initialState
             };
 
         default:
