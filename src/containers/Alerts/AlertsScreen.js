@@ -73,7 +73,7 @@ function AlertsScreen({
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
-    const { pageSize, activePage, appliedFilters, sort } = useSelector(({ table }) => table);
+    const { pageSize, activePage, appliedFilters, areRowsSelectedAll, sort } = useSelector(({ table }) => table);
     const { table, dateRange } = useSelector(({ alerts }) => alerts);
     const isMount = useIsMount();
     const [activeModal, setActiveModal] = useState('bulk');
@@ -113,7 +113,9 @@ function AlertsScreen({
                 userId={profileData.userId}
                 activeModal={activeModal}
                 loadAlerts={loadAlerts}
+                table={table}
                 selectedRows={selectedRows}
+                areRowsSelectedAll={areRowsSelectedAll}
                 activePage={activePage}
                 pageSize={pageSize}
                 dateFrom={dateRangeValues.start.toISOString()}
@@ -361,7 +363,9 @@ const ActionModal = ({
     loadAlerts,
     handleCloseModal,
     handleCloseResolveAlert,
+    table,
     selectedRows,
+    areRowsSelectedAll,
     activePage,
     pageSize,
     dateFrom,
@@ -416,7 +420,9 @@ const ActionModal = ({
     const handleBulkUpdate = async () => {
         setSubmit(true);
 
-        const payload = selectedRows.map(row => {
+        const records = !areRowsSelectedAll ? selectedRows : table.alertIds;
+
+        const payload = records.map(row => {
             return {
                 alertId: row,
                 currentUserId: userId,

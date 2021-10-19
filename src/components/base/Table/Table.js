@@ -23,7 +23,7 @@ import filterIcon from '../../../assets/images/ic_filter.svg';
 import './table.scss';
 
 import { useTable, useRowSelect, useFilters, useGlobalFilter, usePagination, useSortBy, useAsyncDebounce } from 'react-table';
-import { setIsRowSelected, setTablePageSize, setActivePage, setAppliedFilters, resetAppliedFilters, setFilteredRows, setSortedColumn } from '../../../redux/modules/table';
+import { setIsRowSelected, setTablePageSize, setActivePage, setAppliedFilters, resetAppliedFilters, setFilteredRows, setSortedColumn, setAllRowsSelected } from '../../../redux/modules/table';
 
 // Define a default UI for filtering
 function GlobalFilter({
@@ -94,6 +94,16 @@ function SelectColumnFilter({
     const columnsWithCheckbox = ['behaviourCode', 'escalation', 'assignedUser', 'status'];
     const dispatch = useDispatch();
 
+    // const options = useMemo(() => {
+    //     const options = new Set();
+
+    //     preFilteredRows.forEach(row => {
+    //         options.add(row.values[id]);
+    //     });
+
+    //     return [...options.values()];
+    // }, [id, preFilteredRows]);
+
     useEffect(() => {
         setFilter(selectFilter);
     }, [selectFilter]);
@@ -161,6 +171,9 @@ function SelectColumnFilter({
 
     const header = Header.toLowerCase();
 
+    // filtered column options
+    // const choices = options.filter(opt => opt.toString().toLowerCase().includes(searchFilter.toLowerCase()));
+
     // Render a multi-select box
     return (
         <CustomDropdown tag='span'
@@ -169,6 +182,20 @@ function SelectColumnFilter({
                 <img src={filterIcon} alt='talbe-filter-icon' />
             </DropdownItem>
             <DropdownItem divider={true} />
+            {/* <DropdownItem header={true}>
+                <Input type='text' name='search' placeholder='Search...'
+                    bsSize='md' value={searchFilter} onChange={e => handleSearch(e.target.value)} />
+            </DropdownItem>
+            <div className='table__filter-options overflow-auto'>
+                {choices.map((option, i) => (
+                    <FormGroup key={i} check={true}>
+                        <Label check={true}>
+                            <Input type='checkbox' checked={selectFilter.includes(option.toString())} onChange={e => handleFilterChange(e, option.toString())}/>
+                            {option.toString()}
+                        </Label>
+                    </FormGroup>
+                ))}
+            </div> */}
             {!columnsWithCheckbox.includes(id) &&
                 <DropdownItem header={true}>
                     <Input type='text' name='search' placeholder='Search...'
@@ -305,11 +332,13 @@ function SelectColumnFilter({
 const IndeterminateCheckbox = React.forwardRef(
     ({ indeterminate, ...rest }, ref) => {
         const defaultRef = React.useRef();
+        const dispatch = useDispatch();
         const resolvedRef = ref || defaultRef;
 
         React.useEffect(() => {
             resolvedRef.current.indeterminate = indeterminate;
-        }, [resolvedRef, indeterminate]);
+            rest.title.toLowerCase() === 'toggle all rows selected' && dispatch(setAllRowsSelected(rest.checked));
+        }, [resolvedRef, indeterminate, rest.checked]);
 
         return (
             <>

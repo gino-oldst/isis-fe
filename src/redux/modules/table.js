@@ -6,6 +6,7 @@ const SET_FILTERED_ROWS = 'SET_FILTERED_ROWS';
 const SET_SORTED_COLUMN = 'SET_SORTED_COLUMN';
 const SET_PAGE_SIZE = 'SET_PAGE_SIZE';
 const SET_ACTIVE_PAGE = 'SET_ACTIVE_PAGE';
+const SET_ALL_ROWS_SELECTED = 'SET_ALL_ROWS_SELECTED';
 const RESET_STATE = 'RESET_STATE';
 
 export function setIsRowSelected(
@@ -75,8 +76,16 @@ export function resetTableState() {
     };
 }
 
+export function setAllRowsSelected(selected: boolean) {
+    return {
+        type: SET_ALL_ROWS_SELECTED,
+        selected
+    };
+}
+
 const initialState = {
     isRowsSelected: false,
+    areRowsSelectedAll: false,
     selectedRows: [],
     filteredRows: [],
     filtersReset: false,
@@ -208,6 +217,11 @@ export default function table(state: Object = initialState, action: Object) {
             return {
                 ...state,
                 activePage: action.activePage
+            };
+        case SET_ALL_ROWS_SELECTED:
+            return {
+                ...initialState,
+                areRowsSelectedAll: action.selected
             };
         case RESET_STATE:
             return {
