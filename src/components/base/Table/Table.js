@@ -132,6 +132,8 @@ function SelectColumnFilter({
 
         if (isCheckAll) {
             setSelectFilter([]);
+
+            table.data.map((alert) => dispatch(setAppliedFilters(id, alert.id, false, columnsWithCheckbox.includes(id))));
         }
     };
 
