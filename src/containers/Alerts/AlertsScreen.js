@@ -17,6 +17,10 @@ import CustomDropdown from '../../components/base/CustomDropdown/CustomDropdown'
 import filterIcon from '../../assets/images/ic_filter.svg';
 import type { Menu } from '../../types';
 import {
+    setDateRangeLocal,
+    getDateRangeLocal
+} from '../../utils/helpers';
+import {
     Card,
     CardBody,
     DropdownItem,
@@ -26,10 +30,7 @@ import {
     Alert
 } from 'reactstrap';
 import { useIsMount } from '../../hooks/useIsMount';
-import {
-    setDateRangeLocal,
-    getDateRangeLocal
-} from '../../utils/helpers';
+
 import './alerts.scss';
 
 import { bulkUpdateAlert } from '../../api/alerts';
@@ -149,11 +150,17 @@ function AlertsScreen({
                 ...dateRangeValues,
                 start: now
             });
+
+            dispatch(setAlertsDateRange('start', moment().startOf('day')));
+            dispatch(setAlertsDateRange('end', moment().endOf('day')));
         } else if (value === 2) {
             setDateRangeValues({
                 start: moment().subtract(7, 'days')._d,
                 end: now
             });
+
+            dispatch(setAlertsDateRange('start', moment().startOf('day').subtract(7, 'days')._d));
+            dispatch(setAlertsDateRange('end', moment().endOf('day')));
         }
     };
 
@@ -161,7 +168,7 @@ function AlertsScreen({
         setDateRangeFilter(activeFilter);
         setDateRangeFilterValues({
             ...dateRangeFilterValues,
-            [type]: value
+            [type]: moment.tz(value, 'Europe/London').startOf('day').utc()
         });
 
         setDateRangeValues({
