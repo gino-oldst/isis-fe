@@ -220,7 +220,7 @@ export default function table(state: Object = initialState, action: Object) {
             };
         case SET_ALL_ROWS_SELECTED:
             return {
-                ...initialState,
+                ...state,
                 areRowsSelectedAll: action.selected
             };
         case RESET_STATE:
