@@ -406,6 +406,8 @@ const ActionModal = ({
         } else {
             name = option.name;
             value = option.name === 'assignedTo' ? e.id : e.name;
+
+            if (option.name === 'assignedTo' && value === 0) value = 999999;
         }
 
         setAlert({
@@ -426,7 +428,8 @@ const ActionModal = ({
             return {
                 alertId: row,
                 currentUserId: userId,
-                ...alert
+                ...alert,
+                assignedTo: alert.assignedTo === 999999 ? 0 : alert.assignedTo
             };
         });
 
@@ -535,7 +538,8 @@ const ActionModal = ({
                     value={alert.assignedTo === null
                         ? {
                             label: 'No Change',
-                            value: null
+                            name: 'No Change',
+                            value: 'No Change'
                         }
                         : assignees.map(assignee => {
                             if (assignee.id === alert.assignedTo) {
@@ -547,20 +551,15 @@ const ActionModal = ({
                                 };
                             }
                         })}
-                    options={[{
-                        id: 0,
-                        name: 'Unassigned',
-                        label: 'Unassigned',
-                        value: 'Unassigned'
-                    },
-                    ...assignees.map(assignee => {
-                        return {
-                            id: assignee.id,
-                            name: assignee.fullName,
-                            label: assignee.fullName,
-                            value: assignee.fullName
-                        };
-                    })]}
+                    options={[
+                        ...assignees.map(assignee => {
+                            return {
+                                id: assignee.id,
+                                name: assignee.fullName,
+                                label: assignee.fullName,
+                                value: assignee.fullName
+                            };
+                        })]}
                     onChangeHandler={handleChange} />
             </FormGroup>
             <FormGroup className='mb-5'>

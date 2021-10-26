@@ -78,7 +78,13 @@ export default function AlertsContainer({
 
         const filteredUsers = users.data.data.filter(user => user.userRegistrationType === 'EMAIL');
 
-        dispatch(setAssignees(filteredUsers));
+        dispatch(setAssignees([
+            {
+                id: 999999,
+                fullName: 'Unassigned'
+            },
+            ...filteredUsers
+        ]));
     };
 
     const loadBehavioursData = async (activePage, pageSize) => {
