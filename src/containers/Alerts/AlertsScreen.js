@@ -548,7 +548,7 @@ const ActionModal = ({
                             }
                         })}
                     options={[{
-                        id: null,
+                        id: 0,
                         name: 'Unassigned',
                         label: 'Unassigned',
                         value: 'Unassigned'
