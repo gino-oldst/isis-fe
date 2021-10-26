@@ -198,29 +198,27 @@ function AlertDetailScreen({
                                                                         <Typography color='color-3'>{selectedAlert.alertDate ? moment(selectedAlert.alertDate).format('DD/MM/YY') : '—'}</Typography>
                                                                     </td>
                                                                 </tr>
-                                                                <tr>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Mariana Broker</Typography>
-                                                                    </td>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3'>{selectedAlert.broker || '—'}</Typography>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Mariana Branch</Typography>
-                                                                    </td>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3'>{selectedAlert.book || '—'}</Typography>
-                                                                    </td>
-                                                                </tr>
                                                                 {
-                                                                    (selectedAlert.behaviourCode === 'LARGE_ORDER_MUFP' ||
-                                                                    selectedAlert.behaviourCode === 'HIGH_VOLUME_MUFP' ||
-                                                                    selectedAlert.behaviourCode === 'HIGH_ORDER_COUNT_MUFP')
+                                                                    selectedAlert.behaviourCode !== 'HIGH_ORDER_COUNT_MUFP'
                                                                         ? <>
                                                                             <tr>
                                                                                 <td className='pb-2'>
+                                                                                    <Typography color='color-3' className='mr-3' weight='semi-bold'>Mariana Broker</Typography>
+                                                                                </td>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3'>{selectedAlert.broker || '—'}</Typography>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3' className='mr-3' weight='semi-bold'>Mariana Branch</Typography>
+                                                                                </td>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3'>{selectedAlert.book || '—'}</Typography>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td className='pb-2'>
                                                                                     <Typography color='color-3' className='mr-3' weight='semi-bold'>Client Name</Typography>
                                                                                 </td>
                                                                                 <td className='pb-2'>
@@ -236,24 +234,14 @@ function AlertDetailScreen({
                                                                                 </td>
                                                                             </tr>
                                                                         </>
-                                                                        : <>
-                                                                            <tr>
-                                                                                <td className='pb-2'>
-                                                                                    <Typography color='color-3' className='mr-3' weight='semi-bold'>Client Name</Typography>
-                                                                                </td>
-                                                                                <td className='pb-2'>
-                                                                                    <Typography color='color-3'>{selectedAlert.client || '—'}</Typography>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td className='pb-2'>
-                                                                                    <Typography color='color-3' className='mr-3' weight='semi-bold'>Client Trader</Typography>
-                                                                                </td>
-                                                                                <td className='pb-2'>
-                                                                                    <Typography color='color-3'>{selectedAlert.clientTrader || '—'}</Typography>
-                                                                                </td>
-                                                                            </tr>
-                                                                        </>
+                                                                        : <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Total Volume:</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{numberWithCommas(Math.round(alertSpecifics.totalVolume)) || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
                                                                 }
                                                             </tbody>
                                                         </table>
@@ -505,7 +493,8 @@ function AlertDetailScreen({
                                                                 {(selectedAlert.behaviourCode === 'HIGH_VOLUME' ||
                                                                 selectedAlert.behaviourCode === 'HIGH_VOLUME_MUFP' ||
                                                                 selectedAlert.behaviourCode === 'HIGH_ORDER_COUNT' ||
-                                                                selectedAlert.behaviourCode === 'HIGH_ORDER_COUNT_MUFP') &&
+                                                                selectedAlert.behaviourCode === 'HIGH_ORDER_COUNT_MUFP' ||
+                                                                selectedAlert.behaviourCode === 'HIGH_VOLUME_BY_CLIENT') &&
                                                                     <>
                                                                         <tr>
                                                                             <td className='pb-2'>
@@ -517,7 +506,8 @@ function AlertDetailScreen({
                                                                         </tr>
                                                                         {
                                                                             (selectedAlert.behaviourCode === 'HIGH_VOLUME' ||
-                                                                            selectedAlert.behaviourCode === 'HIGH_VOLUME_MUFP') &&
+                                                                            selectedAlert.behaviourCode === 'HIGH_VOLUME_MUFP' ||
+                                                                            selectedAlert.behaviourCode === 'HIGH_VOLUME_BY_CLIENT') &&
                                                                             <>
                                                                                 <tr>
                                                                                     <td className='pb-2'>
@@ -558,6 +548,17 @@ function AlertDetailScreen({
                                                                                     </td>
                                                                                 </tr>
                                                                             </>
+                                                                        }
+                                                                        {
+                                                                            selectedAlert.behaviourCode === 'HIGH_VOLUME_BY_CLIENT' &&
+                                                                            <tr>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3' className='mr-3' weight='semi-bold'>Total Orders</Typography>
+                                                                                </td>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3'>{numberWithCommas(alertSpecifics.totalOrders) || '—'}</Typography>
+                                                                                </td>
+                                                                            </tr>
                                                                         }
                                                                         <tr>
                                                                             <td className='pb-2'>

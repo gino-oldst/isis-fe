@@ -17,6 +17,8 @@ export function camelize(str: string): string {
 }
 
 export function kFormatter(value: integer): string {
+    if (!value) return 0;
+
     const COUNT_FORMATS =
     [
         { // 0 - 999

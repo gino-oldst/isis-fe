@@ -257,77 +257,6 @@ function SelectColumnFilter({
     );
 }
 
-// This is a custom filter UI for selecting
-// a unique option from a list
-// function RadioColumnFilter({
-//     column: { setFilter }
-// }) {
-//     // Calculate the options for filtering
-//     // using the preFilteredRows
-//     const [radioFilter, setRadioFilter] = useState(0);
-
-//     useEffect(() => {
-//         setFilter(radioFilter);
-//     }, [radioFilter]);
-
-//     const handleRadioFilterChange = (e, value) => {
-//         const isChecked = e.target.checked;
-
-//         isChecked
-//             ? setRadioFilter(value)
-//             : setRadioFilter(0);
-//     };
-
-//     const handleResetFilter = () => {
-//         setFilter(undefined);
-//         setRadioFilter(0);
-//     };
-
-//     // Render a multi-select box
-//     return (
-//         <CustomDropdown tag='span'
-//             toggle={<img className='table__filter-icon cursor-pointer' src={filterIcon} alt='talbe-filter-icon' />}>
-//             <DropdownItem header={true} className='text-center'>
-//                 <img src={filterIcon} alt='talbe-filter-icon' />
-//             </DropdownItem>
-//             <DropdownItem divider={true} />
-//             <div className='table__quantity-filter-options'>
-//                 <FormGroup check={true}>
-//                     <Label check={true}>
-//                         <Input type='radio' name='radio1'
-//                             checked={radioFilter === 1} onChange={e => handleRadioFilterChange(e, 1)} />{' '}
-//                         Below 100K
-//                     </Label>
-//                 </FormGroup>
-//                 <FormGroup check={true}>
-//                     <Label check={true}>
-//                         <Input type='radio' name='radiotwo'
-//                             checked={radioFilter === 2} onChange={e => handleRadioFilterChange(e, 2)} />{' '}
-//                         100K - 500K
-//                     </Label>
-//                 </FormGroup>
-//                 <FormGroup check={true}>
-//                     <Label check={true}>
-//                         <Input type='radio' name='radio3'
-//                             checked={radioFilter === 3} onChange={e => handleRadioFilterChange(e, 3)} />{' '}
-//                         501K - 1M
-//                     </Label>
-//                 </FormGroup>
-//                 <FormGroup check={true}>
-//                     <Label check={true}>
-//                         <Input type='radio' name='radio4'
-//                             checked={radioFilter === 4} onChange={e => handleRadioFilterChange(e, 4)} />{' '}
-//                         Above 1M
-//                     </Label>
-//                 </FormGroup>
-//             </div>
-//             <DropdownItem divider={true} />
-//             <Button label={<><Typography weight='light' variant='size-14'>Reset</Typography></>}
-//                 className='table__filter-reset-button float-right mr-2' onClick={() => handleResetFilter()}/>
-//         </CustomDropdown>
-//     );
-// }
-
 // For row selection
 const IndeterminateCheckbox = React.forwardRef(
     ({ indeterminate, ...rest }, ref) => {
@@ -639,28 +568,6 @@ function multiSelectFilter(rows, columnIds, filterValue) {
     return filterValue.length === 0 ? rows : rows.filter((row) => filterValue.includes(String(row.original[columnIds])));
 }
 
-// Quantity custom filter function!
-// function filterGreaterThan(rows, id, filterValue) {
-//     const result = rows.filter(row => {
-//         const rowValue = row.values[id];
-
-//         switch (filterValue) {
-//             case 1:
-//                 return rowValue <= 100000;
-//             case 2:
-//                 return rowValue > 100000 && rowValue <= 500000;
-//             case 3:
-//                 return rowValue > 500001 && rowValue <= 1000000;
-//             case 4:
-//                 return rowValue > 1000000;
-//             default:
-//                 return rowValue;
-//         }
-//     });
-
-//     return result;
-// }
-
 type Props = {
     loading?: boolean,
     children?: string | React.Node,
@@ -709,14 +616,16 @@ export default function ReactTable({
                             : column.accessor === 'name'
                                 ? viewDetails(e.cell.row.original)
                                 : null}>{column.accessor === 'quantity'
-                            ? kFormatter(e.value)
-                            : column.accessor === 'escalation'
-                                ? <span className='font-weight-bold'>{getTextColor(e.value)}</span>
-                                : column.accessor === 'status'
-                                    ? <Badge status={e.value} />
-                                    : column.accessor === 'parameterValues'
-                                        ? e.value.split(',').map(val => <div>{val.replace(':', ': ')}</div>)
-                                        : e.value}</span>,
+                            ? kFormatter(e.cell.row.original.quantity)
+                            : column.accessor === 'client'
+                                ? 'MUFP Total'
+                                : column.accessor === 'escalation'
+                                    ? <span className='font-weight-bold'>{getTextColor(e.value)}</span>
+                                    : column.accessor === 'status'
+                                        ? <Badge status={e.value} />
+                                        : column.accessor === 'parameterValues'
+                                            ? e.value.split(',').map(val => <div>{val.replace(':', ': ')}</div>)
+                                            : e.value}</span>,
                 sortType: column.accessor === 'date'
                     ? (a, b, c, d) => {
                         a = new Date(a.values.date).getTime();
