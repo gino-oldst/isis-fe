@@ -126,7 +126,7 @@ function AlertDetailScreen({
             orderType: selectedAlert.orderType,
             details: selectedAlert.details,
             behaviourDescription: selectedAlert.behaviourDescription,
-            assignedUserId: alert.assignedUser === '' ? 0 : alert.assignedUser,
+            assignedUserId: alert.assignedUser === '' || alert.assignedUser === null ? 0 : alert.assignedUser,
             escalation: alert.escalation === '' ? selectedAlert.escalation : alert.escalation,
             status: resolve ? 'RESOLVED' : alert.status === '' ? selectedAlert.status : alert.status,
             notes: alert.notes === '' ? selectedAlert.notes : alert.notes,
