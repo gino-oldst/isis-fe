@@ -166,7 +166,11 @@ export default function table(state: Object = initialState, action: Object) {
                     ...newData[toUpdateIndex].value,
                     action.value
                 ]
-                : action.value !== '' ? [action.value] : [];
+                : action.value !== ''
+                    ? Array.isArray(action.value)
+                        ? action.value
+                        : [action.value]
+                    : [];
 
             if (action.isChecked) {
                 newData[toUpdateIndex] = {

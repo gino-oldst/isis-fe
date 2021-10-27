@@ -5,6 +5,7 @@ const SET_ALERTS_DATA = 'SET_ALERTS_DATA';
 const SET_ALERT_SPECIFICS_DATA = 'SET_ALERT_SPECIFICS_DATA';
 const SET_SELECTED_ALERT = 'SET_SELECTED_ALERT';
 const SET_ASSIGNEES = 'SET_ASSIGNEES';
+const SET_COLUMN_FILTER_VALUES = 'SET_COLUMN_FILTER_VALUES';
 const REPLACE_ALERT_DETAILS = 'REPLACE_ALERT_DETAILS';
 const FILTER_ALERTS_DATA = 'FILTER_ALERTS_DATA';
 const SET_LOADING = 'SET_LOADING';
@@ -31,6 +32,13 @@ export function setAlertSpecificsData(data: Object) {
     return {
         type: SET_ALERT_SPECIFICS_DATA,
         data
+    };
+}
+
+export function setColumnFilterValues(values: object) {
+    return {
+        type: SET_COLUMN_FILTER_VALUES,
+        values
     };
 }
 
@@ -78,6 +86,7 @@ const initialState = {
         start: moment().subtract(7, 'd'),
         end: moment()
     },
+    columnFilterValues: null,
     table: {
         loading: false,
         isFiltered: false,
@@ -205,6 +214,11 @@ export default function alerts(state: Object = initialState, action: Object):
                     ...state.selected,
                     assignees: action.users.filter(user => user.fullName.toLowerCase() !== 'admin' || user.username.toLowerCase() !== 'admin')
                 }
+            };
+        case SET_COLUMN_FILTER_VALUES:
+            return {
+                ...state,
+                columnFilterValues: action.values
             };
 
         case REPLACE_ALERT_DETAILS:

@@ -69,6 +69,7 @@ type Props = {
     defaultValue?: string,
     options: Array,
     invalid: Boolean,
+    components: any,
     onChangeHandler: Function
 }
 
@@ -79,6 +80,7 @@ export default function AppSelect({
     defaultValue,
     options,
     invalid = false,
+    components,
     onChangeHandler,
     ...rest
 }: Props): React$Element<any> {
@@ -89,7 +91,7 @@ export default function AppSelect({
             isMulti={isMulti}
             options={options}
             defaultValue={defaultValue}
-            components={{ Option: CustomSelectOption, SingleValue: CustomSelectValue }}
+            components={components || { Option: CustomSelectOption, SingleValue: CustomSelectValue }}
             className={`${className}`}
             onChange={onChangeHandler}
             styles={invalid ? customStyles : colourStyles} />

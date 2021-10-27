@@ -6,13 +6,13 @@ import moment from 'moment';
 import AlertsScreen from './AlertsScreen';
 import type { Menu } from '../../types';
 import { getBehaviours } from '../../api/behaviours';
-import { getAlerts, downloadAlertsList } from '../../api/alerts';
+import { getAlerts, downloadAlertsList, getColumnFilterValues } from '../../api/alerts';
 import { getUsers } from '../../api/users';
 import {
     DATE_TO_UTC
 } from '../../utils/helpers';
 import { setBehavioursData } from '../../redux/modules/behaviours';
-import { setAlertsData, setAssignees } from '../../redux/modules/alerts';
+import { setAlertsData, setAssignees, setColumnFilterValues } from '../../redux/modules/alerts';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -65,12 +65,19 @@ export default function AlertsContainer({
 
         await loadBehavioursData();
         await loadUsers();
+        await loadColumnFilterValues();
         const alerts = await getAlerts(page, size, fromDate, toDate, appliedFilters, sort);
         const { data, alertIds, totalNoOfRecords, totalPages } = alerts.data;
 
         dispatch(setAlertsData(data, alertIds, totalNoOfRecords, totalPages));
 
         setLoading(false);
+    };
+
+    const loadColumnFilterValues = async () => {
+        const columnFilterValues = await getColumnFilterValues();
+
+        dispatch(setColumnFilterValues(columnFilterValues.data));
     };
 
     const loadUsers = async () => {

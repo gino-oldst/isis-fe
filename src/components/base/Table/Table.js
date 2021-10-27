@@ -8,6 +8,7 @@ import Badge from '../../base/Badge/Badge';
 import Typography from '../../base/Typography/Typography';
 import 'react-datepicker/dist/react-datepicker.css';
 import CustomDropdown from '../../base/CustomDropdown/CustomDropdown';
+import Select from '../../base/Select/Select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { kFormatter, getTextColor } from '../../../utils/helpers';
 import {
@@ -19,6 +20,7 @@ import {
     Row,
     Col
 } from 'reactstrap';
+import { components } from 'react-select';
 import filterIcon from '../../../assets/images/ic_filter.svg';
 import './table.scss';
 
@@ -64,9 +66,7 @@ function DefaultColumnFilter({
     return (
         <input
             value={filterValue || ''}
-            onChange={e => {
-                setFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
-            }}
+            onChange={e => setFilter(e.target.value || undefined)} // Set undefined to remove the filter entirely
             placeholder={`Search ${count} records...`}/>
     );
 }
@@ -88,7 +88,7 @@ function SelectColumnFilter({
     const [selectFilter, setSelectFilter] = useState([]);
     const [searchFilter, setSearchFilter] = useState('');
     const [isCheckAll, setIsCheckAll] = useState(false);
-    const { selected } = useSelector(({ alerts }) => alerts);
+    const { selected, columnFilterValues } = useSelector(({ alerts }) => alerts);
     const { table } = useSelector(({ behaviours }) => behaviours);
     const { appliedFilters, filtersReset } = useSelector(({ table }) => table);
     const columnsWithCheckbox = ['behaviourCode', 'escalation', 'assignedUser', 'status'];
@@ -169,10 +169,31 @@ function SelectColumnFilter({
         return <img className='table__filter-icon cursor-pointer' src={filterIcon} alt='talbe-filter-icon' />;
     };
 
+    const Option = (props) => {
+        return (
+            <div>
+                <components.Option {...props}>
+                    <input
+                        type='checkbox'
+                        checked={props.isSelected}
+                        onChange={() => null}/>{' '}
+                    <label>{props.label}</label>
+                </components.Option>
+            </div>
+        );
+    };
+
+    const handleSelectFilterChange = selected => {
+        dispatch(setAppliedFilters(id, selected.map(select => select.value), true, columnsWithCheckbox.includes(id)));
+    };
+
     const header = Header.toLowerCase();
 
     // filtered column options
     // const choices = options.filter(opt => opt.toString().toLowerCase().includes(searchFilter.toLowerCase()));
+
+    const appliedFilterForColumn = appliedFilters.filter(filter => filter.id === id)[0];
+    const result = appliedFilterForColumn.value.length > 0 ? appliedFilterForColumn.value.map(filVal => ({ name: filVal, label: filVal, value: filVal })) : [];
 
     // Render a multi-select box
     return (
@@ -198,8 +219,29 @@ function SelectColumnFilter({
             </div> */}
             {!columnsWithCheckbox.includes(id) &&
                 <DropdownItem header={true}>
-                    <Input type='text' name='search' placeholder='Search...'
-                        bsSize='md' value={searchFilter} onChange={e => handleSearch(e.target.value)} />
+                    <Select
+                        name='search'
+                        placeHolder='Search...'
+                        components={{
+                            Option
+                        }}
+                        options={!columnFilterValues
+                            ? []
+                            : id === 'ticker'
+                                ? columnFilterValues.tickers.map(value => ({ name: value, label: value, value: value }))
+                                : id === 'client'
+                                    ? columnFilterValues.clients.map(value => ({ name: value, label: value, value: value }))
+                                    : id === 'book'
+                                        ? columnFilterValues.books.map(value => ({ name: value, label: value, value: value }))
+                                        : columnFilterValues[id].map(value => ({ name: value, label: value, value: value }))}
+                        isMulti={true}
+                        closeMenuOnSelect={false}
+                        hideSelectedOptions={false}
+                        allowSelectAll={true}
+                        value={result}
+                        onChangeHandler={handleSelectFilterChange} />
+                    {/* <Input type='text' name='search' placeholder='Search...'
+                        bsSize='md' value={searchFilter} onChange={e => handleSearch(e.target.value)} /> */}
                 </DropdownItem>
             }
             <div className='table__filter-options overflow-auto'>
@@ -433,7 +475,6 @@ function Table({
                         <tr {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers.map(column => (
                                 <th {...column.getHeaderProps()}>
-                                    {/* Render the columns filter UI */}
                                     <span onClick={() => column.id !== 'selection' && handleSort(column.id)} className='cursor-pointer'>
                                         {column.render('Header')}
                                         {column.id !== 'selection' && renderSortControl(column.id)}
@@ -446,26 +487,23 @@ function Table({
                 </thead>
                 <tbody {...getTableBodyProps()}>
                     {!page.length
-                        ? (
-                            <tr>
-                                <td className='text-muted text-center' colSpan={12}>
-                                    {loading ? 'Fetching data...' : 'No data found'}
-                                </td>
-                            </tr>
-                        )
-                        : (
-                            page.map((row, i) => {
-                                prepareRow(row);
+                        ? <tr>
+                            <td className='text-muted text-center' colSpan={12}>
+                                {loading ? 'Fetching data...' : 'No data found'}
+                            </td>
+                        </tr>
+                        : page.map((row, i) => {
+                            prepareRow(row);
 
-                                return (
-                                    <tr {...row.getRowProps()} className={`${row.isSelected ? 'selected-row' : ''}`}>
-                                        {row.cells.map(cell => {
-                                            return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
-                                        })}
-                                    </tr>
-                                );
-                            })
-                        )}
+                            return (
+                                <tr {...row.getRowProps()} className={`${row.isSelected ? 'selected-row' : ''}`}>
+                                    {row.cells.map(cell => {
+                                        return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+                                    })}
+                                </tr>
+                            );
+                        })
+                    }
                 </tbody>
             </ReactstrapTable>
             {pagination &&
@@ -574,8 +612,14 @@ type Props = {
     className?: string,
     tableData: Array,
     tableColumns: Array,
-    selectableRows: Boolean,
-    globalFilter: Boolean,
+    tablePagination: number,
+    totalNoOfRecords: number,
+    activePage: number,
+    selectableRows: boolean,
+    globalFilter: boolean,
+    pagination: boolean,
+    sortable: boolean,
+    fetching: boolean,
     viewDetails: Function,
 }
 
@@ -641,7 +685,10 @@ export default function ReactTable({
 
     return (
         <div className={`w-100 ${className}`}>
-            <Table loading={loading} columns={columns} data={tableData}
+            <Table
+                loading={loading}
+                columns={columns}
+                data={tableData}
                 tablePagination={tablePagination}
                 totalNoOfRecords={totalNoOfRecords}
                 activePage={activePage}

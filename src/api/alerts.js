@@ -6,6 +6,7 @@ const UPDATE_ALERT = '/measure/alerts';
 const BULK_UPDATE_ALERT = '/measure/alerts/bulk-edit';
 const DOWNLOAD_ALERTS_LIST = '/measure/alerts/download-list';
 const DOWNLOAD_ALERTS_RECORD = '/measure/alerts/download-alerts-record';
+const COLUMN_FILTER_VALUES = '/measure/alerts/column-values';
 
 export async function getAlerts(
     page: String,
@@ -39,9 +40,18 @@ export async function getAlerts(
             case 'status':
                 key = 'statusList';
                 break;
+            case 'ticker':
+                key = 'tickers';
+                break;
+            case 'client':
+                key = 'clients';
+                break;
+            case 'book':
+                key = 'books';
+                break;
             default:
                 key = body.id;
-                value = body.value.join(',');
+                value = body.value;
                 break;
         }
 
@@ -73,4 +83,8 @@ export async function downloadAlertsList(data: Object) {
 
 export async function downloadAlertsRecord(id: String) {
     return await makeApiCall(`${DOWNLOAD_ALERTS_RECORD}/${id}`, 'POST', {});
+}
+
+export async function getColumnFilterValues() {
+    return await makeApiCall(`${COLUMN_FILTER_VALUES}`, 'POST', {});
 }
