@@ -69,8 +69,7 @@ type Props = {
     defaultValue?: string,
     options: Array,
     invalid: Boolean,
-    components: any,
-    onChangeHandler: Function
+    components: any
 }
 
 export default function AppSelect({
@@ -81,9 +80,45 @@ export default function AppSelect({
     options,
     invalid = false,
     components,
-    onChangeHandler,
     ...rest
 }: Props): React$Element<any> {
+    if (rest.allowSelectAll) {
+        return (
+            <Select
+                {...rest}
+                name={name}
+                isMulti={isMulti}
+                defaultValue={defaultValue}
+                options={[rest.allOption, ...options]}
+                components={components || { Option: CustomSelectOption, SingleValue: CustomSelectValue }}
+                className={`${className}`}
+                styles={invalid ? customStyles : colourStyles}
+                onChange={(selected, event) => {
+                    if (selected !== null && selected.length > 0) {
+                        if (selected[selected.length - 1].value === rest.allOption.value) {
+                            return rest.onChange([rest.allOption, ...options]);
+                        }
+
+                        let result = [];
+
+                        if (selected.length === options.length) {
+                            if (selected.includes(rest.allOption)) {
+                                result = selected.filter(
+                                    option => option.value !== rest.allOption.value
+                                );
+                            } else if (event.action === 'select-option') {
+                                result = [rest.allOption, ...options];
+                            }
+
+                            return rest.onChange(result);
+                        }
+                    }
+
+                    return rest.onChange(selected);
+                }}/>
+        );
+    }
+
     return (
         <Select
             {...rest}
@@ -93,7 +128,13 @@ export default function AppSelect({
             defaultValue={defaultValue}
             components={components || { Option: CustomSelectOption, SingleValue: CustomSelectValue }}
             className={`${className}`}
-            onChange={onChangeHandler}
             styles={invalid ? customStyles : colourStyles} />
     );
 }
+
+AppSelect.defaultProps = {
+    allOption: {
+        label: 'Select all',
+        value: '*'
+    }
+};

@@ -9,6 +9,7 @@ import Typography from '../../base/Typography/Typography';
 import 'react-datepicker/dist/react-datepicker.css';
 import CustomDropdown from '../../base/CustomDropdown/CustomDropdown';
 import Select from '../../base/Select/Select';
+import makeAnimated from 'react-select/animated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { kFormatter, getTextColor } from '../../../utils/helpers';
 import {
@@ -91,7 +92,7 @@ function SelectColumnFilter({
     const { selected, columnFilterValues } = useSelector(({ alerts }) => alerts);
     const { table } = useSelector(({ behaviours }) => behaviours);
     const { appliedFilters, filtersReset } = useSelector(({ table }) => table);
-    const columnsWithCheckbox = ['behaviourCode', 'escalation', 'assignedUser', 'status'];
+    const columnsWithCheckbox = ['escalation', 'assignedUser', 'status'];
     const dispatch = useDispatch();
 
     // const options = useMemo(() => {
@@ -169,22 +170,60 @@ function SelectColumnFilter({
         return <img className='table__filter-icon cursor-pointer' src={filterIcon} alt='talbe-filter-icon' />;
     };
 
-    const Option = (props) => {
+    const Option = props => {
         return (
-            <div>
+            <div className='d-flex'>
                 <components.Option {...props}>
                     <input
                         type='checkbox'
                         checked={props.isSelected}
+                        style={{ verticalAlign: 'middle' }}
                         onChange={() => null}/>{' '}
-                    <label>{props.label}</label>
+                    <label style={{ fontSize: '14px', verticalAlign: 'top' }}>{props.label}</label>
                 </components.Option>
             </div>
         );
     };
 
+    const allOption = {
+        label: 'Select all',
+        value: '*'
+    };
+
+    const ValueContainer = ({ children, ...props }) => {
+        const currentValues = props.getValue();
+        let toBeRendered = children;
+
+        if (currentValues.some(val => val.value === allOption.value)) {
+            toBeRendered = [[children[0][0]], children[1]];
+        }
+
+        return (
+            <components.ValueContainer {...props}>
+                {toBeRendered}
+            </components.ValueContainer>
+        );
+    };
+
+    const MultiValue = props => {
+        let labelToBeDisplayed = `${props.data.label} `;
+
+        if (props.data.value === allOption.value) {
+            labelToBeDisplayed = 'All is selected';
+        }
+
+        return (
+            <components.MultiValue {...props}>
+                <span>{labelToBeDisplayed}</span>
+            </components.MultiValue>
+        );
+    };
+
+    const animatedComponents = makeAnimated();
+
     const handleSelectFilterChange = selected => {
-        dispatch(setAppliedFilters(id, selected.map(select => select.value), true, columnsWithCheckbox.includes(id)));
+        dispatch(setActivePage(0));
+        dispatch(setAppliedFilters(id, selected, true, columnsWithCheckbox.includes(id)));
     };
 
     const header = Header.toLowerCase();
@@ -192,8 +231,24 @@ function SelectColumnFilter({
     // filtered column options
     // const choices = options.filter(opt => opt.toString().toLowerCase().includes(searchFilter.toLowerCase()));
 
-    const appliedFilterForColumn = appliedFilters.filter(filter => filter.id === id)[0];
-    const result = appliedFilterForColumn.value.length > 0 ? appliedFilterForColumn.value.map(filVal => ({ name: filVal, label: filVal, value: filVal })) : [];
+    const getColumnFilterOptions = () => {
+        switch (id) {
+            case 'ticker':
+                return columnFilterValues.tickers.map(value => ({ name: value, label: value, value: value }));
+            case 'client':
+                return columnFilterValues.clients.map(value => ({ name: value, label: value, value: value }));
+            case 'book':
+                return columnFilterValues.books.map(value => ({ name: value, label: value, value: value }));
+            case 'behaviourCode':
+                return columnFilterValues.behaviours.map(value => ({ name: value.internalCode, label: value.internalCode, value: value.id }));
+            case 'isin': // todo
+                return [];
+            case 'summary':
+                return [];
+            default:
+                return columnFilterValues[id].map(value => ({ name: value, label: value, value: value }));
+        }
+    };
 
     // Render a multi-select box
     return (
@@ -203,93 +258,55 @@ function SelectColumnFilter({
                 <img src={filterIcon} alt='talbe-filter-icon' />
             </DropdownItem>
             <DropdownItem divider={true} />
-            {/* <DropdownItem header={true}>
-                <Input type='text' name='search' placeholder='Search...'
-                    bsSize='md' value={searchFilter} onChange={e => handleSearch(e.target.value)} />
-            </DropdownItem>
-            <div className='table__filter-options overflow-auto'>
-                {choices.map((option, i) => (
-                    <FormGroup key={i} check={true}>
-                        <Label check={true}>
-                            <Input type='checkbox' checked={selectFilter.includes(option.toString())} onChange={e => handleFilterChange(e, option.toString())}/>
-                            {option.toString()}
-                        </Label>
-                    </FormGroup>
-                ))}
-            </div> */}
             {!columnsWithCheckbox.includes(id) &&
                 <DropdownItem header={true}>
                     <Select
+                        options={!columnFilterValues ? [] : getColumnFilterOptions()}
                         name='search'
                         placeHolder='Search...'
-                        components={{
-                            Option
-                        }}
-                        options={!columnFilterValues
-                            ? []
-                            : id === 'ticker'
-                                ? columnFilterValues.tickers.map(value => ({ name: value, label: value, value: value }))
-                                : id === 'client'
-                                    ? columnFilterValues.clients.map(value => ({ name: value, label: value, value: value }))
-                                    : id === 'book'
-                                        ? columnFilterValues.books.map(value => ({ name: value, label: value, value: value }))
-                                        : columnFilterValues[id].map(value => ({ name: value, label: value, value: value }))}
                         isMulti={true}
                         closeMenuOnSelect={false}
                         hideSelectedOptions={false}
+                        components={{
+                            Option,
+                            MultiValue,
+                            ValueContainer,
+                            animatedComponents
+                        }}
+                        onChange={handleSelectFilterChange}
                         allowSelectAll={true}
-                        value={result}
-                        onChangeHandler={handleSelectFilterChange} />
-                    {/* <Input type='text' name='search' placeholder='Search...'
-                        bsSize='md' value={searchFilter} onChange={e => handleSearch(e.target.value)} /> */}
+                        value={appliedFilters.filter(filter => filter.id === id)[0].value} />
                 </DropdownItem>
             }
             <div className='table__filter-options overflow-auto'>
-                {header === 'alert type'
-                    ? <>
-                        <FormGroup key={'select_all'} check={true}>
+                {header === 'escalation'
+                    ? ['Base', 'Manager', 'CO'].map((escalation, i) => (
+                        <FormGroup key={escalation} check={true}>
                             <Label check={true}>
-                                <Input type='checkbox' checked={isCheckAll} onChange={handleSelectAll}/>
-                                Select all
+                                <Input type='checkbox' checked={selectFilter.includes(escalation.toUpperCase())} onChange={e => handleFilterChange(e, escalation.toUpperCase())}/>
+                                {escalation}
                             </Label>
                         </FormGroup>
-                        {table.data.map((alert, i) => (
-                            <FormGroup key={alert.code} check={true}>
+                    ))
+                    : header === 'assigned'
+                        ? selected.assignees.map((assignee, i) => (
+                            <FormGroup key={assignee.fullName} check={true}>
                                 <Label check={true}>
-                                    <Input type='checkbox' checked={selectFilter.includes(alert.id)} onChange={e => handleFilterChange(e, alert.id)}/>
-                                    {alert.code}
-                                </Label>
-                            </FormGroup>
-                        ))}
-                    </>
-                    : header === 'escalation'
-                        ? ['Base', 'Manager', 'CO'].map((escalation, i) => (
-                            <FormGroup key={escalation} check={true}>
-                                <Label check={true}>
-                                    <Input type='checkbox' checked={selectFilter.includes(escalation.toUpperCase())} onChange={e => handleFilterChange(e, escalation.toUpperCase())}/>
-                                    {escalation}
+                                    <Input type='checkbox' checked={selectFilter.includes(assignee.id)} onChange={e => handleFilterChange(e, assignee.id)}/>
+                                    {assignee.fullName}
                                 </Label>
                             </FormGroup>
                         ))
-                        : header === 'assigned'
-                            ? selected.assignees.map((assignee, i) => (
-                                <FormGroup key={assignee.fullName} check={true}>
+                        : header === 'status'
+                            ? ['OPEN', 'IN_REVIEW', 'RESOLVED', 'ARCHIVED'].map((status, i) => (
+                                <FormGroup key={status} check={true}>
                                     <Label check={true}>
-                                        <Input type='checkbox' checked={selectFilter.includes(assignee.id)} onChange={e => handleFilterChange(e, assignee.id)}/>
-                                        {assignee.fullName}
+                                        <Input type='checkbox' checked={selectFilter.includes(status.toUpperCase())} onChange={e => handleFilterChange(e, status.toUpperCase())}/>
+                                        {status}
                                     </Label>
                                 </FormGroup>
                             ))
-                            : header === 'status'
-                                ? ['OPEN', 'IN_REVIEW', 'RESOLVED', 'ARCHIVED'].map((status, i) => (
-                                    <FormGroup key={status} check={true}>
-                                        <Label check={true}>
-                                            <Input type='checkbox' checked={selectFilter.includes(status.toUpperCase())} onChange={e => handleFilterChange(e, status.toUpperCase())}/>
-                                            {status}
-                                        </Label>
-                                    </FormGroup>
-                                ))
-                                : null}
+                            : null}
 
             </div>
             <DropdownItem divider={true} />
@@ -486,7 +503,7 @@ function Table({
                     ))}
                 </thead>
                 <tbody {...getTableBodyProps()}>
-                    {!page.length
+                    {!page.length || loading
                         ? <tr>
                             <td className='text-muted text-center' colSpan={12}>
                                 {loading ? 'Fetching data...' : 'No data found'}
@@ -662,7 +679,7 @@ export default function ReactTable({
                                 : null}>{column.accessor === 'quantity'
                             ? kFormatter(e.cell.row.original.quantity)
                             : column.accessor === 'client'
-                                ? e.cell.row.original.behaviourCode === 'High Order Count MUFP' && 'MUFP Total'
+                                ? e.cell.row.original.behaviourCode !== 'High Order Count MUFP' ? e.cell.row.original.client : 'MUFP Total'
                                 : column.accessor === 'escalation'
                                     ? <span className='font-weight-bold'>{getTextColor(e.value)}</span>
                                     : column.accessor === 'status'

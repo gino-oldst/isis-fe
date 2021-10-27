@@ -640,7 +640,7 @@ function AlertDetailScreen({
                                                                     label: <Badge status='Archived' />,
                                                                     value: <Badge status='Archived'/>
                                                                 }]}
-                                                                onChangeHandler={handleChange} />
+                                                                onChange={handleChange} />
                                                             </>
                                                         }
                                                     </Col>
@@ -672,7 +672,7 @@ function AlertDetailScreen({
                                                                         value: assignee.fullName
                                                                     };
                                                                 })]}
-                                                                onChangeHandler={handleChange} />
+                                                                onChange={handleChange} />
                                                         }
                                                     </Col>
                                                 </FormGroup>
@@ -702,7 +702,7 @@ function AlertDetailScreen({
                                                                     label: 'CO',
                                                                     value: 'CO'
                                                                 }]}
-                                                                onChangeHandler={handleChange} />
+                                                                onChange={handleChange} />
                                                         }
                                                     </Col>
                                                 </FormGroup>

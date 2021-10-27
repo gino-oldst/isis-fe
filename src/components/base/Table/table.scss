@@ -60,6 +60,12 @@
         }
     }
 
+    // react-select dropdown field
+    .css-g1d714-ValueContainer {
+        max-height: 140px;
+        overflow: auto;
+    }
+
     thead > tr > th:nth-child(1) > div > div {
         margin-left: -55px !important;
     } // margin for first column filter dropdown (resitrcted list)

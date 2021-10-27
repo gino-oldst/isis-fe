@@ -75,9 +75,19 @@ export default function AlertsContainer({
     };
 
     const loadColumnFilterValues = async () => {
-        const columnFilterValues = await getColumnFilterValues();
+        const { data } = await getColumnFilterValues();
+        let dataCopy = data;
 
-        dispatch(setColumnFilterValues(columnFilterValues.data));
+        const keys = Object.keys(data);
+
+        keys.forEach(key => {
+            dataCopy = {
+                ...data,
+                [key]: data[key].sort()
+            };
+        });
+
+        dispatch(setColumnFilterValues(dataCopy));
     };
 
     const loadUsers = async () => {

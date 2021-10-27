@@ -30,6 +30,7 @@ export async function getAlerts(
         switch (body.id.toLowerCase()) {
             case 'behaviourcode':
                 key = 'behaviourIdList';
+                value = value.map(val => val.value);
                 break;
             case 'escalation':
                 key = 'escalationList';
@@ -42,12 +43,15 @@ export async function getAlerts(
                 break;
             case 'ticker':
                 key = 'tickers';
+                value = value.map(val => val.value);
                 break;
             case 'client':
                 key = 'clients';
+                value = value.map(val => val.value);
                 break;
             case 'book':
                 key = 'books';
+                value = value.map(val => val.value);
                 break;
             default:
                 key = body.id;

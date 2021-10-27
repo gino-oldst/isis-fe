@@ -495,7 +495,7 @@ const ActionModal = ({
                         label: 'CO',
                         value: 'CO'
                     }]}
-                    onChangeHandler={handleChange} />
+                    onChange={handleChange} />
             </FormGroup>
             <FormGroup className='mb-3'>
                 <Label for='status'>Select Status</Label>
@@ -528,7 +528,7 @@ const ActionModal = ({
                         label: <Badge status='Archived' />,
                         value: <Badge status='Archived'/>
                     }]}
-                    onChangeHandler={handleChange} />
+                    onChange={handleChange} />
                 {alert.resolveReason && <div>Reason: {alert.resolveReason}</div>}
             </FormGroup>
             <FormGroup className='mb-3'>
@@ -560,7 +560,7 @@ const ActionModal = ({
                                 value: assignee.fullName
                             };
                         })]}
-                    onChangeHandler={handleChange} />
+                    onChange={handleChange} />
             </FormGroup>
             <FormGroup className='mb-5'>
                 <Label for='notes'>Notes</Label>
