@@ -662,7 +662,7 @@ export default function ReactTable({
                                 : null}>{column.accessor === 'quantity'
                             ? kFormatter(e.cell.row.original.quantity)
                             : column.accessor === 'client'
-                                ? 'MUFP Total'
+                                ? e.cell.row.original.behaviourCode === 'High Order Count MUFP' && 'MUFP Total'
                                 : column.accessor === 'escalation'
                                     ? <span className='font-weight-bold'>{getTextColor(e.value)}</span>
                                     : column.accessor === 'status'
