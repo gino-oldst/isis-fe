@@ -295,8 +295,8 @@ function SelectColumnFilter({
             case 'assigned':
                 options = selected.assignees.map(assignee => ({
                     label: assignee.fullName,
-                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(assignee.id !== 999999 ? assignee.id : 0)}
-                        onChange={e => handleFilterChange(e, assignee.id !== 999999 ? assignee.id : 0)}/>
+                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(assignee.id !== 999999 ? assignee.id : null)}
+                        onChange={e => handleFilterChange(e, assignee.id !== 999999 ? assignee.id : null)}/>
                 }));
                 break;
             case 'status':
