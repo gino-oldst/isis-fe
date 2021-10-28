@@ -282,12 +282,6 @@ function AlertsScreen({
                                             <FormGroup tag='fieldset'>
                                                 <FormGroup check={true} className='mb-1'>
                                                     <Label check={true}>
-                                                        <Input type='radio' name='radio4' checked={dateRangeFilter === 1} />{' '}
-                                                Today
-                                                    </Label>
-                                                </FormGroup>
-                                                <FormGroup check={true} className='mb-1'>
-                                                    <Label check={true}>
                                                         <Input type='radio' name='radio5' checked={dateRangeFilter === 2} />{' '}
                                                 Last 7 Days
                                                     </Label>
