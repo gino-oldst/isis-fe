@@ -63,7 +63,11 @@ export async function getAlerts(
         return null;
     });
 
-    const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sort.column},${sort.type}` : '';
+    let sortColumn = sort.column;
+
+    if (sort.column === 'assignedUser') sortColumn = 'assignedUserId';
+
+    const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sortColumn},${sort.type}` : '';
 
     return await makeApiCall(`${GET_ALERTS}?page=${page}&size=${size}${withSorting()}`, 'POST', filterBody);
 }

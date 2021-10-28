@@ -122,7 +122,7 @@ export default function AlertsContainer({
             ).map(filter => `${filter.id}: [${filter.id.toLowerCase() === 'behaviourcode'
                     ? filter.value.map(val => behaviours.table.data.filter(code => code.id === val)[0].code)
                     : filter.id.toLowerCase() === 'assigneduser'
-                        ? filter.value.map(val => selected.assignees.filter(user => user.id === val)[0].fullName)
+                        ? filter.value.map(val => selected.assignees.filter(user => (user.id !== 999999 ? user.id : null) === val)[0].fullName)
                         : filter.value}]`).join(',')
         };
 
