@@ -17,7 +17,22 @@ const storageKey = {
     sidebarState: 'sidebarState'
 };
 
+const ALERT_ESCALATION_OPTIONS = {
+    BASE: 'BASE',
+    CO: 'CO',
+    MANAGER: 'MANAGER'
+};
+
+const ALERT_STATUS_OPTIONS = {
+    OPEN: 'OPEN',
+    RESOLVED: 'RESOLVED',
+    ARCHIVED: 'ARCHIVED',
+    IN_REVIEW: 'IN_REVIEW'
+};
+
 export {
     config,
-    storageKey
+    storageKey,
+    ALERT_ESCALATION_OPTIONS,
+    ALERT_STATUS_OPTIONS
 };

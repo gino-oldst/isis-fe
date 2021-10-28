@@ -19,6 +19,11 @@ const customStyles = {
     indicatorSeparator: base => ({
         ...base,
         display: 'none'
+    }),
+    valueContainer: (provided, state) => ({
+        ...provided,
+        maxHeight: '135px',
+        overflow: 'auto'
     })
 };
 
@@ -41,6 +46,11 @@ const colourStyles = { // remove default bg color and text color (blue)
     indicatorSeparator: base => ({
         ...base,
         display: 'none'
+    }),
+    valueContainer: (provided, state) => ({
+        ...provided,
+        maxHeight: '135px',
+        overflow: 'auto'
     })
 };
 

@@ -236,7 +236,7 @@ function AlertDetailScreen({
                                                                         </>
                                                                         : <tr>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Total Volume:</Typography>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Total Volume</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
                                                                                 <Typography color='color-3'>{numberWithCommas(Math.round(alertSpecifics.totalVolume)) || '—'}</Typography>

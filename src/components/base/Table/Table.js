@@ -12,6 +12,7 @@ import Select from '../../base/Select/Select';
 import makeAnimated from 'react-select/animated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { kFormatter, getTextColor } from '../../../utils/helpers';
+import { ALERT_ESCALATION_OPTIONS, ALERT_STATUS_OPTIONS } from '../../../config/constants';
 import {
     Table as ReactstrapTable,
     DropdownItem,
@@ -84,26 +85,27 @@ fuzzyTextFilterFn.autoRemove = val => !val;
 function SelectColumnFilter({
     column: { Header, filterValue, setFilter, preFilteredRows, id }
 }) {
-    // Calculate the options for filtering
-    // using the preFilteredRows
+    const dispatch = useDispatch();
     const [selectFilter, setSelectFilter] = useState([]);
     const [searchFilter, setSearchFilter] = useState('');
     const [isCheckAll, setIsCheckAll] = useState(false);
     const { selected, columnFilterValues } = useSelector(({ alerts }) => alerts);
     const { table } = useSelector(({ behaviours }) => behaviours);
     const { appliedFilters, filtersReset } = useSelector(({ table }) => table);
-    const columnsWithCheckbox = ['escalation', 'assignedUser', 'status'];
-    const dispatch = useDispatch();
 
-    // const options = useMemo(() => {
-    //     const options = new Set();
+    const header = Header.toLowerCase();
+    const columnFiltersWithCheckbox = ['behaviourCode', 'escalation', 'assignedUser', 'status'];
+    const columnFiltersSearcheable = ['book', 'client'];
+    const columnFiltersWithSearchbox = ['isin', 'summary'];
+    const rootPath = window.location.pathname.split('/')[1];
 
-    //     preFilteredRows.forEach(row => {
-    //         options.add(row.values[id]);
-    //     });
-
-    //     return [...options.values()];
-    // }, [id, preFilteredRows]);
+    if (rootPath === 'alerts') {
+        columnFiltersSearcheable.push('ticker');
+        columnFiltersWithSearchbox.pop();
+    } else {
+        columnFiltersWithSearchbox.push('ticker');
+        columnFiltersSearcheable.pop();
+    }
 
     useEffect(() => {
         setFilter(selectFilter);
@@ -113,8 +115,8 @@ function SelectColumnFilter({
         if (filtersReset) {
             setFilter([]);
             setSearchFilter('');
-            setSelectFilter([]);
             setIsCheckAll(false);
+            setSelectFilter([]);
         }
     }, [filtersReset]);
 
@@ -122,36 +124,12 @@ function SelectColumnFilter({
         const isChecked = e.target.checked;
 
         if (isChecked) {
-            setSelectFilter([
-                ...selectFilter,
-                value
-            ]);
+            setSelectFilter([...selectFilter, value]);
         } else {
             setSelectFilter([...selectFilter.filter(val => val !== value)]);
         }
 
-        dispatch(setAppliedFilters(id, value, isChecked, columnsWithCheckbox.includes(id)));
-    };
-
-    const handleSelectAll = () => {
-        setIsCheckAll(!isCheckAll);
-        setSelectFilter(table.data.map((alert) => {
-            dispatch(setAppliedFilters(id, alert.id, true, columnsWithCheckbox.includes(id)));
-
-            return alert.id;
-        }));
-
-        if (isCheckAll) {
-            setSelectFilter([]);
-
-            table.data.map((alert) => dispatch(setAppliedFilters(id, alert.id, false, columnsWithCheckbox.includes(id))));
-        }
-    };
-
-    const handleSearch = value => {
-        dispatch(setAppliedFilters(id, value, true, columnsWithCheckbox.includes(id)));
-
-        setSearchFilter(value);
+        dispatch(setAppliedFilters(id, value, isChecked, columnFiltersWithCheckbox.includes(id)));
     };
 
     const handleResetFilter = () => {
@@ -160,6 +138,32 @@ function SelectColumnFilter({
         setSearchFilter('');
         setIsCheckAll(false);
         dispatch(resetAppliedFilters(id));
+    };
+
+    const handleSelectFilterChange = selected => {
+        dispatch(setActivePage(0));
+        dispatch(setAppliedFilters(id, selected, true, columnFiltersWithCheckbox.includes(id)));
+    };
+
+    const handleSearch = value => {
+        dispatch(setAppliedFilters(id, value, true, columnFiltersWithCheckbox.includes(id)));
+
+        setSearchFilter(value);
+    };
+
+    const handleSelectAll = () => {
+        setIsCheckAll(!isCheckAll);
+        setSelectFilter(table.data.map((alert) => {
+            dispatch(setAppliedFilters(id, alert.id, true, columnFiltersWithCheckbox.includes(id)));
+
+            return alert.id;
+        }));
+
+        if (isCheckAll) {
+            setSelectFilter([]);
+
+            table.data.map((alert) => dispatch(setAppliedFilters(id, alert.id, false, columnFiltersWithCheckbox.includes(id))));
+        }
     };
 
     const columnIsFiltered = () => {
@@ -221,16 +225,6 @@ function SelectColumnFilter({
 
     const animatedComponents = makeAnimated();
 
-    const handleSelectFilterChange = selected => {
-        dispatch(setActivePage(0));
-        dispatch(setAppliedFilters(id, selected, true, columnsWithCheckbox.includes(id)));
-    };
-
-    const header = Header.toLowerCase();
-
-    // filtered column options
-    // const choices = options.filter(opt => opt.toString().toLowerCase().includes(searchFilter.toLowerCase()));
-
     const getColumnFilterOptions = () => {
         switch (id) {
             case 'ticker':
@@ -250,6 +244,102 @@ function SelectColumnFilter({
         }
     };
 
+    const renderFilterWithSearcheableDropdown = () => {
+        return columnFiltersSearcheable.includes(id) &&
+            <DropdownItem header={true}>
+                <Select
+                    options={!columnFilterValues ? [] : getColumnFilterOptions()}
+                    name='search'
+                    placeholder={'Search...'}
+                    isMulti={true}
+                    closeMenuOnSelect={false}
+                    hideSelectedOptions={false}
+                    components={{
+                        Option,
+                        MultiValue,
+                        ValueContainer,
+                        animatedComponents
+                    }}
+                    onChange={handleSelectFilterChange}
+                    allowSelectAll={true}
+                    value={appliedFilters.filter(filter => filter.id === id)[0].value} />
+            </DropdownItem>;
+    };
+
+    const renderFilterWithSearchbar = () => {
+        return columnFiltersWithSearchbox.includes(id) &&
+        <DropdownItem header={true}>
+            <Input type='text' name='search' placeholder='Search...'
+                bsSize='md' value={searchFilter} onChange={e => handleSearch(e.target.value)} />
+        </DropdownItem>;
+    };
+
+    const renderFilterWithCheckboxColumns = () => {
+        let options = [];
+
+        switch (header) {
+            case 'alert type':
+                options = table.data.map(alertType => ({
+                    label: alertType.code,
+                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(alertType.id)}
+                        onChange={e => handleFilterChange(e, alertType.id)}/>
+                }));
+                break;
+            case 'escalation':
+                options = Object.keys(ALERT_ESCALATION_OPTIONS).map(escalationOpt => ({
+                    label: escalationOpt,
+                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(escalationOpt.toUpperCase())}
+                        onChange={e => handleFilterChange(e, escalationOpt.toUpperCase())}/>
+                }));
+                break;
+            case 'assigned':
+                options = selected.assignees.map(assignee => ({
+                    label: assignee.fullName,
+                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(assignee.id !== 999999 ? assignee.id : 0)}
+                        onChange={e => handleFilterChange(e, assignee.id !== 999999 ? assignee.id : 0)}/>
+                }));
+                break;
+            case 'status':
+                options = Object.keys(ALERT_STATUS_OPTIONS).map(statusOpt => ({
+                    label: statusOpt,
+                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(statusOpt.toUpperCase())}
+                        onChange={e => handleFilterChange(e, statusOpt.toUpperCase())}/>
+                }));
+                break;
+            default:
+                break;
+        }
+
+        if (header === 'alert type') {
+            return <>
+                <FormGroup key={'select_all'} check={true}>
+                    <Label check={true}>
+                        <Input type='checkbox' checked={isCheckAll}
+                            onChange={handleSelectAll}/>
+                        Select all
+                    </Label>
+                </FormGroup>
+                {options.map((opt, idx) => (
+                    <FormGroup key={opt.label} check={true}>
+                        <Label check={true}>
+                            {opt.inputComponent}
+                            {opt.label}
+                        </Label>
+                    </FormGroup>
+                ))}
+            </>;
+        }
+
+        return options.map((opt, idx) => (
+            <FormGroup key={opt.label} check={true}>
+                <Label check={true}>
+                    {opt.inputComponent}
+                    {opt.label}
+                </Label>
+            </FormGroup>
+        ));
+    };
+
     // Render a multi-select box
     return (
         <CustomDropdown tag='span'
@@ -258,56 +348,10 @@ function SelectColumnFilter({
                 <img src={filterIcon} alt='talbe-filter-icon' />
             </DropdownItem>
             <DropdownItem divider={true} />
-            {!columnsWithCheckbox.includes(id) &&
-                <DropdownItem header={true}>
-                    <Select
-                        options={!columnFilterValues ? [] : getColumnFilterOptions()}
-                        name='search'
-                        placeHolder='Search...'
-                        isMulti={true}
-                        closeMenuOnSelect={false}
-                        hideSelectedOptions={false}
-                        components={{
-                            Option,
-                            MultiValue,
-                            ValueContainer,
-                            animatedComponents
-                        }}
-                        onChange={handleSelectFilterChange}
-                        allowSelectAll={true}
-                        value={appliedFilters.filter(filter => filter.id === id)[0].value} />
-                </DropdownItem>
-            }
+            {renderFilterWithSearcheableDropdown()}
+            {renderFilterWithSearchbar()}
             <div className='table__filter-options overflow-auto'>
-                {header === 'escalation'
-                    ? ['Base', 'Manager', 'CO'].map((escalation, i) => (
-                        <FormGroup key={escalation} check={true}>
-                            <Label check={true}>
-                                <Input type='checkbox' checked={selectFilter.includes(escalation.toUpperCase())} onChange={e => handleFilterChange(e, escalation.toUpperCase())}/>
-                                {escalation}
-                            </Label>
-                        </FormGroup>
-                    ))
-                    : header === 'assigned'
-                        ? selected.assignees.map((assignee, i) => (
-                            <FormGroup key={assignee.fullName} check={true}>
-                                <Label check={true}>
-                                    <Input type='checkbox' checked={selectFilter.includes(assignee.id)} onChange={e => handleFilterChange(e, assignee.id)}/>
-                                    {assignee.fullName}
-                                </Label>
-                            </FormGroup>
-                        ))
-                        : header === 'status'
-                            ? ['OPEN', 'IN_REVIEW', 'RESOLVED', 'ARCHIVED'].map((status, i) => (
-                                <FormGroup key={status} check={true}>
-                                    <Label check={true}>
-                                        <Input type='checkbox' checked={selectFilter.includes(status.toUpperCase())} onChange={e => handleFilterChange(e, status.toUpperCase())}/>
-                                        {status}
-                                    </Label>
-                                </FormGroup>
-                            ))
-                            : null}
-
+                {renderFilterWithCheckboxColumns()}
             </div>
             <DropdownItem divider={true} />
             <Button label={<><Typography weight='light' variant='size-14'>Reset</Typography></>}
@@ -356,8 +400,6 @@ function Table({
     const filterTypes = useMemo(
         () => ({
             fuzzyText: fuzzyTextFilterFn,
-            // Or, override the default text filter to use
-            // "startWith"
             text: (rows, id, filterValue) => {
                 return rows.filter(row => {
                     const rowValue = row.values[id];
@@ -679,7 +721,7 @@ export default function ReactTable({
                                 : null}>{column.accessor === 'quantity'
                             ? kFormatter(e.cell.row.original.quantity)
                             : column.accessor === 'client'
-                                ? e.cell.row.original.behaviourCode !== 'High Order Count MUFP' ? e.cell.row.original.client : 'MUFP Total'
+                                ? e.cell.row.original.behaviourCode !== 'HIGH_ORDER_COUNT_MUFP' ? e.cell.row.original.client : 'MUFP Total'
                                 : column.accessor === 'escalation'
                                     ? <span className='font-weight-bold'>{getTextColor(e.value)}</span>
                                     : column.accessor === 'status'
