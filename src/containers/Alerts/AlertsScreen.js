@@ -427,19 +427,26 @@ const ActionModal = ({
             };
         });
 
-        const result = await bulkUpdateAlert(payload);
+        try {
+            const result = await bulkUpdateAlert(payload);
 
-        if (result.status === 200) {
-            setTimeout(async () => {
-                if (result.data.length !== undefined && result.data.length > 0) {
-                    showError(result.data[0].exceptionMessage);
-                } else {
-                    await loadAlerts(activePage, pageSize,
-                        `${dateFrom.split('T')[0]}T00:00:00Z`,
-                        `${dateTo.split('T')[0]}T23:59:59Z`, appliedFilters, sort);
-                    handleClose();
-                }
-            }, 1000);
+            if (result.status === 200) {
+                setTimeout(async () => {
+                    if (result.data.length !== undefined && result.data.length > 0) {
+                        showError(result.data[0].exceptionMessage);
+                    } else {
+                        await loadAlerts(activePage, pageSize,
+                            `${dateFrom.split('T')[0]}T00:00:00Z`,
+                            `${dateTo.split('T')[0]}T23:59:59Z`, appliedFilters, sort);
+                        handleClose();
+                    }
+                }, 1000);
+            }
+        } catch (err) {
+            await loadAlerts(activePage, pageSize,
+                `${dateFrom.split('T')[0]}T00:00:00Z`,
+                `${dateTo.split('T')[0]}T23:59:59Z`, appliedFilters, sort);
+            handleClose();
         }
     };
 
