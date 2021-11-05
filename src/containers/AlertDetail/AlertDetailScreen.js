@@ -114,6 +114,7 @@ function AlertDetailScreen({
 
         const payload = {
             id: selectedAlert.id,
+            flexbookTradeId: selectedAlert.flexbookTradeId,
             ruleId: selectedAlert.ruleId,
             currentUserId: userId,
             behaviourId: selectedAlert.behaviourId,
@@ -123,6 +124,8 @@ function AlertDetailScreen({
             ticker: selectedAlert.ticker,
             quantity: selectedAlert.quantity,
             client: selectedAlert.client,
+            clientTrader: selectedAlert.clientTrader,
+            tradePrice: selectedAlert.tradePrice,
             orderType: selectedAlert.orderType,
             details: selectedAlert.details,
             behaviourDescription: selectedAlert.behaviourDescription,
@@ -446,7 +449,7 @@ function AlertDetailScreen({
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Price</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{numberWithCommas(selectedAlert.tradePrice.toFixed(2)) || '—'}</Typography>
+                                                                                <Typography color='color-3'>{selectedAlert.tradePrice ? numberWithCommas(selectedAlert.tradePrice.toFixed(2)) : '—'}</Typography>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
