@@ -281,28 +281,28 @@ function SelectColumnFilter({
             case 'alert type':
                 options = table.data.map(alertType => ({
                     label: alertType.code,
-                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(alertType.id)}
+                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(alertType.id) || appliedFilters.filter(filter => filter.id === 'behaviourCode' && filter.value.includes(alertType.id)).length}
                         onChange={e => handleFilterChange(e, alertType.id)}/>
                 }));
                 break;
             case 'escalation':
                 options = Object.keys(ALERT_ESCALATION_OPTIONS).map(escalationOpt => ({
                     label: escalationOpt,
-                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(escalationOpt.toUpperCase())}
+                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(escalationOpt.toUpperCase()) || appliedFilters.filter(filter => filter.id === 'escalation' && filter.value.includes(escalationOpt)).length}
                         onChange={e => handleFilterChange(e, escalationOpt.toUpperCase())}/>
                 }));
                 break;
             case 'assigned':
                 options = selected.assignees.map(assignee => ({
                     label: assignee.fullName,
-                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(assignee.id !== 999999 ? assignee.id : null)}
+                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(assignee.id !== 999999 ? assignee.id : null) || appliedFilters.filter(filter => filter.id === 'assignedUser' && filter.value.includes(assignee.id)).length}
                         onChange={e => handleFilterChange(e, assignee.id !== 999999 ? assignee.id : null)}/>
                 }));
                 break;
             case 'status':
                 options = Object.keys(ALERT_STATUS_OPTIONS).map(statusOpt => ({
                     label: statusOpt,
-                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(statusOpt.toUpperCase())}
+                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(statusOpt.toUpperCase()) || appliedFilters.filter(filter => filter.id === 'status' && filter.value.includes(statusOpt)).length}
                         onChange={e => handleFilterChange(e, statusOpt.toUpperCase())}/>
                 }));
                 break;
