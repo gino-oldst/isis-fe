@@ -569,10 +569,11 @@ const ActionModal = ({
                     placeholder='Leave blank if there is no change to apply' value={alert.notes}
                     onChange={handleChange} />
             </FormGroup>
-            <div className='action-modal__buttons d-flex justify-content-center'>
+            <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
                 <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
                     onClick={handleClose} disabled={submit} />
-                <Button label='Apply' variant='secondary' className='alerts__save-button px-4 py-2'
+                <Button label='Apply' isLoading={submit} variant='secondary'
+                    className='alerts__save-button px-4 py-2'
                     onClick={handleBulkUpdate} disabled={submit} />
             </div>
         </div>
