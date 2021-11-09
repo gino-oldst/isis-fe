@@ -27,7 +27,7 @@ export default function AlertsContainer({
     const history = useHistory();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
-    const { isRowsSelected, selectedRows, appliedFilters } = useSelector(({ table }) => table);
+    const { isRowsSelected, selectedRows, appliedFilters, areRowsSelectedAll } = useSelector(({ table }) => table);
     const { table, selected } = useSelector(({ alerts }) => alerts);
     const behaviours = useSelector(({ behaviours }) => behaviours);
     const breadcrumb = [
@@ -112,7 +112,7 @@ export default function AlertsContainer({
 
     const handleDownloadAlertsList = async (date) => {
         const payload = {
-            alertIds: table.alertIds,
+            alertIds: selectedRows.length > 0 ? selectedRows : table.alertIds,
             dateFrom: `${DATE_TO_UTC(date.start).split('T')[0]}T00:00:00Z`,
             dateTo: `${DATE_TO_UTC(date.end).split('T')[0]}T23:59:59Z`,
             dateRange: `${moment(date.start).format('L')} to ${moment(date.end).format('L')}`,
