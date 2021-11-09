@@ -118,8 +118,8 @@ function AlertsScreen({
                 areRowsSelectedAll={areRowsSelectedAll}
                 activePage={activePage}
                 pageSize={pageSize}
-                dateFrom={dateRangeValues.start.toISOString()}
-                dateTo={dateRangeValues.end.toISOString()}
+                dateFrom={dateRange.start.toISOString()}
+                dateTo={dateRange.end.toISOString()}
                 handleCloseModal={handleCloseModal}
                 handleCloseResolveAlert={handleCloseResolveAlert}
                 assignees={assignees}
@@ -147,23 +147,14 @@ function AlertsScreen({
         setDateRangeFilter(value);
         const now = new Date();
 
-        if (value === 1) {
-            setDateRangeValues({
-                ...dateRangeValues,
-                start: now
-            });
+        setDateRangeValues({
+            start: moment().subtract(7, 'days')._d,
+            end: now
+        });
 
-            dispatch(setAlertsDateRange('start', moment().startOf('day')));
-            dispatch(setAlertsDateRange('end', moment().endOf('day')));
-        } else if (value === 2) {
-            setDateRangeValues({
-                start: moment().subtract(7, 'days')._d,
-                end: now
-            });
-
-            dispatch(setAlertsDateRange('start', moment().startOf('day').subtract(7, 'days')._d));
-            dispatch(setAlertsDateRange('end', moment().endOf('day')));
-        }
+        dispatch(setAlertsDateRange('start', moment().startOf('day').subtract(7, 'days')._d));
+        dispatch(setAlertsDateRange('end', moment().endOf('day')));
+        dispatch(setAlertsDateRange('activeOption', value));
     };
 
     const handleDateChange = (type, activeFilter, value) => {
@@ -178,6 +169,7 @@ function AlertsScreen({
             [type]: value
         });
 
+        dispatch(setAlertsDateRange('activeOption', activeFilter));
         dispatch(setAlertsDateRange(type, moment(value)));
     };
 
@@ -242,21 +234,21 @@ function AlertsScreen({
                                             <FormGroup tag='fieldset'>
                                                 <FormGroup check={true} className='mb-1'>
                                                     <Label check={true}>
-                                                        <Input type='radio' name='radio2' checked={dateRangeFilter === 2}
+                                                        <Input type='radio' name='radio2' checked={dateRange.activeOption === 2}
                                                             onChange={() => handleDateFilterChange(2)} />{' '}
                                                 Last 7 Days
                                                     </Label>
                                                 </FormGroup>
                                                 <FormGroup check={true} className='mb-1'>
                                                     <Label check={true}>
-                                                        <Input type='radio' name='radio3' checked={dateRangeFilter === 3}
+                                                        <Input type='radio' name='radio3' checked={dateRange.activeOption === 3}
                                                             onChange={() => handleDateFilterChange(3)}
                                                             onClick={() => datepickerOpen.current.setOpen(true)} />{' '}
                                                         <span className='mr-2'>Specific Date</span>
                                                     </Label>
                                                     <FontAwesomeIcon icon='calendar-alt' size='md' className='date-picker__icon' />
                                                     <ReactDatePicker ref={datepickerOpen}
-                                                        selected={dateRangeValues.start}
+                                                        selected={moment(dateRange.start).toDate()}
                                                         className='table__date-picker'
                                                         dateFormat='dd MMM yyyy'
                                                         onChange={date => {
@@ -282,23 +274,24 @@ function AlertsScreen({
                                             <FormGroup tag='fieldset'>
                                                 <FormGroup check={true} className='mb-1'>
                                                     <Label check={true}>
-                                                        <Input type='radio' name='radio5' checked={dateRangeFilter === 2} />{' '}
+                                                        <Input type='radio' name='radio5' checked={dateRange.activeOption === 2}
+                                                            onChange={() => handleDateFilterChange(2)}/>{' '}
                                                 Last 7 Days
                                                     </Label>
                                                 </FormGroup>
                                                 <FormGroup check={true} className='mb-1'>
                                                     <Label check={true}>
-                                                        <Input type='radio' name='radio6' checked={dateRangeFilter === 3}
+                                                        <Input type='radio' name='radio6' checked={dateRange.activeOption === 3}
                                                             onChange={() => handleDateFilterChange(3)}
                                                             onClick={() => datepickerOpen.current.setOpen(true)} />{' '}
                                                         <span className='mr-2'>Specific Date</span>
                                                     </Label>
                                                     <FontAwesomeIcon icon='calendar-alt' size='md' className='date-picker__icon' />
                                                     <ReactDatePicker ref={datepickerOpen}
-                                                        selected={dateRangeValues.end}
+                                                        selected={moment(dateRange.end).toDate()}
                                                         className='table__date-picker'
                                                         dateFormat='dd MMM yyyy'
-                                                        minDate={dateRangeValues.start}
+                                                        minDate={moment(dateRange.start).toDate()}
                                                         onChange={date => {
                                                             handleDateChange('end', 3, date);
                                                         }} />

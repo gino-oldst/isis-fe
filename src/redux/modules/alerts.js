@@ -84,7 +84,8 @@ export function setLoading() {
 const initialState = {
     dateRange: {
         start: moment().subtract(7, 'd'),
-        end: moment()
+        end: moment(),
+        activeOption: 2
     },
     columnFilterValues: null,
     table: {

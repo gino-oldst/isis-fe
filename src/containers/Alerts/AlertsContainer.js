@@ -27,7 +27,7 @@ export default function AlertsContainer({
     const history = useHistory();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
-    const { isRowsSelected, selectedRows, appliedFilters, areRowsSelectedAll } = useSelector(({ table }) => table);
+    const { isRowsSelected, selectedRows, appliedFilters } = useSelector(({ table }) => table);
     const { table, selected } = useSelector(({ alerts }) => alerts);
     const behaviours = useSelector(({ behaviours }) => behaviours);
     const breadcrumb = [
