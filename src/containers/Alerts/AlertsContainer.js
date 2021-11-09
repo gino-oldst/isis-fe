@@ -28,7 +28,7 @@ export default function AlertsContainer({
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
     const { isRowsSelected, selectedRows, appliedFilters } = useSelector(({ table }) => table);
-    const { table, selected } = useSelector(({ alerts }) => alerts);
+    const { table, selected, dateRange } = useSelector(({ alerts }) => alerts);
     const behaviours = useSelector(({ behaviours }) => behaviours);
     const breadcrumb = [
         {
@@ -115,7 +115,7 @@ export default function AlertsContainer({
             alertIds: selectedRows.length > 0 ? selectedRows : table.alertIds,
             dateFrom: `${DATE_TO_UTC(date.start).split('T')[0]}T00:00:00Z`,
             dateTo: `${DATE_TO_UTC(date.end).split('T')[0]}T23:59:59Z`,
-            dateRange: `${moment(date.start).format('L')} to ${moment(date.end).format('L')}`,
+            dateRange: `${moment(dateRange.start).format('L')} to ${moment(dateRange.end).format('L')}`,
             filteredApplied: appliedFilters.filter(filter =>
                 (filter.id !== 'quantity' && filter.value.length > 0) ||
                 (filter.id === 'quantity' && filter.value > 0)
