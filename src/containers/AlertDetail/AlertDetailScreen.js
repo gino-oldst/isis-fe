@@ -156,25 +156,24 @@ function AlertDetailScreen({
 
     return (
         <div className='alert-detail'>
-            <CollapsibleSidebar
-                menu={sidebarMenu} />
+            <CollapsibleSidebar menu={sidebarMenu} />
             <div className='w-100 overflow-auto'>
                 <Breadcrumbs links={breadcrumb} />
                 <div className='alert-detail__content'>
-                    <Card className='px-4 py-2'>
-                        <CardBody>
-                            <div className='alert-detail__header d-sm-block d-md-flex align-items-start'>
-                                <Typography color='color-3' className='alert-detail__title mr-auto'>{selectedAlert.behaviourCode}</Typography>
-                                <Button label={<>
-                                    <FontAwesomeIcon className='mr-3' icon='file-download' size='sm' />
-                                    <Typography weight='light' className='my-1 mx-2'>Download</Typography>
-                                </>}
-                                className='ml-sm-0 ml-md-4 d-flex align-items-center alert-detail__download-button px-4'
-                                size='lg' onClick={handleDownloadAlertsRecord} />
-                            </div>
-                            <Row className='mt-4'>
-                                <Col sm={12} md={12} lg={12}
-                                    xl={8}>
+                    <Row>
+                        <Col sm={12} md={12} lg={12}
+                            xl={7}>
+                            <Card className='px-4 py-2'>
+                                <CardBody>
+                                    <div className='alert-detail__header d-sm-block d-md-flex align-items-start'>
+                                        <Typography color='color-3' className='alert-detail__title mr-auto'>{selectedAlert.behaviourCode}</Typography>
+                                        <Button label={<>
+                                            <FontAwesomeIcon className='mr-3' icon='file-download' size='sm' />
+                                            <Typography weight='light' className='my-1 mx-2'>Download</Typography>
+                                        </>}
+                                        className='ml-sm-0 ml-md-4 d-flex align-items-center alert-detail__download-button px-4'
+                                        size='lg' onClick={handleDownloadAlertsRecord} />
+                                    </div>
                                     <div className='alert-detail__information'>
                                         {loading || Object.keys(selectedAlert).length === 0
                                             ? <Spinner animation='border' role='status' className='d-flex mx-auto my-5 text-center'>
@@ -218,6 +217,14 @@ function AlertDetailScreen({
                                                                                 </td>
                                                                                 <td className='pb-2'>
                                                                                     <Typography color='color-3'>{selectedAlert.book || '—'}</Typography>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3' className='mr-3' weight='semi-bold'>Client ID</Typography>
+                                                                                </td>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3'>{selectedAlert.lei || '—'}</Typography>
                                                                                 </td>
                                                                             </tr>
                                                                             <tr>
@@ -333,6 +340,57 @@ function AlertDetailScreen({
                                                                             </td>
                                                                             <td className='pb-2'>
                                                                                 <Typography color='color-3'>{selectedAlert.flexbookTradeId || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </>
+                                                                }
+                                                                {selectedAlert.behaviourCode === 'MARKET_PARTICIPATION' &&
+                                                                    <>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Ticker</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{selectedAlert.ticker || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Volume</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{numberWithCommas(Math.round(alertSpecifics.totalVolume)) || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Trade ID</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{selectedAlert.flexbookTradeId || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Market Volume</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>{numberWithCommas(Math.round(alertSpecifics.marketVolume)) || '—'}</Typography>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference(%)</Typography>
+                                                                            </td>
+                                                                            <td className='pb-2'>
+                                                                                <Typography color='color-3'>
+                                                                                    {alertSpecifics.difference
+                                                                                        ? typeof alertSpecifics.difference !== 'undefined' || typeof alertSpecifics.difference !== 'object'
+                                                                                            ? Math.round(alertSpecifics.difference) + '%'
+                                                                                            : '—'
+                                                                                        : '—'
+                                                                                    }
+                                                                                </Typography>
                                                                             </td>
                                                                         </tr>
                                                                     </>
@@ -470,7 +528,7 @@ function AlertDetailScreen({
                                                                         </tr>
                                                                         <tr>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference</Typography>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference(%)</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
                                                                                 <Typography color='color-3'>
@@ -552,7 +610,7 @@ function AlertDetailScreen({
                                                                                 </tr>
                                                                             </>
                                                                         }
-                                                                        {
+                                                                        {/* {
                                                                             selectedAlert.behaviourCode === 'HIGH_VOLUME_BY_CLIENT' &&
                                                                             <tr>
                                                                                 <td className='pb-2'>
@@ -562,10 +620,10 @@ function AlertDetailScreen({
                                                                                     <Typography color='color-3'>{numberWithCommas(alertSpecifics.totalOrders) || '—'}</Typography>
                                                                                 </td>
                                                                             </tr>
-                                                                        }
+                                                                        } */}
                                                                         <tr>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference</Typography>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference(%)</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
                                                                                 <Typography color='color-3'>
@@ -578,147 +636,150 @@ function AlertDetailScreen({
                                                                                 </Typography>
                                                                             </td>
                                                                         </tr>
-                                                                        <tr>
+                                                                        {/* <tr>
                                                                             <td className='pb-2'>
                                                                                 <Typography color='color-3' className='mr-3' weight='semi-bold'>Trade ID</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
                                                                                 <Typography color='color-3'>{selectedAlert.flexbookTradeId || '—'}</Typography>
                                                                             </td>
-                                                                        </tr>
+                                                                        </tr> */}
                                                                     </>
                                                                 }
                                                             </tbody>
                                                         </table>
                                                     </Col>
                                                 </Row>
-                                                <Row className='mt-4'>
-                                                    <Col>
-                                                        <FormGroup>
-                                                            <Label for='note'><Typography color='color-3' variant='size-16' weight='bold'>Notes</Typography></Label>
-                                                            <Input type='textarea' name='notes' id='notes'
-                                                                rows={4} defaultValue={selectedAlert.notes.trim()} placeholder='Write notes...'
-                                                                onChange={handleChange} invalid={alert.errors.notes} />
-                                                            <FormFeedback className={`${alert.errors.notes ? 'd-block' : 'd-none'}`}>
-                                                                {alert.errors.notesErrMsg}
-                                                            </FormFeedback>
-                                                        </FormGroup>
-                                                    </Col>
-                                                </Row>
                                             </>
                                         }
                                     </div>
-                                </Col>
-                                <Col lg={12} xl={4} className='mt-4 mt-xl-0'>
-                                    <div className='alert-detail__assignees'>
-                                        <Card>
-                                            <CardBody>
-                                                <FormGroup row={true} className='mb-3'>
-                                                    <Label for='status' lg={12} xl={4}><Typography color='color-3' variant='size-16' weight='bold'>Status</Typography></Label>
-                                                    <Col lg={12} xl={8}>
-                                                        {loading || Object.keys(selectedAlert).length === 0
-                                                            ? <Spinner animation='border' role='status' className='d-flex my-auto text-center'>
-                                                                <span className='sr-only'>Loading...</span>
-                                                            </Spinner>
-                                                            : <><Select
-                                                                name='status'
-                                                                defaultValue={{
-                                                                    label: <Badge status={selectedAlert.status} />,
-                                                                    value: <Badge status={selectedAlert.status}/>
-                                                                }}
-                                                                options={[{
-                                                                    name: 'OPEN',
-                                                                    label: <Badge status='Open' />,
-                                                                    value: <Badge status='Open'/>
-                                                                }, {
-                                                                    name: 'IN_REVIEW',
-                                                                    label: <Badge status='In Review' />,
-                                                                    value: <Badge status='In Review'/>
-                                                                }, {
-                                                                    name: 'RESOLVED',
-                                                                    label: <Badge status='Resolved' />,
-                                                                    value: <Badge status='Resolved'/>
-                                                                }, {
-                                                                    name: 'ARCHIVED',
-                                                                    label: <Badge status='Archived' />,
-                                                                    value: <Badge status='Archived'/>
-                                                                }]}
-                                                                onChange={handleChange} />
-                                                            </>
-                                                        }
-                                                    </Col>
-                                                </FormGroup>
-                                                <FormGroup row={true} className='mb-3'>
-                                                    <Label for='assignee' lg={12} xl={4}><Typography color='color-3' variant='size-16' weight='bold'>Assign</Typography></Label>
-                                                    <Col lg={12} xl={8}>
-                                                        {loading || Object.keys(selectedAlert).length === 0
-                                                            ? <Spinner animation='border' role='status' className='d-flex my-auto text-center'>
-                                                                <span className='sr-only'>Loading...</span>
-                                                            </Spinner>
-                                                            : <Select
-                                                                name='assignedUser'
-                                                                defaultValue={{
-                                                                    label: selectedAlert.assignedUser,
-                                                                    value: selectedAlert.assignedUser
-                                                                }}
-                                                                options={[{
-                                                                    id: null,
-                                                                    name: 'Unassigned',
-                                                                    label: 'Unassigned',
-                                                                    value: 'Unassigned'
-                                                                },
-                                                                ...assignees.map(assignee => {
-                                                                    return {
-                                                                        id: assignee.id,
-                                                                        name: assignee.fullName,
-                                                                        label: assignee.fullName,
-                                                                        value: assignee.fullName
-                                                                    };
-                                                                })]}
-                                                                onChange={handleChange} />
-                                                        }
-                                                    </Col>
-                                                </FormGroup>
-                                                <FormGroup row={true} className='mb-3'>
-                                                    <Label for='escalation' lg={12} xl={4}><Typography color='color-3' variant='size-16' weight='bold'>Escalation</Typography></Label>
-                                                    <Col lg={12} xl={8}>
-                                                        {loading || Object.keys(selectedAlert).length === 0
-                                                            ? <Spinner animation='border' role='status' className='d-flex my-auto text-center'>
-                                                                <span className='sr-only'>Loading...</span>
-                                                            </Spinner>
-                                                            : <Select
-                                                                name='escalation'
-                                                                defaultValue={{
-                                                                    label: selectedAlert.escalation,
-                                                                    value: selectedAlert.escalation
-                                                                }}
-                                                                options={[{
-                                                                    name: 'BASE',
-                                                                    label: 'BASE',
-                                                                    value: 'BASE'
-                                                                }, {
-                                                                    name: 'MANAGER',
-                                                                    label: 'MANAGER',
-                                                                    value: 'MANAGER'
-                                                                }, {
-                                                                    name: 'CO',
-                                                                    label: 'CO',
-                                                                    value: 'CO'
-                                                                }]}
-                                                                onChange={handleChange} />
-                                                        }
-                                                    </Col>
-                                                </FormGroup>
-                                            </CardBody>
-                                        </Card>
-                                    </div>
-                                    <Button label={<>
-                                        <Typography weight='light' className='my-1 mx-2'>{!submit ? 'Save' : 'Saving...'}</Typography>
-                                    </>} className={`alert-detail__save-bote-button ${!isTabletOrMobile && 'align-button-bottom'} float-right px-4 mt-3`}
-                                    size='lg' onClick={() => handleUpdateAlert(false)} disabled={submit} />
-                                    {/* <Typography variant='size-14' className={`playfair-font mt-4 text-danger ${alert.errors.backendErr !== '' ? 'd-block' : 'd-none'}`}>{alert.errors.backendErr}</Typography> */}
-                                </Col>
-                                <Col sm={12} className='mt-4 mt-0-xl mb-2 '>
+                                </CardBody>
+                            </Card>
+                        </Col>
+                        <Col lg={12} xl={5} className='mt-4 mt-xl-0'>
+                            <div className='alert-detail__assignees'>
+                                <Card>
+                                    <CardBody>
+                                        <FormGroup row={true} className='mb-3'>
+                                            <Label for='status' lg={12} xl={4}><Typography color='color-3' variant='size-16' weight='bold'>Status</Typography></Label>
+                                            <Col lg={12} xl={8}>
+                                                {loading || Object.keys(selectedAlert).length === 0
+                                                    ? <Spinner animation='border' role='status' className='d-flex my-auto text-center'>
+                                                        <span className='sr-only'>Loading...</span>
+                                                    </Spinner>
+                                                    : <><Select
+                                                        name='status'
+                                                        defaultValue={{
+                                                            label: <Badge status={selectedAlert.status} />,
+                                                            value: <Badge status={selectedAlert.status}/>
+                                                        }}
+                                                        options={[{
+                                                            name: 'OPEN',
+                                                            label: <Badge status='Open' />,
+                                                            value: <Badge status='Open'/>
+                                                        }, {
+                                                            name: 'IN_REVIEW',
+                                                            label: <Badge status='In Review' />,
+                                                            value: <Badge status='In Review'/>
+                                                        }, {
+                                                            name: 'RESOLVED',
+                                                            label: <Badge status='Resolved' />,
+                                                            value: <Badge status='Resolved'/>
+                                                        }, {
+                                                            name: 'ARCHIVED',
+                                                            label: <Badge status='Archived' />,
+                                                            value: <Badge status='Archived'/>
+                                                        }]}
+                                                        onChange={handleChange} />
+                                                    </>
+                                                }
+                                            </Col>
+                                        </FormGroup>
+                                        <FormGroup row={true} className='mb-3'>
+                                            <Label for='assignee' lg={12} xl={4}><Typography color='color-3' variant='size-16' weight='bold'>Assign</Typography></Label>
+                                            <Col lg={12} xl={8}>
+                                                {loading || Object.keys(selectedAlert).length === 0
+                                                    ? <Spinner animation='border' role='status' className='d-flex my-auto text-center'>
+                                                        <span className='sr-only'>Loading...</span>
+                                                    </Spinner>
+                                                    : <Select
+                                                        name='assignedUser'
+                                                        defaultValue={{
+                                                            label: selectedAlert.assignedUser,
+                                                            value: selectedAlert.assignedUser
+                                                        }}
+                                                        options={[{
+                                                            id: null,
+                                                            name: 'Unassigned',
+                                                            label: 'Unassigned',
+                                                            value: 'Unassigned'
+                                                        },
+                                                        ...assignees.map(assignee => {
+                                                            return {
+                                                                id: assignee.id,
+                                                                name: assignee.fullName,
+                                                                label: assignee.fullName,
+                                                                value: assignee.fullName
+                                                            };
+                                                        })]}
+                                                        onChange={handleChange} />
+                                                }
+                                            </Col>
+                                        </FormGroup>
+                                        <FormGroup row={true} className='mb-3'>
+                                            <Label for='escalation' lg={12} xl={4}><Typography color='color-3' variant='size-16' weight='bold'>Escalation</Typography></Label>
+                                            <Col lg={12} xl={8}>
+                                                {loading || Object.keys(selectedAlert).length === 0
+                                                    ? <Spinner animation='border' role='status' className='d-flex my-auto text-center'>
+                                                        <span className='sr-only'>Loading...</span>
+                                                    </Spinner>
+                                                    : <Select
+                                                        name='escalation'
+                                                        defaultValue={{
+                                                            label: selectedAlert.escalation,
+                                                            value: selectedAlert.escalation
+                                                        }}
+                                                        options={[{
+                                                            name: 'BASE',
+                                                            label: 'BASE',
+                                                            value: 'BASE'
+                                                        }, {
+                                                            name: 'MANAGER',
+                                                            label: 'MANAGER',
+                                                            value: 'MANAGER'
+                                                        }, {
+                                                            name: 'CO',
+                                                            label: 'CO',
+                                                            value: 'CO'
+                                                        }]}
+                                                        onChange={handleChange} />
+                                                }
+                                            </Col>
+                                        </FormGroup>
+                                        <FormGroup>
+                                            <Label for='note'><Typography color='color-3' variant='size-16' weight='bold'>Notes</Typography></Label>
+                                            <Input type='textarea' name='notes' id='notes'
+                                                rows={4} defaultValue={selectedAlert.notes ? selectedAlert.notes.trim() : ''} placeholder='Write notes...'
+                                                onChange={handleChange} invalid={alert.errors.notes} />
+                                            <FormFeedback className={`${alert.errors.notes ? 'd-block' : 'd-none'}`}>
+                                                {alert.errors.notesErrMsg}
+                                            </FormFeedback>
+                                        </FormGroup>
+                                        <FormGroup>
+                                            <Button label={<>
+                                                <Typography weight='light' className='my-1 mx-2'>{!submit ? 'Save' : 'Saving...'}</Typography>
+                                            </>} className='w-100 float-right px-4 mt-1'
+                                            size='lg' onClick={() => handleUpdateAlert(false)} disabled={submit} />
+                                        </FormGroup>
+                                    </CardBody>
+                                </Card>
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm={12} className='mt-4 mt-0-xl mb-2 '>
+                            <Card className='px-4 py-2'>
+                                <CardBody>
                                     <div className='alert-detail__activities'>
                                         <Typography color='color-3' variant='size-26' className='playfair-font mb-4'>Activity</Typography>
                                         {loading || Object.keys(selectedAlert).length === 0
@@ -741,10 +802,10 @@ function AlertDetailScreen({
                                             </div>
                                         }
                                     </div>
-                                </Col>
-                            </Row>
-                        </CardBody>
-                    </Card>
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    </Row>
                 </div>
             </div>
         </div>
