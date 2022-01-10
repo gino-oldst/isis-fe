@@ -166,15 +166,15 @@ function AlertDetailScreen({
                             <Card className='px-4 py-2'>
                                 <CardBody>
                                     <div className='alert-detail__header d-sm-block d-md-flex align-items-start'>
-                                        <Typography color='color-3' className='alert-detail__title mr-auto'>{selectedAlert.behaviourCode}</Typography>
+                                        <Typography color='color-3' className='alert-detail__title mr-auto mb-3'>{selectedAlert.behaviourCode}</Typography>
                                         <Button label={<>
                                             <FontAwesomeIcon className='mr-3' icon='file-download' size='sm' />
-                                            <Typography weight='light' className='my-1 mx-2'>Download</Typography>
+                                            <Typography weight='light' className='my-1'>Download</Typography>
                                         </>}
-                                        className='ml-sm-0 ml-md-4 d-flex align-items-center alert-detail__download-button px-4'
-                                        size='lg' onClick={handleDownloadAlertsRecord} />
+                                        className='ml-sm-0 ml-md-0 d-flex align-items-center alert-detail__download-button px-4'
+                                        size='md' onClick={handleDownloadAlertsRecord} />
                                     </div>
-                                    <div className='alert-detail__information'>
+                                    <div className='alert-detail__information mt-5'>
                                         {loading || Object.keys(selectedAlert).length === 0
                                             ? <Spinner animation='border' role='status' className='d-flex mx-auto my-5 text-center'>
                                                 <span className='sr-only'>Loading...</span>
@@ -380,7 +380,7 @@ function AlertDetailScreen({
                                                                         </tr>
                                                                         <tr>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference(%)</Typography>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Proportion (%)</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
                                                                                 <Typography color='color-3'>
@@ -528,7 +528,7 @@ function AlertDetailScreen({
                                                                         </tr>
                                                                         <tr>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference(%)</Typography>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Proportion (%)</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
                                                                                 <Typography color='color-3'>
@@ -623,7 +623,7 @@ function AlertDetailScreen({
                                                                         } */}
                                                                         <tr>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Difference(%)</Typography>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Proportion (%)</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
                                                                                 <Typography color='color-3'>
