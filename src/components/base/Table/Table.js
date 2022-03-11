@@ -545,6 +545,8 @@ function Table({
                     ))}
                 </thead>
                 <tbody {...getTableBodyProps()}>
+                    {JSON.stringify(page.length)}
+                    {JSON.stringify(loading)}
                     {!page.length || loading
                         ? <tr>
                             <td className='text-muted text-center' colSpan={12}>
