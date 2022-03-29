@@ -37,7 +37,7 @@ const loading = () => (
 function App() {
     const history = useHistory();
     const dispatch = useDispatch();
-    const { modalContent, onToggle, ...modalEvent } = useSelector(({ modalEvent }) => modalEvent);
+    const { size, modalContent, onToggle, ...modalEvent } = useSelector(({ modalEvent }) => modalEvent);
     const { isAuthed, profileData } = useSelector(({ authentication }) => authentication);
 
     const sidebarMenu = [{
@@ -130,7 +130,8 @@ function App() {
             <AppModal
                 {...modalEvent}
                 isShow={!!modalContent}
-                onToggle={handleCloseModal}>
+                onToggle={handleCloseModal}
+                size={size}>
                 {modalContent}
             </AppModal>
         </AppLoadingContainer>

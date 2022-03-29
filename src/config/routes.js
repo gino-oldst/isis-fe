@@ -3,6 +3,7 @@ import React from 'react';
 const Login = React.lazy(() => import('../containers/Login/LoginContainer'));
 const NotFound = React.lazy(() => import('../containers/NotFound/NotFoundContainer'));
 const CommunicationAlerts = React.lazy(() => import('../containers/CommunicationAlerts/CommunicationAlertsContainer'));
+const CommunicationAlertsDetail = React.lazy(() => import('../containers/CommunicationAlertsDetail/CommunicationAlertsDetailContainer'));
 const CommunicationSearch = React.lazy(() => import('../containers/CommunicationSearch/CommunicationSearchContainer'));
 const CommunicationPolicies = React.lazy(() => import('../containers/CommunicationPolicies/PoliciesContainer'));
 
@@ -12,6 +13,8 @@ const Dashboard = React.lazy(() => import('../containers/Dashboard/DashboardCont
 // const AlertDetail = React.lazy(() => import('../containers/AlertDetail/AlertDetailContainer'));
 // const BehaviourDetail = React.lazy(() => import('../containers/BehaviourDetail/BehaviourDetailContainer'));
 // const RestrictedList = React.lazy(() => import('../containers/RestrictedList/RestrictedListContainer'));
+const CommunicationSearchResults = React.lazy(() => import('../containers/CommunicationSearchResults/CommunicationSearchResultsContainer'));
+const CommunicationSearchMessageDetails = React.lazy(() => import('../containers/CommunicationSearchMessageDetails/CommunicationSearchMessageDetailsContainer'));
 // ROUTE IMPORT CODE GENERATOR INDICATOR DO NOT DELETE
 
 const routes = [{
@@ -30,6 +33,11 @@ const routes = [{
     component: CommunicationAlerts,
     authedRoute: true
 }, {
+    path: '/communication_alerts_detail/:id',
+    name: 'CommunicationAlertsDetail',
+    component: CommunicationAlertsDetail,
+    authedRoute: true
+}, {
     path: '/communication_search',
     name: 'Search',
     component: CommunicationSearch,
@@ -39,7 +47,21 @@ const routes = [{
     name: 'Policies',
     component: CommunicationPolicies,
     authedRoute: true
-},
+}, {
+    path: '/communication_search_results',
+    name: 'CommunicationSearchResults',
+    component: CommunicationSearchResults,
+    authedRoute: true
+}, {
+    path: '/communication_search_message_details',
+    name: 'CommunicationSearchMessageDetails',
+    component: CommunicationSearchMessageDetails,
+    authedRoute: true
+}, {
+    path: '*',
+    name: NotFound,
+    component: NotFound
+}];
 
 // {
 //     path: '/dashboard',
@@ -72,11 +94,7 @@ const routes = [{
 //     name: 'RestrictedList',
 //     component: RestrictedList,
 //     authedRoute: true
-// }, // ROUTE ENTRY CODE GENERATOR INDICATOR DO NOT DELETE
-{
-    path: '*',
-    name: NotFound,
-    component: NotFound
-}];
+// }, {
+// ROUTE ENTRY CODE GENERATOR INDICATOR DO NOT DELETE
 
 export default routes;

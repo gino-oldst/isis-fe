@@ -1,9 +1,10 @@
 import axios from 'axios';
+import { Form } from 'reactstrap';
 import { config } from '../config/constants';
 import { getAuthToken } from '../utils/Auth';
 
 export const api = axios.create({
-    baseURL: config.apiUrl,
+    // baseURL: config.apiUrl,
     headers: {
         'Content-Type': 'application/json'
     },
@@ -32,19 +33,20 @@ export function serialize(data: Object) {
 export default async function makeApiCall(
     endpoint: string,
     method: string,
-    data: Object = null
+    data: FormData = null
 ) {
     const accessToken = await getAuthToken();
 
     const request = {
         method,
         url: endpoint,
-        data: data ? (endpoint.includes('oauth') ? serialize(data) : data) : ''
+        // data: data ? (endpoint.includes('oauth') ? serialize(data) : data) : ''
+        data
     };
 
     if (endpoint.includes('oauth')) {
         request.headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'multipart/form-data;',
             Authorization: `Basic ${config.adminApplAuthHeader}`
         };
     } else if (endpoint.includes('generate-token')) {

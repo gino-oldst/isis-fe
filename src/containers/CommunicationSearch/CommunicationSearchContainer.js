@@ -5,14 +5,9 @@ import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import CommunicationSearchScreen from './CommunicationSearchScreen';
 import type { Menu } from '../../types';
-import { getBehaviours } from '../../api/behaviours';
-import { getAlerts, downloadAlertsList, getColumnFilterValues } from '../../api/alerts';
-import { getUsers } from '../../api/users';
 import {
     DATE_TO_UTC
 } from '../../utils/helpers';
-import { setBehavioursData } from '../../redux/modules/behaviours';
-import { setAlertsData, setAssignees, setColumnFilterValues } from '../../redux/modules/alerts';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -27,9 +22,6 @@ export default function CommunicationSearchContainer({
     const history = useHistory();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
-    const { isRowsSelected, selectedRows, appliedFilters } = useSelector(({ table }) => table);
-    const { table, selected, dateRange } = useSelector(({ alerts }) => alerts);
-    const behaviours = useSelector(({ behaviours }) => behaviours);
     const breadcrumb = [
         {
             label: 'Home',
@@ -41,9 +33,61 @@ export default function CommunicationSearchContainer({
         }
     ];
 
+    // const [filterID, setID] = useState('');
+    // const [filterMessage, setFilterMessage] = useState('');
+    // const [filterSender, setFilterSender] = useState([]);
+    // const [filterRecipient, setFilterRecipient] = useState([]);
+    const [filterStatus, setFilterStatus] = useState([]);
+    const [filterSource, setFilterSource] = useState([]);
+    const [filterDate, setFilterDate] = useState([
+        {
+            startDate: '',
+            endDate: ''
+        }
+    ]);
+    const [filterSearchForm, setFilterSearchForm] = useState({
+        filterId: '',
+        filterText: '',
+        filterStatus: [],
+        filterSource: []
+    });
+
+    const [filterSender, setFilterSender] = useState([]);
+
+    const handleSenderChange = (options) => {
+        console.log(options);
+        setFilterSender(options);
+    };
+
+    const [filterRecipient, setFilterRecipient] = useState([]);
+
+    const handleRecipientChange = (options) => {
+        setFilterRecipient(options);
+    };
+
+    const onSubmit = async e => {
+        e.preventDefault();
+        console.log('onSubmit');
+    };
+
+    const onChange = e => {
+        const { name, value } = e.target;
+
+        setFilterSearchForm({
+            ...filterSearchForm,
+            [name]: value
+        });
+    };
+
     return <CommunicationSearchScreen
         loading={loading}
         userId={userId}
+        onSubmit={onSubmit}
+        onChange={onChange}
+        handleRecipientChange={handleRecipientChange}
+        handleSenderChange={handleSenderChange}
         sidebarMenu={sidebarMenu}
-        breadcrumb={breadcrumb}/>;
+        breadcrumb={breadcrumb}
+        filterDate={filterDate}
+        setFilterDate={setFilterDate}/>;
 }

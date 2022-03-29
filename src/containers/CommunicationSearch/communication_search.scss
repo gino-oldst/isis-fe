@@ -34,20 +34,20 @@
         }
     }
 
+    &__status-filters {
+        background-color: #f6f6f6;
+        border-radius: 2px;
+        padding: 30px;
+        margin-bottom: 5px;
+    }
+
     .MuiInputAdornment-root.MuiInputAdornment-positionEnd {
         display: none;
     }
 
     .form-group {
         margin-bottom: 0;
-    }
-
-    .dropdown-menu {
-        width: 300px;
-
-        .dropdown-divider {
-            border-top: 1px solid #dee2e6;
-        }
+        padding: 0 0 30px 0;
     }
 
     &__filter-reset-button {
@@ -122,5 +122,51 @@
 
     .react-datepicker-wrapper {
         width: 60%;
+    }
+
+    .dropdown-item:hover,
+    .dropdown-item:focus {
+        background-color: white;
+    }
+
+    .dropdown-toggle {
+        width: 100% !important;
+        text-align: left;
+    }
+
+    input[type="radio"],
+    input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+    }
+
+    .box-label {
+        font-size: 16px;
+        text-align: start;
+        margin-left: 12px;
+    }
+
+    .btn-outline-light {
+        color: hsl(0, 0%, 50%);
+        background-color: hsl(0, 0%, 100%);
+        border-color: hsl(0, 0%, 80%);
+    }
+
+    .btn-outline-light:not(:disabled):not(.disabled):active,
+    .btn-outline-light:not(:disabled):not(.disabled).active,
+    .show > .btn-outline-light.dropdown-toggle {
+        color: hsl(0, 0%, 50%);
+        background-color: hsl(0, 0%, 100%);
+        border-color: hsl(0, 0%, 80%);
+    }
+
+    .dropdown .dropdown-item.active,
+    .dropdown .dropdown-item:active {
+        background-color: #ffffff !important;
+        border-color: #ffffff !important;
+    }
+
+    .alerts .dropdown-menu {
+        width: 100% !important;
     }
 }

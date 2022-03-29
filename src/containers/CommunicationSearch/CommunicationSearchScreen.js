@@ -4,7 +4,7 @@ import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import Table from '../../components/base/Table/Table';
 import Button from '../../components/base/Button/Button';
-import Select from '../../components/base/Select/Select';
+import Select, { components } from 'react-select';
 import Badge from '../../components/base/Badge/Badge';
 import DatePicker from '../../components/base/DatePicker/DatePicker';
 import ReactDatePicker from 'react-datepicker';
@@ -25,34 +25,150 @@ import {
     CardBody,
     DropdownItem,
     FormGroup,
+    Form,
     Input,
     Label,
-    Alert
+    Alert,
+    Row,
+    Col
 } from 'reactstrap';
 import { useIsMount } from '../../hooks/useIsMount';
-
 import './communication_search.scss';
-
-import { bulkUpdateAlert } from '../../api/alerts';
 import { setModalContent } from '../../redux/modules/modalEvent';
-import { resetTableState } from '../../redux/modules/table';
-import { setLoading, setAlertsDateRange } from '../../redux/modules/alerts';
+import { DropdownButton, OverlayTrigger, Popover } from 'react-bootstrap';
+
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css'; // theme css file
+import { DateRangePicker } from 'react-date-range';
+import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
 
 type Props = {
     loading: Boolean,
     userId: String,
     breadcrumb: Array,
     sidebarMenu: Array<Menu>,
+    filterDate:Array<any>,
+    setFilterDate: Function,
+    filterMessage: String,
+    onSubmit: Function,
+    onChange: Function,
+    handleSenderChange: Function,
+    handleRecipientChange: Function
 }
 
 function CommunicationSearchScreen({
     loading,
     userId,
     breadcrumb,
-    sidebarMenu
+    sidebarMenu,
+    filterDate,
+    setFilterDate,
+    filterMessage,
+    onSubmit,
+    onChange,
+    handleSenderChange,
+    handleRecipientChange
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
+
+    const options = [
+        { value: 'alex@mcgfutures.com', label: 'alex@mcgfutures.com' },
+        { value: 'chevillon@nyenburgh.com', label: 'chevillon@nyenburgh.com' },
+        { value: 'daniel.caplin@marianacap.com', label: 'daniel.caplin@marianacap.com' }
+    ];
+
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggleOpen = () => {
+        setIsOpen(!isOpen);
+    };
+
+    const [dateOptions, setDateOptions] = useState({
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
+
+    const [dateState, setDateState] = useState([
+        {
+            startDate: new Date(),
+            endDate: new Date(),
+            key: 'selection'
+        }
+    ]);
+
+    const convertedStartDate = dateState[0].startDate.toLocaleDateString([], dateOptions);
+
+    const convertedEndDate = dateState[0].endDate.toLocaleDateString([], dateOptions);
+
+    const handleDates = (dates) => {
+        setDateState(dates);
+        setFilterDate(dates);
+    };
+
+    const popoverClickRootClose = (
+        <Popover id='popover-trigger-click-root-close' title='Choose dates...' style={{ maxWidth: '1000px' }}>
+            <DateRangePicker
+                onChange={item => handleDates([item.selection])}
+                inputRanges={[]}
+                showSelectionPreview={true}
+                moveRangeOnFirstSelection={false}
+                months={2}
+                ranges={dateState}
+                value={filterDate.startDate === '' ? null : filterDate}
+                direction='horizontal'/>
+        </Popover>
+    );
+
+    const logout = () => {
+        window.location.href = '/communication_search_results';
+    };
+
+    // const handleStatus = e => {
+    //     console.log(e);
+    // };
+    const [status, setStatus] = useState([
+        { id: 1, value: 'open', name: 'Open', isChecked: false },
+        { id: 2, value: 'inReview', name: 'In Review', isChecked: false },
+        { id: 3, value: 'resolved', name: 'Resolved', isChecked: false },
+        { id: 4, value: 'archived', name: 'Archived', isChecked: false },
+        { id: 5, value: 'notAvailable', name: 'Not Available', isChecked: false }
+    ]);
+
+    const [source, setSource] = useState([
+        { id: 1, value: 'email', isChecked: false },
+        { id: 2, value: 'reuters', isChecked: false },
+        { id: 3, value: 'bloomberg', isChecked: false }
+    ]);
+
+    const [checkedStatus, setCheckedStatus] = useState([]);
+    const [checkedSource, setCheckedSource] = useState([]);
+
+    // Add/Remove checked item from list
+    const handleStatus = (event) => {
+        var updatedList = [...checkedStatus];
+
+        if (event.target.checked) {
+            updatedList = [...checkedStatus, event.target.value];
+        } else {
+            updatedList.splice(checkedStatus.indexOf(event.target.value), 1);
+        }
+
+        setCheckedStatus(updatedList);
+    };
+
+    const handleSource = (event) => {
+        var updatedList = [...checkedSource];
+
+        if (event.target.checked) {
+            updatedList = [...checkedSource, event.target.value];
+        } else {
+            updatedList.splice(checkedSource.indexOf(event.target.value), 1);
+        }
+
+        setCheckedSource(updatedList);
+    };
 
     return (
         <div className='alerts'>
@@ -60,7 +176,166 @@ function CommunicationSearchScreen({
                 menu={sidebarMenu} />
             <div className='w-100 overflow-auto'>
                 <Breadcrumbs links={breadcrumb} />
-                <div className='alerts__content'/>
+                <div className='alerts__content'>
+                    <Card className='px-4 py-2'>
+                        <CardBody>
+                            <Typography color='color-3' className='alerts__title mr-auto'>Search Message</Typography>
+                            <div className='d-flex align-item-center'>
+                                <Form className='w-100' onSubmit={onSubmit}>
+                                    <Row>
+                                        <Col lg={8}>
+                                            <div className='alerts__input-fields'>
+                                                <FormGroup>
+                                                    <Label>Message / Alert ID</Label>
+                                                    <Input type='text' name='filterId' placeholder='Search Unique ID'
+                                                        onChange={onChange}/>
+                                                </FormGroup>
+                                                <FormGroup>
+                                                    <Label>Subject / Message</Label>
+                                                    <Input type='text' name='filterText' placeholder='Search a keyword'
+                                                        onChange={onChange}/>
+                                                </FormGroup>
+                                                <FormGroup>
+                                                    <Label>Sender</Label>
+                                                    <Select
+                                                        options={options}
+                                                        isMulti={true}
+                                                        name='filterSender'
+                                                        placeholder={'Select Sender...'}
+                                                        onChange={handleSenderChange}/>
+                                                </FormGroup>
+                                                <FormGroup>
+                                                    <Label>Recipient</Label>
+                                                    <Select
+                                                        options={options}
+                                                        isMulti={true}
+                                                        name='filterRecipient'
+                                                        placeholder={'Select Recipient...'}
+                                                        onChange={handleRecipientChange}/>
+                                                </FormGroup>
+                                                <FormGroup>
+                                                    <Label>Date/Time Range</Label>
+                                                    {/* <OverlayTrigger trigger='click' rootClose={true} placement='top-start'
+                                                        overlay={popoverClickRootClose}>
+                                                        <DropdownButton className='w-100' title='Date Range'/>
+                                                    </OverlayTrigger> */}
+                                                    <DropdownButton variant='outline-light' id='dropdown-basic-button'
+                                                        title={filterDate[0].startDate === '' ? 'Select Date' : convertedStartDate + ' - ' + convertedEndDate}>
+                                                        <DropdownItem>
+                                                            <DateRangePicker
+                                                                onChange={item => handleDates([item.selection])}
+                                                                inputRanges={[]}
+                                                                showSelectionPreview={true}
+                                                                moveRangeOnFirstSelection={false}
+                                                                months={2}
+                                                                ranges={dateState}
+                                                                value={filterDate.startDate === '' ? null : filterDate}
+                                                                direction='horizontal'/>
+                                                        </DropdownItem>
+                                                    </DropdownButton>
+                                                </FormGroup>
+                                                <Button label='Search' variant='secondary'
+                                                    onClick={logout} className='alerts__save-button px-4 py-2'/>
+                                            </div>
+                                        </Col>
+                                        <Col lg={3} className='offset-1'>
+                                            <div className='alerts__status-filters'>
+                                                {JSON.stringify(checkedStatus)}
+                                                <Typography color='color-3' className='mr-auto' weight='bold'
+                                                    variant='size-16'>Status</Typography>
+                                                <FormGroup tag='fieldset'>
+                                                    <CheckboxGroup onChange={console.log}>
+                                                        <FormGroup check={true} className='mb-1'>
+                                                            <Label check={true}>
+                                                                <AllCheckerCheckbox/>
+                                                                <span className='box-label'>(Select All)</span>
+                                                            </Label>
+                                                        </FormGroup>
+                                                        {status.map(stat => (
+                                                            <FormGroup check={true} className='mb-1'>
+                                                                <Label check={true}>
+                                                                    <Checkbox value={stat.value} />
+                                                                    <span className='box-label'>{stat.name}</span>
+                                                                </Label>
+                                                            </FormGroup>
+                                                        ))}
+                                                    </CheckboxGroup>
+                                                    {/* <FormGroup check={true} className='mb-1'>
+                                                        <Label check={true}>
+                                                            <Input type='checkbox' name='filterStatus' value='open'
+                                                                onChange={e => handleStatus(e)}/>
+                                                            <span className='box-label'>Open</span>
+                                                        </Label>
+                                                    </FormGroup>
+                                                    <FormGroup check={true} className='mb-1'>
+                                                        <Label check={true}>
+                                                            <Input type='checkbox' name='filterStatus' value='inReview'
+                                                                onChange={e => handleStatus(e)}/>
+                                                            <span className='box-label'>In Review</span>
+                                                        </Label>
+                                                    </FormGroup>
+                                                    <FormGroup check={true} className='mb-1'>
+                                                        <Label check={true}>
+                                                            <Input type='checkbox' name='filterStatus' value='resolved'
+                                                                onChange={e => handleStatus(e)}/>
+                                                            <span className='box-label'>Resolved</span>
+                                                        </Label>
+                                                    </FormGroup>
+                                                    <FormGroup check={true} className='mb-1'>
+                                                        <Label check={true}>
+                                                            <Input type='checkbox' name='filterStatus' value='archived'
+                                                                onChange={e => handleStatus(e)}/>
+                                                            <span className='box-label'>Archived</span>
+                                                        </Label>
+                                                    </FormGroup>
+                                                    <FormGroup check={true} className='mb-1'>
+                                                        <Label check={true}>
+                                                            <Input type='checkbox' name='filterStatus' value='notAvailable'
+                                                                onChange={e => handleStatus(e)}/>
+                                                            <span className='box-label'>N/A</span>
+                                                        </Label>
+                                                    </FormGroup> */}
+                                                </FormGroup>
+                                            </div>
+                                            <div className='alerts__status-filters'>
+                                                {JSON.stringify(checkedSource)}
+                                                <Typography color='color-3' className='mr-auto' weight='bold'
+                                                    variant='size-16'>Source</Typography>
+                                                <FormGroup tag='fieldset'>
+                                                    <FormGroup check={true} className='mb-1'>
+                                                        <Label check={true} className='d-flex align-items-center'>
+                                                            <Input type='checkbox' name='filterSouce' value='selectAll'
+                                                                onChange={e => handleSource(e)}/>
+                                                            <span className='box-label' >(Select All)</span>
+                                                        </Label>
+                                                    </FormGroup>
+                                                    <FormGroup check={true} className='mb-1'>
+                                                        <Label check={true}>
+                                                            <Input type='checkbox' name='filterSouce' value='reuters'
+                                                                onChange={e => handleSource(e)}/>
+                                                            <span className='box-label'>Reuters</span>
+                                                        </Label>
+                                                    </FormGroup>
+                                                    <FormGroup check={true} className='mb-1'>
+                                                        <Label check={true}>
+                                                            <Input type='checkbox' name='filterSouce' value='bloomberg'
+                                                                onChange={e => handleSource(e)}/>
+                                                            <span className='box-label'>Bloomberg</span>
+                                                        </Label>
+                                                    </FormGroup>
+                                                </FormGroup>
+                                                {/* <Button label={<>
+                                                    <FontAwesomeIcon className='mr-1' icon='file-download' size='sm' />
+                                                    <Typography weight='light' className='my-1 mx-2'>Download</Typography>
+                                                </>} */}
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            </div>
+                        </CardBody>
+                    </Card>
+                </div>
             </div>
         </div>
     );
@@ -69,292 +344,3 @@ function CommunicationSearchScreen({
 const CommunicationSearch: any = withLoading<React$Element<Props>>(CommunicationSearchScreen);
 
 export default CommunicationSearch;
-
-const ActionModal = ({
-    userId,
-    activeModal,
-    loadAlerts,
-    handleCloseModal,
-    handleCloseResolveAlert,
-    table,
-    selectedRows,
-    areRowsSelectedAll,
-    activePage,
-    pageSize,
-    dateFrom,
-    dateTo,
-    assignees,
-    appliedFilters,
-    sort,
-    alert,
-    setAlert,
-    setActiveModal,
-    handleResolveReasonChange
-}) => {
-    const dispatch = useDispatch();
-    const [submit, setSubmit] = useState(false);
-
-    const showResolveAlert = () => {
-        setActiveModal('resolve');
-        dispatch(setModalContent({
-            modalContent: <ResolveAlertModal handleCloseModal={handleCloseModal} handleCloseResolveAlert={handleCloseResolveAlert}
-                alert={alert} setAlert={setAlert} handleResolveReasonChange={handleResolveReasonChange} />
-        }));
-    };
-
-    const showError = errMsg => {
-        dispatch(setModalContent({
-            modalContent: <ErrorMsgModal
-                errMsg={errMsg}
-                handleCloseModal={handleCloseModal} />
-        }));
-    };
-
-    const handleChange = (e, option) => {
-        let name, value;
-
-        if (option === undefined) {
-            name = e.target.name;
-            value = e.target.value;
-        } else {
-            name = option.name;
-            value = option.name === 'assignedTo' ? e.id : e.name;
-
-            if (option.name === 'assignedTo' && value === 0) value = 999999;
-        }
-
-        setAlert({
-            ...alert,
-            [name]: value,
-            resolveReason: name === 'status' && value !== 'RESOLVED' ? null : alert.resolveReason
-        });
-
-        if (value === 'RESOLVED') showResolveAlert();
-    };
-
-    const handleBulkUpdate = async () => {
-        setSubmit(true);
-
-        const records = !areRowsSelectedAll ? selectedRows : table.alertIds;
-
-        const payload = records.map(row => {
-            return {
-                alertId: row,
-                currentUserId: userId,
-                ...alert,
-                assignedTo: alert.assignedTo === 999999 ? 0 : alert.assignedTo
-            };
-        });
-
-        try {
-            const result = await bulkUpdateAlert(payload);
-
-            if (result.status === 200) {
-                setTimeout(async () => {
-                    if (result.data.length !== undefined && result.data.length > 0) {
-                        showError(result.data[0].exceptionMessage);
-                    } else {
-                        await loadAlerts(activePage, pageSize,
-                            `${dateFrom.split('T')[0]}T00:00:00Z`,
-                            `${dateTo.split('T')[0]}T23:59:59Z`, appliedFilters, sort);
-                        handleClose();
-                    }
-                }, 1000);
-            }
-        } catch (err) {
-            await loadAlerts(activePage, pageSize,
-                `${dateFrom.split('T')[0]}T00:00:00Z`,
-                `${dateTo.split('T')[0]}T23:59:59Z`, appliedFilters, sort);
-            handleClose();
-        }
-    };
-
-    const handleClose = () => {
-        handleCloseModal();
-        setAlert({
-            notes: null,
-            status: null,
-            assignedTo: null,
-            escalation: null,
-            resolveReason: null
-        });
-    };
-
-    return (
-        <div className='action-modal p-4'>
-            <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
-                onClick={handleClose} />
-            <Typography variant='size-26' color='color-3'
-                className='mb-4 playfair-font'>
-                Bulk Action
-            </Typography>
-            <FormGroup className='mb-3'>
-                <Label for='escalation'>Select Escalation</Label>
-                <Select
-                    name='escalation'
-                    value={alert.escalation === null
-                        ? {
-                            label: 'No Change',
-                            value: null
-                        }
-                        : {
-                            name: alert.escalation,
-                            label: alert.escalation,
-                            value: alert.escalation
-                        }}
-                    options={[{
-                        name: 'BASE',
-                        label: 'BASE',
-                        value: 'BASE'
-                    }, {
-                        name: 'MANAGER',
-                        label: 'MANAGER',
-                        value: 'MANAGER'
-                    }, {
-                        name: 'CO',
-                        label: 'CO',
-                        value: 'CO'
-                    }]}
-                    onChange={handleChange} />
-            </FormGroup>
-            <FormGroup className='mb-3'>
-                <Label for='status'>Select Status</Label>
-                <Select
-                    name='status'
-                    value={alert.status === null
-                        ? {
-                            label: 'No Change',
-                            value: null
-                        }
-                        : {
-                            name: alert.status,
-                            label: <Badge status={alert.status} />,
-                            value: <Badge status={alert.status}/>
-                        }}
-                    options={[{
-                        name: 'OPEN',
-                        label: <Badge status='Open' />,
-                        value: <Badge status='Open'/>
-                    }, {
-                        name: 'IN_REVIEW',
-                        label: <Badge status='In Review' />,
-                        value: <Badge status='In Review'/>
-                    }, {
-                        name: 'RESOLVED',
-                        label: <Badge status='Resolved' />,
-                        value: <Badge status='Resolved'/>
-                    }, {
-                        name: 'ARCHIVED',
-                        label: <Badge status='Archived' />,
-                        value: <Badge status='Archived'/>
-                    }]}
-                    onChange={handleChange} />
-                {alert.resolveReason && <div>Reason: {alert.resolveReason}</div>}
-            </FormGroup>
-            <FormGroup className='mb-3'>
-                <Label for='assignedTo'>Select Assignee</Label>
-                <Select
-                    name='assignedTo'
-                    value={alert.assignedTo === null
-                        ? {
-                            label: 'No Change',
-                            name: 'No Change',
-                            value: 'No Change'
-                        }
-                        : assignees.map(assignee => {
-                            if (assignee.id === alert.assignedTo) {
-                                return {
-                                    id: assignee.id,
-                                    name: assignee.fullName,
-                                    label: assignee.fullName,
-                                    value: assignee.fullName
-                                };
-                            }
-                        })}
-                    options={[
-                        ...assignees.map(assignee => {
-                            return {
-                                id: assignee.id,
-                                name: assignee.fullName,
-                                label: assignee.fullName,
-                                value: assignee.fullName
-                            };
-                        })]}
-                    onChange={handleChange} />
-            </FormGroup>
-            <FormGroup className='mb-5'>
-                <Label for='notes'>Notes</Label>
-                <Input type='textarea' rows={5} name='notes'
-                    placeholder='Leave blank if there is no change to apply' value={alert.notes}
-                    onChange={handleChange} />
-            </FormGroup>
-            <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
-                <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
-                    onClick={handleClose} disabled={submit} />
-                <Button label='Apply' isLoading={submit} variant='secondary'
-                    className='alerts__save-button px-4 py-2'
-                    onClick={handleBulkUpdate} disabled={submit} />
-            </div>
-        </div>
-    );
-};
-
-const ErrorMsgModal = ({
-    errMsg,
-    handleCloseModal
-}) => {
-    return (
-        <div className='alerts__error p-4'>
-            <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right mt-2' icon='times' size='lg'
-                onClick={handleCloseModal} />
-            <Typography variant='size-26' color='color-3'
-                className='mb-5 playfair-font'>
-                Error
-            </Typography>
-            <Alert color='danger' className='mb-5'>
-                <Typography color='color-3' variant='size-16' className='playfair-font'>{errMsg}</Typography>
-            </Alert>
-            <div className='d-flex justify-content-center'>
-                <Button label='OK' variant='light' className='ok-button px-4 mr-2 py-2'
-                    onClick={() => {
-                        handleCloseModal();
-                    }} />
-            </div>
-        </div>
-    );
-};
-
-const ResolveAlertModal = ({
-    handleCloseModal,
-    handleCloseResolveAlert,
-    handleResolveReasonChange
-}) => {
-    const [submit, setSubmit] = useState(false);
-
-    return (
-        <div className='alert-details__resolve-alert p-4'>
-            <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
-                onClick={handleCloseModal} />
-            <Typography variant='size-26' color='color-3'
-                className='mb-4 playfair-font'>
-                Resolving Alert
-            </Typography>
-            <FormGroup className='mb-4'>
-                <Label for='resolveReason'>Reason of Resolving Alert</Label>
-                <Input type='textarea' name='resolveReason' id='resolveReason'
-                    rows={4} placeholder='Reason...' onChange={(e, option) => {
-                        handleResolveReasonChange(e.target.value);
-                    }}/>
-            </FormGroup>
-            <div className='resolve-alert__buttons d-flex justify-content-center'>
-                <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
-                    onClick={handleCloseResolveAlert}/>
-                <Button label={`${!submit ? 'Done' : 'Saving...'}`} variant='primary' className='alerts__save-button px-4 py-2'
-                    disabled={submit} onClick={() => {
-                        setSubmit(true);
-                        handleCloseResolveAlert();
-                    }} />
-            </div>
-        </div>
-    );
-};

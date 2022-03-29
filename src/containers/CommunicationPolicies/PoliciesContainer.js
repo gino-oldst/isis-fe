@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { setPoliciesData } from '../../redux/modules/policies';
 import CommunicationPoliciesScreen from './PoliciesScreen';
 import type { Menu } from '../../types';
+
+import dataSample from './data_sample.json';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -38,69 +40,11 @@ export default function CommunicationPoliciesContainer({
         try {
             // const behaviours = await getBehaviours(activePage, pageSize, sort);
             // const { data, totalNoOfRecords, totalPages } = behaviours.data;
-            const policies = {
-                totalNoOfRecords: 11,
-                totalPages: 2,
-                totalCurrentElements: 10,
-                data: [
-                    {
-                        id: 'Alert 1',
-                        keyword: 'Bloody',
-                        status: 'Enabled'
-                    },
-                    {
-                        id: 'Alert 2',
-                        keyword: 'Shit',
-                        status: 'Enabled'
-                    },
-                    {
-                        id: 'Alert 3',
-                        keyword: 'Retard',
-                        status: 'Enabled'
-                    },
-                    {
-                        id: 'Alert 4',
-                        keyword: 'Flame',
-                        status: 'Enabled'
-                    },
-                    {
-                        id: 'Alert 5',
-                        keyword: 'Bot',
-                        status: 'Enabled'
-                    },
-                    {
-                        id: 'Alert 6',
-                        keyword: 'Donec sollicitudin',
-                        status: 'Enabled'
-                    },
-                    {
-                        id: 'Alert 7',
-                        keyword: 'Queer',
-                        status: 'Enabled'
-                    },
-                    {
-                        id: 'Alert 8',
-                        keyword: 'Shitty',
-                        status: 'Enabled'
-                    },
-                    {
-                        id: 'Alert 9',
-                        keyword: 'Acknowledge',
-                        status: 'Disabled'
-                    },
-                    {
-                        id: 'Alert 10',
-                        keyword: 'Avg',
-                        status: 'Enabled'
-                    }
-                ],
-                responseStatus: 'success'
-            };
+            const policies = dataSample;
 
-            console.log(policies.data);
+            console.log(JSON.stringify(policies));
             const { data, totalNoOfRecords, totalPages } = policies.data;
 
-            console.log(data, totalNoOfRecords, totalPages);
             dispatch(setPoliciesData(data, totalNoOfRecords, totalPages));
         } catch (e) {
             console.error(e);
@@ -113,11 +57,16 @@ export default function CommunicationPoliciesContainer({
         history.push(`/policies/${row.original.id}`);
     };
 
+    const { pageSize, activePage, sort } = useSelector(({ table }) => table);
+
+    useEffect(() => {
+        loadPolicyData(activePage, pageSize, sort);
+    }, [pageSize, activePage, sort]);
+
     return <CommunicationPoliciesScreen
         loading={loading}
         breadcrumb={breadcrumb}
-        tableColumns={table.columns}
-        tableData={table.data}
-        loadPoliciesData={loadPolicyData}
+        table={table}
+        activePage={activePage}
         sidebarMenu={sidebarMenu}/>;
 }

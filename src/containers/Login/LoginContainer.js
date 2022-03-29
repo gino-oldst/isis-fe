@@ -23,7 +23,8 @@ export default function LoginContainer({
     const [errMsg, setErrMsg] = useState('');
     const [loginForm, setLoginForm] = useState({
         username: '',
-        password: ''
+        password: '',
+        grant_type: 'password'
     });
 
     const onSubmit = async e => {
@@ -34,6 +35,8 @@ export default function LoginContainer({
         try {
             if (loginForm.username && loginForm.password) {
                 const response = await userLogin(loginForm);
+
+                console.log(response);
 
                 if (Object.keys(response).length === 0) {
                     setErrMsg('Invalid username!');
@@ -57,6 +60,7 @@ export default function LoginContainer({
                 }
             }
         } catch (err) {
+            console.log(err);
             dispatch(setFlashNotification({
                 message: 'Invalid username or password.',
                 isError: true

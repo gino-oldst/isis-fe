@@ -12,9 +12,14 @@
 
     &__title {
         margin-top: 0.35rem;
-        margin-bottom: 2rem;
+        // margin-bottom: 2rem;
         font-size: 2rem !important;
         font-family: $font-family-2;
+    }
+
+    &__bulk-review {
+        padding: 12px;
+        background-color: #004c98;
     }
 
     &__date-filter-options {
@@ -83,7 +88,7 @@
     }
 
     .table {
-        min-width: 2000px;
+        width: 100%;
 
         thead {
             font-size: 1.2rem;

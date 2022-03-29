@@ -29,7 +29,7 @@ const initialState = {
     title: null,
     modalContent: null,
     className: '',
-    size: 'md',
+    size: 'lg',
     onToggle: null
 };
 

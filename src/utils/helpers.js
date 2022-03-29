@@ -190,3 +190,7 @@ export const getDateRangeLocal = (key) => {
 export const numberWithCommas = (value) => {
     return value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : value;
 };
+
+export const truncateText = (str, n) => {
+    return (str.length > n) ? str.substr(0, n - 1) + '...' : str;
+};

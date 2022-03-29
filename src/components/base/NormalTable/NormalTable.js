@@ -1,23 +1,114 @@
 // @flow
-import React from 'react';
-import { useTable, useSortBy } from 'react-table';
+import React, { useEffect, useMemo } from 'react';
+import { useTable, useSortBy, useGlobalFilter, useFilters, usePagination, useRowSelect, useAsyncDebounce } from 'react-table';
+import { FaSortUp, FaSortDown, FaSort, FaSearch } from 'react-icons/fa';
 import {
     Table as ReactstrapTable
 } from 'reactstrap';
 import './normal-table.scss';
+import { matchSorter } from 'match-sorter';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-function Table({ columns, data }) {
+// Define a default UI for filtering
+function GlobalFilter({
+    preGlobalFilteredRows,
+    globalFilter,
+    setGlobalFilter
+}) {
+    const count = preGlobalFilteredRows.length;
+    const [value, setValue] = React.useState(globalFilter);
+    const onChange = useAsyncDebounce(value => {
+        setGlobalFilter(value || undefined);
+    }, 200);
+
+    return (
+        <span>
+            Search:{' '}
+            <input
+                value={value || ''}
+                onChange={e => {
+                    setValue(e.target.value);
+                    onChange(e.target.value);
+                }}
+                placeholder={`${count} records...`}
+                style={{
+                    fontSize: '1.1rem',
+                    border: '0'
+                }}/>
+        </span>
+    );
+}
+
+// Define a default UI for filtering
+function DefaultColumnFilter({
+    column: { filterValue, preFilteredRows, setFilter }
+}) {
+    const count = preFilteredRows.length;
+
+    return (
+        <input
+            value={filterValue || ''}
+            onChange={e => setFilter(e.target.value || undefined)} // Set undefined to remove the filter entirely
+            placeholder={`Search ${count} records...`}/>
+    );
+}
+
+function fuzzyTextFilterFn(rows, id, filterValue) {
+    return matchSorter(rows, filterValue, { keys: [row => row.values[id]] });
+}
+
+// Let the table remove the filter if the string is empty
+fuzzyTextFilterFn.autoRemove = val => !val;
+
+function Table({
+    columns,
+    data
+}) {
+    const filterTypes = useMemo(
+        () => ({
+            fuzzyText: fuzzyTextFilterFn,
+            text: (rows, id, filterValue) => {
+                return rows.filter(row => {
+                    const rowValue = row.values[id];
+
+                    return rowValue !== undefined
+                        ? String(rowValue)
+                            .toLowerCase()
+                            .startsWith(String(filterValue).toLowerCase())
+                        : true;
+                });
+            }
+        }),
+        []
+    );
+
+    const defaultColumn = useMemo(
+        () => ({
+            // Let's set up our default Filter UI
+            Filter: DefaultColumnFilter
+        }),
+        []
+    );
+
     const {
         getTableProps,
         getTableBodyProps,
         headerGroups,
         rows,
-        prepareRow
+        prepareRow,
+        state,
+        visibleColumns,
+        preGlobalFilteredRows,
+        setGlobalFilter
     } = useTable(
         {
             columns,
-            data
+            data,
+            defaultColumn,
+            filterTypes
         },
+        useFilters,
+        useGlobalFilter,
         useSortBy
     );
 
@@ -27,7 +118,7 @@ function Table({ columns, data }) {
 
     return (
         <>
-            <ReactstrapTable {...getTableProps()}>
+            <ReactstrapTable responsive={true} {...getTableProps()}>
                 <thead>
                     {headerGroups.map(headerGroup => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -40,10 +131,11 @@ function Table({ columns, data }) {
                                     <span>
                                         {column.isSorted
                                             ? column.isSortedDesc
-                                                ? ' 🔽'
-                                                : ' 🔼'
-                                            : ''}
+                                                ? <FaSortDown size={15}/>
+                                                : <FaSortUp size={15}/>
+                                            : <FaSort size={15} color='#d1d1d1'/>}
                                     </span>
+                                    {column.canFilter ? column.render('Filter') : null}
                                 </th>
                             ))}
                         </tr>
@@ -74,7 +166,8 @@ function Table({ columns, data }) {
 }
 
 type Props = {
-    className?: string
+    className?: string,
+    tableData: Array
 }
 
 export default function NormalTable({
@@ -84,46 +177,34 @@ export default function NormalTable({
     const columns = React.useMemo(
         () => [
             {
-                Header: 'Name',
-                columns: [
-                    {
-                        Header: 'First Name',
-                        accessor: 'firstName'
-                    },
-                    {
-                        Header: 'Last Name',
-                        accessor: 'lastName'
-                    }
-                ]
+                Header: 'ID',
+                accessor: 'id'
             },
             {
-                Header: 'Info',
-                columns: [
-                    {
-                        Header: 'Age',
-                        accessor: 'age'
-                    },
-                    {
-                        Header: 'Visits',
-                        accessor: 'visits'
-                    },
-                    {
-                        Header: 'Status',
-                        accessor: 'status'
-                    },
-                    {
-                        Header: 'Profile Progress',
-                        accessor: 'progress'
-                    }
-                ]
+                Header: 'Date',
+                accessor: 'date'
+            },
+            {
+                Header: 'Source',
+                accessor: 'source'
+            },
+            {
+                Header: 'Sender',
+                accessor: 'sender'
+            },
+            {
+                Header: 'Receiver',
+                accessor: 'receiver'
             }
         ],
         []
     );
 
+    const data = React.useMemo(() => tableData);
+
     return (
         <div className={`w-100 ${className}`} >
-            <Table columns={columns} data={tableData} />
+            <Table columns={columns} data={data} />
         </div>
     );
 }

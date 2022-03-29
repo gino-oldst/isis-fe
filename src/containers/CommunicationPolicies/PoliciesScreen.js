@@ -45,9 +45,8 @@ type Props = {
     loading: Boolean,
     breadcrumb: Array,
     sidebarMenu: Array<Menu>,
-    tableColumns: Array,
-    tableData: Array,
-    loadPoliciesData: Function,
+    table: Any,
+    activePage: Int,
     viewPoliciesDetails: Function
 }
 
@@ -55,21 +54,10 @@ function CommunicationPoliciesScreen({
     loading,
     breadcrumb,
     sidebarMenu,
-    tableColumns,
-    tableData,
-    loadPoliciesData,
+    table,
+    activePage,
     viewPoliciesDetails
 }: Props): React$Element<any> {
-    const dispatch = useDispatch();
-    const { pageSize, activePage, sort } = useSelector(({ table }) => table);
-    const { table } = useSelector(({ policies }) => policies);
-
-    useEffect(() => {
-        dispatch(setLoading());
-        console.log('effect');
-        loadPoliciesData(activePage, pageSize, sort);
-    }, [pageSize, activePage, sort]);
-
     return (
         <div className='policies'>
             <CollapsibleSidebar
@@ -82,12 +70,13 @@ function CommunicationPoliciesScreen({
                             <Typography color='color-3' className='policies__title'>Policies</Typography>
                             <Table className='policies__table'
                                 loading={loading}
-                                tableColumns={tableColumns}
-                                tableData={tableData}
+                                tableColumns={table.columns}
+                                tableData={table.data}
                                 tablePagination={table.totalPages}
                                 totalNoOfRecords={table.totalNoOfRecords}
                                 activePage={activePage}
                                 pagination={false}
+                                sortable={false}
                                 fetching={table.loading}/>
                         </CardBody>
                     </Card>
