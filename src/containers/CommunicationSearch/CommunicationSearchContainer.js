@@ -28,46 +28,106 @@ export default function CommunicationSearchContainer({
             path: '/alerts'
         },
         {
-            label: 'Alerts',
-            path: '/alerts'
+            label: 'Search',
+            path: '/communication_search'
         }
     ];
 
-    // const [filterID, setID] = useState('');
-    // const [filterMessage, setFilterMessage] = useState('');
-    // const [filterSender, setFilterSender] = useState([]);
-    // const [filterRecipient, setFilterRecipient] = useState([]);
-    const [filterStatus, setFilterStatus] = useState([]);
-    const [filterSource, setFilterSource] = useState([]);
     const [filterDate, setFilterDate] = useState([
         {
             startDate: '',
             endDate: ''
         }
     ]);
+
+    useEffect(() => {
+        const dateFrom = filterDate[0].startDate != '' ? moment(filterDate[0].startDate).utc().local().format('YYYY-MM-DD') : '';
+        const dateTo = filterDate[0].endDate != '' ? moment(filterDate[0].endDate).utc().local().format('YYYY-MM-DD') : '';
+
+        setFilterSearchForm({
+            ...filterSearchForm,
+            filterDateFrom: dateFrom,
+            filterDateTo: dateTo
+        });
+    }, [filterDate]);
+
     const [filterSearchForm, setFilterSearchForm] = useState({
         filterId: '',
         filterText: '',
+        filterDateFrom: '',
+        filterDateTo: '',
+        filterSenders: [],
+        filterRecipients: [],
         filterStatus: [],
         filterSource: []
     });
 
     const [filterSender, setFilterSender] = useState([]);
-
-    const handleSenderChange = (options) => {
-        console.log(options);
-        setFilterSender(options);
-    };
-
     const [filterRecipient, setFilterRecipient] = useState([]);
 
-    const handleRecipientChange = (options) => {
-        setFilterRecipient(options);
+    const handleSenderChange = (updatedList) => {
+        // var updatedList = [];
+
+        // options.map(op => {
+        //     if (!updatedList.indexOf(op.value) > -1) {
+        //         updatedList.push(op.value);
+        //     }
+        // });
+        setFilterSender(updatedList);
+        setFilterSearchForm({
+            ...filterSearchForm,
+            filterSenders: updatedList
+        });
+    };
+
+    const handleRecipientChange = (updatedList) => {
+        // var updatedList = [];
+
+        // options.map(op => {
+        //     if (!updatedList.indexOf(op.value) > -1) {
+        //         updatedList.push(op.value);
+        //     }
+        // });
+        setFilterRecipient(updatedList);
+        setFilterSearchForm({
+            ...filterSearchForm,
+            filterRecipients: updatedList
+        });
+    };
+
+    const handleStatus = (event) => {
+        var updatedList = [];
+
+        event.map(ev => {
+            if (ev.checked) {
+                updatedList.push(ev.value);
+            }
+        });
+
+        setFilterSearchForm({
+            ...filterSearchForm,
+            filterStatus: updatedList
+        });
+    };
+
+    const handleSource = (event) => {
+        var updatedList = [];
+
+        event.map(ev => {
+            if (ev.checked) {
+                updatedList.push(ev.value);
+            }
+        });
+
+        setFilterSearchForm({
+            ...filterSearchForm,
+            filterSource: updatedList
+        });
     };
 
     const onSubmit = async e => {
         e.preventDefault();
-        console.log('onSubmit');
+        history.push('/communication_search_results', filterSearchForm);
     };
 
     const onChange = e => {
@@ -86,8 +146,12 @@ export default function CommunicationSearchContainer({
         onChange={onChange}
         handleRecipientChange={handleRecipientChange}
         handleSenderChange={handleSenderChange}
+        filterSender={filterSender}
+        filterRecipient={filterRecipient}
         sidebarMenu={sidebarMenu}
         breadcrumb={breadcrumb}
         filterDate={filterDate}
-        setFilterDate={setFilterDate}/>;
+        setFilterDate={setFilterDate}
+        handleSource={handleSource}
+        handleStatus={handleStatus}/>;
 }

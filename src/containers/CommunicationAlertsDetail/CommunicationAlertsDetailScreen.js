@@ -18,7 +18,8 @@ import filterIcon from '../../assets/images/ic_filter.svg';
 import type { Menu } from '../../types';
 import {
     setDateRangeLocal,
-    getDateRangeLocal
+    getDateRangeLocal,
+    isoToUTCLocal
 } from '../../utils/helpers';
 import {
     Row,
@@ -34,13 +35,13 @@ import {
 import { useIsMount } from '../../hooks/useIsMount';
 
 import './communication_alerts.scss';
-
+import { FaInfoCircle } from 'react-icons/fa';
 import { bulkUpdateAlert } from '../../api/alerts';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import { resetTableState } from '../../redux/modules/table';
 import { setLoading, setAlertsDateRange } from '../../redux/modules/alerts';
 import Highlighter from 'react-highlight-words';
-import { Nav } from 'react-bootstrap';
+import { Nav, OverlayTrigger, Popover, PopoverContent } from 'react-bootstrap';
 
 type Props = {
     loading: Boolean,
@@ -48,6 +49,8 @@ type Props = {
     breadcrumb: Array,
     sidebarMenu: Array<Menu>,
     useMediaQuery: Function,
+    detailData: Array,
+    dataId: Any
 }
 
 function CommunicationAlertsDetailScreen({
@@ -55,12 +58,22 @@ function CommunicationAlertsDetailScreen({
     userId,
     breadcrumb,
     useMediaQuery,
-    sidebarMenu
+    sidebarMenu,
+    detailData,
+    dataId
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
     const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1199px)' });
     const isLaptopScreen = useMediaQuery({ query: '(max-width: 1450px)' });
+
+    const renderAlertInfo = (text) => (
+        <Popover id='popover-basic'>
+            <PopoverContent>
+                {text}
+            </PopoverContent>
+        </Popover>
+    );
 
     return (
         <div className='alerts'>
@@ -72,15 +85,15 @@ function CommunicationAlertsDetailScreen({
                     <Card className='px-4 py-2'>
                         <CardBody>
                             <div className='alerts__header d-flex align-items-center'>
-                                <Typography color='color-3' className='alerts__title mr-auto' weight='regular'>4fd-8067-b-8067-b35baaa7f3a8</Typography>
+                                <Typography color='color-3' className='alerts__title mr-auto' weight='regular'>{dataId != '' ? dataId : 'N/A'}</Typography>
                             </div>
                             <div className='alerts__information mt-2'>
                                 <Row>
                                     <Col>
                                         <Typography color='color-3' className='mr-auto' weight='regular'
-                                            style={{ fontSize: '32px', lineHeight: '24pt' }} >RE: Trading Message</Typography>
+                                            style={{ fontSize: '32px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : 'N/A'} {/* RE: Trading Message */}</Typography>
                                         <Typography color='color-3' className='mr-auto' weight='bold'
-                                            style={{ fontSize: '16px', lineHeight: '24pt' }}>Email</Typography>
+                                            style={{ fontSize: '16px', lineHeight: '24pt' }}>{detailData.subject != null ? detailData.subject : 'N/A'} {/* Email */}</Typography>
                                     </Col>
                                 </Row>
                                 <Row className='mt-5'>
@@ -88,68 +101,87 @@ function CommunicationAlertsDetailScreen({
                                         <div className='d-flex align-items-center justify-content-between'>
                                             <Typography color='color-3' className='mr-3 mb-2' weight='semi-bold'
                                                 style={{ fontSize: '24px', lineHeight: '24pt' }}>Alert</Typography>
-                                            <Button weight='light' className='ml-4 mr-4 alerts__bulk-review' label='Update all Status'/>
+                                            <Button weight='light' disabled={detailData.alerts ? 'true' : 'false'} className='ml-4 mr-4 alerts__bulk-review'
+                                                label='Update all Status'/>
                                         </div>
                                         <table className='table' style={{ minWidth: '300px !important' }}>
-                                            <thead>
-                                                <tr>
-                                                    <th className='pb-2'>
-                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Alert</Typography>
-                                                    </th>
-                                                    <th className='pb-2'>
-                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Trigered Text</Typography>
-                                                    </th>
-                                                    <th className='pb-2'>
-                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Status</Typography>
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td className='pb-2'>
-                                                        <Typography color='color-3'>Alert 4</Typography>
-                                                    </td>
-                                                    <td className='pb-2'>
-                                                        <Typography color='color-3'>Flame</Typography>
-                                                    </td>
-                                                    <td>
-                                                        <Select
-                                                            name='status'
-                                                            // defaultValue={{
-                                                            //     label: <Badge status={selectedAlert.status} />,
-                                                            //     value: <Badge status={selectedAlert.status}/>
-                                                            // }}
-                                                            options={[{
-                                                                name: 'OPEN',
-                                                                label: <Badge status='Open' />,
-                                                                value: <Badge status='Open'/>
-                                                            }, {
-                                                                name: 'IN_REVIEW',
-                                                                label: <Badge status='In Review' />,
-                                                                value: <Badge status='In Review'/>
-                                                            }, {
-                                                                name: 'RESOLVED',
-                                                                label: <Badge status='Resolved' />,
-                                                                value: <Badge status='Resolved'/>
-                                                            }, {
-                                                                name: 'ARCHIVED',
-                                                                label: <Badge status='Archived' />,
-                                                                value: <Badge status='Archived'/>
-                                                            }]} />
-                                                        {/* onChange={handleChange} /> */}
-                                                    </td>
-                                                </tr>
-                                            </tbody>
+                                            {/* detailData.alerts.length > 0 */}
+                                            {detailData.alerts == null
+                                                ? <>
+                                                    <thead>
+                                                        <tr>
+                                                            <th className='pb-2'>
+                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Alert</Typography>
+                                                            </th>
+                                                            <th className='pb-2'>
+                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Trigered Text</Typography>
+                                                            </th>
+                                                            <th className='pb-2'>
+                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Status</Typography>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td className='pb-2'>
+                                                                <Typography color='color-3'>Alert 4</Typography>
+                                                            </td>
+                                                            <td className='pb-2'>
+                                                                <Typography color='color-3'>Flame</Typography>
+                                                            </td>
+                                                            <td style={{ width: '250px' }}>
+                                                                <Select
+                                                                    name='status'
+                                                                    // defaultValue={{
+                                                                    //     label: <Badge status={selectedAlert.status} />,
+                                                                    //     value: <Badge status={selectedAlert.status}/>
+                                                                    // }}
+                                                                    options={[{
+                                                                        name: 'OPEN',
+                                                                        label: <Badge status='Open' />,
+                                                                        value: <Badge status='Open'/>
+                                                                    }, {
+                                                                        name: 'IN_REVIEW',
+                                                                        label: <Badge status='In Review' />,
+                                                                        value: <Badge status='In Review'/>
+                                                                    }, {
+                                                                        name: 'RESOLVED',
+                                                                        label: <Badge status='Resolved' />,
+                                                                        value: <Badge status='Resolved'/>
+                                                                    }, {
+                                                                        name: 'ARCHIVED',
+                                                                        label: <Badge status='Archived' />,
+                                                                        value: <Badge status='Archived'/>
+                                                                    }]} />
+                                                                <OverlayTrigger placement='bottom-start' overlay={renderAlertInfo('OverlayTrigger Text')}>
+                                                                    <FaInfoCircle style={{ color: '#004C98' }} size={24}/>
+                                                                </OverlayTrigger>
+                                                                {/* onChange={handleChange} /> */}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </>
+                                                : <>
+                                                    <thead>
+                                                        <tr>
+                                                            <th className='pb-2 text-center'>
+                                                                <Typography size={18} color='color-1' className='mr-3'
+                                                                    weight='semi-bold'>No Alerts</Typography>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                </>
+                                            }
                                         </table>
                                     </Col>
                                     <Col className='offset-2' lg={3}>
                                         <div style={{ border: '2px solid #D0D0D0', height: '100%', padding: '30px' }}>
                                             <Typography color='color-3' className='mr-auto' weight='regular'
-                                                style={{ fontSize: '16px', lineHeight: '24pt' }} ><b>Date & Time:</b> 17/12/20 5:34 PM</Typography>
+                                                style={{ fontSize: '16px', lineHeight: '24pt' }} ><b>Date & Time: </b>{detailData.timeSent != null ? isoToUTCLocal(detailData.timeSent) : 'N/A'} {/* 17/12/20 5:34 PM */}</Typography>
                                             <Typography color='color-3' className='mr-auto' weight='regular'
-                                                style={{ fontSize: '16px', lineHeight: '24pt' }} ><b>Sender</b> daniel.caplin@marianacap.com</Typography>
+                                                style={{ fontSize: '16px', lineHeight: '24pt' }} ><b>Sender: </b>{detailData.sender != null ? detailData.sender : 'N/A'} {/* daniel.caplin@marianacap.com */}</Typography>
                                             <Typography color='color-3' className='mr-auto' weight='regular'
-                                                style={{ fontSize: '16px', lineHeight: '24pt' }} ><b>Receiver:</b> simon@mcgfutures.com</Typography>
+                                                style={{ fontSize: '16px', lineHeight: '24pt' }} ><b>Receiver: </b>{detailData.receiver != null ? detailData.receiver : 'N/A'} {/* simon@mcgfutures.com */}</Typography>
                                         </div>
                                     </Col>
                                 </Row>
@@ -158,19 +190,22 @@ function CommunicationAlertsDetailScreen({
                                         <Typography color='color-3' className='mr-3 mb-2' weight='semi-bold'
                                             style={{ fontSize: '24px', lineHeight: '24pt' }}>Messege</Typography>
                                         <div className='d-flex flex-column'>
-                                            <Button label='Load previous message' variant='outline-primary' className='ok-button px-4 mr-2 py-2' />
+                                            <Button label='Load previous 5 message' variant='outline-primary' className='ok-button px-4 mr-2 py-2' />
                                             <div className='alert__message-thread mb-4 mt-4'>
                                                 <Typography color='color-3' className='mr-3 mb-2' weight='regular'
                                                     style={{ fontSize: '16px', lineHeight: '24pt' }}><b>Daniel Caplin</b> 17/12/21, 8:02 AM</Typography>
-                                                <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
-                                                    <Highlighter highlightClassName='alertKeyword'
-                                                        style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
-                                                        searchWords={['flame']}
-                                                        autoEscape={true}
-                                                        textToHighlight='This stock is going up in flames.'/>
-                                                </div>
+                                                {/* detailData.messages.map(item => {}) */}
+                                                {[1, 2, 3, 4, 5].map(item => {
+                                                    return (<div className='message-box mb-4' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
+                                                        <Highlighter highlightClassName='alertKeyword'
+                                                            style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
+                                                            searchWords={['flame']}
+                                                            autoEscape={true}
+                                                            textToHighlight='This stock is going up in flames.'/>
+                                                    </div>);
+                                                })}
                                             </div>
-                                            <Button label='Load next message' variant='outline-primary' className='ok-button px-4 mr-2 py-2' />
+                                            <Button label='Load next 5 message' variant='outline-primary' className='ok-button px-4 mr-2 py-2' />
                                         </div>
                                     </Col>
                                 </Row>

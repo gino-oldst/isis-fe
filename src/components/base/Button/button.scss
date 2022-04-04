@@ -1,0 +1,29 @@
+@import "../../../styles/utils/_variables";
+@import "../../../styles/utils/_mixins";
+
+.button {
+    position: relative;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    display: flex;
+    align-items: center;
+
+    &__spinner {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 10px;
+        margin: auto;
+        width: 1.2rem !important;
+        height: 1.2rem !important;
+
+        &.text-light {
+            color: #efefef !important;
+        }
+
+        .spinner-border {
+            vertical-align: unset;
+            border-width: 0.15em;
+        }
+    }
+}

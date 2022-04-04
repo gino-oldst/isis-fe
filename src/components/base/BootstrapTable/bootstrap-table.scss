@@ -2,157 +2,80 @@
 @import "../../../styles/utils/_mixins";
 
 .table {
-    &__filter-icon {
-        margin-left: 0.5rem;
-        margin-bottom: 0.3rem;
-        color: $color-sidebar-2;
-        font-size: 1rem;
+    &__title {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+    }
 
-        &-active {
-            margin-left: 0.5rem;
-            margin-bottom: 0;
-            color: $color-sidebar-2;
-            font-size: 1rem;
+    &__header {
+        border-top: none !important;
+        font-size: 12px;
+        font-weight: $font-medium;
+        text-transform: uppercase;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+        line-height: 12px;
+
+        &-item {
+            // flex-spaced align-items-end
+            display: flex;
+            align-items: flex-end;
         }
+    }
+
+    &__data {
+        border-top: 1px solid gray !important;
+        vertical-align: middle !important;
+        min-height: 52px !important;
     }
 
     &__sort-icon {
-        margin-left: 0.5rem;
-        color: $color-sidebar-2;
-        font-size: 1rem;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        padding: 5px 7px;
     }
 
-    &__filter-options {
-        max-height: 130px;
-        padding: 0.2rem 1.5rem;
-        font-weight: 600;
-
-        .form-check {
-            padding-bottom: 0.2rem;
-        }
+    &-striped tbody tr:nth-of-type(odd) {
+        background-color: #f9fbff;
     }
 
-    &__quantity-filter-options,
-    &__date-filter-options {
-        padding: 0.3rem 1.2rem;
+    &-hover tbody tr:hover {
+        background-color: darken(#f9fbff, 1%);
     }
 
-    .form-check-label {
-        font-weight: 500;
-        font-size: 1.1rem;
+    .--success {
+        background-color: rgba(#2ec29e, 0.1);
     }
 
-    .MuiOutlinedInput-input {
-        padding: 8px 0 !important;
-        font-size: 1rem !important;
+    .--error {
+        background-color: rgba(#f34247, 0.1);
     }
 
-    .form-group {
-        margin-bottom: 0;
-    }
-
-    .dropdown-menu {
-        margin-left: -150px;
-        width: 280px;
-
-        .dropdown-divider {
-            border-top: 1px solid #dee2e6;
-        }
-    }
-
-    // react-select dropdown field
-    .css-g1d714-ValueContainer {
-        max-height: 140px;
-        overflow: auto;
-    }
-
-    thead > tr > th:nth-child(1) > div > div {
-        margin-left: -55px !important;
-    } // margin for first column filter dropdown (resitrcted list)
-
-    thead > tr > th:nth-child(2) > div > div {
-        margin-left: -135px !important;
-    } // margin for first column filter dropdown (alerts)
-
-    .dropdown-date-type-header .form-group {
-        width: 230px !important;
-        position: relative;
-        bottom: 0.5em;
-    }
-
-    .dropdown-date-type-header .dropdown-item:last-child {
-        height: 50px;
-    }
-
-    &__filter-reset-button {
-        border: $bg-download-button;
-        background-color: $bg-download-button;
-        border-radius: 0.2rem;
-
-        &:hover,
-        &:focus,
-        &:active {
-            background-color: darken($bg-download-button, 10%) !important;
-            border-color: darken($bg-download-button, 10%) !important;
-        }
-    }
-
-    .date-picker__icon {
-        position: absolute;
-        top: 8px;
-        left: 120px;
-        z-index: 100;
-    }
-
-    .react-datepicker-wrapper {
-        width: 60%;
-    }
-
-    &__date-picker {
-        width: 90%;
-        padding-left: 32px;
-        font-size: 1.1rem;
+    &__search {
+        border: 1px solid gray;
         border-radius: 5px;
-        border: solid 2px #f1f1f1;
-    }
-}
+        justify-self: flex-end;
+        display: flex;
+        width: 296px;
+        padding: 4px;
+        align-self: flex-end;
 
-.pagination-pagesize {
-    float: left;
+        &-icon {
+            margin: 5px;
+        }
 
-    .form-control {
-        width: auto !important;
-    }
-}
-
-.pagination {
-    span {
-        color: black;
-        float: left;
-        text-decoration: none;
-        transition: background-color 0.3s;
-
-        border-radius: 30px;
-        margin-right: 10px;
-        width: 40px;
-        height: 40px;
-        padding: 8px 8px;
-        background: #fff;
-        text-align: center;
-
-        &.active {
-            border: 1px solid $color-sidebar-2;
+        &-input {
+            border: none;
+            outline: none;
+            margin-left: 5px;
         }
     }
 
-    .pagination-navigate {
-        font-size: 0.9rem !important;
-        padding: 10px 6px 6px 6px !important;
-        margin-left: 10px !important;
-        margin-right: 10px !important;
+    .form-check-input {
+        position: inherit;
+        margin-top: 0rem;
+        margin-left: 0rem;
     }
-}
-
-.pagination-goto-page {
-    float: right;
 }

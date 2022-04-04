@@ -1,5 +1,6 @@
 @import "../../styles/utils/_variables";
 @import "../../styles/utils/_mixins";
+@import "node_modules/@pathofdev/react-tag-input/src/styles/index.scss";
 
 .alerts {
     height: 100%;
@@ -168,5 +169,9 @@
 
     .alerts .dropdown-menu {
         width: 100% !important;
+    }
+
+    .form-check {
+        padding-left: 0 !important;
     }
 }

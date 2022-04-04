@@ -1,0 +1,86 @@
+{
+    "message": {
+        "id": "16bcd360-09d7-465f-a2fd-b14e56caf04d",
+        "chainLinkId": "callid:68d3daa373d00f132ff3472a8f510743ec2ea1a6",
+        "message": "traded -0.695",
+        "sourceMessageId": "15209613771",
+        "timeSent": "2022-01-13T16:24:50",
+        "sender": "jmeikle@avaloncp.com",
+        "source": "REUTERS",
+        "deleted": false
+    },
+    "before": [
+        {
+            "id": "4119e69e-373f-4785-8b5d-1e50def4645d",
+            "chainLinkId": "callid:68d3daa373d00f132ff3472a8f510743ec2ea1a6",
+            "message": "Thank you",
+            "sourceMessageId": "15208552863",
+            "timeSent": "2022-01-13T08:13:27",
+            "sender": "jmeikle@avaloncp.com",
+            "source": "REUTERS",
+            "deleted": false
+        },
+        {
+            "id": "e06d5ec2-5837-4b6e-aff8-23d205929d14",
+            "chainLinkId": "callid:68d3daa373d00f132ff3472a8f510743ec2ea1a6",
+            "message": "[[:Conversations will be recorded and may be monitored by the participants and their employers, and may be disclosed to governmental or other regulatory bodies in compliance with applicable laws.You acknowledge and agree that any interactive features within Eikon, Eikon Messenger, Refinitiv Messenger, Refinitiv Workspace or any other services which are not advertised to be trade execution venues must not be used to conduct or execute any transactions or trades under any circumstances.:]]\nZURN Mar22 SSF",
+            "sourceMessageId": "15209582553",
+            "timeSent": "2022-01-13T16:01:46",
+            "sender": "jmeikle@avaloncp.com",
+            "source": "REUTERS",
+            "deleted": false
+        },
+        {
+            "id": "a13abd0c-cf24-4061-8024-866b86070038",
+            "chainLinkId": "callid:68d3daa373d00f132ff3472a8f510743ec2ea1a6",
+            "message": "think its going to trade",
+            "sourceMessageId": "15209582660",
+            "timeSent": "2022-01-13T16:01:53",
+            "sender": "jmeikle@avaloncp.com",
+            "source": "REUTERS",
+            "deleted": false
+        },
+        {
+            "id": "6eb789d0-d150-480c-b8b9-d4df323b9658",
+            "chainLinkId": "callid:68d3daa373d00f132ff3472a8f510743ec2ea1a6",
+            "message": "you want to get involved",
+            "sourceMessageId": "15209583130",
+            "timeSent": "2022-01-13T16:02:12",
+            "sender": "jmeikle@avaloncp.com",
+            "source": "REUTERS",
+            "deleted": false
+        },
+        {
+            "id": "0e1e04c2-4262-494a-bedb-d1ae85c5e93d",
+            "chainLinkId": "callid:68d3daa373d00f132ff3472a8f510743ec2ea1a6",
+            "message": "[[:Conversations will be recorded and may be monitored by the participants and their employers, and may be disclosed to governmental or other regulatory bodies in compliance with applicable laws.You acknowledge and agree that any interactive features within Eikon, Eikon Messenger, Refinitiv Messenger, Refinitiv Workspace or any other services which are not advertised to be trade execution venues must not be used to conduct or execute any transactions or trades under any circumstances.:]]\nno",
+            "sourceMessageId": "15209593274",
+            "timeSent": "2022-01-13T16:09:13",
+            "sender": "jaap@nino-options.nl",
+            "source": "REUTERS",
+            "deleted": false
+        }
+    ],
+    "after": [
+        {
+            "id": "8b3fc94a-e2c1-4455-b77c-4d5d993d81d0",
+            "chainLinkId": "callid:68d3daa373d00f132ff3472a8f510743ec2ea1a6",
+            "message": "8k",
+            "sourceMessageId": "15209613822",
+            "timeSent": "2022-01-13T16:24:53",
+            "sender": "jmeikle@avaloncp.com",
+            "source": "REUTERS",
+            "deleted": false
+        },
+        {
+            "id": "33e50d0b-0f6c-463c-8784-9775fd74d81f",
+            "chainLinkId": "callid:68d3daa373d00f132ff3472a8f510743ec2ea1a6",
+            "message": "[[:Conversations will be recorded and may be monitored by the participants and their employers, and may be disclosed to governmental or other regulatory bodies in compliance with applicable laws.You acknowledge and agree that any interactive features within Eikon, Eikon Messenger, Refinitiv Messenger, Refinitiv Workspace or any other services which are not advertised to be trade execution venues must not be used to conduct or execute any transactions or trades under any circumstances.:]]\nty",
+            "sourceMessageId": "15209616317",
+            "timeSent": "2022-01-13T16:27:23",
+            "sender": "jaap@nino-options.nl",
+            "source": "REUTERS",
+            "deleted": false
+        }
+    ]
+}

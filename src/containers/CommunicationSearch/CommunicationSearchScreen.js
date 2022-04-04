@@ -18,7 +18,8 @@ import filterIcon from '../../assets/images/ic_filter.svg';
 import type { Menu } from '../../types';
 import {
     setDateRangeLocal,
-    getDateRangeLocal
+    getDateRangeLocal,
+    isValidEmail
 } from '../../utils/helpers';
 import {
     Card,
@@ -41,19 +42,25 @@ import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
 import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
+import ReactTagInput from '@pathofdev/react-tag-input';
+import { setFlashNotification } from '../../redux/modules/flashNotification';
 
 type Props = {
     loading: Boolean,
     userId: String,
     breadcrumb: Array,
     sidebarMenu: Array<Menu>,
-    filterDate:Array<any>,
+    filterDate: Array<any>,
     setFilterDate: Function,
     filterMessage: String,
     onSubmit: Function,
     onChange: Function,
     handleSenderChange: Function,
-    handleRecipientChange: Function
+    handleRecipientChange: Function,
+    handleSource: Function,
+    handleStatus: Function,
+    filterSender: Array<any>,
+    filterRecipient: Array<any>
 }
 
 function CommunicationSearchScreen({
@@ -67,7 +74,11 @@ function CommunicationSearchScreen({
     onSubmit,
     onChange,
     handleSenderChange,
-    handleRecipientChange
+    handleRecipientChange,
+    handleSource,
+    handleStatus,
+    filterSender,
+    filterRecipient
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -125,9 +136,6 @@ function CommunicationSearchScreen({
         window.location.href = '/communication_search_results';
     };
 
-    // const handleStatus = e => {
-    //     console.log(e);
-    // };
     const [status, setStatus] = useState([
         { id: 1, value: 'open', name: 'Open', isChecked: false },
         { id: 2, value: 'inReview', name: 'In Review', isChecked: false },
@@ -137,37 +145,26 @@ function CommunicationSearchScreen({
     ]);
 
     const [source, setSource] = useState([
-        { id: 1, value: 'email', isChecked: false },
-        { id: 2, value: 'reuters', isChecked: false },
-        { id: 3, value: 'bloomberg', isChecked: false }
+        { id: 1, value: 'email', name: 'Email', isChecked: false },
+        { id: 2, value: 'reuters', name: 'Reuters', isChecked: false },
+        { id: 3, value: 'bloomberg', name: 'Bloomberg', isChecked: false }
     ]);
 
-    const [checkedStatus, setCheckedStatus] = useState([]);
-    const [checkedSource, setCheckedSource] = useState([]);
+    const [tags, setTags] = React.useState(['example tag']);
 
-    // Add/Remove checked item from list
-    const handleStatus = (event) => {
-        var updatedList = [...checkedStatus];
+    const validateEmail = (value) => {
+        // Don't actually validate e-mails this way
+        const isEmail = isValidEmail(value);
 
-        if (event.target.checked) {
-            updatedList = [...checkedStatus, event.target.value];
-        } else {
-            updatedList.splice(checkedStatus.indexOf(event.target.value), 1);
+        if (!isEmail) {
+            dispatch(setFlashNotification({
+                message: 'Please enter an e-mail address.',
+                isError: true
+            }));
         }
 
-        setCheckedStatus(updatedList);
-    };
-
-    const handleSource = (event) => {
-        var updatedList = [...checkedSource];
-
-        if (event.target.checked) {
-            updatedList = [...checkedSource, event.target.value];
-        } else {
-            updatedList.splice(checkedSource.indexOf(event.target.value), 1);
-        }
-
-        setCheckedSource(updatedList);
+        // Return boolean to indicate validity
+        return isEmail;
     };
 
     return (
@@ -197,21 +194,33 @@ function CommunicationSearchScreen({
                                                 </FormGroup>
                                                 <FormGroup>
                                                     <Label>Sender</Label>
-                                                    <Select
+                                                    <ReactTagInput
+                                                        tags={filterSender}
+                                                        placeholder='Select Sender'
+                                                        removeOnBackspace={true}
+                                                        onChange={(newTags) => handleSenderChange(newTags)}
+                                                        validator={(value) => validateEmail(value)}/>
+                                                    {/* <Select
                                                         options={options}
                                                         isMulti={true}
                                                         name='filterSender'
                                                         placeholder={'Select Sender...'}
-                                                        onChange={handleSenderChange}/>
+                                                        onChange={handleSenderChange}/> */}
                                                 </FormGroup>
                                                 <FormGroup>
                                                     <Label>Recipient</Label>
-                                                    <Select
+                                                    <ReactTagInput
+                                                        tags={filterRecipient}
+                                                        placeholder='Select Recipient'
+                                                        removeOnBackspace={true}
+                                                        onChange={(newTags) => handleRecipientChange(newTags)}
+                                                        validator={(value) => validateEmail(value)}/>
+                                                    {/* <Select
                                                         options={options}
                                                         isMulti={true}
                                                         name='filterRecipient'
                                                         placeholder={'Select Recipient...'}
-                                                        onChange={handleRecipientChange}/>
+                                                        onChange={handleRecipientChange}/> */}
                                                 </FormGroup>
                                                 <FormGroup>
                                                     <Label>Date/Time Range</Label>
@@ -234,96 +243,50 @@ function CommunicationSearchScreen({
                                                         </DropdownItem>
                                                     </DropdownButton>
                                                 </FormGroup>
-                                                <Button label='Search' variant='secondary'
-                                                    onClick={logout} className='alerts__save-button px-4 py-2'/>
+                                                <Button label='Search' variant='secondary' type='subnmit'
+                                                    className='alerts__save-button px-4 py-2'/>
                                             </div>
                                         </Col>
                                         <Col lg={3} className='offset-1'>
                                             <div className='alerts__status-filters'>
-                                                {JSON.stringify(checkedStatus)}
                                                 <Typography color='color-3' className='mr-auto' weight='bold'
                                                     variant='size-16'>Status</Typography>
-                                                <FormGroup tag='fieldset'>
-                                                    <CheckboxGroup onChange={console.log}>
-                                                        <FormGroup check={true} className='mb-1'>
-                                                            <Label check={true}>
-                                                                <AllCheckerCheckbox/>
-                                                                <span className='box-label'>(Select All)</span>
-                                                            </Label>
-                                                        </FormGroup>
-                                                        {status.map(stat => (
-                                                            <FormGroup check={true} className='mb-1'>
-                                                                <Label check={true}>
-                                                                    <Checkbox value={stat.value} />
-                                                                    <span className='box-label'>{stat.name}</span>
-                                                                </Label>
-                                                            </FormGroup>
-                                                        ))}
-                                                    </CheckboxGroup>
-                                                    {/* <FormGroup check={true} className='mb-1'>
-                                                        <Label check={true}>
-                                                            <Input type='checkbox' name='filterStatus' value='open'
-                                                                onChange={e => handleStatus(e)}/>
-                                                            <span className='box-label'>Open</span>
-                                                        </Label>
-                                                    </FormGroup>
-                                                    <FormGroup check={true} className='mb-1'>
-                                                        <Label check={true}>
-                                                            <Input type='checkbox' name='filterStatus' value='inReview'
-                                                                onChange={e => handleStatus(e)}/>
-                                                            <span className='box-label'>In Review</span>
-                                                        </Label>
-                                                    </FormGroup>
-                                                    <FormGroup check={true} className='mb-1'>
-                                                        <Label check={true}>
-                                                            <Input type='checkbox' name='filterStatus' value='resolved'
-                                                                onChange={e => handleStatus(e)}/>
-                                                            <span className='box-label'>Resolved</span>
-                                                        </Label>
-                                                    </FormGroup>
-                                                    <FormGroup check={true} className='mb-1'>
-                                                        <Label check={true}>
-                                                            <Input type='checkbox' name='filterStatus' value='archived'
-                                                                onChange={e => handleStatus(e)}/>
-                                                            <span className='box-label'>Archived</span>
-                                                        </Label>
-                                                    </FormGroup>
-                                                    <FormGroup check={true} className='mb-1'>
-                                                        <Label check={true}>
-                                                            <Input type='checkbox' name='filterStatus' value='notAvailable'
-                                                                onChange={e => handleStatus(e)}/>
-                                                            <span className='box-label'>N/A</span>
-                                                        </Label>
-                                                    </FormGroup> */}
-                                                </FormGroup>
-                                            </div>
-                                            <div className='alerts__status-filters'>
-                                                {JSON.stringify(checkedSource)}
-                                                <Typography color='color-3' className='mr-auto' weight='bold'
-                                                    variant='size-16'>Source</Typography>
-                                                <FormGroup tag='fieldset'>
+                                                <CheckboxGroup onChange={handleStatus}>
                                                     <FormGroup check={true} className='mb-1'>
                                                         <Label check={true} className='d-flex align-items-center'>
-                                                            <Input type='checkbox' name='filterSouce' value='selectAll'
-                                                                onChange={e => handleSource(e)}/>
-                                                            <span className='box-label' >(Select All)</span>
+                                                            <AllCheckerCheckbox/>
+                                                            <span className='box-label'>(Select All)</span>
                                                         </Label>
                                                     </FormGroup>
+                                                    {status.map(stat => (
+                                                        <FormGroup check={true} className='mb-1 '>
+                                                            <Label check={true} className='d-flex align-items-center'>
+                                                                <Checkbox value={stat.value} />
+                                                                <span className='box-label'>{stat.name}</span>
+                                                            </Label>
+                                                        </FormGroup>
+                                                    ))}
+                                                </CheckboxGroup>
+                                            </div>
+                                            <div className='alerts__status-filters'>
+                                                <Typography color='color-3' className='mr-auto' weight='bold'
+                                                    variant='size-16'>Source</Typography>
+                                                <CheckboxGroup onChange={handleSource}>
                                                     <FormGroup check={true} className='mb-1'>
-                                                        <Label check={true}>
-                                                            <Input type='checkbox' name='filterSouce' value='reuters'
-                                                                onChange={e => handleSource(e)}/>
-                                                            <span className='box-label'>Reuters</span>
+                                                        <Label check={true} className='d-flex align-items-center'>
+                                                            <AllCheckerCheckbox/>
+                                                            <span className='box-label'>(Select All)</span>
                                                         </Label>
                                                     </FormGroup>
-                                                    <FormGroup check={true} className='mb-1'>
-                                                        <Label check={true}>
-                                                            <Input type='checkbox' name='filterSouce' value='bloomberg'
-                                                                onChange={e => handleSource(e)}/>
-                                                            <span className='box-label'>Bloomberg</span>
-                                                        </Label>
-                                                    </FormGroup>
-                                                </FormGroup>
+                                                    {source.map(sourc => (
+                                                        <FormGroup check={true} className='mb-1 '>
+                                                            <Label check={true} className='d-flex align-items-center'>
+                                                                <Checkbox value={sourc.value} />
+                                                                <span className='box-label'>{sourc.name}</span>
+                                                            </Label>
+                                                        </FormGroup>
+                                                    ))}
+                                                </CheckboxGroup>
                                                 {/* <Button label={<>
                                                     <FontAwesomeIcon className='mr-1' icon='file-download' size='sm' />
                                                     <Typography weight='light' className='my-1 mx-2'>Download</Typography>

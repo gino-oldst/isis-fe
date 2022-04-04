@@ -45,14 +45,14 @@ export default function LoginContainer({
                 } else {
                     const { data } = response;
 
-                    Storage.setItem(storageKey.accessToken, JSON.stringify(data.token));
+                    Storage.setItem(storageKey.accessToken, JSON.stringify(data.access_token));
                     Storage.setItem(storageKey.user, JSON.stringify({
-                        userId: data.userId,
+                        userId: data.jti,
                         username: loginForm.username
                     }));
 
                     dispatch(authUser({
-                        userId: data.userId,
+                        userId: data.jti,
                         username: loginForm.username
                     }));
 
@@ -60,7 +60,6 @@ export default function LoginContainer({
                 }
             }
         } catch (err) {
-            console.log(err);
             dispatch(setFlashNotification({
                 message: 'Invalid username or password.',
                 isError: true

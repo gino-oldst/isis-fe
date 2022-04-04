@@ -19,7 +19,5 @@ export async function userLogin(credentials: Object) {
     datas.append('username', credentials.username);
     datas.append('password', credentials.password);
 
-    console.log(datas, ...datas);
-
     return await makeApiCall(AUTH_ENDPOINT, 'POST', datas);
 }

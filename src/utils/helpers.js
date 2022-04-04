@@ -194,3 +194,7 @@ export const numberWithCommas = (value) => {
 export const truncateText = (str, n) => {
     return (str.length > n) ? str.substr(0, n - 1) + '...' : str;
 };
+
+export const isoToUTCLocal = (value) => {
+    return moment(value).utc().local().format('DD/MM/YYYY hh:mm A');
+};

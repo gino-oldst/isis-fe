@@ -100,7 +100,7 @@ function App() {
     const NavbarLinks = () => {
         return (
             <Nav className='navlinks-right'>
-                <Notifications eventTypes='click' />
+                {/* <Notifications eventTypes='click' />` */}
                 <UncontrolledDropdown nav={true} direction='down' className='mr-4'>
                     <NavbarAccount />
                 </UncontrolledDropdown>

@@ -1,14 +1,16 @@
 // @flow
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import CommunicationSearchResultsScreen from './CommunicationSearchResultsScreen';
 import type { Menu } from '../../types';
-import { setCommunicationAlertsData, setColumnFilterValues } from '../../redux/modules/communicationAlerts';
-
-// To be removed once we move to with backend
 import dataSample from '../CommunicationAlerts/MOCK_DATA.json';
 import filterSample from '../CommunicationAlerts/filters.json';
+
+// To be removed once we move to with backend
+import { getCommunicationSearchData } from '../../api/communicationSearch';
+import { setCommunicationSearchData, setColumnFilterValues } from '../../redux/modules/communicationSearch';
+import { filter } from 'underscore';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -24,8 +26,11 @@ export default function CommunicationSearchResultsContainer({
     const history = useHistory();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
-    const { pageSize, activePage, appliedFilters, areRowsSelectedAll, sort } = useSelector(({ table }) => table);
-    const { table, selected, dateRange } = useSelector(({ communicationAlerts }) => communicationAlerts);
+    const [isCheckAll, setIsCheckAll] = useState(false);
+
+    const { pageSize, activePage, appliedFilters, areRowsSelectedAll, sort } = useSelector(({ isisTable }) => isisTable);
+    const { table, selected, dateRange } = useSelector(({ communicationSearch }) => communicationSearch);
+
     const breadcrumb = [
         {
             label: 'Home',
@@ -34,21 +39,44 @@ export default function CommunicationSearchResultsContainer({
         {
             label: 'Search',
             path: 'communication_search'
+        },
+        {
+            label: 'Search Results',
+            path: 'communication_search_results'
         }
     ];
 
-    const loadCommAlertsData = async (page, size, appliedFilters, sort) => {
+    const [filterSearchForm, setFilterSearchForm] = useState({
+        filterId: '',
+        filterText: '',
+        filterDateFrom: '',
+        filterDateTo: '',
+        filterSenders: [],
+        filterRecipients: [],
+        filterStatus: [],
+        filterSource: []
+    });
+
+    const filters = useLocation();
+
+    useEffect(() => {
+        setFilterSearchForm(filters.state);
+    }, [filters]);
+
+    // const [table, setTable] = useState([]);
+
+    const loadSearchData = async (page, size, appliedFilters, sort) => {
         setLoading(true);
 
         try {
-            // const behaviours = await getBehaviours(activePage, pageSize, sort);
-            // const { data, totalNoOfRecords, totalPages } = behaviours.data;
-            const policies = dataSample;
+            const search = await getCommunicationSearchData(page, size, sort, appliedFilters);
 
             await loadColumnFilterValues();
-            const { data, alertIds, totalNoOfRecords, totalPages } = policies.data;
 
-            dispatch(setCommunicationAlertsData(data, alertIds, totalNoOfRecords, totalPages));
+            const { data, alertIds, totalNoOfRecords, totalPages } = search.data;
+
+            console.log(totalNoOfRecords, totalPages, pageSize, activePage);
+            dispatch(setCommunicationSearchData(data, alertIds, totalNoOfRecords, totalPages));
 
             console.log(data);
         } catch (e) {
@@ -59,13 +87,51 @@ export default function CommunicationSearchResultsContainer({
     };
 
     useEffect(() => {
-        loadCommAlertsData(
+        console.log(filterSearchForm);
+        loadSearchData(
             activePage,
             pageSize,
-            appliedFilters,
+            filterSearchForm,
             sort
         );
-    }, [pageSize, activePage, appliedFilters, sort]);
+    }, [pageSize, activePage, filterSearchForm, sort]);
+
+    useEffect(() => {
+        // console.log(appliedFilters);
+        handleAppliedFiltersChange(appliedFilters);
+    }, [appliedFilters]);
+
+    const handleAppliedFiltersChange = (appliedFilters) => {
+        var updatedList = [];
+
+        // appliedFilters.map(ev => {
+        //     switch (ev.id.toLowerCase()) {
+        //         case 'source':
+
+        //             break;
+
+        //         default:
+        //             break;
+        //     }
+        // });
+
+        // switch (appliedFilters.id) {
+        //     case value:
+
+        //         break;
+
+        //     default:
+        //         break;
+        // }
+        // appliedFilters.map(ev => {
+        //     console.log(ev);
+        // });
+
+        // setFilterSearchForm({
+        //     ...filterSearchForm,
+        //     filterSource: updatedList
+        // });
+    };
 
     const loadColumnFilterValues = async () => {
         // const { data } = await getColumnFilterValues();
@@ -92,21 +158,80 @@ export default function CommunicationSearchResultsContainer({
     const tableIsFiltered = () => {
         return !!appliedFilters.filter(filter => filter.value.length > 0).length;
     };
+    // const loadSearchData = async (page, size, sort) => {
+    //     setLoading(true);
 
-    const viewCommunicationAlertDetails = async (row) => {
-        // history.push(`/communication_alerts/${row.id}`);
-        window.location.href = `/communication_alerts/${row.id}`;
+    //     try {
+    //         const search = await getCommunicationSearchData(page, size, sort, filters.state);
+
+    //         const { data, totalCurrentElements, totalPages, totalNoOfRecords } = search.data;
+
+    //         const newData = data.map((item) => {
+    //             return { ...item, selected: false };
+    //         });
+
+    //         setTable(newData);
+    //         console.log(newData);
+    //     } catch (e) {
+    //         console.error(e);
+    //     }
+
+    //     setLoading(false);
+    // };
+
+    const handleItemClick = async (row) => {
+        history.push({
+            pathname: `/communication_search_message_details/${row}`,
+            state: { id: row }
+        });
+        // window.location.href = `/communication_alerts/${row.id}`;
     };
+
+    // const handleSelectAll = (e) => {
+    //     var updatedList = table;
+    //     var isCheckAllTemp = isCheckAll;
+
+    //     isCheckAllTemp = e.target.checked;
+    //     setIsCheckAll(isCheckAllTemp);
+
+    //     updatedList.map(row => {
+    //         row.selected = e.target.checked;
+    //     });
+    //     setTable(updatedList);
+    // };
+
+    // const handleItemCheck = (e, item) => {
+    //     var updatedList = table;
+    //     var isCheckAllTemp = isCheckAll;
+
+    //     updatedList.map(row => {
+    //         if (row.id == item.id) {
+    //             row.selected = e.target.checked;
+    //         }
+
+    //         return row;
+    //     });
+    //     setTable(updatedList);
+    //     // Control master checkbox state
+    //     const totalItems = table.length;
+    //     const totalCheckedItems = updatedList.filter((e) => e.selected).length;
+
+    //     isCheckAllTemp = (totalItems === totalCheckedItems);
+    //     setIsCheckAll(isCheckAllTemp);
+    //     setTable(updatedList);
+    // };
 
     return <CommunicationSearchResultsScreen
         loading={loading}
         sidebarMenu={sidebarMenu}
         breadcrumb={breadcrumb}
         table={table}
+        isCheckAll={isCheckAll}
         activePage={activePage}
+        // handleSelectAll={handleSelectAll}
+        // handleItemCheck={handleItemCheck}
+        loadSearchData={loadSearchData}
         useMediaQuery={useMediaQuery}
-        breadcrumb={breadcrumb}
-        sidebarMenu={sidebarMenu}
         handleCloseModal={handleCloseModal}
-        viewCommunicationAlertDetails={viewCommunicationAlertDetails}/>;
+        handleItemClick={handleItemClick}/>;
 }

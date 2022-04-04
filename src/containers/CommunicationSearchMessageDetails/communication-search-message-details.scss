@@ -5,6 +5,11 @@
     height: 100%;
     display: flex;
 
+    &__message-thread {
+        max-height: 800px;
+        overflow: scroll;
+    }
+
     &__content {
         padding: 0.6rem 2rem;
         margin-bottom: 80px;
@@ -143,5 +148,9 @@
     .info-icon {
         width: 20px;
         height: 20px;
+    }
+
+    .status-select {
+        width: 300px;
     }
 }

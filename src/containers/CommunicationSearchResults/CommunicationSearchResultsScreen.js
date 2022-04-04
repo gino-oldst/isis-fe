@@ -2,7 +2,7 @@
 import React, { useState, useEffect, createRef } from 'react';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
-import Table from '../../components/base/Table/Table';
+// import Table from '../../components/base/Table/Table';
 import Button from '../../components/base/Button/Button';
 import Select, { components } from 'react-select';
 import Badge from '../../components/base/Badge/Badge';
@@ -29,7 +29,10 @@ import {
     Label,
     Alert,
     Row,
-    Col
+    Col,
+    InputGroup,
+    InputGroupAddon,
+    InputGroupText
 } from 'reactstrap';
 import { useIsMount } from '../../hooks/useIsMount';
 import { setModalContent } from '../../redux/modules/modalEvent';
@@ -40,6 +43,10 @@ import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
 import './communication-search-results.scss';
+import BootstrapTable from '../../components/base/BootstrapTable/BootstrapTable';
+import IsisTable from '../../components/base/IsisTable/IsisTable';
+import { FaSearch } from 'react-icons/fa';
+import { MdInsertComment } from 'react-icons/md';
 
 type Props = {
     // TODO add props here
@@ -51,7 +58,13 @@ type Props = {
     activePage: Int,
     useMediaQuery: Function,
     handleCloseModal: Function,
-    viewCommunicationAlertDetails: Function
+    viewCommunicationAlertDetails: Function,
+    isCheckAll: Boolean,
+    handleSelectAll?: (e: any) => void,
+    handleItemCheck?: (e: any) => void,
+    handleItemClick?: (e: any) => void,
+    loadSearchData?: (e: any) => void,
+    isLoading?: boolean
 }
 
 function CommunicationSearchResultsScreen({
@@ -63,7 +76,13 @@ function CommunicationSearchResultsScreen({
     activePage,
     useMediaQuery,
     handleCloseModal,
-    viewCommunicationAlertDetails
+    viewCommunicationAlertDetails,
+    isCheckAll,
+    handleSelectAll,
+    handleItemCheck,
+    handleItemClick,
+    loadSearchData,
+    isLoading
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -101,7 +120,7 @@ function CommunicationSearchResultsScreen({
                 <div className='alerts__information mt-5 w-100 mb-4' style={{ height: '200px', overflowX: 'hidden', overflowY: 'auto' }}>
                     <Row>
                         <Col lg={12}>
-                            <Table className='alerts__table table-striped'
+                            {/* <Table className='alerts__table table-striped'
                                 loading={loading}
                                 tableColumns={table.columns}
                                 tableData={table.data}
@@ -111,7 +130,7 @@ function CommunicationSearchResultsScreen({
                                 selectableRows={true}
                                 hideHeader={true}
                                 activePage={activePage}
-                                fetching={table.loading}/>
+                                fetching={table.loading}/> */}
                         </Col>
                     </Row>
                 </div>
@@ -209,33 +228,70 @@ function CommunicationSearchResultsScreen({
                         <CardBody>
                             <div className='search-results__header d-flex align-items-center justify-content-between'>
                                 <Typography color='color-3' className='search-results__title'>Search Results</Typography>
-                                <Button weight='light' className='ml-4 mr-4 search-results__bulk-review' label='Bulk Review'
-                                    onClick={showActionsModal}/>
+                                {/* <Button weight='light' className='ml-4 mr-4 search-results__bulk-review' label='Bulk Review'
+                                    onClick={showActionsModal}/> */}
                             </div>
-                            <div className='d-flex align-items-center'>
+                            <div className='search-results__search-bar d-flex align-items-center pb-0'>
                                 <FormGroup>
-                                    <Input type='text' placeholder='Search Unique ID' />
+                                    <InputGroup>
+                                        <InputGroupAddon addonType='prepend'>
+                                            <InputGroupText>
+                                                <FaSearch size={18} color='#675cff'/>
+                                            </InputGroupText>
+                                        </InputGroupAddon>
+                                        <Input type='text' fontSize={18} placeholder='Search unique ID'
+                                            className='shadow-none' />
+                                    </InputGroup>
                                 </FormGroup>
                                 <FormGroup className='px-4'>
-                                    <Input type='text' placeholder='Search a keyword' />
+                                    <InputGroup>
+                                        <InputGroupAddon addonType='prepend'>
+                                            <InputGroupText>
+                                                <MdInsertComment size={18} color='#675cff'/>
+                                            </InputGroupText>
+                                        </InputGroupAddon>
+                                        <Input type='text' fontSize={18} placeholder='Search a Keyword'
+                                            className='shadow-none' />
+                                    </InputGroup>
                                 </FormGroup>
                             </div>
                             <Typography color='color-3' className='search-results__box-label' >4 Results</Typography>
                             <div className='search-results__information mt-5'>
                                 <Row>
-                                    <Col lg={12}>
-                                        <Table className='search-results__table table-striped'
+                                    <Col lg={12} className='overflow-auto'>
+                                        <IsisTable className='search-results__table table-striped'
                                             loading={loading}
                                             tableColumns={table.columns}
                                             tableData={table.data}
                                             tablePagination={table.totalPages}
                                             totalNoOfRecords={table.totalNoOfRecords}
-                                            selectableRows={true}
+                                            selectableRows={false}
                                             activePage={activePage}
                                             pagination={true}
                                             sortable={true}
                                             fetching={table.loading}
-                                            viewDetails={viewCommunicationAlertDetails}/>
+                                            viewDetails={handleItemClick}/>
+                                        {/* <BootstrapTable className='search-results__table'
+                                            isHover={true}
+                                            withSearch={true}
+                                            withPagination={true}
+                                            headers={[
+                                                { key: 'id', label: 'ID #' },
+                                                { key: 'subject', label: 'Subject & Message' },
+                                                { key: 'source', label: 'Source' },
+                                                // { key: 'keyword', label: 'Alert' },
+                                                // { key: 'status', label: 'Status' },
+                                                { key: 'timeSent', label: 'Date & Time' }
+                                            ]}
+                                            list={table}
+                                            searchKeys={['chainLinkId', 'message']}
+                                            placeHolder='Enter search for Id and Keyword'
+                                            handleSelectAll={handleSelectAll}
+                                            handleItemCheck={handleItemCheck}
+                                            handleItemClick={handleItemClick}
+                                            isCheckAll={isCheckAll}
+                                            isLoading={loading}
+                                            loadSearchData={loadSearchData}/> */}
                                     </Col>
                                 </Row>
                             </div>
