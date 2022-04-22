@@ -62,24 +62,26 @@ function CommunicationPoliciesScreen({
         <div className='policies'>
             <CollapsibleSidebar
                 menu={sidebarMenu} />
-            <div className='w-100 overflow-auto'>
-                <Breadcrumbs links={breadcrumb} />
-                <div className='policies__content'>
-                    <Card className='px-4 py-2'>
-                        <CardBody>
-                            <Typography color='color-3' className='policies__title'>Policies</Typography>
-                            <Table className='policies__table'
-                                loading={loading}
-                                tableColumns={table.columns}
-                                tableData={table.data}
-                                tablePagination={table.totalPages}
-                                totalNoOfRecords={table.totalNoOfRecords}
-                                activePage={activePage}
-                                pagination={false}
-                                sortable={false}
-                                fetching={table.loading}/>
-                        </CardBody>
-                    </Card>
+            <div className='w-100'>
+                <Breadcrumbs className='position-sticky' links={breadcrumb} />
+                <div className='overflow-auto h-100 pb-40'>
+                    <div className='policies__content'>
+                        <Card className='px-4 py-2'>
+                            <CardBody>
+                                <Typography color='color-3' className='policies__title'>Policies</Typography>
+                                <Table className='policies__table'
+                                    loading={loading}
+                                    tableColumns={table.columns}
+                                    tableData={table.data}
+                                    tablePagination={table.totalPages}
+                                    totalNoOfRecords={table.totalNoOfRecords}
+                                    activePage={activePage}
+                                    pagination={false}
+                                    sortable={false}
+                                    fetching={table.loading}/>
+                            </CardBody>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </div>

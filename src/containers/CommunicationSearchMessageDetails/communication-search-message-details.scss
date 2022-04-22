@@ -18,8 +18,8 @@
     &__title {
         margin-top: 0.35rem;
         margin-bottom: 2rem;
-        font-size: 2rem !important;
-        font-family: $font-family-2;
+        font-size: 40px !important;
+        font-family: $font-family-2 !important;
     }
 
     &__date-filter-options {
@@ -37,6 +37,10 @@
         .btn-group {
             width: 25%;
         }
+    }
+
+    &__messages{
+        width: 600px;
     }
 
     .MuiInputAdornment-root.MuiInputAdornment-positionEnd {
@@ -131,8 +135,8 @@
 
     .alertKeyword {
         font-weight: 700;
-        color: crimson;
-        background-color: #ffd5d7 !important;
+        color: rgb(0, 0, 0);
+        background-color: #FFF2D0 !important;
     }
 
     .activity-icon {
@@ -152,5 +156,23 @@
 
     .status-select {
         width: 300px;
+    }
+
+    .pt-30 {
+        padding-top: 30px !important;
+    }
+
+    .pb-30 {
+        padding-bottom: 30px !important;
+    }
+
+    .ok-button {
+        width: 220px;
+        padding: 20px !important;
+        font-size: 16px;
+    }
+
+    .pb-40 {
+        padding-bottom: 100px;
     }
 }

@@ -18,7 +18,8 @@ import filterIcon from '../../assets/images/ic_filter.svg';
 import type { Menu } from '../../types';
 import {
     setDateRangeLocal,
-    getDateRangeLocal
+    getDateRangeLocal,
+    numberWithCommas
 } from '../../utils/helpers';
 import {
     Card,
@@ -32,7 +33,8 @@ import {
     Col,
     InputGroup,
     InputGroupAddon,
-    InputGroupText
+    InputGroupText,
+    Form
 } from 'reactstrap';
 import { useIsMount } from '../../hooks/useIsMount';
 import { setModalContent } from '../../redux/modules/modalEvent';
@@ -64,7 +66,12 @@ type Props = {
     handleItemCheck?: (e: any) => void,
     handleItemClick?: (e: any) => void,
     loadSearchData?: (e: any) => void,
-    isLoading?: boolean
+    isLoading?: boolean,
+    setSearchId?: (e: any) => void,
+    setKeyword?: (e: any) => void,
+    handleSearchClick?: (e: any) => void,
+    filterKeyword: String,
+    filterId: String
 }
 
 function CommunicationSearchResultsScreen({
@@ -82,7 +89,12 @@ function CommunicationSearchResultsScreen({
     handleItemCheck,
     handleItemClick,
     loadSearchData,
-    isLoading
+    isLoading,
+    setSearchId,
+    setKeyword,
+    filterKeyword,
+    filterId,
+    handleSearchClick
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -221,82 +233,91 @@ function CommunicationSearchResultsScreen({
         <div className='search-results'>
             <CollapsibleSidebar
                 menu={sidebarMenu} />
-            <div className='w-100 overflow-auto'>
-                <Breadcrumbs links={breadcrumb} />
-                <div className='search-results__content'>
-                    <Card className='px-4 py-2'>
-                        <CardBody>
-                            <div className='search-results__header d-flex align-items-center justify-content-between'>
-                                <Typography color='color-3' className='search-results__title'>Search Results</Typography>
-                                {/* <Button weight='light' className='ml-4 mr-4 search-results__bulk-review' label='Bulk Review'
-                                    onClick={showActionsModal}/> */}
-                            </div>
-                            <div className='search-results__search-bar d-flex align-items-center pb-0'>
-                                <FormGroup>
-                                    <InputGroup>
-                                        <InputGroupAddon addonType='prepend'>
-                                            <InputGroupText>
-                                                <FaSearch size={18} color='#675cff'/>
-                                            </InputGroupText>
-                                        </InputGroupAddon>
-                                        <Input type='text' fontSize={18} placeholder='Search unique ID'
-                                            className='shadow-none' />
-                                    </InputGroup>
-                                </FormGroup>
-                                <FormGroup className='px-4'>
-                                    <InputGroup>
-                                        <InputGroupAddon addonType='prepend'>
-                                            <InputGroupText>
-                                                <MdInsertComment size={18} color='#675cff'/>
-                                            </InputGroupText>
-                                        </InputGroupAddon>
-                                        <Input type='text' fontSize={18} placeholder='Search a Keyword'
-                                            className='shadow-none' />
-                                    </InputGroup>
-                                </FormGroup>
-                            </div>
-                            <Typography color='color-3' className='search-results__box-label' >4 Results</Typography>
-                            <div className='search-results__information mt-5'>
-                                <Row>
-                                    <Col lg={12} className='overflow-auto'>
-                                        <IsisTable className='search-results__table table-striped'
-                                            loading={loading}
-                                            tableColumns={table.columns}
-                                            tableData={table.data}
-                                            tablePagination={table.totalPages}
-                                            totalNoOfRecords={table.totalNoOfRecords}
-                                            selectableRows={false}
-                                            activePage={activePage}
-                                            pagination={true}
-                                            sortable={true}
-                                            fetching={table.loading}
-                                            viewDetails={handleItemClick}/>
-                                        {/* <BootstrapTable className='search-results__table'
-                                            isHover={true}
-                                            withSearch={true}
-                                            withPagination={true}
-                                            headers={[
-                                                { key: 'id', label: 'ID #' },
-                                                { key: 'subject', label: 'Subject & Message' },
-                                                { key: 'source', label: 'Source' },
-                                                // { key: 'keyword', label: 'Alert' },
-                                                // { key: 'status', label: 'Status' },
-                                                { key: 'timeSent', label: 'Date & Time' }
-                                            ]}
-                                            list={table}
-                                            searchKeys={['chainLinkId', 'message']}
-                                            placeHolder='Enter search for Id and Keyword'
-                                            handleSelectAll={handleSelectAll}
-                                            handleItemCheck={handleItemCheck}
-                                            handleItemClick={handleItemClick}
-                                            isCheckAll={isCheckAll}
-                                            isLoading={loading}
-                                            loadSearchData={loadSearchData}/> */}
-                                    </Col>
-                                </Row>
-                            </div>
-                        </CardBody>
-                    </Card>
+            <div className='w-100'>
+                <Breadcrumbs className='position-sticky' links={breadcrumb} />
+                <div className='overflow-auto h-100 pb-40'>
+                    <div className='search-results__content'>
+                        <Card className='px-4 py-2'>
+                            <CardBody>
+                                <div className='search-results__header d-flex align-items-center justify-content-between'>
+                                    <Typography color='color-3' className='search-results__title'>Search Results</Typography>
+                                    {/* <Button weight='light' className='ml-4 mr-4 search-results__bulk-review' label='Bulk Review'
+                                        onClick={showActionsModal}/> */}
+                                </div>
+                                <div className='search-results__search-bar d-flex align-items-center pb-0'>
+                                    <Form className='d-flex' onSubmit={handleSearchClick}>
+                                        <FormGroup>
+                                            <InputGroup>
+                                                <InputGroupAddon addonType='prepend'>
+                                                    <InputGroupText>
+                                                        <FaSearch size={18} color='#004C98'/>
+                                                    </InputGroupText>
+                                                </InputGroupAddon>
+                                                <Input name='filterId' type='text' defaultValue={filterId}
+                                                    className='shadow-none' placeholder='Search unique ID'/>
+                                            </InputGroup>
+                                        </FormGroup>
+                                        <FormGroup className='px-4'>
+                                            <InputGroup>
+                                                <InputGroupAddon addonType='prepend'>
+                                                    <InputGroupText>
+                                                        <MdInsertComment size={18} color='#004C98'/>
+                                                    </InputGroupText>
+                                                </InputGroupAddon>
+                                                <Input name='filterText' type='text' defaultValue={filterKeyword}
+                                                    className='shadow-none' placeholder='Search a Keyword'/>
+                                            </InputGroup>
+                                        </FormGroup>
+                                        <FormGroup>
+                                            <Button label='Search' variant='primary' type='submit'
+                                                className='alerts__save-button px-4 py-2'/>
+                                        </FormGroup>
+                                    </Form>
+                                </div>
+                                <Typography color='color-3' className='search-results__box-label' >{table.totalNoOfRecords > 0 ? numberWithCommas(table.totalNoOfRecords) : '0'} Results</Typography>
+                                <div className='search-results__information mt-5'>
+                                    <Row>
+                                        <Col lg={12} className='overflow-auto'>
+                                            <IsisTable className='search-results__table table-striped'
+                                                loading={loading}
+                                                tableColumns={table.columns}
+                                                tableData={table.data}
+                                                tablePagination={table.totalPages}
+                                                totalNoOfRecords={table.totalNoOfRecords}
+                                                selectableRows={true}
+                                                activePage={activePage}
+                                                pagination={true}
+                                                sortable={true}
+                                                fetching={table.loading}
+                                                viewDetails={handleItemClick}
+                                                filterKeyword={filterKeyword}/>
+                                            {/* <BootstrapTable className='search-results__table'
+                                                isHover={true}
+                                                withSearch={true}
+                                                withPagination={true}
+                                                headers={[
+                                                    { key: 'id', label: 'ID #' },
+                                                    { key: 'subject', label: 'Subject & Message' },
+                                                    { key: 'source', label: 'Source' },
+                                                    // { key: 'keyword', label: 'Alert' },
+                                                    // { key: 'status', label: 'Status' },
+                                                    { key: 'timeSent', label: 'Date & Time' }
+                                                ]}
+                                                list={table}
+                                                searchKeys={['chainLinkId', 'message']}
+                                                placeHolder='Enter search for Id and Keyword'
+                                                handleSelectAll={handleSelectAll}
+                                                handleItemCheck={handleItemCheck}
+                                                handleItemClick={handleItemClick}
+                                                isCheckAll={isCheckAll}
+                                                isLoading={loading}
+                                                loadSearchData={loadSearchData}/> */}
+                                        </Col>
+                                    </Row>
+                                </div>
+                            </CardBody>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </div>

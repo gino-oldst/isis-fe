@@ -10,7 +10,24 @@ const REPLACE_COMMUNICATION_SEARCH_DETAILS = 'REPLACE_COMMUNICATION_SEARCH_DETAI
 const FILTER_COMMUNICATION_SEARCH_DATA = 'FILTER_COMMUNICATION_SEARCH_DATA';
 const SET_LOADING = 'SET_LOADING';
 const SET_COMMUNICATION_SEARCH_DATE_RANGE = 'SET_COMMUNICATION_SEARCH_DATE_RANGE';
+const SET_SELECTED_MESSAGE = 'SET_SELECTED_MESSAGE';
+const SET_SEARCH_FILTER_VALUES = 'SET_SEARCH_FILTER_VALUES';
 
+export function setSelectedMessage(data: String) {
+    return {
+        type: SET_SELECTED_MESSAGE,
+        data
+    };
+}
+
+export function setSearchFilterValues(values: object) {
+    return {
+        type: SET_SEARCH_FILTER_VALUES,
+        values
+    };
+}
+
+// for search details
 export function setSelectedCommnunicationSearch(data: Object) {
     return {
         type: SET_SELECTED_COMMUNICATION_SEARCH,
@@ -18,13 +35,11 @@ export function setSelectedCommnunicationSearch(data: Object) {
     };
 }
 
-export function setCommunicationSearchData(data: Array, alertIds: Array, totalNoOfRecords: Integer, totalPages: Integer) {
-    console.log(totalNoOfRecords, totalPages);
-
+export function setCommunicationSearchData(data: Array, searchIds: Array, totalNoOfRecords: Integer, totalPages: Integer) {
     return {
         type: SET_COMMUNICATION_SEARCH_DATA,
         data,
-        alertIds,
+        searchIds,
         totalNoOfRecords,
         totalPages
     };
@@ -89,6 +104,7 @@ const initialState = {
     //     end: moment(),
     //     activeOption: 2
     // },
+    searchFilterValue: null,
     columnFilterValues: null,
     table: {
         loading: false,
@@ -117,6 +133,18 @@ const initialState = {
                 accessor: 'timeSent',
                 disableFilters: true,
                 clickable: false
+            },
+            {
+                header: 'Sender',
+                accessor: 'sender',
+                disableFilters: true,
+                clickable: false
+            },
+            {
+                header: 'Recipient',
+                accessor: 'recipient',
+                disableFilters: true,
+                clickable: false
             }
         ],
         data: [],
@@ -124,6 +152,10 @@ const initialState = {
         filtered: [],
         totalNoOfRecords: null,
         totalPages: null
+    },
+    selectedMessage: {
+        messageId: null,
+        keyword: null
     },
     selected: {
         data: {},
@@ -147,14 +179,12 @@ export default function communicationSearch(state: Object = initialState, action
                 }
             };
         case SET_COMMUNICATION_SEARCH_DATA:
-            console.log(action);
-
             return {
                 ...state,
                 table: {
                     ...state.table,
                     data: action.data,
-                    alertIds: action.id,
+                    searchIds: action.id,
                     totalNoOfRecords: action.totalNoOfRecords,
                     totalPages: action.totalPages,
                     loading: false
@@ -188,6 +218,12 @@ export default function communicationSearch(state: Object = initialState, action
             return {
                 ...state,
                 columnFilterValues: action.values
+            };
+
+        case SET_SEARCH_FILTER_VALUES:
+            return {
+                ...state,
+                searchFilterValue: action.values
             };
 
         case REPLACE_COMMUNICATION_SEARCH_DETAILS:

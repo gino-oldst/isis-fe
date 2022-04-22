@@ -31,7 +31,8 @@ import {
     FormGroup,
     Input,
     Label,
-    Alert
+    Alert,
+    Spinner
 } from 'reactstrap';
 import { useIsMount } from '../../hooks/useIsMount';
 
@@ -52,11 +53,18 @@ type Props = {
     useMediaQuery: Function,
     detailData: Array,
     dataId: Any,
-    handleMessagePrevious: Function,
-    handleMessageNext: Function,
+    handleMessageBeforeIncrement: Function,
+    handleMessageBeforeDecrement: Function,
+    handleMessageAfterIncrement: Function,
+    handleMessageAfterDecrement: Function,
     handleBackMessage: Function,
+    handlePreviousMessage: Function,
+    handleNextMessage: Function,
     loadMessageStatus: String,
-    messages: Array
+    messages: Array,
+    recipients: Array,
+    filterText: String,
+    messageButtonDisable: Any
 }
 
 function CommunicationSearchMessageDetailsScreen({
@@ -67,11 +75,18 @@ function CommunicationSearchMessageDetailsScreen({
     sidebarMenu,
     detailData,
     dataId,
-    handleMessagePrevious,
-    handleMessageNext,
+    handleMessageBeforeIncrement,
+    handleMessageBeforeDecrement,
+    handleMessageAfterIncrement,
+    handleMessageAfterDecrement,
     handleBackMessage,
+    handlePreviousMessage,
+    handleNextMessage,
     loadMessageStatus,
-    messages
+    messages,
+    recipients,
+    filterText,
+    messageButtonDisable
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -90,229 +105,279 @@ function CommunicationSearchMessageDetailsScreen({
         <div className='communication-search-message-details'>
             <CollapsibleSidebar
                 menu={sidebarMenu} />
-            <div className='w-100 overflow-auto'>
-                <Breadcrumbs links={breadcrumb} />
-                <div className='communication-search-message-details__content'>
-                    <Card className='px-5 py-4'>
-                        <CardBody>
-                            <div className='communication-search-message-details__header d-flex align-items-center'>
-                                <Typography color='color-3' className='alerts__title mr-auto'
-                                    weight='regular' style={{ fontSize: '28px', lineHeight: '24pt' }}>{dataId != '' ? dataId : 'N/A'}</Typography>
-                            </div>
-                            <div className='communication-search-message-details__information mt-2'>
-                                <Row>
-                                    <Col>
-                                        <Typography color='color-3' className='mr-auto' weight='regular'
-                                            style={{ fontSize: '24px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : 'No Subject'} {/* RE: Trading Message */}</Typography>
-                                        <Typography color='color-3' className='mr-auto' weight='regular'
-                                            style={{ fontSize: '16px', lineHeight: '24pt' }}>{detailData.source != null ? detailData.source : 'No Source'} {/* Email */}</Typography>
-                                    </Col>
-                                </Row>
-                                <Row className='mt-5'>
-                                    <Col lg={7}>
-                                        <div className='d-flex align-items-center justify-content-between'>
-                                            <Typography color='color-3' className='mr-3 mb-2' weight='semi-bold'
-                                                style={{ fontSize: '24px', lineHeight: '24pt' }}>Alert</Typography>
-                                            <Button weight='light' disabled={detailData.alerts ? 'true' : 'false'} className='ml-4 mr-4 alerts__bulk-review'
-                                                label='Update all Status'/>
-                                        </div>
-                                        <table className='table' style={{ minWidth: '300px !important' }}>
-                                            {/* detailData.alerts.length > 0 */}
-                                            {detailData.alerts != null
-                                                ? <>
-                                                    <thead>
-                                                        <tr>
-                                                            <th className='pb-2'>
-                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Alert</Typography>
-                                                            </th>
-                                                            <th className='pb-2'>
-                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Trigered Text</Typography>
-                                                            </th>
-                                                            <th className='pb-2'>
-                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Status</Typography>
-                                                            </th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td className='pb-2'>
-                                                                <Typography color='color-3'>Alert 4</Typography>
-                                                            </td>
-                                                            <td className='pb-2'>
-                                                                <Typography color='color-3'>Flame</Typography>
-                                                            </td>
-                                                            <td>
-                                                                <div className='d-flex align-items-center w-100'>
-                                                                    <Select
-                                                                        className='status-select'
-                                                                        name='status'
-                                                                        // defaultValue={{
-                                                                        //     label: <Badge status={selectedAlert.status} />,
-                                                                        //     value: <Badge status={selectedAlert.status}/>
-                                                                        // }}
-                                                                        options={[{
-                                                                            name: 'OPEN',
-                                                                            label: <Badge status='Open' />,
-                                                                            value: <Badge status='Open'/>
-                                                                        }, {
-                                                                            name: 'IN_REVIEW',
-                                                                            label: <Badge status='In Review' />,
-                                                                            value: <Badge status='In Review'/>
-                                                                        }, {
-                                                                            name: 'RESOLVED',
-                                                                            label: <Badge status='Resolved' />,
-                                                                            value: <Badge status='Resolved'/>
-                                                                        }, {
-                                                                            name: 'ARCHIVED',
-                                                                            label: <Badge status='Archived' />,
-                                                                            value: <Badge status='Archived'/>
-                                                                        }]} />
+            <div className='w-100'>
+                <Breadcrumbs className='position-sticky' links={breadcrumb} />
+                <div className='overflow-auto h-100 pb-40'>
+                    <div className='communication-search-message-details__content'>
+                        <Card className='px-5 py-4'>
+                            <CardBody>
+                                <div className='communication-search-message-details__header d-flex align-items-center'>
+                                    <Typography color='color-3' className='alerts__title mr-auto'
+                                        weight='regular' style={{ fontSize: '28px', lineHeight: '24pt' }}>{dataId != '' ? dataId : 'N/A'}</Typography>
+                                </div>
+                                <div className='communication-search-message-details__information mt-2'>
+                                    <Row>
+                                        <Col>
+                                            <Typography color='color-3' className='alerts__title mr-auto' weight='regular'
+                                                style={{ fontSize: '24px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : 'No Subject'} {/* RE: Trading Message */}</Typography>
+                                            <Typography color='color-3' className='mr-auto' weight='regular'
+                                                style={{ fontSize: '16px', lineHeight: '24pt' }}>{detailData.source != null ? detailData.source : 'No Source'} {/* Email */}</Typography>
+                                        </Col>
+                                    </Row>
+                                    <Row className='mt-5'>
+                                        <Col lg={7}>
+                                            <div className='mb-4'>
+                                                <div className='d-flex align-items-center justify-content-between'>
+                                                    <Typography color='color-3' className='mr-3 mb-2' weight='semi-bold'
+                                                        style={{ fontSize: '24px', lineHeight: '24pt' }}>Alert</Typography>
+                                                    {/* <Button weight='light' disabled={detailData.alerts ? 'true' : 'false'} className='ml-4 mr-4 alerts__bulk-review'
+                                                        label='Update all Status'/> */}
+                                                </div>
+                                                <table className='table' style={{ minWidth: '300px !important' }}>
+                                                    {/* detailData.alerts.length > 0 */}
+                                                    {detailData.alerts != null
+                                                        ? <>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Alert</Typography>
+                                                                    </th>
+                                                                    <th className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Trigered Text</Typography>
+                                                                    </th>
+                                                                    <th className='pb-2'>
+                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Status</Typography>
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3'>Alert 4</Typography>
+                                                                    </td>
+                                                                    <td className='pb-2'>
+                                                                        <Typography color='color-3'>Flame</Typography>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div className='d-flex align-items-center w-100'>
+                                                                            <Select
+                                                                                className='status-select'
+                                                                                name='status'
+                                                                                // defaultValue={{
+                                                                                //     label: <Badge status={selectedAlert.status} />,
+                                                                                //     value: <Badge status={selectedAlert.status}/>
+                                                                                // }}
+                                                                                options={[{
+                                                                                    name: 'OPEN',
+                                                                                    label: <Badge status='Open' />,
+                                                                                    value: <Badge status='Open'/>
+                                                                                }, {
+                                                                                    name: 'IN_REVIEW',
+                                                                                    label: <Badge status='In Review' />,
+                                                                                    value: <Badge status='In Review'/>
+                                                                                }, {
+                                                                                    name: 'RESOLVED',
+                                                                                    label: <Badge status='Resolved' />,
+                                                                                    value: <Badge status='Resolved'/>
+                                                                                }, {
+                                                                                    name: 'ARCHIVED',
+                                                                                    label: <Badge status='Archived' />,
+                                                                                    value: <Badge status='Archived'/>
+                                                                                }]} />
 
-                                                                    <OverlayTrigger placement='bottom-start' overlay={renderAlertInfo('OverlayTrigger Text')}>
-                                                                        <FaInfoCircle style={{ color: '#004C98', marginLeft: '10px' }} size={24}/>
-                                                                    </OverlayTrigger>
-                                                                </div>
-                                                                {/* onChange={handleChange} /> */}
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </>
-                                                : <>
-                                                    <thead>
-                                                        <tr>
-                                                            <th className='pb-2 text-center'>
-                                                                <Typography size={18} color='color-1' className='mr-3'
-                                                                    weight='semi-bold'>No Alerts</Typography>
-                                                            </th>
-                                                        </tr>
-                                                    </thead>
-                                                </>
-                                            }
-                                        </table>
-                                    </Col>
-                                    <Col className='offset-lg-2' lg={3} md={12}>
-                                        <div style={{ border: '2px solid #D0D0D0', height: '100%', padding: '30px' }}>
-                                            <Typography color='color-3' className='mr-auto' weight='regular'
-                                                style={{ fontSize: '16px', lineHeight: '24pt' }} ><b>Date & Time: </b>{detailData.timeSent != null ? isoToUTCLocal(detailData.timeSent) : 'N/A'} {/* 17/12/20 5:34 PM */}</Typography>
-                                            <Typography color='color-3' className='mr-auto' weight='regular'
-                                                style={{ fontSize: '16px', lineHeight: '24pt' }} ><b>Sender: </b>{detailData.sender != null ? detailData.sender : 'N/A'} {/* daniel.caplin@marianacap.com */}</Typography>
-                                            <Typography color='color-3' className='mr-auto' weight='regular'
-                                                style={{ fontSize: '16px', lineHeight: '24pt' }} ><b>Receiver: </b>{detailData.receiver != null ? detailData.receiver : 'N/A'} {/* simon@mcgfutures.com */}</Typography>
-                                        </div>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col xl={6} lg={12} md={12}
-                                        className='mb-2'>
-                                        <Typography color='color-3' className='mr-3 mb-2' weight='semi-bold'
-                                            style={{ fontSize: '24px', lineHeight: '24pt' }}>Messege</Typography>
-                                        <div className='d-flex flex-column'>
-                                            {loadMessageStatus == 'next'
-                                                ? <Button label='Load message Alerted' variant='outline-primary' className='ok-button px-4 mr-2 py-2'
-                                                    onClick={handleBackMessage}/>
-                                                : <Button label='Load 5 previous message' disabled={loadMessageStatus == 'prev'} variant='outline-primary'
-                                                    onClick={handleMessagePrevious} className='ok-button px-4 mr-2 py-2' />
-                                            }
-                                            <div className='communication-search-message-details__message-thread mb-4 mt-4'>
-                                                <div>
-                                                    {messages.map(message => {
-                                                        return (<>
-                                                            <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                style={{ fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>
-                                                            <div className='message-box mb-4' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
-                                                                <Highlighter highlightClassName='alertKeyword'
-                                                                    style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
-                                                                    searchWords={['flame']}
-                                                                    autoEscape={true}
-                                                                    textToHighlight={message.message}/>
-                                                            </div></>);
-                                                    })}
-                                                </div>
+                                                                            <OverlayTrigger placement='bottom-start' overlay={renderAlertInfo('OverlayTrigger Text')}>
+                                                                                <FaInfoCircle style={{ color: '#004C98', marginLeft: '10px' }} size={24}/>
+                                                                            </OverlayTrigger>
+                                                                        </div>
+                                                                        {/* onChange={handleChange} /> */}
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </>
+                                                        : <>
+                                                            <Typography size={18} color='color-3' className='mr-3'
+                                                                weight='regular'>No Alerts</Typography>
+                                                        </>
+                                                    }
+                                                </table>
                                             </div>
-                                            {loadMessageStatus == 'prev'
-                                                ? <Button label='Load message Alerted' variant='outline-primary' className='ok-button px-4 mr-2 py-2'
-                                                    onClick={handleBackMessage}/>
-                                                : <Button label='Load next 5 message' disabled={loadMessageStatus == 'next'} variant='outline-primary'
-                                                    onClick={handleMessageNext} className='ok-button px-4 mr-2 py-2'/>
-                                            }
-                                        </div>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col lg={4} className='mt-5 mb-4'>
-                                        <Typography color='color-3' className='mr-3' weight='semi-bold'
-                                            style={{ fontSize: '24px', lineHeight: '32pt' }}>Comment</Typography>
-                                        <Input type='textarea' name='alertComment' id='alertComment'
-                                            className='mb-2' rows={4} placeholder='Comment here...' />
-                                        <Button label='Add Comment' variant='primary' className='ok-button px-4 mt-3 mr-2 py-2' />
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col lg={6} className='mt-5 mb-4'>
-                                        <Tab.Container id='left-tabs-example' defaultActiveKey='link-0'>
-                                            <div className='alert-detail__activities'>
-                                                <Typography color='color-3' className='mr-3' weight='semi-bold'
-                                                    style={{ fontSize: '24px', lineHeight: '32pt' }}>Activity</Typography>
-                                                <Nav className='navActivities mb-4' variant='pills' defaultActiveKey='/home'>
-                                                    <Nav.Item>
-                                                        <Nav.Link disabled={true}>Show</Nav.Link>
-                                                    </Nav.Item>
-                                                    <Nav.Item>
-                                                        <Nav.Link eventKey='link-0'>ALL</Nav.Link>
-                                                    </Nav.Item>
-                                                    <Nav.Item>
-                                                        <Nav.Link eventKey='link-1'>MESSAGE ACTIVITIES</Nav.Link>
-                                                    </Nav.Item>
-                                                    <Nav.Item>
-                                                        <Nav.Link eventKey='link-2'>ALERT ACTIVITIES</Nav.Link>
-                                                    </Nav.Item>
-                                                </Nav>
-                                                <div className='overflow-auto pr-2' style={{ height: '400px' }}>
-                                                    <Tab.Content>
-                                                        <Tab.Pane eventKey='link-0'>
-                                                            <div key={1} className='alert-detail__activity-info d-flex align-items-center mb-4'>
-                                                                <span className='activity-icon'><span className='text-light'>J</span></span>
-                                                                <div className='d-block'>
-                                                                    <Typography color='color-3' variant='size-16'>James Allan added a comment.</Typography>
-                                                                    <Typography color='color-3' variant='size-14' className='text-muted'>17/12/21, 8:12 AM</Typography>
-                                                                    <Typography color='color-3 mt-2' variant='size-14' >Donec rutrum congue leo eget malesuada. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. </Typography>
+                                            <div className='pt-30 pb-30 communication-search-message-details__messages'>
+                                                <Typography color='color-3' className='mr-3 mb-4' weight='semi-bold'
+                                                    style={{ fontSize: '24px', lineHeight: '24pt' }}>Message</Typography>
+                                                {/* || recipients === undefined */}
+                                                {loading
+                                                    ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3'>
+                                                        <span className='sr-only'>Loading...</span>
+                                                    </Spinner>
+                                                    : <>
+                                                        <div className='d-flex flex-column'>
+                                                            {/* {loadMessageStatus == 'before'
+                                                                ? <Button label='Load message Alerted' variant='outline-primary' className='ok-button px-4 mr-2 py-2'
+                                                                    onClick={handleBackMessage}/>
+                                                                : <Button label='Load next message' disabled={loadMessageStatus == 'after'} variant='outline-primary'
+                                                                    onClick={handleNextMessage} className='ok-button px-4 mr-2 py-2'/>
+                                                            } */}
+                                                            {/* {loadMessageStatus == 'before' &&
+                                                                <Button disabled={messageButtonDisable} label='Load previous message' variant='outline-primary'
+                                                                    className='ok-button px-4 mr-2 py-2' onClick={handleMessageBeforeIncrement}/>
+                                                            }
+                                                            {loadMessageStatus == 'after' &&
+                                                                <Button label='Load previous message' variant='outline-primary' className='ok-button px-4 mr-2 py-2'
+                                                                    onClick={handleMessageAfterDecrement}/>
+                                                            }
+                                                            {loadMessageStatus == 'message' &&
+                                                                <Button label='Load previous message' variant='outline-primary' className='ok-button px-4 mr-2 py-2'
+                                                                    onClick={handleMessageBeforeIncrement}/>
+                                                            } */}
+                                                            <div className='communication-search-message-details__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
+                                                                <div>
+                                                                    {messages[0].map(message => {
+                                                                        return (<>
+                                                                            <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                                                style={{ fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>
+                                                                            <div className='message-box mb-4' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
+                                                                                <Highlighter highlightClassName='alertKeyword'
+                                                                                    style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
+                                                                                    searchWords={[filterText]}
+                                                                                    autoEscape={true}
+                                                                                    textToHighlight={message.message}/>
+                                                                            </div></>);
+                                                                    })}
                                                                 </div>
                                                             </div>
-                                                            <div key={2} className='alert-detail__activity-info d-flex align-items-center'>
-                                                                <span className='activity-icon'><span className='text-light'>J</span></span>
-                                                                <div className='d-block'>
-                                                                    <Typography color='color-3' variant='size-16'>James Allan viewed the alert.</Typography>
-                                                                    <Typography color='color-3' variant='size-14' className='text-muted'>17/12/21, 8:02 AM</Typography>
-                                                                </div>
-                                                            </div>
-                                                        </Tab.Pane>
-                                                        <Tab.Pane eventKey='link-1'>
-                                                            <div key={2} className='alert-detail__activity-info d-flex align-items-center'>
-                                                                <span className='activity-icon'><span className='text-light'>J</span></span>
-                                                                <div className='d-block'>
-                                                                    <Typography color='color-3' variant='size-16'>James Allan viewed the alert.</Typography>
-                                                                    <Typography color='color-3' variant='size-14' className='text-muted'>17/12/21, 8:02 AM</Typography>
-                                                                </div>
-                                                            </div>
-                                                        </Tab.Pane>
-                                                        <Tab.Pane eventKey='link-2'>
-                                                            <div key={2} className='alert-detail__activity-info d-flex align-items-center'>
-                                                                <span className='activity-icon'><span className='text-light'>J</span></span>
-                                                                <div className='d-block'>
-                                                                    <Typography color='color-3' variant='size-16'>James Allan viewed the alert.</Typography>
-                                                                    <Typography color='color-3' variant='size-14' className='text-muted'>17/12/21, 8:02 AM</Typography>
-                                                                </div>
-                                                            </div>
-                                                        </Tab.Pane>
-                                                    </Tab.Content>
-                                                </div>
+                                                            {/* {loadMessageStatus == 'before' &&
+                                                                <Button label='Load next message' variant='outline-primary' className='ok-button px-4 mr-2 py-2'
+                                                                    onClick={handleMessageBeforeDecrement}/>
+                                                            }
+                                                            {loadMessageStatus == 'after' &&
+                                                                <Button disabled={messageButtonDisable} label='Load next message' variant='outline-primary'
+                                                                    className='ok-button px-4 mr-2 py-2' onClick={handleMessageAfterIncrement}/>
+                                                            }
+                                                            {loadMessageStatus == 'message' &&
+                                                                <Button label='Load next message' variant='outline-primary' className='ok-button px-4 mr-2 py-2'
+                                                                    onClick={handleMessageAfterIncrement}/>
+                                                            } */}
+                                                            {/* {loadMessageStatus == 'after'
+                                                                ? <Button label='Load message Alerted' variant='outline-primary' className='ok-button px-4 mr-2 py-2'
+                                                                    onClick={handleBackMessage}/>
+                                                                : <Button label='Load next message' disabled={loadMessageStatus == 'before'} variant='outline-primary'
+                                                                    onClick={handleNextMessage} className='ok-button px-4 mr-2 py-2'/>
+                                                            } */}
+                                                        </div>
+                                                    </>
+                                                }
                                             </div>
-                                        </Tab.Container>
-                                    </Col>
-                                </Row>
-                            </div>
-                        </CardBody>
-                    </Card>
+                                        </Col>
+                                        <Col className='offset-lg-1' lg={4} md={12}>
+                                            <div style={{ border: '2px solid #D0D0D0', padding: '30px' }}>
+                                                <Typography color='color-3' className='mr-auto' weight='regular'
+                                                    style={{ fontSize: '16px', lineHeight: '24pt' }} ><b>Date & Time: </b>{detailData.timeSent != null ? isoToUTCLocal(detailData.timeSent) : 'N/A'} {/* 17/12/20 5:34 PM */}</Typography>
+                                                <Typography color='color-3' className='mr-auto' weight='regular'
+                                                    style={{ fontSize: '16px', lineHeight: '24pt' }} ><b>Sender: </b>{detailData.sender != null ? detailData.sender : 'N/A'} {/* daniel.caplin@marianacap.com */}</Typography>
+                                                <Typography color='color-3' className='mr-auto' weight='regular'
+                                                    style={{ fontSize: '16px', lineHeight: '24pt' }} >
+                                                    <b>Recipient: </b>
+                                                    {loading || recipients === undefined
+                                                        ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3'>
+                                                            <span className='sr-only'>Loading...</span>
+                                                        </Spinner>
+                                                        : recipients != null ? recipients.join(', ') : 'N/A'
+                                                    }
+                                                </Typography>
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                    {/* <Row>
+                                        <Col lg={4} className='mt-5 mb-4'>
+                                            <Typography color='color-3' className='mr-3' weight='semi-bold'
+                                                style={{ fontSize: '24px', lineHeight: '32pt' }}>Comment</Typography>
+                                            <Input type='textarea' name='alertComment' id='alertComment'
+                                                className='mb-2' rows={4} placeholder='Comment here...' />
+                                            <Button label='Add Comment' variant='primary' className='ok-button px-4 mt-3 mr-2 py-2' />
+                                        </Col>
+                                    </Row> */}
+                                    <Row>
+                                        <Col lg={6} className='mt-5 mb-4 pt-30'>
+                                            <Tab.Container id='left-tabs-example' defaultActiveKey='link-0'>
+                                                <div className='alert-detail__activities'>
+                                                    <Typography color='color-3' className='mr-3' weight='semi-bold'
+                                                        style={{ fontSize: '24px', lineHeight: '32pt' }}>Activity</Typography>
+                                                    {/* <Nav className='navActivities mb-4' variant='pills' defaultActiveKey='/home'>
+                                                        <Nav.Item>
+                                                            <Nav.Link disabled={true}>Show</Nav.Link>
+                                                        </Nav.Item>
+                                                        <Nav.Item>
+                                                            <Nav.Link eventKey='link-0'>ALL</Nav.Link>
+                                                        </Nav.Item>
+                                                        <Nav.Item>
+                                                            <Nav.Link eventKey='link-1'>MESSAGE ACTIVITIES</Nav.Link>
+                                                        </Nav.Item>
+                                                        <Nav.Item>
+                                                            <Nav.Link eventKey='link-2'>ALERT ACTIVITIES</Nav.Link>
+                                                        </Nav.Item>
+                                                    </Nav> */}
+                                                    <div className='overflow-auto pr-2'>
+                                                        <div key={1} className='alert-detail__activity-info d-flex align-items-center mb-4'>
+                                                            <span className='activity-icon'><span className='text-light'>J</span></span>
+                                                            <div className='d-block'>
+                                                                <Typography color='color-3' variant='size-16'>James Allan added a comment.</Typography>
+                                                                <Typography color='color-3' variant='size-14' className='text-muted'>17/12/21, 8:12 AM</Typography>
+                                                                <Typography color='color-3 mt-2' variant='size-14' >Donec rutrum congue leo eget malesuada. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. </Typography>
+                                                            </div>
+                                                        </div>
+                                                        <div key={2} className='alert-detail__activity-info d-flex align-items-center'>
+                                                            <span className='activity-icon'><span className='text-light'>J</span></span>
+                                                            <div className='d-block'>
+                                                                <Typography color='color-3' variant='size-16'>James Allan viewed the alert.</Typography>
+                                                                <Typography color='color-3' variant='size-14' className='text-muted'>17/12/21, 8:02 AM</Typography>
+                                                            </div>
+                                                        </div>
+                                                        {/* <Tab.Content>
+                                                            <Tab.Pane eventKey='link-0'>
+                                                                <div key={1} className='alert-detail__activity-info d-flex align-items-center mb-4'>
+                                                                    <span className='activity-icon'><span className='text-light'>J</span></span>
+                                                                    <div className='d-block'>
+                                                                        <Typography color='color-3' variant='size-16'>James Allan added a comment.</Typography>
+                                                                        <Typography color='color-3' variant='size-14' className='text-muted'>17/12/21, 8:12 AM</Typography>
+                                                                        <Typography color='color-3 mt-2' variant='size-14' >Donec rutrum congue leo eget malesuada. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. </Typography>
+                                                                    </div>
+                                                                </div>
+                                                                <div key={2} className='alert-detail__activity-info d-flex align-items-center'>
+                                                                    <span className='activity-icon'><span className='text-light'>J</span></span>
+                                                                    <div className='d-block'>
+                                                                        <Typography color='color-3' variant='size-16'>James Allan viewed the alert.</Typography>
+                                                                        <Typography color='color-3' variant='size-14' className='text-muted'>17/12/21, 8:02 AM</Typography>
+                                                                    </div>
+                                                                </div>
+                                                            </Tab.Pane>
+                                                            <Tab.Pane eventKey='link-1'>
+                                                                <div key={2} className='alert-detail__activity-info d-flex align-items-center'>
+                                                                    <span className='activity-icon'><span className='text-light'>J</span></span>
+                                                                    <div className='d-block'>
+                                                                        <Typography color='color-3' variant='size-16'>James Allan viewed the alert.</Typography>
+                                                                        <Typography color='color-3' variant='size-14' className='text-muted'>17/12/21, 8:02 AM</Typography>
+                                                                    </div>
+                                                                </div>
+                                                            </Tab.Pane>
+                                                            <Tab.Pane eventKey='link-2'>
+                                                                <div key={2} className='alert-detail__activity-info d-flex align-items-center'>
+                                                                    <span className='activity-icon'><span className='text-light'>J</span></span>
+                                                                    <div className='d-block'>
+                                                                        <Typography color='color-3' variant='size-16'>James Allan viewed the alert.</Typography>
+                                                                        <Typography color='color-3' variant='size-14' className='text-muted'>17/12/21, 8:02 AM</Typography>
+                                                                    </div>
+                                                                </div>
+                                                            </Tab.Pane>
+                                                        </Tab.Content> */}
+                                                    </div>
+                                                </div>
+                                            </Tab.Container>
+                                        </Col>
+                                    </Row>
+                                </div>
+                            </CardBody>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </div>

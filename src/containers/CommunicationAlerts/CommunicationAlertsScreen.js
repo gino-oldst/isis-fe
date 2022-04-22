@@ -206,36 +206,38 @@ function CommunicationAlertsScreen({
         <div className='alerts'>
             <CollapsibleSidebar
                 menu={sidebarMenu} />
-            <div className='w-100 overflow-auto'>
-                <Breadcrumbs links={breadcrumb} />
-                <div className='alerts__content'>
-                    <Card className='px-4 py-2'>
-                        <CardBody>
-                            <div className='alerts__header d-flex align-items-center justify-content-between'>
-                                <Typography color='color-3' className='alerts__title'>Communication Alerts</Typography>
-                                <Button weight='light' className='ml-4 mr-4 alerts__bulk-review' label='Bulk Review'
-                                    onClick={showActionsModal}/>
-                            </div>
-                            <div className='alerts__information mt-5'>
-                                <Row>
-                                    <Col lg={12}>
-                                        <Table className='alerts__table table-striped'
-                                            loading={loading}
-                                            tableColumns={table.columns}
-                                            tableData={table.data}
-                                            tablePagination={table.totalPages}
-                                            totalNoOfRecords={table.totalNoOfRecords}
-                                            selectableRows={true}
-                                            activePage={activePage}
-                                            pagination={true}
-                                            sortable={true}
-                                            fetching={table.loading}
-                                            viewDetails={viewCommunicationAlertDetails}/>
-                                    </Col>
-                                </Row>
-                            </div>
-                        </CardBody>
-                    </Card>
+            <div className='w-100'>
+                <Breadcrumbs className='position-sticky' links={breadcrumb} />
+                <div className='overflow-auto h-100 pb-40'>
+                    <div className='alerts__content'>
+                        <Card className='px-4 py-2'>
+                            <CardBody>
+                                <div className='alerts__header d-flex align-items-center justify-content-between'>
+                                    <Typography color='color-3' className='alerts__title'>Communication Alerts</Typography>
+                                    <Button weight='light' className='ml-4 mr-4 alerts__bulk-review' label='Bulk Review'
+                                        onClick={showActionsModal}/>
+                                </div>
+                                <div className='alerts__information mt-5'>
+                                    <Row>
+                                        <Col lg={12}>
+                                            <Table className='alerts__table table-striped'
+                                                loading={loading}
+                                                tableColumns={table.columns}
+                                                tableData={table.data}
+                                                tablePagination={table.totalPages}
+                                                totalNoOfRecords={table.totalNoOfRecords}
+                                                selectableRows={true}
+                                                activePage={activePage}
+                                                pagination={true}
+                                                sortable={true}
+                                                fetching={table.loading}
+                                                viewDetails={viewCommunicationAlertDetails}/>
+                                        </Col>
+                                    </Row>
+                                </div>
+                            </CardBody>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </div>

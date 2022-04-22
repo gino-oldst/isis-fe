@@ -12,7 +12,7 @@ type Props = {
     isLoading?: boolean,
     onClick?: Function,
     iconLeft?: any,
-    iconRight?: any,
+    iconRight?: any
 }
 
 export default function AppButton({ iconLeft: IconLeft, iconRight: IconRight, variant, label, className = '', isLoading = false, onClick, ...rest }: Props): React$Element<any> {

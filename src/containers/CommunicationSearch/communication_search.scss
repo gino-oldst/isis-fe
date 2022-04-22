@@ -35,6 +35,28 @@
         }
     }
 
+    &__input-fields{
+        .form-control.isis-control {
+            border-left: none !important;
+            font-size: 16px !important;
+        }
+    
+        .form-control:focus {
+            border-color: #ced4da !important;
+            outline: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 0;
+            padding-bottom: 10px;
+        }
+
+        .react-tag-input__input, 
+        .dropdown-toggle{
+            font-size: 16px !important;
+        }
+    }
+
     &__status-filters {
         background-color: #f6f6f6;
         border-radius: 2px;
@@ -173,5 +195,48 @@
 
     .form-check {
         padding-left: 0 !important;
+    }
+
+    .pb-40 {
+        padding-bottom: 100px;
+    }
+
+    .time-wrapper {
+        margin-left: 226px;
+    }
+
+    .rdrTime {
+        padding: 0 0.833em;
+        width: 100%;
+    }
+
+    input[type='time'] {
+        color: transparent;
+        display: block;
+        margin: 10px;
+        padding: 10px;
+
+        &:invalid {
+            &:before{
+                color: grey;
+                content: attr(placeholder);
+                pointer-events: none;
+                position: relative;
+            }
+        }
+            
+        &:valid,
+        &:focus,
+        &:active {
+            color: black;
+            &:before {
+                display: none
+            }
+        }
+    }
+
+    .input-group-text {
+        background-color: #fff !important; 
+        border-right: none !important;
     }
 }

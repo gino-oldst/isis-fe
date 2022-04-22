@@ -44,7 +44,7 @@
     &__search-bar{
         .form-control {
             border-left: none !important;
-            font-size: 1.4rem !important;
+            font-size: 16px !important;
         }
     
         .form-control:focus {
@@ -186,5 +186,9 @@
     .input-group-text {
         background-color: #fff !important; 
         border-right: none !important;
+    }
+
+    .pb-40 {
+        padding-bottom: 100px;
     }
 }

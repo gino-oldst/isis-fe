@@ -8,8 +8,8 @@ import makeApiCall from '../api/makeApiCall';
 const GET_SEARCH_DATA = `${config.apiStorage}/storage-service/message/search/paged`;
 
 export async function getCommunicationSearchData(page, size, sort, filters) {
-    console.log('ss', filters);
     const filterBody = {
+        id: filters.filterId,
         message: filters.filterText,
         senders: filters.filterSenders,
         // recipients: filters.filterRecipients.length > 0 ? filters.filterRecipient : ['sample@email.com'],
@@ -39,7 +39,6 @@ const GET_COMM_MESSAGE_DATA = `${config.apiStorage}/storage-service/message/`;
 export async function getCommunicationMessageDetail(commMessageId) {
     // const sortColumn = sort.column;
     // const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sortColumn},${sort.type}` : '';
-    console.log('call getCommunicationMessageDetail ', commMessageId);
 
     return await makeApiCall(`${GET_COMM_MESSAGE_DATA}${commMessageId}`, 'GET');
 }
@@ -52,8 +51,6 @@ const GET_RECENT_MESSAGE_DATA = `${config.apiStorage}/storage-service/message/se
 // "id":"f623466e-2d73-483a-9829-8962485ae68a" //communication message id
 // }
 export async function getRecentMessages(messageId, size) {
-    console.log('call getRecentMessages ', size);
-
     const filterBody = {
         id: messageId
     };
@@ -73,8 +70,6 @@ export async function getRecentMessages(messageId, size) {
 const ADD_MESSAGE_ACTIVITY = `${config.apiStorage}/storage-service/message-activity`;
 
 export async function addMessageActivity(formData) {
-    console.log('call addMessageActivity ', formData);
-
     // const body = {
     //     messageId: formData.messageId,
     //     executorId: formData.executorId,
@@ -93,11 +88,21 @@ export async function addMessageActivity(formData) {
 const GET_MESSAGE_ACTIVITY = `${config.apiStorage}/storage-service/message-activity/search/paged`;
 
 export async function getMessageActivity(messageId) {
-    console.log('call getMessageActivity ', messageId);
-
     const filterBody = {
         messageId: messageId
     };
 
     return await makeApiCall(`${GET_MESSAGE_ACTIVITY}`, 'POST');
+}
+
+// {{storage-url}}/recipient/search
+// const GET_COMMENTS = `${config.apiStorage}/storage-service/message-activity/search/paged`;
+const GET_RECIPIENTS = `${config.apiStorage}/storage-service/recipient/search`;
+
+export async function getRecipients(chainLinkId) {
+    const filterBody = {
+        chainLinkId: chainLinkId
+    };
+
+    return await makeApiCall(`${GET_RECIPIENTS}`, 'POST', filterBody);
 }

@@ -11,7 +11,7 @@ import CustomDropdown from '../../base/CustomDropdown/CustomDropdown';
 import Select from '../../base/Select/Select';
 import makeAnimated from 'react-select/animated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { kFormatter, getTextColor, truncateText, capitalize } from '../../../utils/helpers';
+import { kFormatter, getTextColor, truncateText, capitalize, numberWithCommas } from '../../../utils/helpers';
 import { ALERT_ESCALATION_OPTIONS, ALERT_STATUS_OPTIONS, COMMUNICATION_ALERT_SOURCE_OPTIONS } from '../../../config/constants';
 import {
     Table as ReactstrapTable,
@@ -27,7 +27,8 @@ import filterIcon from '../../../assets/images/ic_filter.svg';
 import './table.scss';
 
 import { useTable, useRowSelect, useFilters, useGlobalFilter, usePagination, useSortBy, useAsyncDebounce, useExpanded } from 'react-table';
-import { setIsRowSelected, setTablePageSize, setActivePage, setAppliedFilters, resetAppliedFilters, setFilteredRows, setSortedColumn, setAllRowsSelected } from '../../../redux/modules/table';
+import { setIsRowSelected, setTablePageSize, setActivePage, setAppliedFilters, resetAppliedFilters, setFilteredRows, setSortedColumn, setAllRowsSelected } from '../../../redux/modules/isisTable';
+import Highlighter from 'react-highlight-words';
 
 // Define a default UI for filtering
 function GlobalFilter({
@@ -89,9 +90,9 @@ function SelectColumnFilter({
     const [selectFilter, setSelectFilter] = useState([]);
     const [searchFilter, setSearchFilter] = useState('');
     const [isCheckAll, setIsCheckAll] = useState(false);
-    const { selected, columnFilterValues } = useSelector(({ alerts }) => alerts);
+    const { selected, columnFilterValues, searchFilterValue } = useSelector(({ communicationSearch }) => communicationSearch);
     const { table } = useSelector(({ behaviours }) => behaviours);
-    const { appliedFilters, filtersReset } = useSelector(({ table }) => table);
+    const { appliedFilters, filtersReset } = useSelector(({ isisTable }) => isisTable);
 
     const header = Header.toLowerCase();
     const columnFiltersWithCheckbox = ['behaviourCode', 'escalation', 'assignedUser', 'status', 'source'];
@@ -309,7 +310,7 @@ function SelectColumnFilter({
             case 'source':
                 options = Object.keys(COMMUNICATION_ALERT_SOURCE_OPTIONS).map(statusOpt => ({
                     label: statusOpt,
-                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(statusOpt.toUpperCase()) || appliedFilters.filter(filter => filter.id === 'status' && filter.value.includes(statusOpt)).length}
+                    inputComponent: <Input type='checkbox' disabled={statusOpt != 'REUTERS'} checked={selectFilter.includes(statusOpt.toUpperCase()) || appliedFilters.filter(filter => filter.id === 'status' && filter.value.includes(statusOpt)).length}
                         onChange={e => handleFilterChange(e, statusOpt.toUpperCase())}/>
                 }));
                 break;
@@ -321,7 +322,7 @@ function SelectColumnFilter({
             return <>
                 <FormGroup key={'select_all'} check={true}>
                     <Label check={true}>
-                        <Input type='checkbox' checked={isCheckAll}
+                        <Input type='checkbox' disabled={true} checked={isCheckAll}
                             onChange={handleSelectAll}/>
                         Select all
                     </Label>
@@ -588,7 +589,7 @@ function IsisTable({
                 <Row className='mt-5 align-items-center'>
                     <Col md={12} lg={3} className='mr-auto'>
                         <div className='pagination-pagesize'>
-                            <span>Showing {((activePage + 1) * pageSize + 1) - pageSize}-{(activePage + 1) * pageSize > totalNoOfRecords ? totalNoOfRecords : (activePage + 1) * pageSize} of {totalNoOfRecords} items</span>
+                            <span>Showing {totalNoOfRecords > 0 ? ((activePage + 1) * pageSize + 1) - pageSize : 0}-{(activePage + 1) * pageSize > totalNoOfRecords ? totalNoOfRecords : (activePage + 1) * pageSize} of {numberWithCommas(totalNoOfRecords)} items</span>
                             <Input type='select'
                                 className='mt-2'
                                 value={pageSize}
@@ -723,11 +724,15 @@ export default function ReactTable({
         () => tableColumns.map(column => {
             const rootPath = window.location.pathname.split('/')[1];
 
+            const highlight = ({ children, highlightIndex }) => (
+                <strong className='highlighted-text'>{children}</strong>
+            );
+
             const cellRender = (accessor, cell) => {
                 if (accessor == 'id') {
                     return (
                         <div>
-                            <span className={'color-link-text cursor-pointer'} onClick={() => viewDetails(cell.value)}>
+                            <span title={cell.value} className={'color-link-text cursor-pointer'} onClick={() => viewDetails(cell.value, cell.cell.row.original.chainLinkId, cell.cell.row.original.keyword)}>
                                 {truncateText(cell.value, 20)}
                             </span>
                         </div>
@@ -746,9 +751,15 @@ export default function ReactTable({
                             <Typography size={14} color='color-3' className='table__box-label' >
                                 {cell.cell.row.original.subject == null ? 'No Subject' : cell.cell.row.original.subject}
                             </Typography>
-                            <Typography size={14} color='color-3' className='table__box-label' >
+                            <Highlighter className='table__box-label' highlightClassName='alertKeyword'
+                                style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
+                                searchWords={[cell.cell.row.original.keyword]}
+                                highlightTag={highlight}
+                                autoEscape={true}
+                                textToHighlight={truncateText(cell.value, 40)}/>
+                            {/* <Typography size={14} color='color-3' className='table__box-label' >
                                 {truncateText(cell.value, 40)}
-                            </Typography>
+                            </Typography> */}
                         </div>
                     );
                 } else if (accessor == 'source') {
@@ -763,7 +774,7 @@ export default function ReactTable({
                         </div>
                     );
                 } else {
-                    return (<span>{cell.value}</span>);
+                    return (<span>{cell.value == null ? 'Not Available' : cell.value}</span>);
                 }
                 // if (key == 'subject') {
                 //     return (
@@ -836,7 +847,7 @@ export default function ReactTable({
                 Header: column.header,
                 accessor: column.accessor,
                 disableFilters: column.disableFilters,
-                Cell: (cell) => cellRender(column.accessor, cell),
+                Cell: (cell, state) => cellRender(column.accessor, cell),
                 Filter: SelectColumnFilter,
                 filter: multiSelectFilter,
                 // Cell: (e, row) => <span>{e.value}</span>,

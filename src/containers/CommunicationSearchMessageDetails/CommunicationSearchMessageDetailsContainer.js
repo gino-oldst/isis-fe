@@ -4,10 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import CommunicationSearchMessageDetailsScreen from './CommunicationSearchMessageDetailsScreen';
 import type { Menu } from '../../types';
-import { getCommunicationMessageDetail, getRecentMessages, addMessageActivity } from '../../api/communicationSearch';
+import { getCommunicationMessageDetail, getRecentMessages, addMessageActivity, getRecipients } from '../../api/communicationSearch';
 
 import messageSample from './messageData.json';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
+import { uniq } from 'underscore';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -26,47 +27,147 @@ export default function CommunicationSearchMessageDetailsContainer({
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
     const [detailData, setDetailData] = useState([]);
+    const [recipients, setRecipients] = useState([]);
     const [messages, setMessages] = useState([]);
     const [messageStorage, setMessageStorage] = useState([]);
+    const [count, setCount] = useState(0);
+    const [messageButtonDisable, setMessageButtonDisable] = useState(false);
     const [loadMessageStatus, setLoadMessageStatus] = useState('message');
+    const filters = useLocation();
     const breadcrumb = [
         {
             label: 'Home',
             path: '/alerts'
         },
         {
-            label: 'Search',
+            label: 'Search Message',
             path: '/communication_search'
         }
+        // {
+        //     label: filters.state.id,
+        //     path: `communication_search_message_details/${filters.state.id}`,
+        //     disabled: true
+        // }
     ];
 
-    const filters = useLocation();
+    // useEffect(() => {
+    //     loadSearchData(filters.state);
+    // }, [filters]);
 
     useEffect(() => {
-        console.log(filters.state.id);
-        console.log('userID: ', userId);
-        // setMessages(messageSample);
-        // console.log(messages);
-        // loadMessage(messageSample);
-        loadSearchData(filters.state);
-    }, [filters]);
+        loadSearchData('1234');
+    }, []);
 
-    // todo - Move this func to Highligh Component also improve upon
-    const handleMessagePrevious = () => {
-        setLoadMessageStatus('prev');
-        setMessages(messageStorage.before);
+    // todo - Move this func to Highlight Component also improve upon
+    // before
+    const handleMessageBeforeIncrement = (increment) => {
+        if (count == (messageStorage.before.length - 1)) {
+            setMessageButtonDisable(true);
+        }
+
+        if (count < (messageStorage.before.length - 1)) {
+            const updateArr = [];
+            var _count = count;
+
+            if (count < messageStorage.before.length && loadMessageStatus == 'before') {
+                _count = _count + 1;
+                updateArr.push(messageStorage.before[_count]);
+                setMessages(updateArr);
+                setCount(_count);
+            } else {
+                updateArr.push(messageStorage.before[_count]);
+                setMessages(updateArr);
+            }
+
+            setLoadMessageStatus('before');
+        }
     };
 
-    const handleMessageNext = (selection) => {
-        setLoadMessageStatus('next');
-        setMessages(messageStorage.after);
+    const handleMessageBeforeDecrement = (index) => {
+        if (count > 0) {
+            setLoadMessageStatus('before');
+            const updateArr = [];
+            var _count = count;
+
+            _count = _count - 1;
+            updateArr.push(messageStorage.before[_count]);
+            setMessages(updateArr);
+            setCount(_count);
+
+            if (_count < (messageStorage.before.length - 1)) {
+                setMessageButtonDisable(false);
+            }
+        } else {
+            handleBackMessage();
+            setCount(0);
+        }
     };
 
-    const handleBackMessage = (selection) => {
+    // After
+    const handleMessageAfterIncrement = (increment) => {
+        if (count == (messageStorage.after.length - 1)) {
+            setMessageButtonDisable(true);
+        }
+
+        if (count < (messageStorage.after.length - 1)) {
+            const updateArr = [];
+            var _count = count;
+
+            if (count < messageStorage.after.length && loadMessageStatus == 'after') {
+                _count = _count + 1;
+                updateArr.push(messageStorage.after[_count]);
+                setMessages(updateArr);
+                setCount(_count);
+            } else {
+                updateArr.push(messageStorage.after[_count]);
+                setMessages(updateArr);
+            }
+
+            setLoadMessageStatus('after');
+        }
+    };
+
+    const handleMessageAfterDecrement = (index) => {
+        if (count > 0) {
+            setLoadMessageStatus('after');
+            const updateArr = [];
+            var _count = count;
+
+            _count = _count - 1;
+            updateArr.push(messageStorage.after[_count]);
+            setMessages(updateArr);
+            setCount(_count);
+
+            if (_count < (messageStorage.after.length - 1)) {
+                setMessageButtonDisable(false);
+            }
+        } else {
+            handleBackMessage();
+            setCount(0);
+        }
+    };
+
+    const handlePreviousMessage = () => {
+        setLoadMessageStatus('before');
+        const updateArr = [];
+
+        updateArr.push(messageStorage.before);
+        setMessages(updateArr);
+    };
+
+    const handleBackMessage = () => {
         setLoadMessageStatus('message');
         const updateArr = [];
 
         updateArr.push(messageStorage.message);
+        setMessages(updateArr);
+    };
+
+    const handleNextMessage = () => {
+        setLoadMessageStatus('after');
+        const updateArr = [];
+
+        updateArr.push(messageStorage.after);
         setMessages(updateArr);
     };
 
@@ -82,8 +183,6 @@ export default function CommunicationSearchMessageDetailsContainer({
             if (formData.event) {
                 const response = await addMessageActivity(formData);
 
-                console.log(response);
-
                 if (Object.keys(response).length === 0) {
                     dispatch(setFlashNotification({
                         message: 'Cannot add comment.',
@@ -91,8 +190,6 @@ export default function CommunicationSearchMessageDetailsContainer({
                     }));
                 } else {
                     const { data } = response;
-
-                    console.log(response);
 
                     dispatch(setFlashNotification({
                         message: 'Comment Successfully added.',
@@ -114,7 +211,10 @@ export default function CommunicationSearchMessageDetailsContainer({
 
         const updateArr = [];
 
-        updateArr.push(messageData.message);
+        console.log(messageData.before);
+
+        // updateArr.push(messageData.message);
+        updateArr.push(messageData.before);
         setMessages(updateArr);
 
         setMessageStorage(messageData);
@@ -124,12 +224,22 @@ export default function CommunicationSearchMessageDetailsContainer({
         setLoading(true);
 
         try {
-            const search = await getCommunicationMessageDetail(commMessageId.id);
-            const messages = await getRecentMessages(commMessageId.id, 5);
+            // const search = await getCommunicationMessageDetail(commMessageId.id);
 
-            console.log(messages.data);
-            loadMessage(messages.data);
-            setDetailData(search.data);
+            // setDetailData(search.data);
+
+            // const messages = await getRecentMessages(commMessageId.id, 10);
+
+            // loadMessage(messages.data);
+            loadMessage(messageSample);
+
+            console.log(messageSample);
+
+            // const recipients = await getRecipients(search.data.chainLinkId);
+
+            // const extractedRecipients = extractRecipients(recipients.data);
+
+            // setRecipients(extractedRecipients);
         } catch (e) {
             console.error(e);
         }
@@ -137,17 +247,30 @@ export default function CommunicationSearchMessageDetailsContainer({
         setLoading(false);
     };
 
+    const extractRecipients = (recipients) => {
+        const unique = [...new Set(recipients.data.map(item => item.recipient))];
+
+        return unique;
+    };
+
     return <CommunicationSearchMessageDetailsScreen
         loading={loading}
         userId={userId}
-        dataId={filters.state.id}
+        dataId={1234}
+        filterText={'will'}
         detailData={detailData}
         useMediaQuery={useMediaQuery}
         breadcrumb={breadcrumb}
         sidebarMenu={sidebarMenu}
-        handleMessagePrevious={handleMessagePrevious}
-        handleMessageNext={handleMessageNext}
+        handleMessageBeforeIncrement={handleMessageBeforeIncrement}
+        handleMessageBeforeDecrement={handleMessageBeforeDecrement}
+        handleMessageAfterIncrement={handleMessageAfterIncrement}
+        handleMessageAfterDecrement={handleMessageAfterDecrement}
         handleBackMessage={handleBackMessage}
+        handlePreviousMessage={handlePreviousMessage}
+        handleNextMessage={handleNextMessage}
         loadMessageStatus={loadMessageStatus}
-        messages={messages}/>;
+        messages={messages}
+        messageButtonDisable={messageButtonDisable}
+        recipients={recipients}/>;
 }

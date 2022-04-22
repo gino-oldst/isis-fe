@@ -48,7 +48,7 @@ function App() {
         },
         key: 'communication_alerts'
     }, {
-        label: 'Search',
+        label: 'Search Message',
         onClick: () => {
             dispatch(resetTableState());
             history.push('/communication_search');
@@ -172,7 +172,7 @@ function RouteWithSubRoutes({ component: Component, isAuthed, handleCloseModal, 
             render={props => (
                 isAuthed
                     ? <Redirect to={{
-                        pathname: '/communication_alerts',
+                        pathname: '/communication_search',
                         state: { from: props.location }
                     }}/>
                     : <Component {...props} routes={props.routes} handleCloseModal={handleCloseModal} />

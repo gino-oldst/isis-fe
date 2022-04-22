@@ -57,7 +57,7 @@ const initialState = {
         columns: [
             {
                 header: 'Alert No.',
-                accessor: 'id',
+                accessor: 'alertId',
                 disableFilters: true,
                 clickable: false
             },

@@ -9,7 +9,8 @@ import filterSample from '../CommunicationAlerts/filters.json';
 
 // To be removed once we move to with backend
 import { getCommunicationSearchData } from '../../api/communicationSearch';
-import { setCommunicationSearchData, setColumnFilterValues } from '../../redux/modules/communicationSearch';
+import { setCommunicationSearchData, setColumnFilterValues, setSearchFilterValues } from '../../redux/modules/communicationSearch';
+import { setActivePage } from '../../redux/modules/isisTable';
 import { filter } from 'underscore';
 
 type Props = {
@@ -27,9 +28,9 @@ export default function CommunicationSearchResultsContainer({
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
     const [isCheckAll, setIsCheckAll] = useState(false);
-
+    const [currPage, setCurrPage] = useState(false);
     const { pageSize, activePage, appliedFilters, areRowsSelectedAll, sort } = useSelector(({ isisTable }) => isisTable);
-    const { table, selected, dateRange } = useSelector(({ communicationSearch }) => communicationSearch);
+    const { table, selected, dateRange, searchFilterValue } = useSelector(({ communicationSearch }) => communicationSearch);
 
     const breadcrumb = [
         {
@@ -37,7 +38,7 @@ export default function CommunicationSearchResultsContainer({
             path: '/alerts'
         },
         {
-            label: 'Search',
+            label: 'Search Message',
             path: 'communication_search'
         },
         {
@@ -46,22 +47,8 @@ export default function CommunicationSearchResultsContainer({
         }
     ];
 
-    const [filterSearchForm, setFilterSearchForm] = useState({
-        filterId: '',
-        filterText: '',
-        filterDateFrom: '',
-        filterDateTo: '',
-        filterSenders: [],
-        filterRecipients: [],
-        filterStatus: [],
-        filterSource: []
-    });
-
     const filters = useLocation();
-
-    useEffect(() => {
-        setFilterSearchForm(filters.state);
-    }, [filters]);
+    const [filterSearchForm, setFilterSearchForm] = useState(filters.state);
 
     // const [table, setTable] = useState([]);
 
@@ -71,14 +58,16 @@ export default function CommunicationSearchResultsContainer({
         try {
             const search = await getCommunicationSearchData(page, size, sort, appliedFilters);
 
-            await loadColumnFilterValues();
+            // await loadColumnFilterValues();
 
-            const { data, alertIds, totalNoOfRecords, totalPages } = search.data;
+            const { data, searchIds, totalNoOfRecords, totalPages } = search.data;
 
-            console.log(totalNoOfRecords, totalPages, pageSize, activePage);
-            dispatch(setCommunicationSearchData(data, alertIds, totalNoOfRecords, totalPages));
+            // Map data and add the keyword to object as filterKeyword
+            data.map(item => {
+                item.keyword = appliedFilters.filterText;
+            });
 
-            console.log(data);
+            dispatch(setCommunicationSearchData(data, searchIds, totalNoOfRecords, totalPages));
         } catch (e) {
             console.error(e);
         }
@@ -86,8 +75,7 @@ export default function CommunicationSearchResultsContainer({
         setLoading(false);
     };
 
-    useEffect(() => {
-        console.log(filterSearchForm);
+    useEffect((e) => {
         loadSearchData(
             activePage,
             pageSize,
@@ -97,23 +85,41 @@ export default function CommunicationSearchResultsContainer({
     }, [pageSize, activePage, filterSearchForm, sort]);
 
     useEffect(() => {
-        // console.log(appliedFilters);
         handleAppliedFiltersChange(appliedFilters);
     }, [appliedFilters]);
+
+    const [searchId, setSearchId] = useState('');
+    const [keyword, setKeyword] = useState('');
+
+    const handleSearchClick = (event) => {
+        const id = event.target.filterId.value;
+        const keyword = event.target.filterText.value;
+
+        setFilterSearchForm({
+            ...filterSearchForm,
+            filterId: searchId,
+            filterText: keyword
+        });
+        setSearchId(id);
+        setKeyword(keyword);
+        dispatch(setActivePage(0));
+        event.preventDefault();
+        // dispatch(setSearchFilterValues(filterSearchForm));
+    };
 
     const handleAppliedFiltersChange = (appliedFilters) => {
         var updatedList = [];
 
-        // appliedFilters.map(ev => {
-        //     switch (ev.id.toLowerCase()) {
-        //         case 'source':
+        appliedFilters.map(ev => {
+            switch (ev.id.toLowerCase()) {
+                case 'source':
+                    // console.log(ev);
+                    break;
 
-        //             break;
-
-        //         default:
-        //             break;
-        //     }
-        // });
+                default:
+                    break;
+            }
+        });
 
         // switch (appliedFilters.id) {
         //     case value:
@@ -155,9 +161,14 @@ export default function CommunicationSearchResultsContainer({
         dispatch(setColumnFilterValues(dataCopy));
     };
 
-    const tableIsFiltered = () => {
-        return !!appliedFilters.filter(filter => filter.value.length > 0).length;
+    const handleItemClick = (row, chainLinkId, filterText) => {
+        history.push({
+            pathname: `/communication_search_message_details/${row}`,
+            state: { id: row, chainLinkId: chainLinkId, filterText: filterText }
+        });
+        // window.location.href = `/communication_alerts/${row.id}`;
     };
+
     // const loadSearchData = async (page, size, sort) => {
     //     setLoading(true);
 
@@ -178,14 +189,6 @@ export default function CommunicationSearchResultsContainer({
 
     //     setLoading(false);
     // };
-
-    const handleItemClick = async (row) => {
-        history.push({
-            pathname: `/communication_search_message_details/${row}`,
-            state: { id: row }
-        });
-        // window.location.href = `/communication_alerts/${row.id}`;
-    };
 
     // const handleSelectAll = (e) => {
     //     var updatedList = table;
@@ -233,5 +236,10 @@ export default function CommunicationSearchResultsContainer({
         loadSearchData={loadSearchData}
         useMediaQuery={useMediaQuery}
         handleCloseModal={handleCloseModal}
-        handleItemClick={handleItemClick}/>;
+        handleItemClick={handleItemClick}
+        setSearchId={setSearchId}
+        setKeyword={setKeyword}
+        filterKeyword={filterSearchForm.filterText}
+        filterId={filterSearchForm.filterId}
+        handleSearchClick={handleSearchClick}/>;
 }

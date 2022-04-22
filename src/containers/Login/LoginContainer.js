@@ -36,8 +36,6 @@ export default function LoginContainer({
             if (loginForm.username && loginForm.password) {
                 const response = await userLogin(loginForm);
 
-                console.log(response);
-
                 if (Object.keys(response).length === 0) {
                     setErrMsg('Invalid username!');
                 } else if (response.data.message) {

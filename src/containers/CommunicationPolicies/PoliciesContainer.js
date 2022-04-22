@@ -6,6 +6,7 @@ import CommunicationPoliciesScreen from './PoliciesScreen';
 import type { Menu } from '../../types';
 
 import dataSample from './data_sample.json';
+import { getKeywordSearch, getPolicySearchData } from '../../api/policies';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -34,16 +35,37 @@ export default function CommunicationPoliciesContainer({
         }
     ];
 
+    const { pageSize, activePage, sort } = useSelector(({ table }) => table);
+
+    useEffect(() => {
+        loadPolicyData(activePage, pageSize, sort);
+    }, [pageSize, activePage, sort]);
+
     const loadPolicyData = async (activePage, pageSize, sort) => {
         setLoading(true);
 
         try {
-            // const behaviours = await getBehaviours(activePage, pageSize, sort);
-            // const { data, totalNoOfRecords, totalPages } = behaviours.data;
-            const policies = dataSample;
-
-            console.log(JSON.stringify(policies));
+            const policies = await getPolicySearchData(activePage, pageSize, sort);
             const { data, totalNoOfRecords, totalPages } = policies.data;
+
+            const keyword = await getKeywordSearch();
+            const keywordData = keyword.data;
+
+            data.map((policy, i) => {
+                var keyword = keywordData.data.find(function(post, index) {
+                    if (post.id == policy.keywordId) {
+                        return true;
+                    }
+                });
+
+                policy.keyword = keyword.word;
+                policy.alertId = `Alert ${i + 1}`;
+                policy.status = policy.deleted ? 'Enabled' : 'Disabled';
+            });
+            // const policies = dataSample;
+
+            // console.log(JSON.stringify(policies));
+            // const { data, totalNoOfRecords, totalPages } = policies.data;
 
             dispatch(setPoliciesData(data, totalNoOfRecords, totalPages));
         } catch (e) {
@@ -56,12 +78,6 @@ export default function CommunicationPoliciesContainer({
     const viewPolicyDetails = async row => {
         history.push(`/policies/${row.original.id}`);
     };
-
-    const { pageSize, activePage, sort } = useSelector(({ table }) => table);
-
-    useEffect(() => {
-        loadPolicyData(activePage, pageSize, sort);
-    }, [pageSize, activePage, sort]);
 
     return <CommunicationPoliciesScreen
         loading={loading}

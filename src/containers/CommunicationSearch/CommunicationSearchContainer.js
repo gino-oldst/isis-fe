@@ -9,6 +9,8 @@ import {
     DATE_TO_UTC
 } from '../../utils/helpers';
 
+import { setCommunicationSearchData, setSearchFilterValues } from '../../redux/modules/communicationSearch';
+
 type Props = {
     sidebarMenu: Array<Menu>,
     handleCloseModal: Function
@@ -22,13 +24,14 @@ export default function CommunicationSearchContainer({
     const history = useHistory();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
+    const { table, selected, searchFilterValue } = useSelector(({ communicationSearch }) => communicationSearch);
     const breadcrumb = [
         {
             label: 'Home',
             path: '/alerts'
         },
         {
-            label: 'Search',
+            label: 'Search Message',
             path: '/communication_search'
         }
     ];
@@ -41,8 +44,9 @@ export default function CommunicationSearchContainer({
     ]);
 
     useEffect(() => {
-        const dateFrom = filterDate[0].startDate != '' ? moment(filterDate[0].startDate).utc().local().format('YYYY-MM-DD') : '';
-        const dateTo = filterDate[0].endDate != '' ? moment(filterDate[0].endDate).utc().local().format('YYYY-MM-DD') : '';
+        console.log('filterDate', filterDate);
+        const dateFrom = filterDate[0].startDate != '' ? moment(filterDate[0].startDate).utc().local().format('YYYY-MM-DD') : ''; // for adding time in format hh:mm A
+        const dateTo = filterDate[0].endDate != '' ? moment(filterDate[0].endDate).utc().local().format('YYYY-MM-DD') : ''; // for adding time in format hh:mm A
 
         setFilterSearchForm({
             ...filterSearchForm,
