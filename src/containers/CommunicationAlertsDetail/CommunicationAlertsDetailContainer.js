@@ -29,11 +29,7 @@ export default function CommunicationAlertsDetail({
 }: Props): React$Element<any> {
     const history = useHistory();
     const dispatch = useDispatch();
-    const location = useLocation();
-
-    useEffect(() => {
-        console.log(location.state);
-    }, [location]);
+    const filters = useLocation();
 
     const [loading, setLoading] = useState(true);
     const { isRowsSelected, selectedRows, appliedFilters } = useSelector(({ table }) => table);
@@ -46,12 +42,15 @@ export default function CommunicationAlertsDetail({
             path: '/alerts'
         },
         {
-            label: 'Search Message',
+            label: 'Alerts',
             path: '/alerts'
+        },
+        {
+            label: filters.state.id,
+            path: `communication_alerts_detail/${filters.state.id}`,
+            disabled: true
         }
     ];
-
-    const filters = useLocation();
 
     useEffect(() => {
         console.log(filters.state.id);
@@ -62,14 +61,14 @@ export default function CommunicationAlertsDetail({
         setLoading(true);
 
         try {
-            const search = await getCommunicationMessageDetail(commMessageId.id);
+            // const search = await getCommunicationMessageDetail(commMessageId.id);
 
             // const { data, totalCurrentElements, totalPages, totalNoOfRecords } = search.data;
 
             // const newData = data.map((item) => {
             //     return { ...item, selected: false };
             // });
-            setDetailData(search);
+            // setDetailData(search);
         } catch (e) {
             console.error(e);
         }

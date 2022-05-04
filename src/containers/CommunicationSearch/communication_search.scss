@@ -51,7 +51,8 @@
             padding-bottom: 10px;
         }
 
-        .react-tag-input__input, 
+        .react-tag-input__input,
+        .filter-select, 
         .dropdown-toggle{
             font-size: 16px !important;
         }
@@ -238,5 +239,9 @@
     .input-group-text {
         background-color: #fff !important; 
         border-right: none !important;
+    }
+
+    label {
+        font-size: 16px !important;
     }
 }

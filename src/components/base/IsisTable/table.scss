@@ -24,6 +24,24 @@
         text-overflow: ellipsis;
     }
 
+    &__number-square {
+        display: inline-block;
+        line-height: 0px;
+        border-radius: 5%;
+        background-color: #C8E4FF;
+        font-size: 16px;
+        width: 35px;
+        height: 35px;
+      }
+      
+    // &__number-square p {
+    //     display: inline-block;
+    //     padding-top: 50%;
+    //     padding-bottom: 50%;
+    //     margin-left: 8px;
+    //     margin-right: 8px;
+    // }
+
     &__sort-icon {
         margin-left: 0.5rem;
         color: $color-sidebar-2;
@@ -163,4 +181,9 @@
 
 .pagination-goto-page {
     float: right;
+}
+
+input[type="radio"], input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
 }

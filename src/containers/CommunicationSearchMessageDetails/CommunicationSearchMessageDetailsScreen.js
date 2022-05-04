@@ -20,7 +20,8 @@ import type { Menu } from '../../types';
 import {
     setDateRangeLocal,
     getDateRangeLocal,
-    isoToUTCLocal
+    isoToUTCLocal,
+    truncateText
 } from '../../utils/helpers';
 import {
     Row,
@@ -44,6 +45,8 @@ import { resetTableState } from '../../redux/modules/table';
 import { setLoading, setAlertsDateRange } from '../../redux/modules/alerts';
 import Highlighter from 'react-highlight-words';
 import { Nav, OverlayTrigger, Popover, PopoverContent, Tab } from 'react-bootstrap';
+import { Element, Link, scroller, Button as ScrollButton } from 'react-scroll';
+import { load } from 'dotenv';
 
 type Props = {
     loading: Boolean,
@@ -96,10 +99,34 @@ function CommunicationSearchMessageDetailsScreen({
     const renderAlertInfo = (text) => (
         <Popover id='popover-basic'>
             <PopoverContent>
-                {text}
+                <Typography color='color-3' className='mr-auto' weight='bold'
+                    style={{ fontSize: '14px', lineHeight: '20pt' }}>Reason for resolution</Typography>
+                <Typography color='color-3' className='mr-auto' weight='regular'
+                    style={{ fontSize: '14px' }} >{text}</Typography>
             </PopoverContent>
         </Popover>
     );
+
+    const renderRecipientPopover = (text) => (
+        <Popover id='popover-basic'>
+            <PopoverContent>
+                <Typography color='color-3' className='mr-auto' weight='bold'
+                    style={{ fontSize: '14px', lineHeight: '20pt' }}>Recipients</Typography>
+                <Typography color='color-3' className='mr-auto' weight='regular'
+                    style={{ fontSize: '14px' }} >{text}</Typography>
+            </PopoverContent>
+        </Popover>
+    );
+
+    useEffect(() => {
+        // scroll to active message
+        scroller.scrollTo('0e6dbaac-2e0b-4c15-a26e-2543325ee453', {
+            duration: 500,
+            smooth: true,
+            containerId: 'containerElement'
+            // offset: 50 // Scrolls to element + 50 pixels down the page
+        });
+    }, [loading]);
 
     return (
         <div className='communication-search-message-details'>
@@ -185,7 +212,7 @@ function CommunicationSearchMessageDetailsScreen({
                                                                                     value: <Badge status='Archived'/>
                                                                                 }]} />
 
-                                                                            <OverlayTrigger placement='bottom-start' overlay={renderAlertInfo('OverlayTrigger Text')}>
+                                                                            <OverlayTrigger placement='bottom-start' overlay={renderAlertInfo('Donec sollicitudin molestie malesuada. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Donec sollicitudin molestie malesuada. Cras ultricies ligula sed magna dictum porta. Donec sollicitudin molestie malesuada. Cras ultricies ligula sed magna dictum porta.')}>
                                                                                 <FaInfoCircle style={{ color: '#004C98', marginLeft: '10px' }} size={24}/>
                                                                             </OverlayTrigger>
                                                                         </div>
@@ -202,8 +229,20 @@ function CommunicationSearchMessageDetailsScreen({
                                                 </table>
                                             </div>
                                             <div className='pt-30 pb-30 communication-search-message-details__messages'>
-                                                <Typography color='color-3' className='mr-3 mb-4' weight='semi-bold'
-                                                    style={{ fontSize: '24px', lineHeight: '24pt' }}>Message</Typography>
+                                                <Row>
+                                                    <Col>
+                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'
+                                                            style={{ fontSize: '24px', lineHeight: '24pt' }}>Message</Typography>
+                                                        <Typography color='color-3' className='mr-3 mb-4' weight='regular'
+                                                            style={{ fontSize: '16px', lineHeight: '24pt' }}>Reported message is highlighted.</Typography>
+                                                    </Col>
+                                                    <Col>
+                                                        <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' to={dataId} smooth={true}
+                                                            containerId='containerElement' duration={500}>
+                                                            Show reported message
+                                                        </Link>
+                                                    </Col>
+                                                </Row>
                                                 {/* || recipients === undefined */}
                                                 {loading
                                                     ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3'>
@@ -229,19 +268,21 @@ function CommunicationSearchMessageDetailsScreen({
                                                                 <Button label='Load previous message' variant='outline-primary' className='ok-button px-4 mr-2 py-2'
                                                                     onClick={handleMessageBeforeIncrement}/>
                                                             } */}
-                                                            <div className='communication-search-message-details__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
+                                                            <div id='containerElement' className='communication-search-message-details__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
                                                                 <div>
-                                                                    {messages[0].map(message => {
+                                                                    {messages.map(message => {
                                                                         return (<>
-                                                                            <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                style={{ fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>
-                                                                            <div className='message-box mb-4' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
-                                                                                <Highlighter highlightClassName='alertKeyword'
-                                                                                    style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
-                                                                                    searchWords={[filterText]}
-                                                                                    autoEscape={true}
-                                                                                    textToHighlight={message.message}/>
-                                                                            </div></>);
+                                                                            <Element name={message.id} className={`element mb-4 ${message.id == dataId && 'active-message'}`}>
+                                                                                <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                                                    style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>
+                                                                                <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
+                                                                                    <Highlighter highlightClassName='alertKeyword'
+                                                                                        style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
+                                                                                        searchWords={[filterText]}
+                                                                                        autoEscape={true}
+                                                                                        textToHighlight={message.message}/>
+                                                                                </div>
+                                                                            </Element></>);
                                                                     })}
                                                                 </div>
                                                             </div>
@@ -281,7 +322,9 @@ function CommunicationSearchMessageDetailsScreen({
                                                         ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3'>
                                                             <span className='sr-only'>Loading...</span>
                                                         </Spinner>
-                                                        : recipients != null ? recipients.join(', ') : 'N/A'
+                                                        : recipients != null
+                                                            ? truncateText(recipients.join(', '), 400)
+                                                            : 'N/A'
                                                     }
                                                 </Typography>
                                             </div>

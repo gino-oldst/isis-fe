@@ -34,7 +34,9 @@ import {
     Col,
     InputGroup,
     InputGroupAddon,
-    InputGroupText
+    InputGroupText,
+    FormFeedback,
+    FormText
 } from 'reactstrap';
 import { FaSearch } from 'react-icons/fa';
 import { MdInsertComment } from 'react-icons/md';
@@ -49,6 +51,7 @@ import { DateRangePicker } from 'react-date-range';
 import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
 import ReactTagInput from '@pathofdev/react-tag-input';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
+import AsyncSelect from 'react-select/async';
 
 type Props = {
     loading: Boolean,
@@ -65,7 +68,9 @@ type Props = {
     handleSource: Function,
     handleStatus: Function,
     filterSender: Array<any>,
-    filterRecipient: Array<any>
+    filterRecipient: Array<any>,
+    loadOptions: Function,
+    errorForm: Array<Any>
 }
 
 function CommunicationSearchScreen({
@@ -83,7 +88,9 @@ function CommunicationSearchScreen({
     handleSource,
     handleStatus,
     filterSender,
-    filterRecipient
+    filterRecipient,
+    loadOptions,
+    errorForm
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -114,11 +121,27 @@ function CommunicationSearchScreen({
         }
     ]);
 
-    const convertedStartDate = moment(dateState[0].startDate).utc().local().format('MMM. DD, YYYY'); // for adding time in format hh:mm A
+    const convertedStartDate = moment(dateState[0].startDate).utc().local().format('MMM. DD, YYYY hh:mm A'); // for adding time in format hh:mm A
 
-    const convertedEndDate = moment(dateState[0].endDate).utc().local().format('MMM. DD, YYYY'); // for adding time in format hh:mm A
+    const convertedEndDate = moment(dateState[0].endDate).utc().local().format('MMM. DD, YYYY hh:mm A'); // for adding time in format hh:mm A
 
     const handleDates = (dates) => {
+        var copyDates = dateState[0];
+
+        Object.keys(copyDates).map((e, i) => {
+            if (e == 'startDate') {
+                var hours = parseInt(copyDates[e].getHours());
+                var minutes = parseInt(copyDates[e].getMinutes());
+
+                dates[0].startDate.setHours(hours, minutes, 0, 0);
+            } else if (e == 'endDate') {
+                var hours = parseInt(copyDates[e].getHours());
+                var minutes = parseInt(copyDates[e].getMinutes());
+
+                dates[0].endDate.setHours(hours, minutes, 0, 0);
+            }
+        });
+
         setDateState(dates);
         setFilterDate(dates);
     };
@@ -127,28 +150,25 @@ function CommunicationSearchScreen({
         var name = event.target.getAttribute('name');
         var timeParts = event.target.value.match(/(\d+):(\d+)/);
 
+        const clonedDate = JSON.parse(JSON.stringify(dateState));
+
+        clonedDate[0].startDate = new Date(clonedDate[0].startDate);
+        clonedDate[0].endDate = new Date(clonedDate[0].endDate);
+
         if (name == 'timeStart' && timeParts) {
             var hours = parseInt(timeParts[1]);
             var minutes = parseInt(timeParts[2]);
 
-            setDateState({
-                ...dateState,
-                startDate: dateState[0].startDate.setHours(hours, minutes, 0, 0)
-            });
+            clonedDate[0].startDate.setHours(hours, minutes, 0, 0);
         } else if (name == 'timeEnd' && timeParts) {
             var hours = parseInt(timeParts[1]);
             var minutes = parseInt(timeParts[2]);
 
-            dateState[0].endDate.setHours(hours, minutes, 0, 0);
+            clonedDate[0].endDate.setHours(hours, minutes, 0, 0);
         }
 
-        console.log(dateState);
-
-        setDateState(dateState);
-        setFilterDate(dateState);
-
-        console.log('start:', dateState[0].startDate);
-        console.log('end:', dateState[0].endDate);
+        setDateState(clonedDate);
+        setFilterDate(clonedDate);
     };
 
     const logout = () => {
@@ -202,7 +222,7 @@ function CommunicationSearchScreen({
                                         <Row>
                                             <Col lg={8}>
                                                 <div className='alerts__input-fields'>
-                                                    {/* <FormGroup>
+                                                    <FormGroup>
                                                         <Label>Message / Alert ID</Label>
                                                         <InputGroup>
                                                             <InputGroupAddon addonType='prepend'>
@@ -213,7 +233,7 @@ function CommunicationSearchScreen({
                                                             <Input name='filterId' type='text' onChange={onChange}
                                                                 className='shadow-none isis-control' placeholder='Search Unique ID'/>
                                                         </InputGroup>
-                                                    </FormGroup> */}
+                                                    </FormGroup>
                                                     <FormGroup>
                                                         <Label>Subject / Message</Label>
                                                         <InputGroup>
@@ -227,57 +247,61 @@ function CommunicationSearchScreen({
                                                         </InputGroup>
                                                     </FormGroup>
                                                     <FormGroup>
-                                                        <Label>Sender</Label>
-                                                        <ReactTagInput
+                                                        <Label>Sender*</Label>
+                                                        {/* <ReactTagInput
                                                             tags={filterSender}
                                                             placeholder='Select Sender'
                                                             removeOnBackspace={true}
                                                             onChange={(newTags) => handleSenderChange(newTags)}
-                                                            validator={(value) => validateEmail(value)}/>
-                                                        {/* <Select
-                                                            options={options}
-                                                            isMulti={true}
-                                                            name='filterSender'
-                                                            placeholder={'Select Sender...'}
-                                                            onChange={handleSenderChange}/> */}
-                                                    </FormGroup>
-                                                    <FormGroup>
-                                                        <Label>Recipient</Label>
-                                                        <Input type='text' name='filterText' style={{ border: '1px' }}
-                                                            placeholder='Select Recipient' disabled={true}/>
-                                                        {/* <ReactTagInput
-                                                            readOnly={true}
-                                                            tags={filterRecipient}
-                                                            placeholder='Select Recipient'
-                                                            removeOnBackspace={true}
-                                                            onChange={(newTags) => handleRecipientChange(newTags)}
                                                             validator={(value) => validateEmail(value)}/> */}
-                                                        {/* <Select
-                                                            options={options}
+                                                        <AsyncSelect
                                                             isMulti={true}
-                                                            name='filterRecipient'
-                                                            placeholder={'Select Recipient...'}
-                                                            onChange={handleRecipientChange}/> */}
+                                                            cacheOptions={true}
+                                                            loadOptions={loadOptions}
+                                                            components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
+                                                            name='filterSender'
+                                                            className='filter-select'
+                                                            onChange={(newTags) => handleSenderChange(newTags)}
+                                                            placeholder={'Select Sender...'}/>
+                                                        {errorForm.errorSenders !== '' &&
+                                                            <Typography variant='size-14' className='form-text text-danger'>
+                                                                {errorForm.errorSenders}
+                                                            </Typography>
+                                                        }
                                                     </FormGroup>
                                                     <FormGroup>
-                                                        {/* {JSON.stringify(moment(dateState[0].startDate).utc().local().format('MMM. DD, YYYY hh:mm A'))}
-                                                        {JSON.stringify(moment(dateState[0].endDate).utc().local().format('MMM. DD, YYYY hh:mm A'))}
-                                                        {JSON.stringify(filterDate)} */}
-                                                        <Label>Date/Time Range</Label>
+                                                        <Label>Recipient*</Label>
+                                                        <AsyncSelect
+                                                            isMulti={true}
+                                                            cacheOptions={true}
+                                                            loadOptions={loadOptions}
+                                                            components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
+                                                            name='filterRecipient'
+                                                            className='filter-select'
+                                                            onChange={(newTags) => handleRecipientChange(newTags)}
+                                                            placeholder={'Select Recipient...'}/>
+                                                        {errorForm.errorRecipients !== '' &&
+                                                            <Typography variant='size-14' className='form-text text-danger'>
+                                                                {errorForm.errorRecipients}
+                                                            </Typography>
+                                                        }
+                                                    </FormGroup>
+                                                    <FormGroup>
+                                                        <Label>Date/Time Range*</Label>
                                                         <DropdownButton variant='outline-light' id='dropdown-basic-button' alignRight={true}
                                                             title={filterDate[0].startDate === '' ? 'Select Date' : convertedStartDate + ' - ' + convertedEndDate}>
                                                             <DropdownItem>
                                                                 <DateRangePicker
                                                                     onChange={item => handleDates([item.selection])}
-                                                                    inputRanges={[]}
                                                                     showSelectionPreview={true}
                                                                     moveRangeOnFirstSelection={false}
                                                                     months={2}
+                                                                    inputRanges={[]}
                                                                     ranges={dateState}
                                                                     showDateDisplay={false}
                                                                     value={filterDate.startDate === '' ? null : filterDate}
                                                                     direction='horizontal'/>
-                                                                {/* <div className='d-flex time-wrapper'>
+                                                                <div className='d-flex time-wrapper'>
                                                                     <div className='rdrTime'>
                                                                         <Input type='time' name='timeStart' placeholder='hh:mm'
                                                                             required={true} formNoValidate={true} onChange={e => handleTime(e)}/>
@@ -286,11 +310,16 @@ function CommunicationSearchScreen({
                                                                         <Input type='time' name='timeEnd' placeholder='hh:mm'
                                                                             required={true} formNoValidate={true} onChange={e => handleTime(e)}/>
                                                                     </div>
-                                                                </div> */}
+                                                                </div>
                                                             </DropdownItem>
                                                         </DropdownButton>
+                                                        {errorForm.errorDate !== '' &&
+                                                            <Typography variant='size-14' className='form-text text-danger'>
+                                                                {errorForm.errorDate}
+                                                            </Typography>
+                                                        }
                                                     </FormGroup>
-                                                    <Button label='Search' variant='secondary' type='subnmit'
+                                                    <Button label='Search' variant='secondary' type='submit'
                                                         className='alerts__save-button px-4 py-2'/>
                                                 </div>
                                             </Col>

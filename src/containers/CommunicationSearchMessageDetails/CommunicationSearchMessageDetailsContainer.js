@@ -1,14 +1,15 @@
 // @flow
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import CommunicationSearchMessageDetailsScreen from './CommunicationSearchMessageDetailsScreen';
 import type { Menu } from '../../types';
-import { getCommunicationMessageDetail, getRecentMessages, addMessageActivity, getRecipients } from '../../api/communicationSearch';
+import { getCommunicationMessageDetail, getRecentMessages, addMessageActivity, getRecipients, getMessageThread } from '../../api/communicationSearch';
 
 import messageSample from './messageData.json';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
 import { uniq } from 'underscore';
+import * as Scroll from 'react-scroll';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -42,12 +43,12 @@ export default function CommunicationSearchMessageDetailsContainer({
         {
             label: 'Search Message',
             path: '/communication_search'
+        },
+        {
+            label: filters.state.id,
+            path: `communication_search_message_details/${filters.state.id}`,
+            disabled: true
         }
-        // {
-        //     label: filters.state.id,
-        //     path: `communication_search_message_details/${filters.state.id}`,
-        //     disabled: true
-        // }
     ];
 
     // useEffect(() => {
@@ -55,7 +56,7 @@ export default function CommunicationSearchMessageDetailsContainer({
     // }, [filters]);
 
     useEffect(() => {
-        loadSearchData('1234');
+        loadSearchData(filters.state);
     }, []);
 
     // todo - Move this func to Highlight Component also improve upon
@@ -211,11 +212,19 @@ export default function CommunicationSearchMessageDetailsContainer({
 
         const updateArr = [];
 
-        console.log(messageData.before);
+        messageData.before.map(item => {
+            updateArr.push(item);
+        });
 
-        // updateArr.push(messageData.message);
-        updateArr.push(messageData.before);
+        messageData.after.map(item => {
+            updateArr.push(item);
+        });
+
+        updateArr.push(messageData.message);
+
         setMessages(updateArr);
+
+        console.log(updateArr);
 
         setMessageStorage(messageData);
     };
@@ -224,22 +233,24 @@ export default function CommunicationSearchMessageDetailsContainer({
         setLoading(true);
 
         try {
-            // const search = await getCommunicationMessageDetail(commMessageId.id);
+            const search = await getCommunicationMessageDetail(commMessageId.id);
 
-            // setDetailData(search.data);
+            setDetailData(search.data);
 
             // const messages = await getRecentMessages(commMessageId.id, 10);
-
+            // console.log(commMessageId.chainLinkId);
             // loadMessage(messages.data);
-            loadMessage(messageSample);
 
-            console.log(messageSample);
+            const messages = await getMessageThread(commMessageId.chainLinkId);
+            const { data, totalNoOfRecords, totalPages } = messages.data;
 
-            // const recipients = await getRecipients(search.data.chainLinkId);
+            setMessages(data);
 
-            // const extractedRecipients = extractRecipients(recipients.data);
+            const recipients = await getRecipients(search.data.chainLinkId);
 
-            // setRecipients(extractedRecipients);
+            const extractedRecipients = extractRecipients(recipients.data);
+
+            setRecipients(extractedRecipients);
         } catch (e) {
             console.error(e);
         }
@@ -256,8 +267,8 @@ export default function CommunicationSearchMessageDetailsContainer({
     return <CommunicationSearchMessageDetailsScreen
         loading={loading}
         userId={userId}
-        dataId={1234}
-        filterText={'will'}
+        dataId={filters.state.id}
+        filterText={filters.state.filterText}
         detailData={detailData}
         useMediaQuery={useMediaQuery}
         breadcrumb={breadcrumb}

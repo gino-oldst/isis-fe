@@ -161,10 +161,10 @@ export default function CommunicationSearchResultsContainer({
         dispatch(setColumnFilterValues(dataCopy));
     };
 
-    const handleItemClick = (row, chainLinkId, filterText) => {
+    const handleItemClick = (id, chainLinkId, filterText) => {
         history.push({
-            pathname: `/communication_search_message_details/${row}`,
-            state: { id: row, chainLinkId: chainLinkId, filterText: filterText }
+            pathname: `/communication_search_message_details/${id}`,
+            state: { id: id, chainLinkId: chainLinkId, filterText: filterText }
         });
         // window.location.href = `/communication_alerts/${row.id}`;
     };

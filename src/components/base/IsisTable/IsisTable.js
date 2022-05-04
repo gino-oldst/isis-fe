@@ -29,6 +29,7 @@ import './table.scss';
 import { useTable, useRowSelect, useFilters, useGlobalFilter, usePagination, useSortBy, useAsyncDebounce, useExpanded } from 'react-table';
 import { setIsRowSelected, setTablePageSize, setActivePage, setAppliedFilters, resetAppliedFilters, setFilteredRows, setSortedColumn, setAllRowsSelected } from '../../../redux/modules/isisTable';
 import Highlighter from 'react-highlight-words';
+import makeData from './makeData';
 
 // Define a default UI for filtering
 function GlobalFilter({
@@ -97,7 +98,7 @@ function SelectColumnFilter({
     const header = Header.toLowerCase();
     const columnFiltersWithCheckbox = ['behaviourCode', 'escalation', 'assignedUser', 'status', 'source'];
     const columnFiltersSearcheable = ['book', 'client'];
-    const columnFiltersWithSearchbox = ['isin', 'summary'];
+    const columnFiltersWithSearchbox = ['expander', 'sender', 'receiver', 'status'];
     const rootPath = window.location.pathname.split('/')[1];
 
     if (rootPath === 'alerts') {
@@ -351,7 +352,8 @@ function SelectColumnFilter({
     // Render a multi-select box
     return (
         <CustomDropdown tag='span'
-            toggle={columnIsFiltered()}>
+            toggle={columnIsFiltered()}
+            className='isis-filter'>
             <DropdownItem header={true} className='text-center'>
                 <img src={filterIcon} alt='talbe-filter-icon' />
             </DropdownItem>
@@ -472,7 +474,7 @@ function IsisTable({
                         </div>
                     ),
                     Cell: ({ row }) => (
-                        <div>
+                        <div style={{ padding: '10px 0' }} className='d-flex align-items-center'>
                             <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
                         </div>
                     )
@@ -547,7 +549,7 @@ function IsisTable({
                                 <th {...column.getHeaderProps()}>
                                     <span onClick={() => column.id !== 'selection' && handleSort(column.id)} className='cursor-pointer'>
                                         {column.render('Header')}
-                                        {column.id !== 'selection' && renderSortControl(column.id)}
+                                        {column.id !== 'selection' && column.id !== 'chainLinkId' && renderSortControl(column.id)}
                                     </span>
                                     {column.canFilter ? column.render('Filter') : null}
                                 </th>
@@ -564,6 +566,7 @@ function IsisTable({
                         </tr>
                         : page.map((row, i) => {
                             prepareRow(row);
+                            const rowProps = row.getRowProps();
 
                             return (
                                 <React.Fragment {...row.getRowProps()}>
@@ -572,13 +575,8 @@ function IsisTable({
                                             return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
                                         })}
                                     </tr>
-                                    {row.isExpanded
-                                        ? <tr>
-                                            <td colSpan={visibleColumns.length}>
-                                                {renderRowSubComponent({ row })}
-                                            </td>
-                                        </tr>
-                                        : null}
+                                    {row.isExpanded &&
+                                        renderRowSubComponent({ row, rowProps, visibleColumns })}
                                 </React.Fragment>
                             );
                         })
@@ -685,6 +683,93 @@ function multiSelectFilter(rows, columnIds, filterValue) {
     return filterValue.length === 0 ? rows : rows.filter((row) => filterValue.includes(String(row.original[columnIds])));
 }
 
+/* Subrows */
+function SubRows({ row, rowProps, visibleColumns, data, loading }) {
+    if (loading) {
+        return (
+            <tr>
+                <td/>
+                <td colSpan={visibleColumns.length - 1}>
+                    Loading...
+                </td>
+            </tr>
+        );
+    }
+
+    return (
+        <>
+            {data.map((x, i) => {
+                return (
+                    <tr
+                        {...rowProps}
+                        key={`${rowProps.key}-expanded-${i}`}>
+                        {row.cells.map((cell) => {
+                            console.log(cell.column.id, x);
+
+                            if (cell.column.id == 'selection') {
+                                return (
+                                    <td {...cell.getCellProps()}>
+                                        {cell.render(cell.column.SubCell ? 'SubCell' : 'Cell', {
+                                            value:
+                                                cell.column.accessor &&
+                                                cell.column.accessor(x, i),
+                                            row: { ...row, original: x }
+                                        })}
+                                    </td>
+                                );
+                            } else if (cell.column.id == 'expander') {
+                                return (
+                                    <td>
+                                        <div className='d-flex flex-column'>
+                                            <Typography size={14} color='color-3' className='search-results__box-label' >
+                                                {x.word}
+                                            </Typography>
+                                            <Typography size={14} color='color-3' className='search-results__box-label' >
+                                                {x.alertID}
+                                            </Typography>
+                                        </div>
+                                    </td>
+                                );
+                            } else if (cell.column.id == 'status') {
+                                return (
+                                    <td colSpan={visibleColumns.length - 1} >
+                                        <Badge status={x.status}/>
+                                    </td>
+                                );
+                            }
+                        })}
+                    </tr>
+                );
+            })}
+        </>
+    );
+}
+
+function SubRowAsync({ row, rowProps, visibleColumns }) {
+    const [loading, setLoading] = React.useState(true);
+    const [data, setData] = React.useState([]);
+
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            setData(makeData(Math.floor(Math.random() * 5) + 1));
+            setLoading(false);
+        }, 500);
+
+        return () => {
+            clearTimeout(timer);
+        };
+    }, []);
+
+    return (
+        <SubRows
+            row={row}
+            rowProps={rowProps}
+            visibleColumns={visibleColumns}
+            data={data}
+            loading={loading}/>
+    );
+}
+
 type Props = {
     loading?: boolean,
     children?: string | React.Node,
@@ -728,7 +813,7 @@ export default function ReactTable({
                 <strong className='highlighted-text'>{children}</strong>
             );
 
-            const cellRender = (accessor, cell) => {
+            const cellRender = (accessor, cell, row) => {
                 if (accessor == 'id') {
                     return (
                         <div>
@@ -737,7 +822,7 @@ export default function ReactTable({
                             </span>
                         </div>
                     );
-                } else if (accessor == 'timeSent') {
+                } else if (accessor == 'timeSent' || accessor == 'date') {
                     const readableDate = moment(cell.value).utc().local().format('DD/MM/YYYY hh:mm A');
 
                     return (
@@ -773,8 +858,23 @@ export default function ReactTable({
                             }
                         </div>
                     );
+                } else if (accessor == 'expander') {
+                    // Make an expander cell
+                    return (
+                        <div className='d-flex'>
+                            <div {...cell.cell.row.getToggleRowExpandedProps()} className='table__number-square d-flex justify-content-center align-items-center'>
+                                <Typography weight={'bold'} variant={'size-16'} color='color-3'>
+                                    3
+                                </Typography>
+                            </div>
+                            <Typography variant={'size-16'} color='color-3' className='color-link-text cursor-pointer pl-3 table__box-label'
+                                onClick={() => viewDetails(cell.cell.row.original.chainLinkId)}>
+                                {truncateText(cell.cell.row.original.chainLinkId, 10)}
+                            </Typography>
+                        </div>
+                    );
                 } else {
-                    return (<span>{cell.value == null ? 'Not Available' : cell.value}</span>);
+                    return (<span>{cell.value == null ? '' : cell.value}</span>);
                 }
                 // if (key == 'subject') {
                 //     return (
@@ -847,7 +947,8 @@ export default function ReactTable({
                 Header: column.header,
                 accessor: column.accessor,
                 disableFilters: column.disableFilters,
-                Cell: (cell, state) => cellRender(column.accessor, cell),
+                // SubCell: column.SubCell,
+                Cell: (e, row) => cellRender(column.accessor, e, row),
                 Filter: SelectColumnFilter,
                 filter: multiSelectFilter,
                 // Cell: (e, row) => <span>{e.value}</span>,
@@ -890,12 +991,11 @@ export default function ReactTable({
     );
 
     const renderSubRowComponent = React.useCallback(
-        ({ row }) => (
-            <pre>
-                <code>
-                    {JSON.stringify({ values: row.values }, null, 2)}
-                </code>
-            </pre>
+        ({ row, rowProps, visibleColumns }) => (
+            <SubRowAsync
+                row={row}
+                rowProps={rowProps}
+                visibleColumns={visibleColumns}/>
         ), []
     );
 
@@ -914,7 +1014,7 @@ export default function ReactTable({
                 sortable={sortable}
                 fetching={fetching}
                 hideHeader={hideHeader}
-                renderRowSubComponent={renderSubRowComponent} />
+                renderRowSubComponent={renderSubRowComponent}/>
         </div>
     );
 }

@@ -5,6 +5,11 @@
     height: 100%;
     display: flex;
 
+    &__message-thread {
+        max-height: 800px;
+        overflow: scroll;
+    }
+    
     &__content {
         padding: 0.6rem 2rem;
         margin-bottom: 80px;
@@ -124,10 +129,19 @@
         width: 60%;
     }
 
-    .alertKeyword {
-        font-weight: 700;
-        color: crimson;
-        background-color: #ffd5d7 !important;
+    .activity-icon {
+        border-radius: 30px;
+        margin-right: 10px;
+        width: 40px;
+        height: 40px;
+        padding: 8px 8px;
+        text-align: center;
+        background: $color-sidebar-2;
+    }
+
+    .info-icon {
+        width: 20px;
+        height: 20px;
     }
 
     .activity-icon {
@@ -138,5 +152,22 @@
         padding: 8px 8px;
         text-align: center;
         background: $color-sidebar-2;
+    }
+
+    .alertKeyword {
+        font-weight: 700;
+        color: rgb(0, 0, 0);
+        background-color: #FFF2D0 !important;
+    }
+}
+
+.popover{
+    padding: 15px !important;
+    max-width:523px !important;
+}
+
+.action-modal{
+    .table th{
+        border-top: 0px !important;
     }
 }

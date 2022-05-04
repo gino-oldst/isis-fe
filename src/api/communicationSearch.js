@@ -1,7 +1,16 @@
 import { config } from '../config/constants';
 import makeApiCall from '../api/makeApiCall';
 
-// const GET_DASHBOARD_DATA = '/measure/dashboard';
+// GET EMAILS of FILTERS
+const GET_EMAIL_DATA = `${config.apiStorage}/storage-service/external/search/paged`;
+
+export async function getEmails(likeEmail, likeFirstName, likeLastName) {
+    return await makeApiCall(`${GET_EMAIL_DATA}`, 'POST', {
+        likeEmail: likeEmail,
+        likeFirstName: likeFirstName,
+        likeLastName: likeLastName
+    });
+}
 
 // ULR: /message/search/paged?size=50&page=1
 // const GET_SEARCH_DATA = `${config.apiStorage}/storage-service/alert/search/paged`;
@@ -12,7 +21,7 @@ export async function getCommunicationSearchData(page, size, sort, filters) {
         id: filters.filterId,
         message: filters.filterText,
         senders: filters.filterSenders,
-        // recipients: filters.filterRecipients.length > 0 ? filters.filterRecipient : ['sample@email.com'],
+        recipients: filters.filterRecipients,
         sources: filters.filterSource,
         dateSentFrom: filters.filterDateFrom,
         dateSentTo: filters.filterDateTo
@@ -43,19 +52,31 @@ export async function getCommunicationMessageDetail(commMessageId) {
     return await makeApiCall(`${GET_COMM_MESSAGE_DATA}${commMessageId}`, 'GET');
 }
 
-const GET_RECENT_MESSAGE_DATA = `${config.apiStorage}/storage-service/message/search/recent`;
-
 // recent search (before-after)
 // POST <host>/storage-service/recent/search?size=5
 // {
 // "id":"f623466e-2d73-483a-9829-8962485ae68a" //communication message id
 // }
+
+const GET_RECENT_MESSAGE_DATA = `${config.apiStorage}/storage-service/message/search/recent`;
+
 export async function getRecentMessages(messageId, size) {
     const filterBody = {
         id: messageId
     };
 
     return await makeApiCall(`${GET_RECENT_MESSAGE_DATA}?size=${size}`, 'POST', filterBody);
+}
+
+// Get Whole Message Thread
+const GET_MESSAGE_THREAD = `${config.apiStorage}/storage-service/message/search`;
+
+export async function getMessageThread(chainLinkId) {
+    const filterBody = {
+        chainLinkId: chainLinkId
+    };
+
+    return await makeApiCall(`${GET_MESSAGE_THREAD}`, 'POST', filterBody);
 }
 
 // message activity log (user comments on the message)

@@ -1,5 +1,5 @@
 // @flow
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
@@ -8,8 +8,10 @@ import type { Menu } from '../../types';
 import {
     DATE_TO_UTC
 } from '../../utils/helpers';
+import debounce from 'debounce-async';
 
 import { setCommunicationSearchData, setSearchFilterValues } from '../../redux/modules/communicationSearch';
+import { getEmails } from '../../api/communicationSearch';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -43,18 +45,6 @@ export default function CommunicationSearchContainer({
         }
     ]);
 
-    useEffect(() => {
-        console.log('filterDate', filterDate);
-        const dateFrom = filterDate[0].startDate != '' ? moment(filterDate[0].startDate).utc().local().format('YYYY-MM-DD') : ''; // for adding time in format hh:mm A
-        const dateTo = filterDate[0].endDate != '' ? moment(filterDate[0].endDate).utc().local().format('YYYY-MM-DD') : ''; // for adding time in format hh:mm A
-
-        setFilterSearchForm({
-            ...filterSearchForm,
-            filterDateFrom: dateFrom,
-            filterDateTo: dateTo
-        });
-    }, [filterDate]);
-
     const [filterSearchForm, setFilterSearchForm] = useState({
         filterId: '',
         filterText: '',
@@ -69,33 +59,64 @@ export default function CommunicationSearchContainer({
     const [filterSender, setFilterSender] = useState([]);
     const [filterRecipient, setFilterRecipient] = useState([]);
 
-    const handleSenderChange = (updatedList) => {
-        // var updatedList = [];
+    const [errorForm, setErrorForm] = useState({
+        errorDate: '',
+        errorSenders: '',
+        errorRecipients: ''
+    });
 
-        // options.map(op => {
-        //     if (!updatedList.indexOf(op.value) > -1) {
-        //         updatedList.push(op.value);
-        //     }
-        // });
-        setFilterSender(updatedList);
+    useEffect(() => {
+        // const dateFrom = filterDate[0].startDate != '' ? moment(filterDate[0].startDate).utc().local().format('YYYY-MM-DD hh:mm A') : ''; // for adding time in format hh:mm A
+        // const dateTo = filterDate[0].endDate != '' ? moment(filterDate[0].endDate).utc().local().format('YYYY-MM-DD hh:mm A') : ''; // for adding time in format hh:mm A
+
+        const dateFrom = filterDate[0].startDate != '' ? moment(filterDate[0].startDate).utc().local().format('YYYY-MM-DDTHH:mm:ss') : '';
+        const dateTo = filterDate[0].endDate != '' ? moment(filterDate[0].endDate).utc().local().format('YYYY-MM-DDTHH:mm:ss') : '';
+
         setFilterSearchForm({
             ...filterSearchForm,
-            filterSenders: updatedList
+            filterDateFrom: dateFrom,
+            filterDateTo: dateTo
+        });
+
+        setErrorForm({
+            ...errorForm,
+            errorDate: ''
+        });
+    }, [filterDate]);
+
+    const handleSenderChange = (updatedList) => {
+        var list = [];
+
+        updatedList.map(op => {
+            list.push(op.value);
+        });
+
+        setFilterSender(list);
+        setFilterSearchForm({
+            ...filterSearchForm,
+            filterSenders: list
+        });
+        setErrorForm({
+            ...errorForm,
+            errorSenders: ''
         });
     };
 
     const handleRecipientChange = (updatedList) => {
-        // var updatedList = [];
+        var list = [];
 
-        // options.map(op => {
-        //     if (!updatedList.indexOf(op.value) > -1) {
-        //         updatedList.push(op.value);
-        //     }
-        // });
-        setFilterRecipient(updatedList);
+        updatedList.map(op => {
+            list.push(op.value);
+        });
+
+        setFilterRecipient(list);
         setFilterSearchForm({
             ...filterSearchForm,
-            filterRecipients: updatedList
+            filterRecipients: list
+        });
+        setErrorForm({
+            ...errorForm,
+            errorRecipients: ''
         });
     };
 
@@ -131,7 +152,41 @@ export default function CommunicationSearchContainer({
 
     const onSubmit = async e => {
         e.preventDefault();
-        history.push('/communication_search_results', filterSearchForm);
+        var formValid = true;
+        const initialError = {
+            errorDate: '',
+            errorSenders: '',
+            errorRecipients: ''
+        };
+
+        // Check here
+        if (filterSearchForm.filterSenders.length == 0) {
+            initialError.errorSenders = 'Please add Senders';
+            formValid = false;
+        }
+
+        // if (filterSearchForm.filterRecipients.length == 0) {
+        //     initialError.errorRecipients = 'Please add Recipients';
+        //     formValid = false;
+        // }
+
+        if (filterSearchForm.filterDateFrom == '' && filterSearchForm.filterDateTo == '') {
+            initialError.errorDate = 'Please add Date/Time Range';
+            formValid = false;
+        }
+
+        console.log(filterSearchForm);
+
+        if (formValid) {
+            history.push('/communication_search_results', filterSearchForm);
+        } else {
+            setErrorForm({
+                ...errorForm,
+                errorDate: initialError.errorDate,
+                errorSenders: initialError.errorSenders,
+                errorRecipients: initialError.errorRecipients
+            });
+        }
     };
 
     const onChange = e => {
@@ -142,6 +197,25 @@ export default function CommunicationSearchContainer({
             [name]: value
         });
     };
+
+    // Emails for Sender Recipient Implementation
+    const [lastOptions, setLastOptions] = useState([]);
+
+    const loadOptions = useMemo(() => {
+        return debounce(async (inputValue) => {
+            const { data } = await getEmails(inputValue, inputValue, inputValue);
+            const accounts = data.data;
+
+            const options = accounts.map((account) => ({
+                value: account.email,
+                label: `${account.email} (${account.firstName} ${account.lastName})`
+            }));
+
+            setLastOptions(options);
+
+            return options;
+        }, 300);
+    }, [setLastOptions]);
 
     return <CommunicationSearchScreen
         loading={loading}
@@ -157,5 +231,7 @@ export default function CommunicationSearchContainer({
         filterDate={filterDate}
         setFilterDate={setFilterDate}
         handleSource={handleSource}
-        handleStatus={handleStatus}/>;
+        handleStatus={handleStatus}
+        loadOptions={loadOptions}
+        errorForm={errorForm}/>;
 }

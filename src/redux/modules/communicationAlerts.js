@@ -93,20 +93,28 @@ const initialState = {
         isFiltered: false,
         columns: [
             {
-                header: 'Alert ID',
-                accessor: 'id',
-                disableFilters: true,
+                header: 'Alert',
+                accessor: 'expander',
+                disableFilters: false,
                 clickable: true
             },
+            // {
+            //     header: '',
+            //     accessor: 'chainLinkId',
+            //     disableFilters: true,
+            //     sortable: false,
+            //     hideHeader: true
+            // },
             {
                 header: 'Status',
-                disableFilters: true,
+                accessor: 'status',
+                disableFilters: false,
                 clickable: false
             },
             {
                 header: 'Date',
                 accessor: 'date',
-                disableFilters: true,
+                disableFilters: false,
                 clickable: false
             },
             {
@@ -118,13 +126,13 @@ const initialState = {
             {
                 header: 'Sender',
                 accessor: 'sender',
-                disableFilters: true,
+                disableFilters: false,
                 clickable: false
             },
             {
                 header: 'Receiver',
                 accessor: 'receiver',
-                disableFilters: true,
+                disableFilters: false,
                 clickable: false
             }
         ],

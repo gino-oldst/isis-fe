@@ -103,9 +103,12 @@ export default function CommunicationAlertsContainer({
         return !!appliedFilters.filter(filter => filter.value.length > 0).length;
     };
 
-    const viewCommunicationAlertDetails = async (row) => {
-        // history.push(`/communication_alerts/${row.id}`);
-        window.location.href = `/communication_alerts/${row.id}`;
+    const viewCommunicationAlertDetails = async (id) => {
+        history.push({
+            pathname: `/communication_alerts_detail/${id}`,
+            state: { id: id }
+        });
+        // window.location.href = `/communication_alerts_detail/${id}`;
     };
 
     return <CommunicationAlertsScreen
