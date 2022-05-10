@@ -12,7 +12,7 @@ import Select from '../../base/Select/Select';
 import makeAnimated from 'react-select/animated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { kFormatter, getTextColor, truncateText, capitalize, numberWithCommas } from '../../../utils/helpers';
-import { ALERT_ESCALATION_OPTIONS, ALERT_STATUS_OPTIONS, COMMUNICATION_ALERT_SOURCE_OPTIONS } from '../../../config/constants';
+import { ALERT_ESCALATION_OPTIONS, ALERT_STATUS_OPTIONS, COMMUNICATION_ALERT_SOURCE_OPTIONS, COMMUNICATION_ALERT_STATUS_OPTIONS } from '../../../config/constants';
 import {
     Table as ReactstrapTable,
     DropdownItem,
@@ -30,6 +30,8 @@ import { useTable, useRowSelect, useFilters, useGlobalFilter, usePagination, use
 import { setIsRowSelected, setTablePageSize, setActivePage, setAppliedFilters, resetAppliedFilters, setFilteredRows, setSortedColumn, setAllRowsSelected } from '../../../redux/modules/isisTable';
 import Highlighter from 'react-highlight-words';
 import makeData from './makeData';
+import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
+import DatePicker from 'react-datepicker';
 
 // Define a default UI for filtering
 function GlobalFilter({
@@ -91,14 +93,14 @@ function SelectColumnFilter({
     const [selectFilter, setSelectFilter] = useState([]);
     const [searchFilter, setSearchFilter] = useState('');
     const [isCheckAll, setIsCheckAll] = useState(false);
-    const { selected, columnFilterValues, searchFilterValue } = useSelector(({ communicationSearch }) => communicationSearch);
-    const { table } = useSelector(({ behaviours }) => behaviours);
+    const { table, selected, columnFilterValues, searchFilterValue } = useSelector(({ communicationSearch }) => communicationSearch);
+    // const { table } = useSelector(({ behaviours }) => behaviours);
     const { appliedFilters, filtersReset } = useSelector(({ isisTable }) => isisTable);
 
     const header = Header.toLowerCase();
-    const columnFiltersWithCheckbox = ['behaviourCode', 'escalation', 'assignedUser', 'status', 'source'];
+    const columnFiltersWithCheckbox = ['behaviourCode', 'escalation', 'assignedUser', 'source'];
     const columnFiltersSearcheable = ['book', 'client'];
-    const columnFiltersWithSearchbox = ['expander', 'sender', 'receiver', 'status'];
+    const columnFiltersWithSearchbox = ['expander', 'receiver'];
     const rootPath = window.location.pathname.split('/')[1];
 
     if (rootPath === 'alerts') {
@@ -155,16 +157,21 @@ function SelectColumnFilter({
 
     const handleSelectAll = () => {
         setIsCheckAll(!isCheckAll);
-        setSelectFilter(table.data.map((alert) => {
-            dispatch(setAppliedFilters(id, alert.id, true, columnFiltersWithCheckbox.includes(id)));
 
-            return alert.id;
-        }));
+        if (id == 'source') {
+            setSelectFilter(table.data.map((alert) => {
+                dispatch(setAppliedFilters(id, alert.source, true, columnFiltersWithCheckbox.includes(id)));
+
+                return alert.source;
+            }));
+        }
 
         if (isCheckAll) {
             setSelectFilter([]);
 
-            table.data.map((alert) => dispatch(setAppliedFilters(id, alert.id, false, columnFiltersWithCheckbox.includes(id))));
+            if (id == 'source') {
+                table.data.map((alert) => dispatch(setAppliedFilters(id, alert.source, false, columnFiltersWithCheckbox.includes(id))));
+            }
         }
     };
 
@@ -227,47 +234,6 @@ function SelectColumnFilter({
 
     const animatedComponents = makeAnimated();
 
-    const getColumnFilterOptions = () => {
-        switch (id) {
-            case 'ticker':
-                return columnFilterValues.tickers.map(value => ({ name: value, label: value, value: value }));
-            case 'client':
-                return columnFilterValues.clients.map(value => ({ name: value, label: value, value: value }));
-            case 'book':
-                return columnFilterValues.books.map(value => ({ name: value, label: value, value: value }));
-            case 'behaviourCode':
-                return columnFilterValues.behaviours.map(value => ({ name: value.internalCode, label: value.internalCode, value: value.id }));
-            case 'isin': // todo
-                return [];
-            case 'summary':
-                return [];
-            default:
-                return columnFilterValues[id].map(value => ({ name: value, label: value, value: value }));
-        }
-    };
-
-    const renderFilterWithSearcheableDropdown = () => {
-        return columnFiltersSearcheable.includes(id) &&
-            <DropdownItem header={true}>
-                <Select
-                    options={!columnFilterValues ? [] : getColumnFilterOptions()}
-                    name='search'
-                    placeholder={'Search...'}
-                    isMulti={true}
-                    closeMenuOnSelect={false}
-                    hideSelectedOptions={false}
-                    components={{
-                        Option,
-                        MultiValue,
-                        ValueContainer,
-                        animatedComponents
-                    }}
-                    onChange={handleSelectFilterChange}
-                    allowSelectAll={true}
-                    value={appliedFilters.filter(filter => filter.id === id)[0].value} />
-            </DropdownItem>;
-    };
-
     const renderFilterWithSearchbar = () => {
         return columnFiltersWithSearchbox.includes(id) &&
         <DropdownItem header={true}>
@@ -276,77 +242,116 @@ function SelectColumnFilter({
         </DropdownItem>;
     };
 
+    // List of all cars satisfing all the filters
+    const [filterOptions, setFilteredOptions] = useState('');
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
+
+    const handleDateFrom = (date) => {
+        setStartDate(date);
+        dispatch(setAppliedFilters('dateSentFrom', date, false, false));
+    };
+
+    const handleDateTo = (date) => {
+        setEndDate(date);
+        dispatch(setAppliedFilters('dateSentTo', date, false, false));
+    };
+
     const renderFilterWithCheckboxColumns = () => {
         let options = [];
 
         switch (header) {
-            case 'alert type':
-                options = table.data.map(alertType => ({
-                    label: alertType.code,
-                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(alertType.id) || appliedFilters.filter(filter => filter.id === 'behaviourCode' && filter.value.includes(alertType.id)).length}
-                        onChange={e => handleFilterChange(e, alertType.id)}/>
-                }));
+            case 'date & time':
+                return <>
+                    <FormGroup>
+                        <Typography weight='regular' variant='size-14' color='color-3'>Date From</Typography>
+                        <DatePicker
+                            className='w-100 mb-3'
+                            selected={startDate}
+                            onChange={(date) => handleDateFrom(date)}
+                            showTimeInput={true}
+                            dateFormat='MMMM d, yyyy h:mm aa'/>
+                    </FormGroup>
+                    <FormGroup>
+                        <Typography weight='regular' variant='size-14' color='color-3'>Date To</Typography>
+                        <DatePicker
+                            className='w-100'
+                            selected={endDate}
+                            onChange={(date) => handleDateTo(date)}
+                            showTimeInput={true}
+                            dateFormat='MMMM d, yyyy h:mm aa'/>
+                    </FormGroup>
+                </>;
                 break;
-            case 'escalation':
-                options = Object.keys(ALERT_ESCALATION_OPTIONS).map(escalationOpt => ({
-                    label: escalationOpt,
-                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(escalationOpt.toUpperCase()) || appliedFilters.filter(filter => filter.id === 'escalation' && filter.value.includes(escalationOpt)).length}
-                        onChange={e => handleFilterChange(e, escalationOpt.toUpperCase())}/>
-                }));
+            case 'recipient':
+                if (columnFilterValues) {
+                    options = columnFilterValues.emails.map(email => ({
+                        label: email.value,
+                        inputComponent: <Input type='checkbox' checked={selectFilter.includes(email.value.toUpperCase()) || appliedFilters.filter(filter => filter.id === 'sender' && filter.value.includes(email.value)).length}
+                            onChange={e => handleFilterChange(e, email.value.toUpperCase())}/>
+                    }));
+                }
+
                 break;
-            case 'assigned':
-                options = selected.assignees.map(assignee => ({
-                    label: assignee.fullName,
-                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(assignee.id !== 999999 ? assignee.id : null) || appliedFilters.filter(filter => filter.id === 'assignedUser' && filter.value.includes(assignee.id)).length}
-                        onChange={e => handleFilterChange(e, assignee.id !== 999999 ? assignee.id : null)}/>
-                }));
-                break;
-            case 'status':
-                options = Object.keys(ALERT_STATUS_OPTIONS).map(statusOpt => ({
-                    label: statusOpt,
-                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(statusOpt.toUpperCase()) || appliedFilters.filter(filter => filter.id === 'status' && filter.value.includes(statusOpt)).length}
-                        onChange={e => handleFilterChange(e, statusOpt.toUpperCase())}/>
-                }));
+            case 'sender':
+                if (columnFilterValues) {
+                    options = columnFilterValues.emails.map(email => ({
+                        label: email.value,
+                        inputComponent: <Input type='checkbox' checked={selectFilter.includes(email.value.toUpperCase()) || appliedFilters.filter(filter => filter.id === 'sender' && filter.value.includes(email.value)).length}
+                            onChange={e => handleFilterChange(e, email.value.toUpperCase())}/>
+                    }));
+                }
+
                 break;
             case 'source':
                 options = Object.keys(COMMUNICATION_ALERT_SOURCE_OPTIONS).map(statusOpt => ({
                     label: statusOpt,
-                    inputComponent: <Input type='checkbox' disabled={statusOpt != 'REUTERS'} checked={selectFilter.includes(statusOpt.toUpperCase()) || appliedFilters.filter(filter => filter.id === 'status' && filter.value.includes(statusOpt)).length}
+                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(statusOpt.toUpperCase()) || appliedFilters.filter(filter => filter.id === 'source' && filter.value.includes(statusOpt)).length || isCheckAll}
                         onChange={e => handleFilterChange(e, statusOpt.toUpperCase())}/>
                 }));
+                break;
+            case 'status':
+                options = Object.keys(COMMUNICATION_ALERT_STATUS_OPTIONS).map(statusOpt => ({
+                    label: statusOpt,
+                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(statusOpt.toUpperCase()) || appliedFilters.filter(filter => filter.id === 'source' && filter.value.includes(statusOpt)).length || isCheckAll}
+                        onChange={e => handleFilterChange(e, statusOpt.toUpperCase())}/>
+                }));
+                break;
+            case 'alert':
+                if (columnFilterValues) {
+                    options = columnFilterValues.keywords.map(keyword => ({
+                        label: keyword.value,
+                        inputComponent: <Input type='checkbox' checked={selectFilter.includes(keyword.value.toUpperCase()) || appliedFilters.filter(filter => filter.id === 'alert' && filter.value.includes(keyword.value)).length}
+                            onChange={e => handleFilterChange(e, keyword.value.toUpperCase())}/>
+                    }));
+                }
+
                 break;
             default:
                 break;
         }
 
-        if (header === 'alert type' || header === 'source') {
-            return <>
-                <FormGroup key={'select_all'} check={true}>
-                    <Label check={true}>
-                        <Input type='checkbox' disabled={true} checked={isCheckAll}
-                            onChange={handleSelectAll}/>
-                        Select all
-                    </Label>
-                </FormGroup>
-                {options.map((opt, idx) => (
-                    <FormGroup key={opt.label} check={true}>
-                        <Label check={true}>
-                            {opt.inputComponent}
-                            {opt.label}
-                        </Label>
-                    </FormGroup>
-                ))}
-            </>;
-        }
-
-        return options.map((opt, idx) => (
-            <FormGroup key={opt.label} check={true}>
-                <Label check={true}>
-                    {opt.inputComponent}
-                    {opt.label}
+        return <>
+            <FormGroup className='mb-3'>
+                <Input type='text' name='search' placeholder='Search...'
+                    bsSize='md' value={filterOptions} onChange={e => setFilteredOptions(e.target.value)} />
+            </FormGroup>
+            <FormGroup key={'select_all'} check={true}>
+                <Label check={true} className='d-flex align-items-center'>
+                    <Input type='checkbox' checked={isCheckAll}
+                        onChange={handleSelectAll}/>
+                    <Typography weight='regular' variant='size-16' color='color-3'>Select all</Typography>
                 </Label>
             </FormGroup>
-        ));
+            {options.filter(option => option.label.toLowerCase().includes(filterOptions.toLowerCase())).map((opt, idx) => (
+                <FormGroup key={opt.label} check={true}>
+                    <Label check={true} className='d-flex align-items-center'>
+                        {opt.inputComponent}
+                        <Typography weight='regular' variant='size-16' color='color-3'>{opt.label}</Typography>
+                    </Label>
+                </FormGroup>
+            ))}
+        </>;
     };
 
     // Render a multi-select box
@@ -358,8 +363,6 @@ function SelectColumnFilter({
                 <img src={filterIcon} alt='talbe-filter-icon' />
             </DropdownItem>
             <DropdownItem divider={true} />
-            {renderFilterWithSearcheableDropdown()}
-            {renderFilterWithSearchbar()}
             <div className='table__filter-options overflow-auto'>
                 {renderFilterWithCheckboxColumns()}
             </div>
@@ -495,7 +498,7 @@ function IsisTable({
     const selectedRows = rows.filter(row => row.isSelected === true);
 
     useEffect(() => {
-        dispatch(setIsRowSelected(selectedRows.length, [...selectedRows.map(row => { return row.original.id; })]));
+        dispatch(setIsRowSelected(selectedRows.length, [...selectedRows.map(row => { return row.original; })]));
     }, [selectedRows.length]);
 
     // set pageSize to redux that triggers alerts list api call
@@ -704,8 +707,6 @@ function SubRows({ row, rowProps, visibleColumns, data, loading }) {
                         {...rowProps}
                         key={`${rowProps.key}-expanded-${i}`}>
                         {row.cells.map((cell) => {
-                            console.log(cell.column.id, x);
-
                             if (cell.column.id == 'selection') {
                                 return (
                                     <td {...cell.getCellProps()}>
@@ -721,11 +722,11 @@ function SubRows({ row, rowProps, visibleColumns, data, loading }) {
                                 return (
                                     <td>
                                         <div className='d-flex flex-column'>
-                                            <Typography size={14} color='color-3' className='search-results__box-label' >
-                                                {x.word}
+                                            <Typography color='color-3' className='search-results__box-label' >
+                                                {capitalize(x.keyword)}
                                             </Typography>
-                                            <Typography size={14} color='color-3' className='search-results__box-label' >
-                                                {x.alertID}
+                                            <Typography variant='size-14' color='color-3' className=' search-results__box-label' >
+                                                {x.policyName}
                                             </Typography>
                                         </div>
                                     </td>
@@ -748,10 +749,12 @@ function SubRows({ row, rowProps, visibleColumns, data, loading }) {
 function SubRowAsync({ row, rowProps, visibleColumns }) {
     const [loading, setLoading] = React.useState(true);
     const [data, setData] = React.useState([]);
+    const alertData = row.original.alerts.data;
 
     React.useEffect(() => {
         const timer = setTimeout(() => {
-            setData(makeData(Math.floor(Math.random() * 5) + 1));
+            // setData(makeData(Math.floor(Math.random() * 5) + 1));
+            setData(alertData);
             setLoading(false);
         }, 500);
 
@@ -858,18 +861,67 @@ export default function ReactTable({
                             }
                         </div>
                     );
+                } else if (accessor == 'sender') {
+                    return (
+                        <div className='d-flex flex-column' style={{ maxWidth: '200px' }}>
+                            {cell.cell.row.original.message.sender != null
+                                ? <Typography size={14} color='color-3' className='table__box-label' >
+                                    {cell.cell.row.original.message.sender}
+                                </Typography>
+                                : 'N/A'
+                            }
+                        </div>
+                    );
+                } else if (accessor == 'senderSearch') {
+                    return (
+                        <div className='d-flex flex-column'>
+                            {cell.cell.row.original.sender != null
+                                ? <Typography size={14} color='color-3' className='table__box-label' >
+                                    {cell.cell.row.original.sender}
+                                </Typography>
+                                : 'N/A'
+                            }
+                        </div>
+                    );
+                } else if (accessor == 'recipient') {
+                    const recipients = [...new Set(cell.cell.row.original.recipients.data.map(item => item.recipient))];
+
+                    return (
+                        <div className='d-flex flex-column' style={{ maxWidth: '200px' }}>
+                            {recipients != null
+                                ? <Typography size={14} color='color-3' className='table__box-label' >
+                                    {truncateText(recipients.join(', '), 400)}
+                                </Typography>
+                                : 'N/A'
+                            }
+                        </div>
+                    );
+                } else if (accessor == 'alertSource') {
+                    return (
+                        <div className='d-flex flex-column'>
+                            {cell.cell.row.original.message.source != null
+                                ? <Typography size={14} color='color-3' className='table__box-label' >
+                                    {capitalize(cell.cell.row.original.message.source)}
+                                </Typography>
+                                : 'N/A'
+                            }
+                        </div>
+                    );
                 } else if (accessor == 'expander') {
                     // Make an expander cell
+                    // row.original.alerts.data
+                    const keywords = [...new Set(cell.cell.row.original.alerts.data.map(item => item.keyword))];
+
                     return (
                         <div className='d-flex'>
                             <div {...cell.cell.row.getToggleRowExpandedProps()} className='table__number-square d-flex justify-content-center align-items-center'>
                                 <Typography weight={'bold'} variant={'size-16'} color='color-3'>
-                                    3
+                                    {cell.cell.row.original.alerts.data.length}
                                 </Typography>
                             </div>
                             <Typography variant={'size-16'} color='color-3' className='color-link-text cursor-pointer pl-3 table__box-label'
-                                onClick={() => viewDetails(cell.cell.row.original.chainLinkId)}>
-                                {truncateText(cell.cell.row.original.chainLinkId, 10)}
+                                onClick={() => viewDetails(cell.cell.row.original.message.id, cell.cell.row.original.message.chainLinkId, keywords)}>
+                                {truncateText(cell.cell.row.original.message.id, 10)}
                             </Typography>
                         </div>
                     );

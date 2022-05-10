@@ -8,7 +8,7 @@ import dataSample from '../CommunicationAlerts/MOCK_DATA.json';
 import filterSample from '../CommunicationAlerts/filters.json';
 
 // To be removed once we move to with backend
-import { getCommunicationSearchData } from '../../api/communicationSearch';
+import { getCommunicationSearchData, getEmails, getEmailsAll } from '../../api/communicationSearch';
 import { setCommunicationSearchData, setColumnFilterValues, setSearchFilterValues } from '../../redux/modules/communicationSearch';
 import { setActivePage } from '../../redux/modules/isisTable';
 import { filter } from 'underscore';
@@ -31,6 +31,7 @@ export default function CommunicationSearchResultsContainer({
     const [currPage, setCurrPage] = useState(false);
     const { pageSize, activePage, appliedFilters, areRowsSelectedAll, sort } = useSelector(({ isisTable }) => isisTable);
     const { table, selected, dateRange, searchFilterValue } = useSelector(({ communicationSearch }) => communicationSearch);
+    const { emails, profileData } = useSelector(({ authentication }) => authentication);
 
     const breadcrumb = [
         {
@@ -52,20 +53,26 @@ export default function CommunicationSearchResultsContainer({
 
     // const [table, setTable] = useState([]);
 
-    const loadSearchData = async (page, size, appliedFilters, sort) => {
+    const loadSearchData = async (page, size, appliedFilters, sort, pushToHistory) => {
         setLoading(true);
 
         try {
+            await loadColumnFilterValues();
+
             const search = await getCommunicationSearchData(page, size, sort, appliedFilters);
 
-            // await loadColumnFilterValues();
-
             const { data, searchIds, totalNoOfRecords, totalPages } = search.data;
+
+            console.log(data);
 
             // Map data and add the keyword to object as filterKeyword
             data.map(item => {
                 item.keyword = appliedFilters.filterText;
             });
+
+            if (pushToHistory) {
+                history.push('/communication_search_results', filterSearchForm);
+            }
 
             dispatch(setCommunicationSearchData(data, searchIds, totalNoOfRecords, totalPages));
         } catch (e) {
@@ -80,7 +87,8 @@ export default function CommunicationSearchResultsContainer({
             activePage,
             pageSize,
             filterSearchForm,
-            sort
+            sort,
+            true
         );
     }, [pageSize, activePage, filterSearchForm, sort]);
 
@@ -113,7 +121,7 @@ export default function CommunicationSearchResultsContainer({
         appliedFilters.map(ev => {
             switch (ev.id.toLowerCase()) {
                 case 'source':
-                    // console.log(ev);
+                    console.log(ev);
                     break;
 
                 default:
@@ -140,23 +148,33 @@ export default function CommunicationSearchResultsContainer({
     };
 
     const loadColumnFilterValues = async () => {
-        // const { data } = await getColumnFilterValues();
+        // const emails = await getEmails();
 
-        // console.log(JSON.stringify(data));
-        const { data } = filterSample;
+        // const { data } = emails.data;
+
+        // const { data } = filterSample;
 
         // console.log(JSON.stringify(filterSample));
         // console.log(JSON.stringify(data));
-        let dataCopy = data;
+        // let dataCopy = data;
 
-        const keys = Object.keys(data);
+        // const keys = Object.keys(data);
 
-        keys.forEach(key => {
-            dataCopy = {
-                ...data,
-                [key]: data[key].sort()
-            };
-        });
+        // keys.forEach(key => {
+        //     dataCopy = {
+        //         ...data,
+        //         [key]: data[key].sort()
+        //     };
+        // });
+        // const emailList = data.map((account) => ({
+        //     value: account.email,
+        //     label: `${account.email} (${account.firstName} ${account.lastName})`
+        // }));
+        console.log(emails, profileData);
+
+        const dataCopy = {
+            emails: emails
+        };
 
         dispatch(setColumnFilterValues(dataCopy));
     };

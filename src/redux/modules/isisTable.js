@@ -97,6 +97,22 @@ const initialState = {
         {
             id: 'source',
             value: []
+        },
+        {
+            id: 'sender',
+            value: []
+        },
+        {
+            id: 'recipient',
+            value: []
+        },
+        {
+            id: 'dateSentFrom',
+            value: ''
+        },
+        {
+            id: 'dateSentTo',
+            value: ''
         }
     ],
     sort: {
@@ -110,6 +126,8 @@ const initialState = {
 export default function isisTable(state: Object = initialState, action: Object) {
     switch (action.type) {
         case SET_IS_ROW_SELECTED:
+            console.log(action.selectedRows);
+
             return {
                 ...state,
                 isRowsSelected: action.count,

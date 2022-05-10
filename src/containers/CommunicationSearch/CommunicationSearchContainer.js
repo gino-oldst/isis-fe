@@ -165,17 +165,15 @@ export default function CommunicationSearchContainer({
             formValid = false;
         }
 
-        // if (filterSearchForm.filterRecipients.length == 0) {
-        //     initialError.errorRecipients = 'Please add Recipients';
-        //     formValid = false;
-        // }
+        if (filterSearchForm.filterRecipients.length == 0) {
+            initialError.errorRecipients = 'Please add Recipients';
+            formValid = false;
+        }
 
         if (filterSearchForm.filterDateFrom == '' && filterSearchForm.filterDateTo == '') {
             initialError.errorDate = 'Please add Date/Time Range';
             formValid = false;
         }
-
-        console.log(filterSearchForm);
 
         if (formValid) {
             history.push('/communication_search_results', filterSearchForm);

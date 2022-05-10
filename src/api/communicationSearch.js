@@ -1,5 +1,10 @@
 import { config } from '../config/constants';
-import makeApiCall from '../api/makeApiCall';
+import makeApiCall, { cancelTokenSource } from '../api/makeApiCall';
+
+// For Cancelling Requests
+const handleCancelPreviousRequest = () => {
+    cancelTokenSource.cancel('Request was canceled');
+};
 
 // GET EMAILS of FILTERS
 const GET_EMAIL_DATA = `${config.apiStorage}/storage-service/external/search/paged`;
@@ -12,11 +17,38 @@ export async function getEmails(likeEmail, likeFirstName, likeLastName) {
     });
 }
 
+const GET_EMAIL_DATA_ALL = `${config.apiStorage}/storage-service/external/search`;
+
+export async function getEmailsAll(likeEmail, likeFirstName, likeLastName) {
+    const emails = await makeApiCall(`${GET_EMAIL_DATA_ALL}`, 'POST', {
+        likeEmail: likeEmail,
+        likeFirstName: likeFirstName,
+        likeLastName: likeLastName
+    });
+
+    const { data } = emails.data;
+
+    const alertList = data.map((item) => ({
+        value: item.email,
+        label: item.email
+    }));
+
+    return alertList;
+}
+
 // ULR: /message/search/paged?size=50&page=1
 // const GET_SEARCH_DATA = `${config.apiStorage}/storage-service/alert/search/paged`;
 const GET_SEARCH_DATA = `${config.apiStorage}/storage-service/message/search/paged`;
+var previousKeyword = '';
 
 export async function getCommunicationSearchData(page, size, sort, filters) {
+    // if (previousKeyword != filters.filterText && previousKeyword != '') {
+    //     handleCancelPreviousRequest();
+    //     console.log('cancel');
+    // }
+
+    previousKeyword = filters.filterText;
+
     const filterBody = {
         id: filters.filterId,
         message: filters.filterText,
@@ -76,7 +108,7 @@ export async function getMessageThread(chainLinkId) {
         chainLinkId: chainLinkId
     };
 
-    return await makeApiCall(`${GET_MESSAGE_THREAD}`, 'POST', filterBody);
+    return await makeApiCall(`${GET_MESSAGE_THREAD}?sort=timeSent,DESC`, 'POST', filterBody);
 }
 
 // message activity log (user comments on the message)

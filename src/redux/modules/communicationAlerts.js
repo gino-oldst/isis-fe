@@ -112,14 +112,14 @@ const initialState = {
                 clickable: false
             },
             {
-                header: 'Date',
+                header: 'Date & Time',
                 accessor: 'date',
                 disableFilters: false,
                 clickable: false
             },
             {
                 header: 'Source',
-                accessor: 'source',
+                accessor: 'alertSource',
                 disableFilters: false,
                 clickable: false
             },
@@ -130,8 +130,8 @@ const initialState = {
                 clickable: false
             },
             {
-                header: 'Receiver',
-                accessor: 'receiver',
+                header: 'Recipient',
+                accessor: 'recipient',
                 disableFilters: false,
                 clickable: false
             }

@@ -6,9 +6,10 @@ import { useHistory } from 'react-router-dom';
 import Login from './LoginScreen';
 import Storage from '../../utils/Storage';
 import { storageKey } from '../../config/constants';
-import { authUser } from '../../redux/modules/authentication';
+import { authUser, setEmails } from '../../redux/modules/authentication';
 import { userLogin } from '../../api/auth';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
+import { getEmailsAll } from '../../api/communicationSearch';
 
 type Props = {
     handleCloseModal: Function
@@ -53,6 +54,10 @@ export default function LoginContainer({
                         userId: data.jti,
                         username: loginForm.username
                     }));
+
+                    const emails = await getEmailsAll();
+
+                    dispatch(setEmails(emails));
 
                     history.replace('/dashboard');
                 }

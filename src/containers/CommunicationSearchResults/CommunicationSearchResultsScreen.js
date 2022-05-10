@@ -245,33 +245,35 @@ function CommunicationSearchResultsScreen({
                                         onClick={showActionsModal}/> */}
                                 </div>
                                 <div className='search-results__search-bar d-flex align-items-center pb-0'>
-                                    <Form className='d-flex' onSubmit={handleSearchClick}>
-                                        <FormGroup>
-                                            <InputGroup>
-                                                <InputGroupAddon addonType='prepend'>
-                                                    <InputGroupText>
-                                                        <FaSearch size={18} color='#004C98'/>
-                                                    </InputGroupText>
-                                                </InputGroupAddon>
-                                                <Input name='filterId' type='text' defaultValue={filterId}
-                                                    className='shadow-none' placeholder='Search unique ID'/>
-                                            </InputGroup>
-                                        </FormGroup>
-                                        <FormGroup className='px-4'>
-                                            <InputGroup>
-                                                <InputGroupAddon addonType='prepend'>
-                                                    <InputGroupText>
-                                                        <MdInsertComment size={18} color='#004C98'/>
-                                                    </InputGroupText>
-                                                </InputGroupAddon>
-                                                <Input name='filterText' type='text' defaultValue={filterKeyword}
-                                                    className='shadow-none' placeholder='Search a Keyword'/>
-                                            </InputGroup>
-                                        </FormGroup>
-                                        <FormGroup>
-                                            <Button label='Search' variant='primary' type='submit'
-                                                className='alerts__save-button px-4 py-2'/>
-                                        </FormGroup>
+                                    <Form onSubmit={handleSearchClick}>
+                                        <fieldset className='d-flex' disabled={loading}>
+                                            <FormGroup>
+                                                <InputGroup>
+                                                    <InputGroupAddon addonType='prepend'>
+                                                        <InputGroupText>
+                                                            <FaSearch size={18} color='#004C98'/>
+                                                        </InputGroupText>
+                                                    </InputGroupAddon>
+                                                    <Input name='filterId' type='text' defaultValue={filterId}
+                                                        className='shadow-none' placeholder='Search unique ID'/>
+                                                </InputGroup>
+                                            </FormGroup>
+                                            <FormGroup className='px-4'>
+                                                <InputGroup>
+                                                    <InputGroupAddon addonType='prepend'>
+                                                        <InputGroupText>
+                                                            <MdInsertComment size={18} color='#004C98'/>
+                                                        </InputGroupText>
+                                                    </InputGroupAddon>
+                                                    <Input name='filterText' type='text' defaultValue={filterKeyword}
+                                                        className='shadow-none' placeholder='Search a Keyword'/>
+                                                </InputGroup>
+                                            </FormGroup>
+                                            <FormGroup>
+                                                <Button label='Search' variant='primary' type='submit'
+                                                    className='alerts__save-button px-4 py-2'/>
+                                            </FormGroup>
+                                        </fieldset>
                                     </Form>
                                 </div>
                                 <Typography color='color-3' className='search-results__box-label' >{table.totalNoOfRecords > 0 ? numberWithCommas(table.totalNoOfRecords) : '0'} Results</Typography>

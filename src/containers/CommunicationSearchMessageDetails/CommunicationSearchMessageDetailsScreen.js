@@ -120,7 +120,7 @@ function CommunicationSearchMessageDetailsScreen({
 
     useEffect(() => {
         // scroll to active message
-        scroller.scrollTo('0e6dbaac-2e0b-4c15-a26e-2543325ee453', {
+        scroller.scrollTo(`${dataId}`, {
             duration: 500,
             smooth: true,
             containerId: 'containerElement'
@@ -140,13 +140,13 @@ function CommunicationSearchMessageDetailsScreen({
                             <CardBody>
                                 <div className='communication-search-message-details__header d-flex align-items-center'>
                                     <Typography color='color-3' className='alerts__title mr-auto'
-                                        weight='regular' style={{ fontSize: '28px', lineHeight: '24pt' }}>{dataId != '' ? dataId : 'N/A'}</Typography>
+                                        weight='regular' style={{ fontSize: '40px !important', lineHeight: '24pt' }}>{dataId != '' ? dataId : 'N/A'}</Typography>
                                 </div>
                                 <div className='communication-search-message-details__information mt-2'>
                                     <Row>
                                         <Col>
                                             <Typography color='color-3' className='alerts__title mr-auto' weight='regular'
-                                                style={{ fontSize: '24px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : 'No Subject'} {/* RE: Trading Message */}</Typography>
+                                                style={{ fontSize: '32px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : 'No Subject'} {/* RE: Trading Message */}</Typography>
                                             <Typography color='color-3' className='mr-auto' weight='regular'
                                                 style={{ fontSize: '16px', lineHeight: '24pt' }}>{detailData.source != null ? detailData.source : 'No Source'} {/* Email */}</Typography>
                                         </Col>
@@ -339,13 +339,13 @@ function CommunicationSearchMessageDetailsScreen({
                                             <Button label='Add Comment' variant='primary' className='ok-button px-4 mt-3 mr-2 py-2' />
                                         </Col>
                                     </Row> */}
-                                    <Row>
+                                    {/* <Row>
                                         <Col lg={6} className='mt-5 mb-4 pt-30'>
                                             <Tab.Container id='left-tabs-example' defaultActiveKey='link-0'>
                                                 <div className='alert-detail__activities'>
                                                     <Typography color='color-3' className='mr-3' weight='semi-bold'
                                                         style={{ fontSize: '24px', lineHeight: '32pt' }}>Activity</Typography>
-                                                    {/* <Nav className='navActivities mb-4' variant='pills' defaultActiveKey='/home'>
+                                                    <Nav className='navActivities mb-4' variant='pills' defaultActiveKey='/home'>
                                                         <Nav.Item>
                                                             <Nav.Link disabled={true}>Show</Nav.Link>
                                                         </Nav.Item>
@@ -358,7 +358,7 @@ function CommunicationSearchMessageDetailsScreen({
                                                         <Nav.Item>
                                                             <Nav.Link eventKey='link-2'>ALERT ACTIVITIES</Nav.Link>
                                                         </Nav.Item>
-                                                    </Nav> */}
+                                                    </Nav>
                                                     <div className='overflow-auto pr-2'>
                                                         <div key={1} className='alert-detail__activity-info d-flex align-items-center mb-4'>
                                                             <span className='activity-icon'><span className='text-light'>J</span></span>
@@ -375,7 +375,7 @@ function CommunicationSearchMessageDetailsScreen({
                                                                 <Typography color='color-3' variant='size-14' className='text-muted'>17/12/21, 8:02 AM</Typography>
                                                             </div>
                                                         </div>
-                                                        {/* <Tab.Content>
+                                                        <Tab.Content>
                                                             <Tab.Pane eventKey='link-0'>
                                                                 <div key={1} className='alert-detail__activity-info d-flex align-items-center mb-4'>
                                                                     <span className='activity-icon'><span className='text-light'>J</span></span>
@@ -411,12 +411,12 @@ function CommunicationSearchMessageDetailsScreen({
                                                                     </div>
                                                                 </div>
                                                             </Tab.Pane>
-                                                        </Tab.Content> */}
+                                                        </Tab.Content>
                                                     </div>
                                                 </div>
                                             </Tab.Container>
                                         </Col>
-                                    </Row>
+                                    </Row> */}
                                 </div>
                             </CardBody>
                         </Card>

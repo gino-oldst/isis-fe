@@ -13,7 +13,8 @@ import {
 } from '../../utils/helpers';
 import { setBehavioursData } from '../../redux/modules/behaviours';
 import { setAlertsData, setAssignees, setColumnFilterValues } from '../../redux/modules/alerts';
-import { getCommunicationSearchData, getCommunicationMessageDetail } from '../../api/communicationSearch';
+import { getCommunicationSearchData, getCommunicationMessageDetail, getMessageThread, getRecipients } from '../../api/communicationSearch';
+import { getMessageAlerts } from '../../api/communicationAlerts';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -33,17 +34,15 @@ export default function CommunicationAlertsDetail({
 
     const [loading, setLoading] = useState(true);
     const { isRowsSelected, selectedRows, appliedFilters } = useSelector(({ table }) => table);
-    // const { table, selected, dateRange } = useSelector(({ alerts }) => alerts);
-    // const behaviours = useSelector(({ behaviours }) => behaviours);
     const [detailData, setDetailData] = useState([]);
     const breadcrumb = [
         {
             label: 'Home',
-            path: '/alerts'
+            path: '/communication_alerts'
         },
         {
             label: 'Alerts',
-            path: '/alerts'
+            path: '/communication_alerts'
         },
         {
             label: filters.state.id,
@@ -53,22 +52,34 @@ export default function CommunicationAlertsDetail({
     ];
 
     useEffect(() => {
-        console.log(filters.state.id);
         loadSearchData(filters.state);
     }, [filters]);
+
+    const [messages, setMessages] = useState([]);
+    const [recipients, setRecipients] = useState([]);
+    const [alerts, setAlerts] = useState([]);
 
     const loadSearchData = async (commMessageId) => {
         setLoading(true);
 
         try {
-            // const search = await getCommunicationMessageDetail(commMessageId.id);
+            const search = await getCommunicationMessageDetail(commMessageId.id);
 
-            // const { data, totalCurrentElements, totalPages, totalNoOfRecords } = search.data;
+            setDetailData(search.data);
 
-            // const newData = data.map((item) => {
-            //     return { ...item, selected: false };
-            // });
-            // setDetailData(search);
+            const messages = await getMessageThread(commMessageId.chainLinkId);
+            const { data, totalNoOfRecords, totalPages } = messages.data;
+
+            setMessages(data);
+
+            const alertsData = await getMessageAlerts(commMessageId.id);
+
+            setAlerts(alertsData.data);
+
+            const recipients = await getRecipients(search.data.chainLinkId);
+            const extractedRecipients = extractRecipients(recipients.data);
+
+            setRecipients(extractedRecipients);
         } catch (e) {
             console.error(e);
         }
@@ -76,12 +87,23 @@ export default function CommunicationAlertsDetail({
         setLoading(false);
     };
 
+    const extractRecipients = (recipients) => {
+        const unique = [...new Set(recipients.data.map(item => item.recipient))];
+
+        return unique;
+    };
+
     return <CommunicationAlertsDetailScreen
         loading={loading}
         userId={userId}
         dataId={filters.state.id}
+        filterText={filters.state.filterText}
         detailData={detailData}
+        alertsData={alerts}
+        messages={messages}
+        recipients={recipients}
         useMediaQuery={useMediaQuery}
         breadcrumb={breadcrumb}
-        sidebarMenu={sidebarMenu}/>;
+        sidebarMenu={sidebarMenu}
+        handleCloseModal={handleCloseModal}/>;
 }

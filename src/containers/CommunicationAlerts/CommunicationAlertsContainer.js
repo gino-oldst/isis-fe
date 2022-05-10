@@ -16,6 +16,8 @@ import { setCommunicationAlertsData, setColumnFilterValues } from '../../redux/m
 // To be removed once we move to with backend
 import dataSample from './MOCK_DATA.json';
 import filterSample from './filters.json';
+import { getCommunicationAlertData, getKeywords } from '../../api/communicationAlerts';
+import { getEmails, getEmailsAll } from '../../api/communicationSearch';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -32,9 +34,9 @@ export default function CommunicationAlertsContainer({
     const history = useHistory();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
-    const { pageSize, activePage, appliedFilters, areRowsSelectedAll, sort } = useSelector(({ table }) => table);
+    // const { isRowsSelected, selectedRows, appliedFilters } = useSelector(({ table }) => table);
+    const { pageSize, activePage, appliedFilters, selectedRows, areRowsSelectedAll, sort } = useSelector(({ table }) => table);
     const { table, selected, dateRange } = useSelector(({ communicationAlerts }) => communicationAlerts);
-    // const table = useSelector(({ communication_alerts }) => communication_alerts);
 
     const breadcrumb = [
         {
@@ -51,14 +53,14 @@ export default function CommunicationAlertsContainer({
         setLoading(true);
 
         try {
-            // const behaviours = await getBehaviours(activePage, pageSize, sort);
-            // const { data, totalNoOfRecords, totalPages } = behaviours.data;
-            const policies = dataSample;
+            const alerts = await getCommunicationAlertData(activePage, pageSize, sort);
+            const { data, totalNoOfRecords, totalPages } = alerts.data;
+            // const policies = dataSample;
 
             await loadColumnFilterValues();
-            const { data, alertIds, totalNoOfRecords, totalPages } = policies.data;
+            // const { data, alertIds, totalNoOfRecords, totalPages } = policies.data;
 
-            dispatch(setCommunicationAlertsData(data, alertIds, totalNoOfRecords, totalPages));
+            dispatch(setCommunicationAlertsData(data, totalNoOfRecords, totalPages));
 
             console.log(data);
         } catch (e) {
@@ -78,23 +80,36 @@ export default function CommunicationAlertsContainer({
     }, [pageSize, activePage, appliedFilters, sort]);
 
     const loadColumnFilterValues = async () => {
-        // const { data } = await getColumnFilterValues();
+        const emails = await getEmails();
+        const keywords = await getKeywords();
 
-        // console.log(JSON.stringify(data));
-        const { data } = filterSample;
+        const { data } = emails.data;
+
+        // const { data } = filterSample;
 
         // console.log(JSON.stringify(filterSample));
         // console.log(JSON.stringify(data));
-        let dataCopy = data;
+        // let dataCopy = data;
 
-        const keys = Object.keys(data);
+        // const keys = Object.keys(data);
 
-        keys.forEach(key => {
-            dataCopy = {
-                ...data,
-                [key]: data[key].sort()
-            };
-        });
+        // keys.forEach(key => {
+        //     dataCopy = {
+        //         ...data,
+        //         [key]: data[key].sort()
+        //     };
+        // });
+        const emailList = data.map((account) => ({
+            value: account.email,
+            label: `${account.email} (${account.firstName} ${account.lastName})`
+        }));
+
+        const dataCopy = {
+            emails: emailList,
+            keywords: keywords
+        };
+
+        console.log(dataCopy);
 
         dispatch(setColumnFilterValues(dataCopy));
     };
@@ -103,10 +118,14 @@ export default function CommunicationAlertsContainer({
         return !!appliedFilters.filter(filter => filter.value.length > 0).length;
     };
 
-    const viewCommunicationAlertDetails = async (id) => {
+    const viewCommunicationAlertDetails = async (id, chainLinkId, filterText) => {
+        // history.push({
+        //     pathname: `/communication_alerts_detail/${id}`,
+        //     state: { id: id }
+        // });
         history.push({
             pathname: `/communication_alerts_detail/${id}`,
-            state: { id: id }
+            state: { id: id, chainLinkId: chainLinkId, filterText: filterText }
         });
         // window.location.href = `/communication_alerts_detail/${id}`;
     };
@@ -120,5 +139,6 @@ export default function CommunicationAlertsContainer({
         breadcrumb={breadcrumb}
         sidebarMenu={sidebarMenu}
         handleCloseModal={handleCloseModal}
+        selectedRows={selectedRows}
         viewCommunicationAlertDetails={viewCommunicationAlertDetails}/>;
 }

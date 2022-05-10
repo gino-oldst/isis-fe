@@ -131,19 +131,19 @@ const initialState = {
             {
                 header: 'Date & Time',
                 accessor: 'timeSent',
-                disableFilters: true,
+                disableFilters: false,
                 clickable: false
             },
             {
                 header: 'Sender',
-                accessor: 'sender',
-                disableFilters: true,
+                accessor: 'senderSearch',
+                disableFilters: false,
                 clickable: false
             },
             {
                 header: 'Recipient',
-                accessor: 'recipient',
-                disableFilters: true,
+                accessor: 'searchRecipient',
+                disableFilters: false,
                 clickable: false
             }
         ],

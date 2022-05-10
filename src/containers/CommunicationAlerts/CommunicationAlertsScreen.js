@@ -43,6 +43,7 @@ import BootstrapTable from '../../components/base/BootstrapTable/BootstrapTable'
 import NormalTable from '../../components/base/NormalTable/NormalTable';
 import dataSample from './MOCK_DATA.json';
 import BaseTable from '../../components/base/BaseTable/BaseTable';
+import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
 
 type Props = {
     loading: Boolean,
@@ -53,7 +54,8 @@ type Props = {
     sidebarMenu: Array<Menu>,
     useMediaQuery: Function,
     handleCloseModal: Function,
-    viewCommunicationAlertDetails: Function
+    viewCommunicationAlertDetails: Function,
+    selectedRows: Array
 }
 
 function CommunicationAlertsScreen({
@@ -65,7 +67,8 @@ function CommunicationAlertsScreen({
     useMediaQuery,
     sidebarMenu,
     handleCloseModal,
-    viewCommunicationAlertDetails
+    viewCommunicationAlertDetails,
+    selectedRows
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -110,8 +113,6 @@ function CommunicationAlertsScreen({
                                 tableColumns={table.columns}
                                 tableData={table.data}
                                 defaultPageSize={1}
-                                tablePagination={table.totalPages}
-                                totalNoOfRecords={table.totalNoOfRecords}
                                 selectableRows={true}
                                 hideHeader={true}
                                 activePage={activePage}
@@ -202,6 +203,14 @@ function CommunicationAlertsScreen({
         );
     };
 
+    const [status, setStatus] = useState([
+        { id: 1, value: 'open', name: 'Open', isChecked: false },
+        { id: 2, value: 'inReview', name: 'In Review', isChecked: false },
+        { id: 3, value: 'resolved', name: 'Resolved', isChecked: false },
+        { id: 4, value: 'archived', name: 'Archived', isChecked: false },
+        { id: 5, value: 'notAvailable', name: 'Not Available', isChecked: false }
+    ]);
+
     return (
         <div className='alerts'>
             <CollapsibleSidebar
@@ -216,6 +225,26 @@ function CommunicationAlertsScreen({
                                     <Typography color='color-3' className='alerts__title'>Communication Alerts</Typography>
                                     <Button weight='light' className='ml-4 mr-4 alerts__bulk-review' label='Bulk Review'
                                         onClick={showActionsModal}/>
+                                </div>
+                                <div className='alerts__filters'>
+                                    <div className='alerts__status-filters d-flex align-items-center justify-content-between'>
+                                        <CheckboxGroup>
+                                            <FormGroup check={true} className='mb-1'>
+                                                <Label check={true} className='d-flex align-items-center'>
+                                                    <AllCheckerCheckbox/>
+                                                    <span className='box-label ml-1'>(Select All)</span>
+                                                </Label>
+                                            </FormGroup>
+                                            {status.map(stat => (
+                                                <FormGroup check={true} className='mb-1 '>
+                                                    <Label check={true} className='d-flex align-items-center'>
+                                                        <Checkbox value={stat.value} />
+                                                        <span className='box-label ml-1'>{stat.name}</span>
+                                                    </Label>
+                                                </FormGroup>
+                                            ))}
+                                        </CheckboxGroup>
+                                    </div>
                                 </div>
                                 <div className='alerts__information mt-5'>
                                     <Row>

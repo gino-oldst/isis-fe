@@ -3,6 +3,14 @@ const SET_ACCESS_TOKEN = 'SET_ACCESS_TOKEN';
 const AUTHENTICATE_USER = 'AUTHENTICATE_USER';
 const SET_PROFILE_DATA = 'SET_PROFILE_DATA';
 const SET_LOGGING_OUT = 'SET_LOGGING_OUT';
+const SET_EMAILS = 'SET_EMAILS';
+
+export function setEmails(data: Object) {
+    return {
+        type: SET_EMAILS,
+        data
+    };
+}
 
 export function updateUserToken(userToken: Object): {userToken: string} {
     return {
@@ -35,7 +43,8 @@ const initialState = {
     isAuthed: false,
     isLoggingOut: false,
     profileData: {},
-    userToken: null
+    userToken: null,
+    emails: {}
 };
 
 export default function authentication(state: Object = initialState, action: Object):
@@ -44,7 +53,8 @@ export default function authentication(state: Object = initialState, action: Obj
     isAuthed: boolean,
     isLoggingOut: boolean,
     profileData: {},
-    userToken: null
+    userToken: null,
+    emails: {}
   } {
     switch (action.type) {
         case SET_ACCESS_TOKEN:
@@ -71,6 +81,11 @@ export default function authentication(state: Object = initialState, action: Obj
             return {
                 ...initialState,
                 isLoggingOut: true
+            };
+        case SET_EMAILS:
+            return {
+                ...state,
+                emails: action.data
             };
         default:
             return state;
