@@ -281,7 +281,7 @@ function CommunicationAlertsDetailScreen({
                                             <Typography color='color-3' className='mr-3 mb-2' weight='semi-bold'
                                                 style={{ fontSize: '24px', lineHeight: '24pt' }}>Alert</Typography>
                                             <Button weight='light' disabled={loading} className='ml-4 mr-4 alerts__bulk-review'
-                                                onClick={showActionsModal} label='Update all Status'/>
+                                                disabled={true} onClick={showActionsModal} label='Update all Status'/>
                                         </div>
                                         {loading
                                             ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3'>
@@ -289,7 +289,7 @@ function CommunicationAlertsDetailScreen({
                                             </Spinner>
                                             : <>
                                                 <table className='table'>
-                                                    {alertsData != null
+                                                    {alertsData
                                                         ? <>
                                                             <thead>
                                                                 <tr>
@@ -319,6 +319,7 @@ function CommunicationAlertsDetailScreen({
                                                                                     <Select
                                                                                         name='status'
                                                                                         className='w-100 pr-2'
+                                                                                        isDisabled={true}
                                                                                         defaultValue={{
                                                                                             label: <Badge status={alert.status} />,
                                                                                             value: <Badge status={alert.status}/>

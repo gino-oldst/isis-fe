@@ -27,7 +27,7 @@ import filterIcon from '../../../assets/images/ic_filter.svg';
 import './table.scss';
 
 import { useTable, useRowSelect, useFilters, useGlobalFilter, usePagination, useSortBy, useAsyncDebounce, useExpanded } from 'react-table';
-import { setIsRowSelected, setTablePageSize, setActivePage, setAppliedFilters, resetAppliedFilters, setFilteredRows, setSortedColumn, setAllRowsSelected } from '../../../redux/modules/isisTable';
+import { setIsRowSelected, setTablePageSize, setActivePage, setAppliedFilters, resetAppliedFilters, setAlertsDateRange, setFilteredRows, setSortedColumn, setAllRowsSelected } from '../../../redux/modules/isisTable';
 import Highlighter from 'react-highlight-words';
 import makeData from './makeData';
 import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
@@ -95,7 +95,7 @@ function SelectColumnFilter({
     const [isCheckAll, setIsCheckAll] = useState(false);
     const { table, selected, columnFilterValues, searchFilterValue } = useSelector(({ communicationSearch }) => communicationSearch);
     // const { table } = useSelector(({ behaviours }) => behaviours);
-    const { appliedFilters, filtersReset } = useSelector(({ isisTable }) => isisTable);
+    const { appliedFilters, filtersReset, dateRange } = useSelector(({ isisTable }) => isisTable);
 
     const header = Header.toLowerCase();
     const columnFiltersWithCheckbox = ['behaviourCode', 'escalation', 'assignedUser', 'source'];
@@ -249,12 +249,12 @@ function SelectColumnFilter({
 
     const handleDateFrom = (date) => {
         setStartDate(date);
-        dispatch(setAppliedFilters('dateSentFrom', date, false, false));
+        dispatch(setAlertsDateRange('start', date));
     };
 
     const handleDateTo = (date) => {
         setEndDate(date);
-        dispatch(setAppliedFilters('dateSentTo', date, false, false));
+        dispatch(setAlertsDateRange('end', date));
     };
 
     const renderFilterWithCheckboxColumns = () => {
@@ -396,6 +396,7 @@ const IndeterminateCheckbox = React.forwardRef(
 // Our table component
 function IsisTable({
     loading,
+    isTimeout,
     columns,
     data,
     tablePagination,
@@ -407,6 +408,7 @@ function IsisTable({
     sortable,
     hideHeader,
     renderRowSubComponent,
+    isDisabled,
     fetching
 }) {
     const [isAsc, setIsAsc] = useState(true);
@@ -478,7 +480,9 @@ function IsisTable({
                     ),
                     Cell: ({ row }) => (
                         <div style={{ padding: '10px 0' }} className='d-flex align-items-center'>
-                            <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+                            <IndeterminateCheckbox
+                                disabled={isDisabled}
+                                {...row.getToggleRowSelectedProps()}/>
                         </div>
                     )
                 },
@@ -550,9 +554,17 @@ function IsisTable({
                         <tr {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers.map(column => (
                                 <th {...column.getHeaderProps()}>
-                                    <span onClick={() => column.id !== 'selection' && handleSort(column.id)} className='cursor-pointer'>
+                                    <span onClick={() => column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
+                                            column.id !== 'source' && column.id !== 'expander' && column.id !== 'status' && column.id !== 'date' &&
+                                            column.id !== 'alertSource' && column.id !== 'sender' && column.id !== 'recipient' && handleSort(column.id)}
+                                    className={() => column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
+                                    column.id !== 'source' && column.id !== 'expander' && column.id !== 'status' && column.id !== 'date' &&
+                                    column.id !== 'alertSource' && column.id !== 'sender' && column.id !== 'recipient' && 'cursor-pointer'}>
                                         {column.render('Header')}
-                                        {column.id !== 'selection' && column.id !== 'chainLinkId' && renderSortControl(column.id)}
+                                        {column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
+                                            column.id !== 'source' && column.id !== 'expander' && column.id !== 'status' && column.id !== 'date' &&
+                                            column.id !== 'alertSource' && column.id !== 'sender' && column.id !== 'recipient' &&
+                                            renderSortControl(column.id)}
                                     </span>
                                     {column.canFilter ? column.render('Filter') : null}
                                 </th>
@@ -562,11 +574,17 @@ function IsisTable({
                 </thead>
                 <tbody {...getTableBodyProps()}>
                     {!page.length || loading
-                        ? <tr>
-                            <td className='text-muted text-center' colSpan={12}>
-                                {loading ? 'Fetching data...' : 'No data found'}
-                            </td>
-                        </tr>
+                        ? isTimeout
+                            ? <tr>
+                                <td className='text-muted text-center' colSpan={12}>
+                                    {'Server is taking Too long to respond or has crashed while in the middle of the request. You Might want to change your search criteria.'}
+                                </td>
+                            </tr>
+                            : <tr>
+                                <td className='text-muted text-center' colSpan={12}>
+                                    {loading ? 'Fetching data...' : 'No data Found'}
+                                </td>
+                            </tr>
                         : page.map((row, i) => {
                             prepareRow(row);
                             const rowProps = row.getRowProps();
@@ -687,7 +705,7 @@ function multiSelectFilter(rows, columnIds, filterValue) {
 }
 
 /* Subrows */
-function SubRows({ row, rowProps, visibleColumns, data, loading }) {
+function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
     if (loading) {
         return (
             <tr>
@@ -726,7 +744,7 @@ function SubRows({ row, rowProps, visibleColumns, data, loading }) {
                                                 {capitalize(x.keyword)}
                                             </Typography>
                                             <Typography variant='size-14' color='color-3' className=' search-results__box-label' >
-                                                {x.policyName}
+                                                {alertsList.filter(alert => alert.value === x.keywordId)[0].label}
                                             </Typography>
                                         </div>
                                     </td>
@@ -750,6 +768,7 @@ function SubRowAsync({ row, rowProps, visibleColumns }) {
     const [loading, setLoading] = React.useState(true);
     const [data, setData] = React.useState([]);
     const alertData = row.original.alerts.data;
+    const { alertsList } = useSelector(({ isisTable }) => isisTable);
 
     React.useEffect(() => {
         const timer = setTimeout(() => {
@@ -769,12 +788,14 @@ function SubRowAsync({ row, rowProps, visibleColumns }) {
             rowProps={rowProps}
             visibleColumns={visibleColumns}
             data={data}
-            loading={loading}/>
+            loading={loading}
+            alertsList={alertsList}/>
     );
 }
 
 type Props = {
     loading?: boolean,
+    isTimeout?: boolean,
     children?: string | React.Node,
     className?: string,
     tableData: Array,
@@ -787,12 +808,14 @@ type Props = {
     pagination: boolean,
     sortable: boolean,
     hideHeader: boolean,
+    isDisabled: boolean,
     fetching: boolean,
     viewDetails: Function,
 }
 
 export default function ReactTable({
     loading,
+    isTimeout,
     children,
     className = '',
     tableData,
@@ -805,6 +828,7 @@ export default function ReactTable({
     pagination = false,
     sortable = false,
     hideHeader = false,
+    isDisabled = false,
     fetching,
     viewDetails
 }: Props): React$Element<any> {
@@ -820,7 +844,7 @@ export default function ReactTable({
                 if (accessor == 'id') {
                     return (
                         <div>
-                            <span title={cell.value} className={'color-link-text cursor-pointer'} onClick={() => viewDetails(cell.value, cell.cell.row.original.chainLinkId, cell.cell.row.original.keyword)}>
+                            <span title={cell.value} className={'font-weight-bold color-link-text cursor-pointer'} onClick={() => viewDetails(cell.value, cell.cell.row.original.chainLinkId, cell.cell.row.original.keyword)}>
                                 {truncateText(cell.value, 20)}
                             </span>
                         </div>
@@ -896,6 +920,19 @@ export default function ReactTable({
                             }
                         </div>
                     );
+                } else if (accessor == 'recipients') {
+                    const recipients = [...new Set(cell.cell.row.original.recipients.map(item => item))];
+
+                    return (
+                        <div className='d-flex flex-column' style={{ maxWidth: '200px' }}>
+                            {recipients != null
+                                ? <Typography size={14} color='color-3' className='table__box-label' >
+                                    {truncateText(recipients.join(', '), 400)}
+                                </Typography>
+                                : 'N/A'
+                            }
+                        </div>
+                    );
                 } else if (accessor == 'alertSource') {
                     return (
                         <div className='d-flex flex-column'>
@@ -913,7 +950,7 @@ export default function ReactTable({
                     const keywords = [...new Set(cell.cell.row.original.alerts.data.map(item => item.keyword))];
 
                     return (
-                        <div className='d-flex'>
+                        <div className='d-flex' style={{ maxWidth: '300px' }}>
                             <div {...cell.cell.row.getToggleRowExpandedProps()} className='table__number-square d-flex justify-content-center align-items-center'>
                                 <Typography weight={'bold'} variant={'size-16'} color='color-3'>
                                     {cell.cell.row.original.alerts.data.length}
@@ -1066,6 +1103,7 @@ export default function ReactTable({
                 sortable={sortable}
                 fetching={fetching}
                 hideHeader={hideHeader}
+                isDisabled={isDisabled}
                 renderRowSubComponent={renderSubRowComponent}/>
         </div>
     );

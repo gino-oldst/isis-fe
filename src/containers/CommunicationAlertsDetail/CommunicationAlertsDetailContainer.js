@@ -34,6 +34,8 @@ export default function CommunicationAlertsDetail({
 
     const [loading, setLoading] = useState(true);
     const { isRowsSelected, selectedRows, appliedFilters } = useSelector(({ table }) => table);
+    // const { table, selected, dateRange } = useSelector(({ alerts }) => alerts);
+    // const behaviours = useSelector(({ behaviours }) => behaviours);
     const [detailData, setDetailData] = useState([]);
     const breadcrumb = [
         {

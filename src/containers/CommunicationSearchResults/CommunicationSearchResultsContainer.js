@@ -1,17 +1,19 @@
 // @flow
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import CommunicationSearchResultsScreen from './CommunicationSearchResultsScreen';
 import type { Menu } from '../../types';
 import dataSample from '../CommunicationAlerts/MOCK_DATA.json';
 import filterSample from '../CommunicationAlerts/filters.json';
+import moment from 'moment';
 
 // To be removed once we move to with backend
 import { getCommunicationSearchData, getEmails, getEmailsAll } from '../../api/communicationSearch';
 import { setCommunicationSearchData, setColumnFilterValues, setSearchFilterValues } from '../../redux/modules/communicationSearch';
 import { setActivePage } from '../../redux/modules/isisTable';
 import { filter } from 'underscore';
+import debounce from 'debounce-async';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -26,13 +28,23 @@ export default function CommunicationSearchResultsContainer({
 }: Props): React$Element<any> {
     const history = useHistory();
     const dispatch = useDispatch();
+    const filters = useLocation();
     const [loading, setLoading] = useState(true);
     const [isCheckAll, setIsCheckAll] = useState(false);
     const [currPage, setCurrPage] = useState(false);
-    const { pageSize, activePage, appliedFilters, areRowsSelectedAll, sort } = useSelector(({ isisTable }) => isisTable);
-    const { table, selected, dateRange, searchFilterValue } = useSelector(({ communicationSearch }) => communicationSearch);
+    const { pageSize, activePage, appliedFilters, areRowsSelectedAll, sort, dateRange } = useSelector(({ isisTable }) => isisTable);
+    const { table, selected, searchFilterValue } = useSelector(({ communicationSearch }) => communicationSearch);
     const { emails, profileData } = useSelector(({ authentication }) => authentication);
-
+    const [filterSearchForm, setFilterSearchForm] = useState(filters.state);
+    const [searchId, setSearchId] = useState('');
+    const [keyword, setKeyword] = useState('');
+    const [lastOptions, setLastOptions] = useState([]);
+    const [filterDate, setFilterDate] = useState([
+        {
+            startDate: filterSearchForm.filterDateFrom ? new Date(filterSearchForm.filterDateFrom) : '',
+            endDate: filterSearchForm.filterDateTo ? new Date(filterSearchForm.filterDateTo) : ''
+        }
+    ]);
     const breadcrumb = [
         {
             label: 'Home',
@@ -48,31 +60,65 @@ export default function CommunicationSearchResultsContainer({
         }
     ];
 
-    const filters = useLocation();
-    const [filterSearchForm, setFilterSearchForm] = useState(filters.state);
+    useEffect(() => {
+        loadSearchData(
+            activePage,
+            pageSize,
+            sort,
+            filterSearchForm
+        );
+    }, []);
 
-    // const [table, setTable] = useState([]);
+    useEffect((e) => {
+        loadSearchData(
+            activePage,
+            pageSize,
+            sort,
+            filterSearchForm
+        );
+    }, [pageSize, activePage, sort]);
 
-    const loadSearchData = async (page, size, appliedFilters, sort, pushToHistory) => {
+    // useEffect(() => {
+    //     handleAppliedFiltersChange(appliedFilters, sort, dateRange);
+    // }, [appliedFilters, sort, dateRange]);
+
+    useEffect(() => {
+        // const dateFrom = filterDate[0].startDate != '' ? moment(filterDate[0].startDate).utc().local().format('YYYY-MM-DD hh:mm A') : ''; // for adding time in format hh:mm A
+        // const dateTo = filterDate[0].endDate != '' ? moment(filterDate[0].endDate).utc().local().format('YYYY-MM-DD hh:mm A') : ''; // for adding time in format hh:mm A
+
+        const dateFrom = filterDate[0].startDate != '' ? moment(filterDate[0].startDate).utc().local().format('YYYY-MM-DDTHH:mm:ss') : '';
+        const dateTo = filterDate[0].endDate != '' ? moment(filterDate[0].endDate).utc().local().format('YYYY-MM-DDTHH:mm:ss') : '';
+
+        setFilterSearchForm({
+            ...filterSearchForm,
+            filterDateFrom: dateFrom,
+            filterDateTo: dateTo
+        });
+
+        setErrorForm({
+            ...errorForm,
+            errorDate: ''
+        });
+    }, [filterDate]);
+
+    const loadSearchData = async (page, size, sort, appliedFilters) => {
         setLoading(true);
 
         try {
-            await loadColumnFilterValues();
+            // await loadColumnFilterValues();
 
             const search = await getCommunicationSearchData(page, size, sort, appliedFilters);
 
             const { data, searchIds, totalNoOfRecords, totalPages } = search.data;
 
-            console.log(data);
+            // console.log(data);
 
             // Map data and add the keyword to object as filterKeyword
             data.map(item => {
                 item.keyword = appliedFilters.filterText;
             });
 
-            if (pushToHistory) {
-                history.push('/communication_search_results', filterSearchForm);
-            }
+            history.push('/communication_search_results', filterSearchForm);
 
             dispatch(setCommunicationSearchData(data, searchIds, totalNoOfRecords, totalPages));
         } catch (e) {
@@ -82,46 +128,157 @@ export default function CommunicationSearchResultsContainer({
         setLoading(false);
     };
 
-    useEffect((e) => {
-        loadSearchData(
-            activePage,
-            pageSize,
-            filterSearchForm,
-            sort,
-            true
-        );
-    }, [pageSize, activePage, filterSearchForm, sort]);
+    const handleSource = (items) => {
+        setFilterSearchForm({
+            ...filterSearchForm,
+            filterSource: items
+        });
+    };
 
-    useEffect(() => {
-        handleAppliedFiltersChange(appliedFilters);
-    }, [appliedFilters]);
+    const handleSenderChange = (updatedList) => {
+        var list = [];
 
-    const [searchId, setSearchId] = useState('');
-    const [keyword, setKeyword] = useState('');
-
-    const handleSearchClick = (event) => {
-        const id = event.target.filterId.value;
-        const keyword = event.target.filterText.value;
+        updatedList.map(op => {
+            list.push(op.value);
+        });
 
         setFilterSearchForm({
             ...filterSearchForm,
-            filterId: searchId,
-            filterText: keyword
+            filterSenders: list
         });
-        setSearchId(id);
-        setKeyword(keyword);
-        dispatch(setActivePage(0));
-        event.preventDefault();
-        // dispatch(setSearchFilterValues(filterSearchForm));
+        setErrorForm({
+            ...errorForm,
+            errorSenders: ''
+        });
     };
 
-    const handleAppliedFiltersChange = (appliedFilters) => {
+    const handleRecipientChange = (updatedList) => {
+        var list = [];
+
+        updatedList.map(op => {
+            list.push(op.value);
+        });
+
+        setFilterSearchForm({
+            ...filterSearchForm,
+            filterRecipients: list
+        });
+        setErrorForm({
+            ...errorForm,
+            errorRecipients: ''
+        });
+    };
+
+    const loadOptions = useMemo(() => {
+        return debounce(async (inputValue) => {
+            const { data } = await getEmails(inputValue, inputValue, inputValue);
+            const accounts = data.data;
+
+            const options = accounts.map((account) => ({
+                value: account.email,
+                label: `${account.email} (${account.firstName} ${account.lastName})`
+            }));
+
+            setLastOptions(options);
+
+            return options;
+        }, 300);
+    }, [setLastOptions]);
+
+    const handleUniqueID = (e) => {
+        const searchId = e.target.value;
+
+        setSearchId(searchId);
+        setFilterSearchForm({
+            ...filterSearchForm,
+            filterId: searchId
+        });
+    };
+
+    const handleKeyword = (e) => {
+        const keyword = e.target.value;
+
+        setKeyword(keyword);
+        setFilterSearchForm({
+            ...filterSearchForm,
+            filterText: keyword
+        });
+    };
+
+    const [errorForm, setErrorForm] = useState({
+        errorDate: '',
+        errorSenders: '',
+        errorRecipients: ''
+    });
+
+    const handleSearchClick = (event) => {
+        // const id = event.target.filterId.value;
+        // const keyword = event.target.filterText.value;
+
+        // setFilterSearchForm({
+        //     ...filterSearchForm,
+        //     filterId: searchId,
+        //     filterText: keyword
+        // });
+        var formValid = true;
+        const initialError = {
+            errorDate: '',
+            errorSenders: '',
+            errorRecipients: ''
+        };
+
+        // Check here
+        if (filterSearchForm.filterSenders.length == 0) {
+            initialError.errorSenders = 'Please add Senders';
+            formValid = false;
+        }
+
+        if (filterSearchForm.filterRecipients.length == 0) {
+            initialError.errorRecipients = 'Please add Recipients';
+            formValid = false;
+        }
+
+        if (filterSearchForm.filterDateFrom == '' && filterSearchForm.filterDateTo == '') {
+            initialError.errorDate = 'Please add Date/Time Range';
+            formValid = false;
+        }
+
+        if (formValid) {
+            dispatch(setActivePage(0));
+            loadSearchData(
+                activePage,
+                pageSize,
+                sort,
+                filterSearchForm
+            );
+        } else {
+            setErrorForm({
+                ...errorForm,
+                errorDate: initialError.errorDate,
+                errorSenders: initialError.errorSenders,
+                errorRecipients: initialError.errorRecipients
+            });
+        }
+
+        event.preventDefault();
+    };
+
+    const handleItemClick = (id, chainLinkId, filterText) => {
+        history.push({
+            pathname: `/communication_search_message_details/${id}`,
+            state: { id: id, chainLinkId: chainLinkId, filterText: filterText }
+        });
+    };
+
+    const handleAppliedFiltersChange = (appliedFilters, sort, dateRange) => {
         var updatedList = [];
 
         appliedFilters.map(ev => {
+            // console.log(ev, sort, dateRange);
+
             switch (ev.id.toLowerCase()) {
                 case 'source':
-                    console.log(ev);
+                    // console.log(ev);
                     break;
 
                 default:
@@ -129,28 +286,24 @@ export default function CommunicationSearchResultsContainer({
             }
         });
 
-        // switch (appliedFilters.id) {
-        //     case value:
+        setFilterSearchForm({
+            ...filterSearchForm,
+            filterDateFrom: dateRange.start,
+            filterDateTo: dateRange.end
+        });
 
-        //         break;
-
-        //     default:
-        //         break;
-        // }
-        // appliedFilters.map(ev => {
-        //     console.log(ev);
-        // });
-
-        // setFilterSearchForm({
-        //     ...filterSearchForm,
-        //     filterSource: updatedList
-        // });
+        loadSearchData(
+            activePage,
+            pageSize,
+            filterSearchForm,
+            true
+        );
     };
 
     const loadColumnFilterValues = async () => {
-        // const emails = await getEmails();
+        const emails = await getEmails();
 
-        // const { data } = emails.data;
+        const { data } = emails.data;
 
         // const { data } = filterSample;
 
@@ -166,91 +319,31 @@ export default function CommunicationSearchResultsContainer({
         //         [key]: data[key].sort()
         //     };
         // });
-        // const emailList = data.map((account) => ({
-        //     value: account.email,
-        //     label: `${account.email} (${account.firstName} ${account.lastName})`
-        // }));
-        console.log(emails, profileData);
+        const emailList = data.map((account) => ({
+            value: account.email,
+            label: `${account.email} (${account.firstName} ${account.lastName})`
+        }));
+
+        // console.log(emails);
 
         const dataCopy = {
-            emails: emails
+            emails: emailList
         };
 
         dispatch(setColumnFilterValues(dataCopy));
     };
 
-    const handleItemClick = (id, chainLinkId, filterText) => {
-        history.push({
-            pathname: `/communication_search_message_details/${id}`,
-            state: { id: id, chainLinkId: chainLinkId, filterText: filterText }
-        });
-        // window.location.href = `/communication_alerts/${row.id}`;
-    };
-
-    // const loadSearchData = async (page, size, sort) => {
-    //     setLoading(true);
-
-    //     try {
-    //         const search = await getCommunicationSearchData(page, size, sort, filters.state);
-
-    //         const { data, totalCurrentElements, totalPages, totalNoOfRecords } = search.data;
-
-    //         const newData = data.map((item) => {
-    //             return { ...item, selected: false };
-    //         });
-
-    //         setTable(newData);
-    //         console.log(newData);
-    //     } catch (e) {
-    //         console.error(e);
-    //     }
-
-    //     setLoading(false);
-    // };
-
-    // const handleSelectAll = (e) => {
-    //     var updatedList = table;
-    //     var isCheckAllTemp = isCheckAll;
-
-    //     isCheckAllTemp = e.target.checked;
-    //     setIsCheckAll(isCheckAllTemp);
-
-    //     updatedList.map(row => {
-    //         row.selected = e.target.checked;
-    //     });
-    //     setTable(updatedList);
-    // };
-
-    // const handleItemCheck = (e, item) => {
-    //     var updatedList = table;
-    //     var isCheckAllTemp = isCheckAll;
-
-    //     updatedList.map(row => {
-    //         if (row.id == item.id) {
-    //             row.selected = e.target.checked;
-    //         }
-
-    //         return row;
-    //     });
-    //     setTable(updatedList);
-    //     // Control master checkbox state
-    //     const totalItems = table.length;
-    //     const totalCheckedItems = updatedList.filter((e) => e.selected).length;
-
-    //     isCheckAllTemp = (totalItems === totalCheckedItems);
-    //     setIsCheckAll(isCheckAllTemp);
-    //     setTable(updatedList);
-    // };
-
     return <CommunicationSearchResultsScreen
         loading={loading}
         sidebarMenu={sidebarMenu}
+        handleUniqueID={handleUniqueID}
+        handleKeyword={handleKeyword}
+        defaultSources={filterSearchForm.filterSource}
         breadcrumb={breadcrumb}
         table={table}
         isCheckAll={isCheckAll}
         activePage={activePage}
-        // handleSelectAll={handleSelectAll}
-        // handleItemCheck={handleItemCheck}
+        handleSource={handleSource}
         loadSearchData={loadSearchData}
         useMediaQuery={useMediaQuery}
         handleCloseModal={handleCloseModal}
@@ -259,5 +352,13 @@ export default function CommunicationSearchResultsContainer({
         setKeyword={setKeyword}
         filterKeyword={filterSearchForm.filterText}
         filterId={filterSearchForm.filterId}
-        handleSearchClick={handleSearchClick}/>;
+        handleSearchClick={handleSearchClick}
+        loadOptions={loadOptions}
+        handleRecipientChange={handleRecipientChange}
+        handleSenderChange={handleSenderChange}
+        filterDate={filterDate}
+        setFilterDate={setFilterDate}
+        defaultRecipients={filterSearchForm.filterRecipients}
+        defaultSender={filterSearchForm.filterSenders}
+        errorForm={errorForm}/>;
 }

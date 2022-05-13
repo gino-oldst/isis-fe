@@ -1,4 +1,6 @@
 // @flow
+import moment from 'moment';
+
 const SET_IS_ROW_SELECTED = 'SET_IS_ROW_SELECTED';
 const SET_APPLIED_FILTERS = 'SET_APPLIED_FILTERS';
 const RESET_APPLIED_FILTERS = 'RESET_APPLIED_FILTERS';
@@ -8,6 +10,15 @@ const SET_PAGE_SIZE = 'SET_PAGE_SIZE';
 const SET_ACTIVE_PAGE = 'SET_ACTIVE_PAGE';
 const SET_ALL_ROWS_SELECTED = 'SET_ALL_ROWS_SELECTED';
 const RESET_STATE = 'RESET_STATE';
+const SET_ALERTS_DATE_RANGE = 'SET_ALERTS_DATE_RANGE';
+const SET_ALERTS_LIST = 'SET_ALERTS_LIST';
+
+export function setAlertsList(data: Object) {
+    return {
+        type: SET_ALERTS_LIST,
+        data
+    };
+}
 
 export function setIsRowSelected(
     count: Integer,
@@ -83,12 +94,21 @@ export function setAllRowsSelected(selected: boolean) {
     };
 }
 
+export function setAlertsDateRange(target: String, date: String) {
+    return {
+        type: SET_ALERTS_DATE_RANGE,
+        target,
+        date
+    };
+}
+
 const initialState = {
     isRowsSelected: false,
     areRowsSelectedAll: false,
     selectedRows: [],
     filteredRows: [],
     filtersReset: false,
+    alertsList: null,
     appliedFilters: [
         {
             id: 'status',
@@ -120,14 +140,29 @@ const initialState = {
         sort: ''
     },
     pageSize: 10,
-    activePage: 0
+    activePage: 0,
+    dateRange: {
+        start: moment().subtract(7, 'd'),
+        end: moment()
+    }
 };
 
 export default function isisTable(state: Object = initialState, action: Object) {
     switch (action.type) {
+        case SET_ALERTS_LIST:
+            return {
+                ...state,
+                alertsList: action.data
+            };
+        case SET_ALERTS_DATE_RANGE:
+            return {
+                ...state,
+                dateRange: {
+                    ...state.dateRange,
+                    [action.target]: action.date
+                }
+            };
         case SET_IS_ROW_SELECTED:
-            console.log(action.selectedRows);
-
             return {
                 ...state,
                 isRowsSelected: action.count,

@@ -12,6 +12,14 @@ const SET_LOADING = 'SET_LOADING';
 const SET_COMMUNICATION_SEARCH_DATE_RANGE = 'SET_COMMUNICATION_SEARCH_DATE_RANGE';
 const SET_SELECTED_MESSAGE = 'SET_SELECTED_MESSAGE';
 const SET_SEARCH_FILTER_VALUES = 'SET_SEARCH_FILTER_VALUES';
+const SET_ALERTS_LIST = 'SET_ALERTS_LIST';
+
+export function setAlertsList(data: Object) {
+    return {
+        type: SET_ALERTS_LIST,
+        data
+    };
+}
 
 export function setSelectedMessage(data: String) {
     return {
@@ -106,6 +114,7 @@ const initialState = {
     // },
     searchFilterValue: null,
     columnFilterValues: null,
+    alertsList: null,
     table: {
         loading: false,
         isFiltered: false,
@@ -114,7 +123,7 @@ const initialState = {
                 header: 'ID',
                 accessor: 'id',
                 disableFilters: true,
-                clickable: true
+                clickable: false
             },
             {
                 header: 'Subject & Message',
@@ -125,25 +134,25 @@ const initialState = {
             {
                 header: 'Source',
                 accessor: 'source',
-                disableFilters: false,
+                disableFilters: true,
                 clickable: false
             },
             {
                 header: 'Date & Time',
                 accessor: 'timeSent',
-                disableFilters: false,
+                disableFilters: true,
                 clickable: false
             },
             {
                 header: 'Sender',
                 accessor: 'senderSearch',
-                disableFilters: false,
+                disableFilters: true,
                 clickable: false
             },
             {
-                header: 'Recipient',
-                accessor: 'searchRecipient',
-                disableFilters: false,
+                header: 'Recipients',
+                accessor: 'recipients',
+                disableFilters: true,
                 clickable: false
             }
         ],
@@ -170,6 +179,11 @@ export default function communicationSearch(state: Object = initialState, action
     table: {}
   } {
     switch (action.type) {
+        case SET_ALERTS_LIST:
+            return {
+                ...state,
+                alertsList: action.data
+            };
         case SET_LOADING:
             return {
                 ...state,

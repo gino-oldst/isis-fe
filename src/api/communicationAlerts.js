@@ -3,8 +3,16 @@ import makeApiCall from '../api/makeApiCall';
 
 const GET_ALERT_DATA = `${config.apiStorage}/storage-service/quick-communication/search/paged`;
 
-export async function getCommunicationAlertData(page, size, sort, filters) {
-    const filterBody = {};
+export async function getCommunicationAlertData(page, size, sort, alert, status, dFrom, dTo, sources, senders, recipients) {
+    const filterBody = {
+        keywordIds: alert.length > 0 ? [...alert.map(row => { return row.value; })] : [],
+        sources: sources.length > 0 ? [...sources.map(row => { return row.value; })] : [],
+        statusTypes: status.length > 0 ? [...status.map(row => { return row.value; })] : [],
+        dateFrom: dFrom,
+        dateTo: dTo,
+        senders: senders
+        // recipients: recipients
+    };
 
     const sortColumn = sort.column;
     const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sortColumn},${sort.type}` : '';
@@ -14,7 +22,7 @@ export async function getCommunicationAlertData(page, size, sort, filters) {
 
 // {{storage-url}}/alert/1090b868-2a3b-4e5e-82c0-bcd915d1f401
 // ALERTS
-const GET_TRIGGER_ALERT_DATA = `${config.apiStorage}/alert/`;
+const GET_TRIGGER_ALERT_DATA = `${config.apiStorage}/storage-service/alert/`;
 
 export async function getCommunicationMessageDetail(id) {
     // const sortColumn = sort.column;
@@ -31,12 +39,13 @@ export async function getMessageAlerts(commMessageId) {
     return await makeApiCall(`${GET_MSG_ALERT_DATA}`, 'POST', filterBody);
 }
 
-const UPDATE_BEHAVIOUR = `${config.apiStorage}/alert`;
+const UPDATE_ALERT = `${config.apiStorage}/storage-service/alert`;
 
 export async function updateAlert(data: Object) {
-    return await makeApiCall(UPDATE_BEHAVIOUR, 'PUT', data);
+    return await makeApiCall(UPDATE_ALERT, 'PUT', data);
 }
 
+// const GET_KEYWORDS = `${config.apiStorage}/storage-service/policy-map/search`;
 const GET_KEYWORDS = `${config.apiStorage}/storage-service/keyword/search`;
 
 export async function getKeywords() {
@@ -45,8 +54,8 @@ export async function getKeywords() {
     const { data } = keywords.data;
 
     const alertList = data.map((keyword) => ({
-        value: keyword.word,
-        label: keyword.word
+        value: keyword.id,
+        label: `Alert ${keyword.number}`
     }));
 
     return alertList;

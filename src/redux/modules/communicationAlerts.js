@@ -95,7 +95,7 @@ const initialState = {
             {
                 header: 'Alert',
                 accessor: 'expander',
-                disableFilters: false,
+                disableFilters: true,
                 clickable: true
             },
             // {
@@ -108,31 +108,31 @@ const initialState = {
             {
                 header: 'Status',
                 accessor: 'status',
-                disableFilters: false,
+                disableFilters: true,
                 clickable: false
             },
             {
                 header: 'Date & Time',
                 accessor: 'date',
-                disableFilters: false,
+                disableFilters: true,
                 clickable: false
             },
             {
                 header: 'Source',
                 accessor: 'alertSource',
-                disableFilters: false,
+                disableFilters: true,
                 clickable: false
             },
             {
                 header: 'Sender',
                 accessor: 'sender',
-                disableFilters: false,
+                disableFilters: true,
                 clickable: false
             },
             {
                 header: 'Recipient',
                 accessor: 'recipient',
-                disableFilters: false,
+                disableFilters: true,
                 clickable: false
             }
         ],

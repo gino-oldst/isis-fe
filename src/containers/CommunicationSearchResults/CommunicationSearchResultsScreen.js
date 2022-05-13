@@ -49,6 +49,8 @@ import BootstrapTable from '../../components/base/BootstrapTable/BootstrapTable'
 import IsisTable from '../../components/base/IsisTable/IsisTable';
 import { FaSearch } from 'react-icons/fa';
 import { MdInsertComment } from 'react-icons/md';
+import AsyncSelect from 'react-select/async';
+import { COMMUNICATION_ALERT_SOURCE_OPTIONS } from '../../config/constants';
 
 type Props = {
     // TODO add props here
@@ -71,10 +73,25 @@ type Props = {
     setKeyword?: (e: any) => void,
     handleSearchClick?: (e: any) => void,
     filterKeyword: String,
-    filterId: String
+    filterId: String,
+    loadOptions: Function,
+    handleRecipientChange: Function,
+    handleSenderChange: Function,
+    filterDate: Array<any>,
+    setFilterDate: Function,
+    defaultRecipients: Array<any>,
+    defaultSender:Array<any>,
+    handleSource: Function,
+    handleUniqueID: Function,
+    handleKeyword: Function,
+    defaultSources: Array<any>,
+    errorForm: Array<Any>
 }
 
 function CommunicationSearchResultsScreen({
+    defaultRecipients,
+    defaultSender,
+    defaultSources,
     loading,
     userId,
     breadcrumb,
@@ -94,139 +111,93 @@ function CommunicationSearchResultsScreen({
     setKeyword,
     filterKeyword,
     filterId,
-    handleSearchClick
+    handleSearchClick,
+    loadOptions,
+    handleRecipientChange,
+    handleSenderChange,
+    filterDate,
+    setFilterDate,
+    handleSource,
+    handleUniqueID,
+    handleKeyword,
+    errorForm
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
 
-    const showActionsModal = () => {
-        dispatch(setModalContent({
-            modalContent: <ActionModal handleCloseModal={handleCloseModal}/>,
-            size: 'lg'
-        }));
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggleOpen = () => {
+        setIsOpen(!isOpen);
     };
 
-    const showSuccessModal = () => {
-        dispatch(setModalContent({
-            modalContent: <SuccessModal handleCloseModal={handleCloseModal}/>,
-            size: 'md'
-        }));
+    const [dateOptions, setDateOptions] = useState({
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
+
+    const [dateState, setDateState] = useState([
+        {
+            startDate: filterDate[0].startDate,
+            endDate: filterDate[0].endDate,
+            key: 'selection'
+        }
+    ]);
+
+    const sourceOptions = [{ label: 'Select All', value: 'all' }, ...Object.keys(COMMUNICATION_ALERT_SOURCE_OPTIONS).map(row => ({
+        label: row,
+        value: row
+    }))];
+
+    const convertedStartDate = moment(dateState[0].startDate).utc().local().format('MMM. DD, YYYY hh:mm A'); // for adding time in format hh:mm A
+
+    const convertedEndDate = moment(dateState[0].endDate).utc().local().format('MMM. DD, YYYY hh:mm A'); // for adding time in format hh:mm A
+
+    const handleDates = (dates) => {
+        var copyDates = dateState[0];
+
+        Object.keys(copyDates).map((e, i) => {
+            if (e == 'startDate') {
+                var hours = parseInt(copyDates[e].getHours());
+                var minutes = parseInt(copyDates[e].getMinutes());
+
+                dates[0].startDate.setHours(hours, minutes, 0, 0);
+            } else if (e == 'endDate') {
+                var hours = parseInt(copyDates[e].getHours());
+                var minutes = parseInt(copyDates[e].getMinutes());
+
+                dates[0].endDate.setHours(hours, minutes, 0, 0);
+            }
+        });
+
+        setDateState(dates);
+        setFilterDate(dates);
     };
 
-    const ActionModal = ({
-        userId,
-        activeModal,
-        loadAlerts,
-        handleCloseModal
-    }) => {
-        const dispatch = useDispatch();
+    const handleTime = (event) => {
+        var name = event.target.getAttribute('name');
+        var timeParts = event.target.value.match(/(\d+):(\d+)/);
 
-        return (
-            <div className='action-modal p-4'>
-                <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
-                    onClick={handleCloseModal}/>
-                <Typography variant='size-26' color='color-3'
-                    className='mb-4 playfair-font'>
-                    Bulk Action
-                </Typography>
-                <div className='alerts__information mt-5 w-100 mb-4' style={{ height: '200px', overflowX: 'hidden', overflowY: 'auto' }}>
-                    <Row>
-                        <Col lg={12}>
-                            {/* <Table className='alerts__table table-striped'
-                                loading={loading}
-                                tableColumns={table.columns}
-                                tableData={table.data}
-                                defaultPageSize={1}
-                                tablePagination={table.totalPages}
-                                totalNoOfRecords={table.totalNoOfRecords}
-                                selectableRows={true}
-                                hideHeader={true}
-                                activePage={activePage}
-                                fetching={table.loading}/> */}
-                        </Col>
-                    </Row>
-                </div>
-                <FormGroup className='mb-3'>
-                    <Label for='status'>Select Status</Label>
-                    <Select
-                        name='status'
-                        // value={alert.status === null
-                        //     ? {
-                        //         label: 'No Change',
-                        //         value: null
-                        //     }
-                        //     : {
-                        //         name: alert.status,
-                        //         label: <Badge status={alert.status} />,
-                        //         value: <Badge status={alert.status}/>
-                        //     }}
-                        options={[{
-                            name: 'OPEN',
-                            label: <Badge status='Open' />,
-                            value: <Badge status='Open'/>
-                        }, {
-                            name: 'IN_REVIEW',
-                            label: <Badge status='In Review' />,
-                            value: <Badge status='In Review'/>
-                        }, {
-                            name: 'RESOLVED',
-                            label: <Badge status='Resolved' />,
-                            value: <Badge status='Resolved'/>
-                        }, {
-                            name: 'ARCHIVED',
-                            label: <Badge status='Archived' />,
-                            value: <Badge status='Archived'/>
-                        }]} />
-                    {/* onChange={handleChange} />
-                    {alert.resolveReason && <div>Reason: {alert.resolveReason}</div>} */}
-                </FormGroup>
-                <FormGroup className='mb-5'>
-                    <Label for='notes'>Notes</Label>
-                    <Input type='textarea' rows={5} name='notes'
-                        placeholder='Leave blank if there is no change to apply' value={alert.notes} /> {/* onChange={handleChange} /> */}
-                </FormGroup>
-                <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
-                    <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
-                        onClick={handleCloseModal} /> {/* onClick={handleClose} disabled={submit} /> */}
-                    <Button label='Apply' variant='primary' className='alerts__save-button px-4 py-2'
-                        onClick={showSuccessModal}/>
-                    {/* <Button label='Apply' isLoading={submit} variant='secondary'
-                        className='alerts__save-button px-4 py-2'
-                        onClick={handleBulkUpdate} disabled={submit} /> */}
-                </div>
-            </div>
-        );
-    };
+        const clonedDate = JSON.parse(JSON.stringify(dateState));
 
-    const SuccessModal = ({
-        userId,
-        activeModal,
-        loadAlerts,
-        handleCloseModal
-    }) => {
-        const dispatch = useDispatch();
+        clonedDate[0].startDate = new Date(clonedDate[0].startDate);
+        clonedDate[0].endDate = new Date(clonedDate[0].endDate);
 
-        return (
-            <div className='action-modal p-4'>
-                <div className='row action-modal__content mt-5 mb-5 d-flex justify-content-center align-items-center'>
-                    <Typography variant='size-26' color='color-3'
-                        className='playfair-font'>
-                        Alert Status Updated
-                    </Typography>
-                    <Typography variant='size-16' color='color-3'
-                        className='mb-4 playfair-font'>
-                        You have successfully bulk reviewed the alerts
-                    </Typography>
-                </div>
-                <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
-                    <Button label='Close' variant='primary' className='cancel-button px-4 mr-2 py-2'
-                        onClick={handleCloseModal}/> {/* onClick={handleClose} disabled={submit} /> */}
-                    {/* <Button label='Apply' isLoading={submit} variant='secondary'
-                        className='alerts__save-button px-4 py-2'
-                        onClick={handleBulkUpdate} disabled={submit} /> */}
-                </div>
-            </div>
-        );
+        if (name == 'timeStart' && timeParts) {
+            var hours = parseInt(timeParts[1]);
+            var minutes = parseInt(timeParts[2]);
+
+            clonedDate[0].startDate.setHours(hours, minutes, 0, 0);
+        } else if (name == 'timeEnd' && timeParts) {
+            var hours = parseInt(timeParts[1]);
+            var minutes = parseInt(timeParts[2]);
+
+            clonedDate[0].endDate.setHours(hours, minutes, 0, 0);
+        }
+
+        setDateState(clonedDate);
+        setFilterDate(clonedDate);
     };
 
     return (
@@ -244,38 +215,150 @@ function CommunicationSearchResultsScreen({
                                     {/* <Button weight='light' className='ml-4 mr-4 search-results__bulk-review' label='Bulk Review'
                                         onClick={showActionsModal}/> */}
                                 </div>
-                                <div className='search-results__search-bar d-flex align-items-center pb-0'>
-                                    <Form onSubmit={handleSearchClick}>
-                                        <fieldset className='d-flex' disabled={loading}>
-                                            <FormGroup>
-                                                <InputGroup>
-                                                    <InputGroupAddon addonType='prepend'>
-                                                        <InputGroupText>
-                                                            <FaSearch size={18} color='#004C98'/>
-                                                        </InputGroupText>
-                                                    </InputGroupAddon>
-                                                    <Input name='filterId' type='text' defaultValue={filterId}
-                                                        className='shadow-none' placeholder='Search unique ID'/>
-                                                </InputGroup>
-                                            </FormGroup>
-                                            <FormGroup className='px-4'>
-                                                <InputGroup>
-                                                    <InputGroupAddon addonType='prepend'>
-                                                        <InputGroupText>
-                                                            <MdInsertComment size={18} color='#004C98'/>
-                                                        </InputGroupText>
-                                                    </InputGroupAddon>
-                                                    <Input name='filterText' type='text' defaultValue={filterKeyword}
-                                                        className='shadow-none' placeholder='Search a Keyword'/>
-                                                </InputGroup>
-                                            </FormGroup>
-                                            <FormGroup>
-                                                <Button label='Search' variant='primary' type='submit'
-                                                    className='alerts__save-button px-4 py-2'/>
-                                            </FormGroup>
-                                        </fieldset>
-                                    </Form>
-                                </div>
+                                <Row className='pl-2'>
+                                    <Col lg={12}>
+                                        <Form onSubmit={handleSearchClick}>
+                                            <fieldset disabled={loading}>
+                                                <Row>
+                                                    <Col>
+                                                        <FormGroup>
+                                                            <Label for='filterId'>Unique ID</Label>
+                                                            <InputGroup>
+                                                                <InputGroupAddon addonType='prepend'>
+                                                                    <InputGroupText>
+                                                                        <FaSearch size={18} color='#004C98'/>
+                                                                    </InputGroupText>
+                                                                </InputGroupAddon>
+                                                                <Input name='filterId' type='text' defaultValue={filterId}
+                                                                    onChange={handleUniqueID} className='shadow-none isis-control' placeholder='Search unique ID'/>
+                                                            </InputGroup>
+                                                        </FormGroup>
+                                                    </Col>
+                                                    <Col>
+                                                        <FormGroup>
+                                                            <Label for='filterText'>Keyword</Label>
+                                                            <InputGroup>
+                                                                <InputGroupAddon addonType='prepend'>
+                                                                    <InputGroupText>
+                                                                        <MdInsertComment size={18} color='#004C98'/>
+                                                                    </InputGroupText>
+                                                                </InputGroupAddon>
+                                                                <Input name='filterText' type='text' defaultValue={filterKeyword}
+                                                                    onChange={handleKeyword} className='shadow-none isis-control' placeholder='Search a Keyword'/>
+                                                            </InputGroup>
+                                                        </FormGroup>
+                                                    </Col>
+                                                    <Col>
+                                                        <FormGroup>
+                                                            <Label for='filterText'>Source</Label>
+                                                            <Select
+                                                                isMulti={true}
+                                                                placeholder={'Search Source'}
+                                                                isSearchable={false}
+                                                                isDisabled={loading}
+                                                                className='status-select'
+                                                                name='source'
+                                                                onChange={selected => {
+                                                                    selected.find(option => option.value === 'all')
+                                                                        ? handleSource(sourceOptions.splice(1))
+                                                                        : handleSource(selected);
+                                                                }}
+                                                                value={defaultSources.length > 0
+                                                                    ? defaultSources.map(row => ({ label: row.label, value: row.value }))
+                                                                    : []}
+                                                                options={sourceOptions}/>
+                                                        </FormGroup>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <Col>
+                                                        <FormGroup>
+                                                            <Label for='filterSender'>Sender</Label>
+                                                            <AsyncSelect
+                                                                isMulti={true}
+                                                                value={defaultSender.map(row => ({ label: row, value: row }))}
+                                                                cacheOptions={true}
+                                                                loadOptions={loadOptions}
+                                                                components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
+                                                                name='filterSender'
+                                                                className='filter-select'
+                                                                onChange={(newTags) => handleSenderChange(newTags)}
+                                                                placeholder={'Select Sender...'}/>
+                                                            {errorForm.errorSenders !== '' &&
+                                                                <Typography variant='size-14' className='form-text text-danger'>
+                                                                    {errorForm.errorSenders}
+                                                                </Typography>
+                                                            }
+                                                        </FormGroup>
+                                                    </Col>
+                                                    <Col>
+                                                        <FormGroup>
+                                                            <Label for='filterRecipient'>Recipient</Label>
+                                                            <AsyncSelect
+                                                                isMulti={true}
+                                                                value={defaultRecipients.map(row => ({ label: row, value: row }))}
+                                                                cacheOptions={true}
+                                                                loadOptions={loadOptions}
+                                                                components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
+                                                                name='filterRecipient'
+                                                                className='filter-select'
+                                                                onChange={(newTags) => handleRecipientChange(newTags)}
+                                                                placeholder={'Select Recipient...'}/>
+                                                            {errorForm.errorRecipients !== '' &&
+                                                                <Typography variant='size-14' className='form-text text-danger'>
+                                                                    {errorForm.errorRecipients}
+                                                                </Typography>
+                                                            }
+                                                        </FormGroup>
+                                                    </Col>
+                                                    <Col>
+                                                        <FormGroup>
+                                                            <Label for='dropdown-basic-button'>Date & Time</Label>
+                                                            <DropdownButton variant='outline-light' id='dropdown-basic-button' alignRight={true}
+                                                                title={filterDate[0].startDate === '' ? 'Select Date' : convertedStartDate + ' - ' + convertedEndDate}>
+                                                                <DropdownItem>
+                                                                    <DateRangePicker
+                                                                        onChange={item => handleDates([item.selection])}
+                                                                        showSelectionPreview={true}
+                                                                        moveRangeOnFirstSelection={false}
+                                                                        months={2}
+                                                                        inputRanges={[]}
+                                                                        ranges={dateState}
+                                                                        showDateDisplay={false}
+                                                                        value={filterDate.startDate === '' ? null : filterDate}
+                                                                        direction='horizontal'/>
+                                                                    <div className='d-flex time-wrapper'>
+                                                                        <div className='rdrTime'>
+                                                                            <Input type='time' name='timeStart' placeholder='hh:mm'
+                                                                                required={true} formNoValidate={true} onChange={e => handleTime(e)}/>
+                                                                        </div>
+                                                                        <div className='rdrTime'>
+                                                                            <Input type='time' name='timeEnd' placeholder='hh:mm'
+                                                                                required={true} formNoValidate={true} onChange={e => handleTime(e)}/>
+                                                                        </div>
+                                                                    </div>
+                                                                </DropdownItem>
+                                                            </DropdownButton>
+                                                            {errorForm.errorDate !== '' &&
+                                                                <Typography variant='size-14' className='form-text text-danger'>
+                                                                    {errorForm.errorDate}
+                                                                </Typography>
+                                                            }
+                                                        </FormGroup>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <Col>
+                                                        <FormGroup>
+                                                            <Button label='Search' variant='primary' type='submit'
+                                                                className='alerts__save-button px-4 py-2'/>
+                                                        </FormGroup>
+                                                    </Col>
+                                                </Row>
+                                            </fieldset>
+                                        </Form>
+                                    </Col>
+                                </Row>
                                 <Typography color='color-3' className='search-results__box-label' >{table.totalNoOfRecords > 0 ? numberWithCommas(table.totalNoOfRecords) : '0'} Results</Typography>
                                 <div className='search-results__information mt-5'>
                                     <Row>

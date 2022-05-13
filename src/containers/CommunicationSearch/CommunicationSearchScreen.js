@@ -184,10 +184,10 @@ function CommunicationSearchScreen({
     ]);
 
     const [source, setSource] = useState([
-        { id: 1, value: 'email', name: 'Email', isChecked: false, disabled: true },
-        { id: 2, value: 'reuters', name: 'Reuters', isChecked: false, disabled: false },
-        { id: 3, value: 'bloomberg_chat', name: 'Bloomberg Chat', isChecked: false, disabled: false },
-        { id: 4, value: 'bloomberg_email', name: 'Bloomberg Email', isChecked: false, disabled: false }
+        { id: 1, value: 'EMAIL', name: 'Email', isChecked: false, disabled: true },
+        { id: 2, value: 'REUTERS', name: 'Reuters', isChecked: false, disabled: false },
+        { id: 3, value: 'BLOOMBERG_CHAT', name: 'Bloomberg Chat', isChecked: false, disabled: false },
+        { id: 4, value: 'BLOOMBERG_EMAIL', name: 'Bloomberg Email', isChecked: false, disabled: false }
     ]);
 
     const [tags, setTags] = React.useState(['example tag']);
@@ -207,21 +207,21 @@ function CommunicationSearchScreen({
     };
 
     return (
-        <div className='alerts'>
+        <div className='communication-search'>
             <CollapsibleSidebar
                 menu={sidebarMenu} />
             <div className='w-100'>
                 <Breadcrumbs className='position-sticky' links={breadcrumb} />
                 <div className='overflow-auto h-100 pb-40'>
-                    <div className='alerts__content'>
+                    <div className='communication-search__content'>
                         <Card className='px-4 py-2'>
                             <CardBody>
-                                <Typography color='color-3' className='alerts__title mr-auto'>Search Message</Typography>
+                                <Typography color='color-3' className='communication-search__title mr-auto'>Search Message</Typography>
                                 <div className='d-flex align-item-center'>
                                     <Form className='w-100' onSubmit={onSubmit}>
                                         <Row>
                                             <Col lg={8}>
-                                                <div className='alerts__input-fields'>
+                                                <div className='communication-search__input-fields'>
                                                     <FormGroup>
                                                         <Label>Message / Alert ID</Label>
                                                         <InputGroup>
@@ -320,11 +320,11 @@ function CommunicationSearchScreen({
                                                         }
                                                     </FormGroup>
                                                     <Button label='Search' variant='secondary' type='submit'
-                                                        className='alerts__save-button px-4 py-2'/>
+                                                        className='communication-search__save-button px-4 py-2'/>
                                                 </div>
                                             </Col>
                                             <Col lg={3} className='offset-1'>
-                                                {/* <div className='alerts__status-filters'>
+                                                {/* <div className='communication-search__status-filters'>
                                                     <Typography color='color-3' className='mr-auto' weight='bold'
                                                         variant='size-16'>Status</Typography>
                                                     <CheckboxGroup onChange={handleStatus} defaultDisabled={true}>
@@ -344,7 +344,7 @@ function CommunicationSearchScreen({
                                                         ))}
                                                     </CheckboxGroup>
                                                 </div> */}
-                                                <div className='alerts__status-filters'>
+                                                <div className='communication-search__status-filters'>
                                                     <Typography color='color-3' className='mr-auto' weight='bold'
                                                         variant='size-16'>Source</Typography>
                                                     <CheckboxGroup onChange={handleSource}>
@@ -357,7 +357,7 @@ function CommunicationSearchScreen({
                                                         {source.map(sourc => (
                                                             <FormGroup check={true} className='mb-1 '>
                                                                 <Label check={true} className='d-flex align-items-center'>
-                                                                    <Checkbox value={sourc.value} disabled={sourc.disabled}/>
+                                                                    <Checkbox value={{ label: sourc.name, value: sourc.value }} disabled={sourc.disabled}/>
                                                                     <span className='box-label'>{sourc.name}</span>
                                                                 </Label>
                                                             </FormGroup>

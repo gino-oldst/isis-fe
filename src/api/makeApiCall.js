@@ -89,8 +89,8 @@ export default async function makeApiCall(
         if (err.response) {
             const errData = {};
 
-            errData.status = err.response.status;
-            errData.message = err.response.message;
+            errData.status = err.response.status ? err.response.status : err.response.data.status;
+            errData.message = err.response.message ? err.response.message : err.response.data.message;
 
             cancelTokenSource.cancel('Request was canceled');
 

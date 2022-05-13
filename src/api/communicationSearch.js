@@ -54,7 +54,7 @@ export async function getCommunicationSearchData(page, size, sort, filters) {
         message: filters.filterText,
         senders: filters.filterSenders,
         recipients: filters.filterRecipients,
-        sources: filters.filterSource,
+        sources: filters.filterSource.length > 0 ? [...filters.filterSource.map(row => { return row.value; })] : [],
         dateSentFrom: filters.filterDateFrom,
         dateSentTo: filters.filterDateTo
     };
@@ -108,7 +108,7 @@ export async function getMessageThread(chainLinkId) {
         chainLinkId: chainLinkId
     };
 
-    return await makeApiCall(`${GET_MESSAGE_THREAD}?sort=timeSent,DESC`, 'POST', filterBody);
+    return await makeApiCall(`${GET_MESSAGE_THREAD}?sort=timeSent,ASC`, 'POST', filterBody);
 }
 
 // message activity log (user comments on the message)

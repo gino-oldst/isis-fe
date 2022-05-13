@@ -2,7 +2,7 @@
 @import "../../styles/utils/_mixins";
 @import "node_modules/@pathofdev/react-tag-input/src/styles/index.scss";
 
-.alerts {
+.communication-search {
     height: 100%;
     display: flex;
 
@@ -99,35 +99,6 @@
         &:active {
             background-color: darken($bg-download-button, 10%) !important;
             border-color: darken($bg-download-button, 10%) !important;
-        }
-    }
-
-    .table-responsive {
-        min-height: 550px;
-    }
-
-    .table {
-        min-width: 2000px;
-
-        thead {
-            font-size: 1.2rem;
-
-            th {
-                border-top: 0;
-                text-align: left;
-            }
-        }
-
-        tbody {
-            td {
-                padding: 1.1rem 0 1.1rem 0.8rem;
-                text-align: left;
-                font-size: 1.1rem;
-            }
-        }
-
-        .selected-row {
-            background: rgba(0, 74, 147, 0.075);
         }
     }
 

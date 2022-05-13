@@ -29,21 +29,22 @@ import {
     FormGroup,
     Input,
     Label,
-    Alert
+    Alert,
+    Form
 } from 'reactstrap';
 import { useIsMount } from '../../hooks/useIsMount';
-
-import './communication_alerts.scss';
-
 import { bulkUpdateAlert } from '../../api/alerts';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import { resetTableState } from '../../redux/modules/table';
 import { setLoading, setAlertsDateRange } from '../../redux/modules/alerts';
-import BootstrapTable from '../../components/base/BootstrapTable/BootstrapTable';
-import NormalTable from '../../components/base/NormalTable/NormalTable';
-import dataSample from './MOCK_DATA.json';
-import BaseTable from '../../components/base/BaseTable/BaseTable';
 import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
+import { COMMUNICATION_ALERT_SOURCE_OPTIONS, COMMUNICATION_ALERT_STATUS_OPTIONS } from '../../config/constants';
+import { DropdownButton, OverlayTrigger, Popover } from 'react-bootstrap';
+import AsyncSelect from 'react-select/async';
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css'; // theme css file
+import { DateRangePicker } from 'react-date-range';
+import './communication_alerts.scss';
 
 type Props = {
     loading: Boolean,
@@ -55,7 +56,23 @@ type Props = {
     useMediaQuery: Function,
     handleCloseModal: Function,
     viewCommunicationAlertDetails: Function,
-    selectedRows: Array
+    selectedRows: Array,
+    submit: Boolean,
+    onSubmit: Function,
+    keywords: Array,
+    filterDate: Array<any>,
+    setFilterDate: Function,
+    handleSenderChange: Function,
+    handleRecipientChange: Function,
+    loadOptions: Function,
+    onSearchClick: Function,
+    handleSource: Function,
+    handleAlert: Function,
+    handleStatus: Function,
+    defaultSource: Array<any>,
+    defaultStatus: Array<any>,
+    defaultAlert: Array<any>,
+    isTimeout: Boolean
 }
 
 function CommunicationAlertsScreen({
@@ -68,12 +85,26 @@ function CommunicationAlertsScreen({
     sidebarMenu,
     handleCloseModal,
     viewCommunicationAlertDetails,
-    selectedRows
+    selectedRows,
+    submit,
+    onSubmit,
+    keywords,
+    filterDate,
+    setFilterDate,
+    handleRecipientChange,
+    handleSenderChange,
+    loadOptions,
+    onSearchClick,
+    handleSource,
+    handleAlert,
+    handleStatus,
+    defaultSource,
+    defaultStatus,
+    defaultAlert,
+    isTimeout
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
-    const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1199px)' });
-    const isLaptopScreen = useMediaQuery({ query: '(max-width: 1450px)' });
 
     const showActionsModal = () => {
         dispatch(setModalContent({
@@ -96,6 +127,8 @@ function CommunicationAlertsScreen({
         handleCloseModal
     }) => {
         const dispatch = useDispatch();
+        const [selectedStatus, setSelectedStatus] = useState('');
+        const [resolvedNote, setResolvedNote] = useState('');
 
         return (
             <div className='action-modal p-4'>
@@ -105,69 +138,65 @@ function CommunicationAlertsScreen({
                     className='mb-4 playfair-font'>
                     Bulk Action
                 </Typography>
-                <div className='alerts__information mt-5 w-100 mb-4' style={{ height: '200px', overflowX: 'hidden', overflowY: 'auto' }}>
+                <div className='alerts__information mt-5 w-100 mb-4' style={{ overflowX: 'hidden', overflowY: 'auto' }}>
                     <Row>
                         <Col lg={12}>
                             <Table className='alerts__table table-striped'
                                 loading={loading}
                                 tableColumns={table.columns}
-                                tableData={table.data}
+                                tableData={selectedRows}
                                 defaultPageSize={1}
-                                selectableRows={true}
+                                selectableRows={false}
                                 hideHeader={true}
                                 activePage={activePage}
-                                fetching={table.loading}/>
+                                viewDetails={viewCommunicationAlertDetails}
+                                fetching={table.loading}
+                                isDisabled={true}/>
                         </Col>
                     </Row>
                 </div>
-                <FormGroup className='mb-3'>
-                    <Label for='status'>Select Status</Label>
-                    <Select
-                        name='status'
-                        // value={alert.status === null
-                        //     ? {
-                        //         label: 'No Change',
-                        //         value: null
-                        //     }
-                        //     : {
-                        //         name: alert.status,
-                        //         label: <Badge status={alert.status} />,
-                        //         value: <Badge status={alert.status}/>
-                        //     }}
-                        options={[{
-                            name: 'OPEN',
-                            label: <Badge status='Open' />,
-                            value: <Badge status='Open'/>
-                        }, {
-                            name: 'IN_REVIEW',
-                            label: <Badge status='In Review' />,
-                            value: <Badge status='In Review'/>
-                        }, {
-                            name: 'RESOLVED',
-                            label: <Badge status='Resolved' />,
-                            value: <Badge status='Resolved'/>
-                        }, {
-                            name: 'ARCHIVED',
-                            label: <Badge status='Archived' />,
-                            value: <Badge status='Archived'/>
-                        }]} />
-                    {/* onChange={handleChange} />
-                    {alert.resolveReason && <div>Reason: {alert.resolveReason}</div>} */}
-                </FormGroup>
-                <FormGroup className='mb-5'>
-                    <Label for='notes'>Notes</Label>
-                    <Input type='textarea' rows={5} name='notes'
-                        placeholder='Leave blank if there is no change to apply' value={alert.notes} /> {/* onChange={handleChange} /> */}
-                </FormGroup>
-                <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
-                    <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
-                        onClick={handleCloseModal} /> {/* onClick={handleClose} disabled={submit} /> */}
-                    <Button label='Apply' variant='primary' className='alerts__save-button px-4 py-2'
-                        onClick={showSuccessModal}/>
-                    {/* <Button label='Apply' isLoading={submit} variant='secondary'
-                        className='alerts__save-button px-4 py-2'
-                        onClick={handleBulkUpdate} disabled={submit} /> */}
-                </div>
+                <Form className='w-100'>
+                    <FormGroup className='mb-3'>
+                        <Label for='status'>Select Status</Label>
+                        <Select
+                            name='status'
+                            onChange={selected => setSelectedStatus(selected.value)}
+                            options={[{
+                                name: 'OPEN',
+                                label: <Badge status='Open' />,
+                                value: 'OPEN'
+                            }, {
+                                name: 'IN_REVIEW',
+                                label: <Badge status='In Review' />,
+                                value: 'IN_REVIEW'
+                            }, {
+                                name: 'RESOLVED',
+                                label: <Badge status='Resolved' />,
+                                value: 'RESOLVED'
+                            }, {
+                                name: 'ARCHIVED',
+                                label: <Badge status='Archived' />,
+                                value: 'ARCHIVED'
+                            }]} />
+                        {/*  />{alert.resolveReason && <div>Reason: {alert.resolveReason}</div>} */}
+                    </FormGroup>
+                    {selectedStatus == 'RESOLVED' &&
+                        <FormGroup className='mb-5'>
+                            <Label for='notes'>Resolved Notes</Label>
+                            <Input type='textarea' rows={5} name='notes'
+                                placeholder='Leave blank if there is no change to apply' onChange={e => setResolvedNote(e.target.value)} />
+                        </FormGroup>
+                    }
+                    <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
+                        <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
+                            onClick={handleCloseModal} disabled={submit}/>
+                        <Button label='Apply' variant='primary' className='alerts__save-button px-4 py-2'
+                            onClick={e => onSubmit(selectedStatus, resolvedNote, selectedRows)}/>
+                        {/* <Button label='Apply' isLoading={submit} variant='secondary'
+                            className='alerts__save-button px-4 py-2'
+                            onClick={handleBulkUpdate} disabled={submit} /> */}
+                    </div>
+                </Form>
             </div>
         );
     };
@@ -211,62 +240,275 @@ function CommunicationAlertsScreen({
         { id: 5, value: 'notAvailable', name: 'Not Available', isChecked: false }
     ]);
 
+    // Date Related
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggleOpen = () => {
+        setIsOpen(!isOpen);
+    };
+
+    const [dateOptions, setDateOptions] = useState({
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
+
+    const [dateState, setDateState] = useState([
+        {
+            startDate: new Date(),
+            endDate: new Date(),
+            key: 'selection'
+        }
+    ]);
+
+    const sourceOptions = [{ label: 'Select All', value: 'all' }, ...Object.keys(COMMUNICATION_ALERT_SOURCE_OPTIONS).map(row => ({
+        label: row,
+        value: row
+    }))];
+
+    const statusOptions = [{ label: 'Select All', value: 'all' }, ...Object.keys(COMMUNICATION_ALERT_STATUS_OPTIONS).map(row => ({
+        label: row,
+        value: row
+    }))];
+
+    const [alertOptions, setAlertOptions] = useState([]);
+
+    useEffect(() => {
+        const updatedList = [{ label: 'Select All', value: 'all' }, ...keywords.map(row => ({
+            label: row.label,
+            value: row.value
+        }))];
+
+        setAlertOptions(updatedList);
+    }, [keywords]);
+
+    const convertedStartDate = moment(dateState[0].startDate).utc().local().format('MMM. DD, YYYY hh:mm A'); // for adding time in format hh:mm A
+
+    const convertedEndDate = moment(dateState[0].endDate).utc().local().format('MMM. DD, YYYY hh:mm A'); // for adding time in format hh:mm A
+
+    const handleDates = (dates) => {
+        var copyDates = dateState[0];
+
+        Object.keys(copyDates).map((e, i) => {
+            if (e == 'startDate') {
+                var hours = parseInt(copyDates[e].getHours());
+                var minutes = parseInt(copyDates[e].getMinutes());
+
+                dates[0].startDate.setHours(hours, minutes, 0, 0);
+            } else if (e == 'endDate') {
+                var hours = parseInt(copyDates[e].getHours());
+                var minutes = parseInt(copyDates[e].getMinutes());
+
+                dates[0].endDate.setHours(hours, minutes, 0, 0);
+            }
+        });
+
+        setDateState(dates);
+        setFilterDate(dates);
+    };
+
+    const handleTime = (event) => {
+        var name = event.target.getAttribute('name');
+        var timeParts = event.target.value.match(/(\d+):(\d+)/);
+
+        const clonedDate = JSON.parse(JSON.stringify(dateState));
+
+        clonedDate[0].startDate = new Date(clonedDate[0].startDate);
+        clonedDate[0].endDate = new Date(clonedDate[0].endDate);
+
+        if (name == 'timeStart' && timeParts) {
+            var hours = parseInt(timeParts[1]);
+            var minutes = parseInt(timeParts[2]);
+
+            clonedDate[0].startDate.setHours(hours, minutes, 0, 0);
+        } else if (name == 'timeEnd' && timeParts) {
+            var hours = parseInt(timeParts[1]);
+            var minutes = parseInt(timeParts[2]);
+
+            clonedDate[0].endDate.setHours(hours, minutes, 0, 0);
+        }
+
+        setDateState(clonedDate);
+        setFilterDate(clonedDate);
+    };
+
     return (
         <div className='alerts'>
             <CollapsibleSidebar
                 menu={sidebarMenu} />
             <div className='w-100'>
                 <Breadcrumbs className='position-sticky' links={breadcrumb} />
-                <div className='overflow-auto h-100 pb-40'>
-                    <div className='alerts__content'>
-                        <Card className='px-4 py-2'>
-                            <CardBody>
-                                <div className='alerts__header d-flex align-items-center justify-content-between'>
-                                    <Typography color='color-3' className='alerts__title'>Communication Alerts</Typography>
-                                    <Button weight='light' className='ml-4 mr-4 alerts__bulk-review' label='Bulk Review'
-                                        onClick={showActionsModal}/>
-                                </div>
-                                <div className='alerts__filters'>
-                                    <div className='alerts__status-filters d-flex align-items-center justify-content-between'>
-                                        <CheckboxGroup>
-                                            <FormGroup check={true} className='mb-1'>
-                                                <Label check={true} className='d-flex align-items-center'>
-                                                    <AllCheckerCheckbox/>
-                                                    <span className='box-label ml-1'>(Select All)</span>
-                                                </Label>
-                                            </FormGroup>
-                                            {status.map(stat => (
-                                                <FormGroup check={true} className='mb-1 '>
-                                                    <Label check={true} className='d-flex align-items-center'>
-                                                        <Checkbox value={stat.value} />
-                                                        <span className='box-label ml-1'>{stat.name}</span>
-                                                    </Label>
-                                                </FormGroup>
-                                            ))}
-                                        </CheckboxGroup>
-                                    </div>
-                                </div>
-                                <div className='alerts__information mt-5'>
-                                    <Row>
-                                        <Col lg={12}>
-                                            <Table className='alerts__table table-striped'
-                                                loading={loading}
-                                                tableColumns={table.columns}
-                                                tableData={table.data}
-                                                tablePagination={table.totalPages}
-                                                totalNoOfRecords={table.totalNoOfRecords}
-                                                selectableRows={true}
-                                                activePage={activePage}
-                                                pagination={true}
-                                                sortable={true}
-                                                fetching={table.loading}
-                                                viewDetails={viewCommunicationAlertDetails}/>
-                                        </Col>
-                                    </Row>
-                                </div>
-                            </CardBody>
-                        </Card>
-                    </div>
+                <div className='alerts__content'>
+                    <Card className='px-4 py-2'>
+                        <CardBody>
+                            <div className='alerts__header mb-4'>
+                                <Row className='w-100 mr-0'>
+                                    <Col lg={6}>
+                                        <Typography color='color-3' className='alerts__title pl-0'>Communication Alerts</Typography>
+                                    </Col>
+                                    <Col lg={6} className='text-right pr-0'>
+                                        <Button weight='light' className='alerts__bulk-review' label='Bulk Review'
+                                            disabled={true} onClick={showActionsModal}/>
+                                    </Col>
+                                </Row>
+                            </div>
+                            <Row className='pl-2'>
+                                <Col lg={12}>
+                                    <Form>
+                                        <fieldset disabled={loading}>
+                                            <Row>
+                                                <Col>
+                                                    <FormGroup className='mb-3'>
+                                                        <Label for='alert'>Alert Type</Label>
+                                                        <Select
+                                                            isMulti={true}
+                                                            placeholder={'Search Alert Type'}
+                                                            isSearchable={false}
+                                                            className='status-select'
+                                                            name='alert'
+                                                            onChange={selected => {
+                                                                selected.find(option => option.value === 'all')
+                                                                    ? handleAlert(alertOptions.splice(1))
+                                                                    : handleAlert(selected);
+                                                            }}
+                                                            value={defaultAlert.length > 0
+                                                                ? defaultAlert.map(row => ({ label: row.label, value: row.value }))
+                                                                : []}
+                                                            options={alertOptions}/>
+                                                    </FormGroup>
+                                                </Col>
+                                                <Col>
+                                                    <FormGroup className='mb-3'>
+                                                        <Label for='status'>Status</Label>
+                                                        <Select
+                                                            isMulti={true}
+                                                            placeholder={'Search Status'}
+                                                            isSearchable={false}
+                                                            className='status-select'
+                                                            name='status'
+                                                            onChange={selected => {
+                                                                selected.find(option => option.value === 'all')
+                                                                    ? handleStatus(statusOptions.splice(1))
+                                                                    : handleStatus(selected);
+                                                            }}
+                                                            value={defaultStatus.length > 0
+                                                                ? defaultStatus.map(row => ({ label: row.label, value: row.value }))
+                                                                : []}
+                                                            options={statusOptions}/>
+                                                    </FormGroup>
+                                                </Col>
+                                                <Col>
+                                                    <FormGroup className='mb-3'>
+                                                        <Label for='dropdown-basic-button'>Date & Time</Label>
+                                                        <DropdownButton variant='outline-light' id='dropdown-basic-button' alignRight={true}
+                                                            title={filterDate[0].startDate === '' ? 'Select Date' : convertedStartDate + ' - ' + convertedEndDate}>
+                                                            <DropdownItem>
+                                                                <DateRangePicker
+                                                                    onChange={item => handleDates([item.selection])}
+                                                                    showSelectionPreview={true}
+                                                                    moveRangeOnFirstSelection={false}
+                                                                    months={2}
+                                                                    inputRanges={[]}
+                                                                    ranges={dateState}
+                                                                    showDateDisplay={false}
+                                                                    value={filterDate.startDate === '' ? null : filterDate}
+                                                                    direction='horizontal'/>
+                                                                <div className='d-flex time-wrapper'>
+                                                                    <div className='rdrTime'>
+                                                                        <Input type='time' name='timeStart' placeholder='hh:mm'
+                                                                            required={true} formNoValidate={true} onChange={e => handleTime(e)}/>
+                                                                    </div>
+                                                                    <div className='rdrTime'>
+                                                                        <Input type='time' name='timeEnd' placeholder='hh:mm'
+                                                                            required={true} formNoValidate={true} onChange={e => handleTime(e)}/>
+                                                                    </div>
+                                                                </div>
+                                                            </DropdownItem>
+                                                        </DropdownButton>
+                                                    </FormGroup>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col>
+                                                    <FormGroup className='mb-3'>
+                                                        <Label for='source'>Source</Label>
+                                                        <Select
+                                                            isMulti={true}
+                                                            placeholder={'Search Source'}
+                                                            isSearchable={false}
+                                                            className='status-select'
+                                                            name='source'
+                                                            onChange={selected => {
+                                                                selected.find(option => option.value === 'all')
+                                                                    ? handleSource(sourceOptions.splice(1))
+                                                                    : handleSource(selected);
+                                                            }}
+                                                            value={defaultSource.length > 0
+                                                                ? defaultSource.map(row => ({ label: row.label, value: row.value }))
+                                                                : []}
+                                                            options={sourceOptions}/>
+                                                    </FormGroup>
+                                                </Col>
+                                                <Col>
+                                                    <FormGroup className='mb-3'>
+                                                        <Label for='filterSender'>Sender</Label>
+                                                        <AsyncSelect
+                                                            isMulti={true}
+                                                            cacheOptions={true}
+                                                            loadOptions={loadOptions}
+                                                            components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
+                                                            name='filterSender'
+                                                            className='filter-select'
+                                                            onChange={(newTags) => handleSenderChange(newTags)}
+                                                            placeholder={'Select Sender...'}/>
+                                                    </FormGroup>
+                                                </Col>
+                                                <Col>
+                                                    <FormGroup className='mb-3'>
+                                                        <Label for='filterRecipient'>Recipient</Label>
+                                                        <AsyncSelect
+                                                            isMulti={true}
+                                                            cacheOptions={true}
+                                                            loadOptions={loadOptions}
+                                                            components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
+                                                            name='filterRecipient'
+                                                            className='filter-select'
+                                                            onChange={(newTags) => handleRecipientChange(newTags)}
+                                                            placeholder={'Select Recipient...'}/>
+                                                    </FormGroup>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col>
+                                                    <Button label='Search' variant='primary' type='submit'
+                                                        onClick={onSearchClick} className='alerts__save-button px-4 py-2'/>
+                                                </Col>
+                                            </Row>
+                                        </fieldset>
+                                    </Form>
+                                </Col>
+                            </Row>
+                            <div className='alerts__information mt-5'>
+                                <Row>
+                                    <Col lg={12}>
+                                        <Table className='alerts__table table-responsive table-striped'
+                                            loading={loading}
+                                            isTimeout={isTimeout}
+                                            tableColumns={table.columns}
+                                            tableData={table.data}
+                                            tablePagination={table.totalPages}
+                                            totalNoOfRecords={table.totalNoOfRecords}
+                                            selectableRows={true}
+                                            activePage={activePage}
+                                            pagination={true}
+                                            sortable={true}
+                                            fetching={table.loading}
+                                            viewDetails={viewCommunicationAlertDetails}/>
+                                    </Col>
+                                </Row>
+                            </div>
+                        </CardBody>
+                    </Card>
                 </div>
             </div>
         </div>
