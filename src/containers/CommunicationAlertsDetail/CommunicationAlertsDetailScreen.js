@@ -36,7 +36,7 @@ import {
 } from 'reactstrap';
 import { useIsMount } from '../../hooks/useIsMount';
 
-import './communication_alerts.scss';
+import './communication_alerts_detail.scss';
 import { FaInfoCircle } from 'react-icons/fa';
 import { bulkUpdateAlert } from '../../api/alerts';
 import { setModalContent } from '../../redux/modules/modalEvent';
@@ -83,6 +83,7 @@ function CommunicationAlertsDetailScreen({
     const { profileData } = useSelector(({ authentication }) => authentication);
     const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1199px)' });
     const isLaptopScreen = useMediaQuery({ query: '(max-width: 1450px)' });
+    const { alertsList } = useSelector(({ isisTable }) => isisTable);
 
     const renderAlertInfo = (text) => (
         <Popover id='popover-basic'>
@@ -125,7 +126,7 @@ function CommunicationAlertsDetailScreen({
                     className='mb-4 playfair-font text-center'>
                     Update all Status
                 </Typography>
-                <div className='alerts__information mt-5 w-100 mb-4' style={{ overflowX: 'hidden', overflowY: 'auto' }}>
+                <div className='alerts-detail__information mt-5 w-100 mb-4' style={{ overflowX: 'hidden', overflowY: 'auto' }}>
                     <Row>
                         <Col lg={6}>
                             <table className='table'>
@@ -202,10 +203,10 @@ function CommunicationAlertsDetailScreen({
                 <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
                     <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
                         onClick={handleCloseModal} /> {/* onClick={handleClose} disabled={submit} /> */}
-                    <Button label='Apply' variant='primary' className='alerts__save-button px-4 py-2'
+                    <Button label='Apply' variant='primary' className='alerts-detail__save-button px-4 py-2'
                         onClick={showSuccessModal}/>
                     {/* <Button label='Apply' isLoading={submit} variant='secondary'
-                        className='alerts__save-button px-4 py-2'
+                        className='alerts-detail__save-button px-4 py-2'
                         onClick={handleBulkUpdate} disabled={submit} /> */}
                 </div>
             </div>
@@ -236,7 +237,7 @@ function CommunicationAlertsDetailScreen({
                     <Button label='Close' variant='primary' className='cancel-button px-4 mr-2 py-2'
                         onClick={handleCloseModal}/> {/* onClick={handleClose} disabled={submit} /> */}
                     {/* <Button label='Apply' isLoading={submit} variant='secondary'
-                        className='alerts__save-button px-4 py-2'
+                        className='alerts-detail__save-button px-4 py-2'
                         onClick={handleBulkUpdate} disabled={submit} /> */}
                 </div>
             </div>
@@ -254,22 +255,22 @@ function CommunicationAlertsDetailScreen({
     }, [loading]);
 
     return (
-        <div className='alerts'>
+        <div className='alerts-detail'>
             <CollapsibleSidebar
                 menu={sidebarMenu} />
             <div className='w-100 overflow-auto'>
                 <Breadcrumbs links={breadcrumb} />
-                <div className='alerts__content pb-5'>
+                <div className='alerts-detail__content pb-5'>
                     <Card className='px-5 py-4'>
                         <CardBody>
-                            <div className='alerts__header d-flex align-items-center'>
-                                <Typography color='color-3' className='alerts__title mr-auto'
+                            <div className='alerts-detail__header d-flex align-items-center'>
+                                <Typography color='color-3' className='alerts-detail__detail-heading mr-auto'
                                     weight='regular' style={{ fontSize: '40px !important', lineHeight: '24pt' }}>{dataId != '' ? dataId : 'N/A'}</Typography>
                             </div>
-                            <div className='alerts__information mt-2'>
+                            <div className='alerts-detail__information mt-2'>
                                 <Row>
                                     <Col>
-                                        <Typography color='color-3' className='alerts__title mb-0 mr-auto' weight='regular'
+                                        <Typography color='color-3' className='alerts-detail__title mb-0 mr-auto' weight='regular'
                                             style={{ fontSize: '32px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : 'No Subject'} {/* RE: Trading Message */}</Typography>
                                         <Typography color='color-3' className='mr-auto' weight='bold'
                                             style={{ fontSize: '16px', lineHeight: '24pt' }}>{detailData.source != null ? detailData.source : 'No Source'} {/* Email */}</Typography>
@@ -280,7 +281,7 @@ function CommunicationAlertsDetailScreen({
                                         <div className='d-flex align-items-center justify-content-between'>
                                             <Typography color='color-3' className='mr-3 mb-2' weight='semi-bold'
                                                 style={{ fontSize: '24px', lineHeight: '24pt' }}>Alert</Typography>
-                                            <Button weight='light' disabled={loading} className='ml-4 mr-4 alerts__bulk-review'
+                                            <Button weight='light' disabled={loading} className='ml-4 mr-4 alerts-detail__bulk-review'
                                                 disabled={true} onClick={showActionsModal} label='Update all Status'/>
                                         </div>
                                         {loading
@@ -309,7 +310,7 @@ function CommunicationAlertsDetailScreen({
                                                                     return (<>
                                                                         <tr>
                                                                             <td className='pb-2'>
-                                                                                <Typography color='color-3'>{alert.policyName}</Typography>
+                                                                                <Typography color='color-3'>{alertsList.filter(x => x.value === alert.keywordId)[0].label}</Typography>
                                                                             </td>
                                                                             <td className='pb-2'>
                                                                                 <Typography color='color-3'>{alert.keyword}</Typography>
@@ -409,7 +410,7 @@ function CommunicationAlertsDetailScreen({
                                             </Col>
                                         </Row>
                                         <div className='d-flex flex-column' style={{ minWidth: '600px' }}>
-                                            {/* <div className='alerts__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
+                                            {/* <div className='alerts-detail__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
                                                 <div>
                                                     {messages.map(message => {
                                                         return (<>
@@ -430,7 +431,7 @@ function CommunicationAlertsDetailScreen({
                                                     <span className='sr-only'>Loading...</span>
                                                 </Spinner>
                                                 : <>
-                                                    <div id='containerElement' className='alerts__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
+                                                    <div id='containerElement' className='alerts-detail__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
                                                         <div>
                                                             {messages.map(message => {
                                                                 return (<>
@@ -473,8 +474,10 @@ function CommunicationAlertsDetailScreen({
                                         <Typography color='color-3' className='mr-3' weight='semi-bold'
                                             style={{ fontSize: '24px', lineHeight: '32pt' }}>Comment</Typography>
                                         <Input type='textarea' name='alertComment' id='alertComment'
-                                            className='mb-2' rows={4} placeholder='Comment here...' />
-                                        <Button label='Add Comment' variant='primary' className='ok-button px-4 mt-3 mr-2 py-2' />
+                                            className='mb-2' disabled={true} rows={4}
+                                            placeholder='Comment here...' />
+                                        <Button label='Add Comment' disabled={true} variant='primary'
+                                            className='ok-button px-4 mt-3 mr-2 py-2' />
                                     </Col>
                                 </Row>
                                 <Row>
@@ -488,16 +491,16 @@ function CommunicationAlertsDetailScreen({
                                                         <Nav.Link disabled={true}>Show</Nav.Link>
                                                     </Nav.Item>
                                                     <Nav.Item>
-                                                        <Nav.Link eventKey='link-0'>ALL</Nav.Link>
+                                                        <Nav.Link disabled={true} eventKey='link-0'>ALL</Nav.Link>
                                                     </Nav.Item>
                                                     <Nav.Item>
-                                                        <Nav.Link eventKey='link-1'>MESSAGE ACTIVITIES</Nav.Link>
+                                                        <Nav.Link disabled={true} eventKey='link-1'>MESSAGE ACTIVITIES</Nav.Link>
                                                     </Nav.Item>
                                                     <Nav.Item>
-                                                        <Nav.Link eventKey='link-2'>ALERT ACTIVITIES</Nav.Link>
+                                                        <Nav.Link disabled={true} eventKey='link-2'>ALERT ACTIVITIES</Nav.Link>
                                                     </Nav.Item>
                                                 </Nav>
-                                                <div className='overflow-auto pr-2'>
+                                                {/* <div className='overflow-auto pr-2'>
                                                     <Tab.Content>
                                                         <Tab.Pane eventKey='link-0'>
                                                             <div key={1} className='alert-detail__activity-info d-flex align-items-center mb-4'>
@@ -535,7 +538,7 @@ function CommunicationAlertsDetailScreen({
                                                             </div>
                                                         </Tab.Pane>
                                                     </Tab.Content>
-                                                </div>
+                                                </div> */}
                                             </div>
                                         </Tab.Container>
                                     </Col>

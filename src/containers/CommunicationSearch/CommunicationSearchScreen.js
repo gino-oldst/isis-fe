@@ -184,7 +184,7 @@ function CommunicationSearchScreen({
     ]);
 
     const [source, setSource] = useState([
-        { id: 1, value: 'EMAIL', name: 'Email', isChecked: false, disabled: true },
+        // { id: 1, value: 'EMAIL', name: 'Email', isChecked: false, disabled: true },
         { id: 2, value: 'REUTERS', name: 'Reuters', isChecked: false, disabled: false },
         { id: 3, value: 'BLOOMBERG_CHAT', name: 'Bloomberg Chat', isChecked: false, disabled: false },
         { id: 4, value: 'BLOOMBERG_EMAIL', name: 'Bloomberg Email', isChecked: false, disabled: false }
@@ -304,11 +304,13 @@ function CommunicationSearchScreen({
                                                                 <div className='d-flex time-wrapper'>
                                                                     <div className='rdrTime'>
                                                                         <Input type='time' name='timeStart' placeholder='hh:mm'
-                                                                            required={true} formNoValidate={true} onChange={e => handleTime(e)}/>
+                                                                            defaultValue={moment(dateState[0].startDate).format('HH:mm')}
+                                                                            onChange={e => handleTime(e)}/>
                                                                     </div>
                                                                     <div className='rdrTime'>
                                                                         <Input type='time' name='timeEnd' placeholder='hh:mm'
-                                                                            required={true} formNoValidate={true} onChange={e => handleTime(e)}/>
+                                                                            defaultValue={moment(dateState[0].endDate).format('HH:mm')}
+                                                                            onChange={e => handleTime(e)}/>
                                                                     </div>
                                                                 </div>
                                                             </DropdownItem>
@@ -350,7 +352,7 @@ function CommunicationSearchScreen({
                                                     <CheckboxGroup onChange={handleSource}>
                                                         <FormGroup check={true} className='mb-1'>
                                                             <Label check={true} className='d-flex align-items-center'>
-                                                                <AllCheckerCheckbox disabled={true}/>
+                                                                <AllCheckerCheckbox/>
                                                                 <span className='box-label'>(Select All)</span>
                                                             </Label>
                                                         </FormGroup>

@@ -338,177 +338,179 @@ function CommunicationAlertsScreen({
                 menu={sidebarMenu} />
             <div className='w-100'>
                 <Breadcrumbs className='position-sticky' links={breadcrumb} />
-                <div className='alerts__content'>
-                    <Card className='px-4 py-2'>
-                        <CardBody>
-                            <div className='alerts__header mb-4'>
-                                <Row className='w-100 mr-0'>
-                                    <Col lg={6}>
-                                        <Typography color='color-3' className='alerts__title pl-0'>Communication Alerts</Typography>
-                                    </Col>
-                                    <Col lg={6} className='text-right pr-0'>
-                                        <Button weight='light' className='alerts__bulk-review' label='Bulk Review'
-                                            disabled={true} onClick={showActionsModal}/>
-                                    </Col>
-                                </Row>
-                            </div>
-                            <Row className='pl-2'>
-                                <Col lg={12}>
-                                    <Form>
-                                        <fieldset disabled={loading}>
-                                            <Row>
-                                                <Col>
-                                                    <FormGroup className='mb-3'>
-                                                        <Label for='alert'>Alert Type</Label>
-                                                        <Select
-                                                            isMulti={true}
-                                                            placeholder={'Search Alert Type'}
-                                                            isSearchable={false}
-                                                            className='status-select'
-                                                            name='alert'
-                                                            onChange={selected => {
-                                                                selected.find(option => option.value === 'all')
-                                                                    ? handleAlert(alertOptions.splice(1))
-                                                                    : handleAlert(selected);
-                                                            }}
-                                                            value={defaultAlert.length > 0
-                                                                ? defaultAlert.map(row => ({ label: row.label, value: row.value }))
-                                                                : []}
-                                                            options={alertOptions}/>
-                                                    </FormGroup>
-                                                </Col>
-                                                <Col>
-                                                    <FormGroup className='mb-3'>
-                                                        <Label for='status'>Status</Label>
-                                                        <Select
-                                                            isMulti={true}
-                                                            placeholder={'Search Status'}
-                                                            isSearchable={false}
-                                                            className='status-select'
-                                                            name='status'
-                                                            onChange={selected => {
-                                                                selected.find(option => option.value === 'all')
-                                                                    ? handleStatus(statusOptions.splice(1))
-                                                                    : handleStatus(selected);
-                                                            }}
-                                                            value={defaultStatus.length > 0
-                                                                ? defaultStatus.map(row => ({ label: row.label, value: row.value }))
-                                                                : []}
-                                                            options={statusOptions}/>
-                                                    </FormGroup>
-                                                </Col>
-                                                <Col>
-                                                    <FormGroup className='mb-3'>
-                                                        <Label for='dropdown-basic-button'>Date & Time</Label>
-                                                        <DropdownButton variant='outline-light' id='dropdown-basic-button' alignRight={true}
-                                                            title={filterDate[0].startDate === '' ? 'Select Date' : convertedStartDate + ' - ' + convertedEndDate}>
-                                                            <DropdownItem>
-                                                                <DateRangePicker
-                                                                    onChange={item => handleDates([item.selection])}
-                                                                    showSelectionPreview={true}
-                                                                    moveRangeOnFirstSelection={false}
-                                                                    months={2}
-                                                                    inputRanges={[]}
-                                                                    ranges={dateState}
-                                                                    showDateDisplay={false}
-                                                                    value={filterDate.startDate === '' ? null : filterDate}
-                                                                    direction='horizontal'/>
-                                                                <div className='d-flex time-wrapper'>
-                                                                    <div className='rdrTime'>
-                                                                        <Input type='time' name='timeStart' placeholder='hh:mm'
-                                                                            required={true} formNoValidate={true} onChange={e => handleTime(e)}/>
-                                                                    </div>
-                                                                    <div className='rdrTime'>
-                                                                        <Input type='time' name='timeEnd' placeholder='hh:mm'
-                                                                            required={true} formNoValidate={true} onChange={e => handleTime(e)}/>
-                                                                    </div>
-                                                                </div>
-                                                            </DropdownItem>
-                                                        </DropdownButton>
-                                                    </FormGroup>
-                                                </Col>
-                                            </Row>
-                                            <Row>
-                                                <Col>
-                                                    <FormGroup className='mb-3'>
-                                                        <Label for='source'>Source</Label>
-                                                        <Select
-                                                            isMulti={true}
-                                                            placeholder={'Search Source'}
-                                                            isSearchable={false}
-                                                            className='status-select'
-                                                            name='source'
-                                                            onChange={selected => {
-                                                                selected.find(option => option.value === 'all')
-                                                                    ? handleSource(sourceOptions.splice(1))
-                                                                    : handleSource(selected);
-                                                            }}
-                                                            value={defaultSource.length > 0
-                                                                ? defaultSource.map(row => ({ label: row.label, value: row.value }))
-                                                                : []}
-                                                            options={sourceOptions}/>
-                                                    </FormGroup>
-                                                </Col>
-                                                <Col>
-                                                    <FormGroup className='mb-3'>
-                                                        <Label for='filterSender'>Sender</Label>
-                                                        <AsyncSelect
-                                                            isMulti={true}
-                                                            cacheOptions={true}
-                                                            loadOptions={loadOptions}
-                                                            components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
-                                                            name='filterSender'
-                                                            className='filter-select'
-                                                            onChange={(newTags) => handleSenderChange(newTags)}
-                                                            placeholder={'Select Sender...'}/>
-                                                    </FormGroup>
-                                                </Col>
-                                                <Col>
-                                                    <FormGroup className='mb-3'>
-                                                        <Label for='filterRecipient'>Recipient</Label>
-                                                        <AsyncSelect
-                                                            isMulti={true}
-                                                            cacheOptions={true}
-                                                            loadOptions={loadOptions}
-                                                            components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
-                                                            name='filterRecipient'
-                                                            className='filter-select'
-                                                            onChange={(newTags) => handleRecipientChange(newTags)}
-                                                            placeholder={'Select Recipient...'}/>
-                                                    </FormGroup>
-                                                </Col>
-                                            </Row>
-                                            <Row>
-                                                <Col>
-                                                    <Button label='Search' variant='primary' type='submit'
-                                                        onClick={onSearchClick} className='alerts__save-button px-4 py-2'/>
-                                                </Col>
-                                            </Row>
-                                        </fieldset>
-                                    </Form>
-                                </Col>
-                            </Row>
-                            <div className='alerts__information mt-5'>
-                                <Row>
+                <div className='overflow-auto h-100 pb-40'>
+                    <div className='alerts__content'>
+                        <Card className='px-4 py-2'>
+                            <CardBody>
+                                <div className='alerts__header mb-4'>
+                                    <Row className='w-100 mr-0'>
+                                        <Col lg={6}>
+                                            <Typography color='color-3' className='alerts__title pl-0'>Communication Alerts</Typography>
+                                        </Col>
+                                        <Col lg={6} className='text-right pr-0'>
+                                            <Button weight='light' className='alerts__bulk-review' label='Bulk Review'
+                                                disabled={false} onClick={showActionsModal}/>
+                                        </Col>
+                                    </Row>
+                                </div>
+                                <Row className='pl-2'>
                                     <Col lg={12}>
-                                        <Table className='alerts__table table-responsive table-striped'
-                                            loading={loading}
-                                            isTimeout={isTimeout}
-                                            tableColumns={table.columns}
-                                            tableData={table.data}
-                                            tablePagination={table.totalPages}
-                                            totalNoOfRecords={table.totalNoOfRecords}
-                                            selectableRows={true}
-                                            activePage={activePage}
-                                            pagination={true}
-                                            sortable={true}
-                                            fetching={table.loading}
-                                            viewDetails={viewCommunicationAlertDetails}/>
+                                        <Form>
+                                            <fieldset disabled={loading}>
+                                                <Row>
+                                                    <Col>
+                                                        <FormGroup className='mb-3'>
+                                                            <Label for='alert'>Alert Type</Label>
+                                                            <Select
+                                                                isMulti={true}
+                                                                placeholder={'Search Alert Type'}
+                                                                isSearchable={false}
+                                                                className='status-select'
+                                                                name='alert'
+                                                                onChange={selected => {
+                                                                    selected.find(option => option.value === 'all')
+                                                                        ? handleAlert(alertOptions.splice(1))
+                                                                        : handleAlert(selected);
+                                                                }}
+                                                                value={defaultAlert.length > 0
+                                                                    ? defaultAlert.map(row => ({ label: row.label, value: row.value }))
+                                                                    : []}
+                                                                options={alertOptions}/>
+                                                        </FormGroup>
+                                                    </Col>
+                                                    <Col>
+                                                        <FormGroup className='mb-3'>
+                                                            <Label for='status'>Status</Label>
+                                                            <Select
+                                                                isMulti={true}
+                                                                placeholder={'Search Status'}
+                                                                isSearchable={false}
+                                                                className='status-select'
+                                                                name='status'
+                                                                onChange={selected => {
+                                                                    selected.find(option => option.value === 'all')
+                                                                        ? handleStatus(statusOptions.splice(1))
+                                                                        : handleStatus(selected);
+                                                                }}
+                                                                value={defaultStatus.length > 0
+                                                                    ? defaultStatus.map(row => ({ label: row.label, value: row.value }))
+                                                                    : []}
+                                                                options={statusOptions}/>
+                                                        </FormGroup>
+                                                    </Col>
+                                                    <Col>
+                                                        <FormGroup className='mb-3'>
+                                                            <Label for='dropdown-basic-button'>Date & Time</Label>
+                                                            <DropdownButton variant='outline-light' id='dropdown-basic-button' alignRight={true}
+                                                                title={filterDate[0].startDate === '' ? 'Select Date' : convertedStartDate + ' - ' + convertedEndDate}>
+                                                                <DropdownItem>
+                                                                    <DateRangePicker
+                                                                        onChange={item => handleDates([item.selection])}
+                                                                        showSelectionPreview={true}
+                                                                        moveRangeOnFirstSelection={false}
+                                                                        months={2}
+                                                                        inputRanges={[]}
+                                                                        ranges={dateState}
+                                                                        showDateDisplay={false}
+                                                                        value={filterDate.startDate === '' ? null : filterDate}
+                                                                        direction='horizontal'/>
+                                                                    <div className='d-flex time-wrapper'>
+                                                                        <div className='rdrTime'>
+                                                                            <Input type='time' name='timeStart' placeholder='hh:mm'
+                                                                                required={true} formNoValidate={true} onChange={e => handleTime(e)}/>
+                                                                        </div>
+                                                                        <div className='rdrTime'>
+                                                                            <Input type='time' name='timeEnd' placeholder='hh:mm'
+                                                                                required={true} formNoValidate={true} onChange={e => handleTime(e)}/>
+                                                                        </div>
+                                                                    </div>
+                                                                </DropdownItem>
+                                                            </DropdownButton>
+                                                        </FormGroup>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <Col>
+                                                        <FormGroup className='mb-3'>
+                                                            <Label for='source'>Source</Label>
+                                                            <Select
+                                                                isMulti={true}
+                                                                placeholder={'Search Source'}
+                                                                isSearchable={false}
+                                                                className='status-select'
+                                                                name='source'
+                                                                onChange={selected => {
+                                                                    selected.find(option => option.value === 'all')
+                                                                        ? handleSource(sourceOptions.splice(1))
+                                                                        : handleSource(selected);
+                                                                }}
+                                                                value={defaultSource.length > 0
+                                                                    ? defaultSource.map(row => ({ label: row.label, value: row.value }))
+                                                                    : []}
+                                                                options={sourceOptions}/>
+                                                        </FormGroup>
+                                                    </Col>
+                                                    <Col>
+                                                        <FormGroup className='mb-3'>
+                                                            <Label for='filterSender'>Sender</Label>
+                                                            <AsyncSelect
+                                                                isMulti={true}
+                                                                cacheOptions={true}
+                                                                loadOptions={loadOptions}
+                                                                components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
+                                                                name='filterSender'
+                                                                className='filter-select'
+                                                                onChange={(newTags) => handleSenderChange(newTags)}
+                                                                placeholder={'Select Sender...'}/>
+                                                        </FormGroup>
+                                                    </Col>
+                                                    <Col>
+                                                        <FormGroup className='mb-3'>
+                                                            <Label for='filterRecipient'>Recipient</Label>
+                                                            <AsyncSelect
+                                                                isMulti={true}
+                                                                cacheOptions={true}
+                                                                loadOptions={loadOptions}
+                                                                components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
+                                                                name='filterRecipient'
+                                                                className='filter-select'
+                                                                onChange={(newTags) => handleRecipientChange(newTags)}
+                                                                placeholder={'Select Recipient...'}/>
+                                                        </FormGroup>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <Col>
+                                                        <Button label='Search' variant='primary' type='submit'
+                                                            onClick={onSearchClick} className='alerts__save-button px-4 py-2'/>
+                                                    </Col>
+                                                </Row>
+                                            </fieldset>
+                                        </Form>
                                     </Col>
                                 </Row>
-                            </div>
-                        </CardBody>
-                    </Card>
+                                <div className='alerts__information mt-5'>
+                                    <Row>
+                                        <Col lg={12}>
+                                            <Table className='alerts__table table-responsive table-striped'
+                                                loading={loading}
+                                                isTimeout={isTimeout}
+                                                tableColumns={table.columns}
+                                                tableData={table.data}
+                                                tablePagination={table.totalPages}
+                                                totalNoOfRecords={table.totalNoOfRecords}
+                                                selectableRows={true}
+                                                activePage={activePage}
+                                                pagination={true}
+                                                sortable={true}
+                                                fetching={table.loading}
+                                                viewDetails={viewCommunicationAlertDetails}/>
+                                        </Col>
+                                    </Row>
+                                </div>
+                            </CardBody>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </div>

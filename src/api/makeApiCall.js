@@ -3,11 +3,11 @@ import { Form } from 'reactstrap';
 import { config } from '../config/constants';
 import { getAuthToken } from '../utils/Auth';
 
-export const cancelTokenSource = axios.CancelToken.source();
+// export const cancelTokenSource = axios.CancelToken.source();
 
 export const api = axios.create({
     // baseURL: config.apiUrl,
-    cancelToken: cancelTokenSource.token,
+    // cancelToken: cancelTokenSource.token,
     headers: {
         'Content-Type': 'application/json'
     },
@@ -92,7 +92,7 @@ export default async function makeApiCall(
             errData.status = err.response.status ? err.response.status : err.response.data.status;
             errData.message = err.response.message ? err.response.message : err.response.data.message;
 
-            cancelTokenSource.cancel('Request was canceled');
+            // cancelTokenSource.cancel('Request was canceled');
 
             throw errData;
         } else {
@@ -101,7 +101,7 @@ export default async function makeApiCall(
             errDataNetwork.status = 503;
             errDataNetwork.message = 'Network Unreachable';
 
-            cancelTokenSource.cancel('Request was canceled');
+            // cancelTokenSource.cancel('Request was canceled');
             throw errDataNetwork;
         }
     }

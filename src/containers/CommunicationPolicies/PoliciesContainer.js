@@ -48,24 +48,11 @@ export default function CommunicationPoliciesContainer({
             const policies = await getPolicySearchData(activePage, pageSize, sort);
             const { data, totalNoOfRecords, totalPages } = policies.data;
 
-            const keyword = await getKeywordSearch();
-            const keywordData = keyword.data;
-
             data.map((policy, i) => {
-                var keyword = keywordData.data.find(function(post, index) {
-                    if (post.id == policy.keywordId) {
-                        return true;
-                    }
-                });
-
-                policy.keyword = keyword.word;
-                policy.alertId = `Alert ${i + 1}`;
-                policy.status = policy.deleted ? 'Enabled' : 'Disabled';
+                policy.keyword = policy.word;
+                policy.alertId = `Alert ${policy.number}`;
+                policy.status = policy.deleted ? 'Disabled' : 'Enabled';
             });
-            // const policies = dataSample;
-
-            // console.log(JSON.stringify(policies));
-            // const { data, totalNoOfRecords, totalPages } = policies.data;
 
             dispatch(setPoliciesData(data, totalNoOfRecords, totalPages));
         } catch (e) {

@@ -138,7 +138,7 @@ function CommunicationSearchMessageDetailsScreen({
                     <div className='communication-search-message-details__content'>
                         <Card className='px-5 py-4'>
                             <CardBody>
-                                <div className='communication-search-message-details__header d-flex align-items-center'>
+                                <div className='communication-search-message-details__detail-heading d-flex align-items-center'>
                                     <Typography color='color-3' className='alerts__title mr-auto'
                                         weight='regular' style={{ fontSize: '40px !important', lineHeight: '24pt' }}>{dataId != '' ? dataId : 'N/A'}</Typography>
                                 </div>

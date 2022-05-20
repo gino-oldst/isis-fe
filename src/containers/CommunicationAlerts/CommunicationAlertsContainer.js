@@ -75,11 +75,9 @@ export default function CommunicationAlertsContainer({
             const alerts = await getCommunicationAlertData(page, size, sort, alert, status, dFrom, dTo, sources, senders, recipients);
             const { data, alertIds, totalNoOfRecords, totalPages } = alerts.data;
 
-            console.log(alerts);
-
             dispatch(setCommunicationAlertsData(data, alertIds, totalNoOfRecords, totalPages));
         } catch (e) {
-            if (e.status == 500 || status == 408) {
+            if (e.status == 500 || e.status == 502 || e.status == 503 || e.status == 504 || e.status == 408 || e.status == 404 || e.status == 400) {
                 setIsTimeout(true);
             }
         }
@@ -189,9 +187,10 @@ export default function CommunicationAlertsContainer({
             });
 
             const statusChange = await Promise.all(promises);
-            // showSuccessModal();
 
             // console.log(statusChange);
+
+            showSuccessModal();
         } catch (e) {
             console.error(e);
         }

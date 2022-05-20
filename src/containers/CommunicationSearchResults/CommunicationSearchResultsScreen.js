@@ -85,7 +85,8 @@ type Props = {
     handleUniqueID: Function,
     handleKeyword: Function,
     defaultSources: Array<any>,
-    errorForm: Array<Any>
+    errorForm: Array<Any>,
+    isTimeout: Boolean
 }
 
 function CommunicationSearchResultsScreen({
@@ -120,7 +121,8 @@ function CommunicationSearchResultsScreen({
     handleSource,
     handleUniqueID,
     handleKeyword,
-    errorForm
+    errorForm,
+    isTimeout
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -330,11 +332,13 @@ function CommunicationSearchResultsScreen({
                                                                     <div className='d-flex time-wrapper'>
                                                                         <div className='rdrTime'>
                                                                             <Input type='time' name='timeStart' placeholder='hh:mm'
-                                                                                required={true} formNoValidate={true} onChange={e => handleTime(e)}/>
+                                                                                value={moment(dateState[0].startDate).format('hh:mm')} required={true} formNoValidate={true}
+                                                                                onChange={e => handleTime(e)}/>
                                                                         </div>
                                                                         <div className='rdrTime'>
                                                                             <Input type='time' name='timeEnd' placeholder='hh:mm'
-                                                                                required={true} formNoValidate={true} onChange={e => handleTime(e)}/>
+                                                                                value={moment(dateState[0].endDate).format('hh:mm')} required={true} formNoValidate={true}
+                                                                                onChange={e => handleTime(e)}/>
                                                                         </div>
                                                                     </div>
                                                                 </DropdownItem>
@@ -375,7 +379,8 @@ function CommunicationSearchResultsScreen({
                                                 sortable={true}
                                                 fetching={table.loading}
                                                 viewDetails={handleItemClick}
-                                                filterKeyword={filterKeyword}/>
+                                                filterKeyword={filterKeyword}
+                                                isTimeout={isTimeout}/>
                                             {/* <BootstrapTable className='search-results__table'
                                                 isHover={true}
                                                 withSearch={true}

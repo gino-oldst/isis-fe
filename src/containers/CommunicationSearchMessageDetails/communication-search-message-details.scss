@@ -5,6 +5,11 @@
     height: 100%;
     display: flex;
 
+    &__detail-heading{
+        font-size: 40px !important;
+        font-family: $font-family-2;
+    }
+
     &__message-thread {
         max-height: 800px;
         overflow: scroll;

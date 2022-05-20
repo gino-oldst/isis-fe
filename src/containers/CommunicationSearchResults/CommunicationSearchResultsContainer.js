@@ -101,6 +101,8 @@ export default function CommunicationSearchResultsContainer({
         });
     }, [filterDate]);
 
+    const [isTimeout, setIsTimeout] = useState(false);
+
     const loadSearchData = async (page, size, sort, appliedFilters) => {
         setLoading(true);
 
@@ -122,7 +124,9 @@ export default function CommunicationSearchResultsContainer({
 
             dispatch(setCommunicationSearchData(data, searchIds, totalNoOfRecords, totalPages));
         } catch (e) {
-            console.error(e);
+            if (e.status == 500 || e.status == 502 || e.status == 503 || e.status == 504 || e.status == 408 || e.status == 404 || e.status == 400) {
+                setIsTimeout(true);
+            }
         }
 
         setLoading(false);
@@ -360,5 +364,6 @@ export default function CommunicationSearchResultsContainer({
         setFilterDate={setFilterDate}
         defaultRecipients={filterSearchForm.filterRecipients}
         defaultSender={filterSearchForm.filterSenders}
-        errorForm={errorForm}/>;
+        errorForm={errorForm}
+        isTimeout={isTimeout}/>;
 }

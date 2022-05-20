@@ -89,14 +89,6 @@
         margin-bottom: 0;
     }
 
-    // .dropdown-menu {
-    //     width: 300px;
-
-    //     .dropdown-divider {
-    //         border-top: 1px solid #dee2e6;
-    //     }
-    // }
-
     &__filter-reset-button {
         border: $bg-download-button;
         background-color: $bg-download-button;
@@ -229,6 +221,10 @@
     .rdrTime {
         padding: 0 0.833em;
         width: 100%;
+    }
+
+    .rdrDateRangePickerWrapper{
+        height: 380px !important
     }
 
     input[type='time'] {

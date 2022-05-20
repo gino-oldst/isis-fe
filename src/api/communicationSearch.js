@@ -1,10 +1,11 @@
 import { config } from '../config/constants';
-import makeApiCall, { cancelTokenSource } from '../api/makeApiCall';
+import makeApiCall from '../api/makeApiCall';
+import moment from 'moment';
 
 // For Cancelling Requests
-const handleCancelPreviousRequest = () => {
-    cancelTokenSource.cancel('Request was canceled');
-};
+// const handleCancelPreviousRequest = () => {
+//     cancelTokenSource.cancel('Request was canceled');
+// };
 
 // GET EMAILS of FILTERS
 const GET_EMAIL_DATA = `${config.apiStorage}/storage-service/external/search/paged`;
@@ -103,9 +104,11 @@ export async function getRecentMessages(messageId, size) {
 // Get Whole Message Thread
 const GET_MESSAGE_THREAD = `${config.apiStorage}/storage-service/message/search`;
 
-export async function getMessageThread(chainLinkId) {
+export async function getMessageThread(chainLinkId, timeSent) {
     const filterBody = {
-        chainLinkId: chainLinkId
+        chainLinkId: chainLinkId,
+        dateSentFrom: moment(timeSent).utc().local().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).format('YYYY-MM-DDTHH:mm:ss'),
+        dateSentTo: moment(timeSent).utc().local().set({ hour: 23, minute: 59, second: 0, millisecond: 0 }).format('YYYY-MM-DDTHH:mm:ss')
     };
 
     return await makeApiCall(`${GET_MESSAGE_THREAD}?sort=timeSent,ASC`, 'POST', filterBody);

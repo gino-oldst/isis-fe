@@ -241,7 +241,7 @@ export default function CommunicationSearchMessageDetailsContainer({
             // console.log(commMessageId.chainLinkId);
             // loadMessage(messages.data);
 
-            const messages = await getMessageThread(commMessageId.chainLinkId);
+            const messages = await getMessageThread(commMessageId.chainLinkId, search.data.timeSent);
             const { data, totalNoOfRecords, totalPages } = messages.data;
 
             setMessages(data);

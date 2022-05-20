@@ -555,16 +555,16 @@ function IsisTable({
                             {headerGroup.headers.map(column => (
                                 <th {...column.getHeaderProps()}>
                                     <span onClick={() => column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
-                                            column.id !== 'source' && column.id !== 'expander' && column.id !== 'status' && column.id !== 'date' &&
-                                            column.id !== 'alertSource' && column.id !== 'sender' && column.id !== 'recipient' && handleSort(column.id)}
+                                            column.id !== 'expander' && column.id !== 'status' && column.id !== 'date' &&
+                                            column.id !== 'alertSource' && column.id !== 'sender' && column.id !== 'recipient' && column.id !== 'recipients' && handleSort(column.id == 'senderSearch' ? 'sender' : column.id)}
                                     className={() => column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
-                                    column.id !== 'source' && column.id !== 'expander' && column.id !== 'status' && column.id !== 'date' &&
+                                    column.id !== 'expander' && column.id !== 'date' &&
                                     column.id !== 'alertSource' && column.id !== 'sender' && column.id !== 'recipient' && 'cursor-pointer'}>
                                         {column.render('Header')}
                                         {column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
-                                            column.id !== 'source' && column.id !== 'expander' && column.id !== 'status' && column.id !== 'date' &&
-                                            column.id !== 'alertSource' && column.id !== 'sender' && column.id !== 'recipient' &&
-                                            renderSortControl(column.id)}
+                                            column.id !== 'expander' && column.id !== 'status' && column.id !== 'date' &&
+                                            column.id !== 'alertSource' && column.id !== 'sender' && column.id !== 'recipient' && column.id !== 'recipients' &&
+                                            renderSortControl(column.id == 'senderSearch' ? 'sender' : column.id)}
                                     </span>
                                     {column.canFilter ? column.render('Filter') : null}
                                 </th>
@@ -574,17 +574,11 @@ function IsisTable({
                 </thead>
                 <tbody {...getTableBodyProps()}>
                     {!page.length || loading
-                        ? isTimeout
-                            ? <tr>
-                                <td className='text-muted text-center' colSpan={12}>
-                                    {'Server is taking Too long to respond or has crashed while in the middle of the request. You Might want to change your search criteria.'}
-                                </td>
-                            </tr>
-                            : <tr>
-                                <td className='text-muted text-center' colSpan={12}>
-                                    {loading ? 'Fetching data...' : 'No data Found'}
-                                </td>
-                            </tr>
+                        ? <tr>
+                            <td className='text-muted text-center' colSpan={12}>
+                                {loading ? 'Fetching data...' : isTimeout ? 'Server Timed Out' : 'No data Found'}
+                            </td>
+                        </tr>
                         : page.map((row, i) => {
                             prepareRow(row);
                             const rowProps = row.getRowProps();
@@ -740,12 +734,19 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                                 return (
                                     <td>
                                         <div className='d-flex flex-column'>
-                                            <Typography color='color-3' className='search-results__box-label' >
+                                            {/* <Typography color='color-3' className='search-results__box-label' >
                                                 {capitalize(x.keyword)}
-                                            </Typography>
-                                            <Typography variant='size-14' color='color-3' className=' search-results__box-label' >
-                                                {alertsList.filter(alert => alert.value === x.keywordId)[0].label}
-                                            </Typography>
+                                            </Typography> */}
+                                            {alertsList
+                                                ? <Typography variant='size-16' color='color-3' className=' search-results__box-label' >
+                                                    {alertsList.filter(alert => alert.value === x.keywordId)[0].label}
+                                                    {/* {JSON.stringify(alertsList.filter(alert => alert.value === x.keywordId))}
+                                                    {x.keywordId} */}
+                                                </Typography>
+                                                : <Typography variant='size-16' color='color-3' className=' search-results__box-label' >
+                                                    No Alerts.
+                                                </Typography>
+                                            }
                                         </div>
                                     </td>
                                 );
@@ -775,7 +776,7 @@ function SubRowAsync({ row, rowProps, visibleColumns }) {
             // setData(makeData(Math.floor(Math.random() * 5) + 1));
             setData(alertData);
             setLoading(false);
-        }, 500);
+        }, 200);
 
         return () => {
             clearTimeout(timer);
@@ -849,8 +850,16 @@ export default function ReactTable({
                             </span>
                         </div>
                     );
-                } else if (accessor == 'timeSent' || accessor == 'date') {
+                } else if (accessor == 'timeSent') {
                     const readableDate = moment(cell.value).utc().local().format('DD/MM/YYYY hh:mm A');
+
+                    return (
+                        <div>
+                            <div>{readableDate}</div>
+                        </div>
+                    );
+                } else if (accessor == 'date') {
+                    const readableDate = moment(cell.cell.row.original.alerts.data[0].timeSent).utc().local().format('DD/MM/YYYY hh:mm A');
 
                     return (
                         <div>
@@ -888,9 +897,9 @@ export default function ReactTable({
                 } else if (accessor == 'sender') {
                     return (
                         <div className='d-flex flex-column' style={{ maxWidth: '200px' }}>
-                            {cell.cell.row.original.message.sender != null
+                            {cell.cell.row.original.alerts.data[0].sender != null
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
-                                    {cell.cell.row.original.message.sender}
+                                    {cell.cell.row.original.alerts.data[0].sender}
                                 </Typography>
                                 : 'N/A'
                             }
@@ -908,11 +917,15 @@ export default function ReactTable({
                         </div>
                     );
                 } else if (accessor == 'recipient') {
-                    const recipients = [...new Set(cell.cell.row.original.recipients.data.map(item => item.recipient))];
+                    var recipients = [];
+
+                    if (cell.cell.row.original.recipients) {
+                        recipients = [...new Set(cell.cell.row.original.recipients.data.map(item => item.recipient))];
+                    }
 
                     return (
                         <div className='d-flex flex-column' style={{ maxWidth: '200px' }}>
-                            {recipients != null
+                            {recipients
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
                                     {truncateText(recipients.join(', '), 400)}
                                 </Typography>
@@ -936,9 +949,9 @@ export default function ReactTable({
                 } else if (accessor == 'alertSource') {
                     return (
                         <div className='d-flex flex-column'>
-                            {cell.cell.row.original.message.source != null
+                            {cell.cell.row.original.alerts.data[0].source != null
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
-                                    {capitalize(cell.cell.row.original.message.source)}
+                                    {capitalize(cell.cell.row.original.alerts.data[0].source)}
                                 </Typography>
                                 : 'N/A'
                             }
@@ -956,9 +969,10 @@ export default function ReactTable({
                                     {cell.cell.row.original.alerts.data.length}
                                 </Typography>
                             </div>
-                            <Typography variant={'size-16'} color='color-3' className='color-link-text cursor-pointer pl-3 table__box-label'
-                                onClick={() => viewDetails(cell.cell.row.original.message.id, cell.cell.row.original.message.chainLinkId, keywords)}>
-                                {truncateText(cell.cell.row.original.message.id, 10)}
+                            <Typography weight={'bold'} variant={'size-16'} color='color-3'
+                                className='color-link-text cursor-pointer pl-3 table__box-label'
+                                onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords)}>
+                                {truncateText(cell.cell.row.original.alerts.data[0].commMessageId, 10)}
                             </Typography>
                         </div>
                     );
@@ -1092,6 +1106,7 @@ export default function ReactTable({
         <div className={`w-100 ${className}`}>
             <IsisTable
                 loading={loading}
+                isTimeout={isTimeout}
                 columns={columns}
                 data={tableData}
                 tablePagination={tablePagination}
