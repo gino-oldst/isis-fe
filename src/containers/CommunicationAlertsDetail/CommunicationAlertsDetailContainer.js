@@ -11,10 +11,13 @@ import { getUsers } from '../../api/users';
 import {
     DATE_TO_UTC
 } from '../../utils/helpers';
-import { setBehavioursData } from '../../redux/modules/behaviours';
-import { setAlertsData, setAssignees, setColumnFilterValues } from '../../redux/modules/alerts';
 import { getCommunicationSearchData, getCommunicationMessageDetail, getMessageThread, getRecipients } from '../../api/communicationSearch';
-import { getMessageAlerts } from '../../api/communicationAlerts';
+import { getKeywords, getMessageAlerts, updateAlert } from '../../api/communicationAlerts';
+import Typography from '../../components/base/Typography/Typography';
+import { setModalContent } from '../../redux/modules/modalEvent';
+import Button from '../../components/base/Button/Button';
+import { setFlashNotification } from '../../redux/modules/flashNotification';
+import { setMessageAlerts, setAlertsListDetail } from '../../redux/modules/communicationAlerts';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -33,7 +36,10 @@ export default function CommunicationAlertsDetail({
     const filters = useLocation();
 
     const [loading, setLoading] = useState(true);
+    const [alertLoading, setAlertLoading] = useState(false);
     const { isRowsSelected, selectedRows, appliedFilters } = useSelector(({ table }) => table);
+    const { messageAlerts, alertsList } = useSelector(({ communicationAlerts }) => communicationAlerts);
+    // const { alertsList } = useSelector(({ isisTable }) => isisTable);
     // const { table, selected, dateRange } = useSelector(({ alerts }) => alerts);
     // const behaviours = useSelector(({ behaviours }) => behaviours);
     const [detailData, setDetailData] = useState([]);
@@ -55,11 +61,19 @@ export default function CommunicationAlertsDetail({
 
     useEffect(() => {
         loadSearchData(filters.state);
+        loadAlerts(filters.state.id);
     }, [filters]);
 
     const [messages, setMessages] = useState([]);
-    const [recipients, setRecipients] = useState([]);
+    const [recipients, setRecipients] = useState('');
     const [alerts, setAlerts] = useState([]);
+
+    const loadAlerts = async (id) => {
+        const alertsData = await getMessageAlerts(id);
+
+        // dispatch(setMessageAlerts(alertsData.data));
+        setAlerts(alertsData.data.data);
+    };
 
     const loadSearchData = async (commMessageId) => {
         setLoading(true);
@@ -74,19 +88,89 @@ export default function CommunicationAlertsDetail({
 
             setMessages(data);
 
-            const alertsData = await getMessageAlerts(commMessageId.id);
+            if (Object.keys(alertsList). length === 0) {
+                const keywords = await getKeywords();
 
-            setAlerts(alertsData.data);
+                dispatch(setAlertsListDetail(keywords));
+            }
 
-            const recipients = await getRecipients(search.data.chainLinkId);
-            const extractedRecipients = extractRecipients(recipients.data);
+            // history.push('/communication_alerts_detail', alerts);
 
-            setRecipients(extractedRecipients);
+            // const recipients = await getRecipients(search.data.chainLinkId);
+            // const extractedRecipients = extractRecipients(recipients.data);
+
+            setRecipients(commMessageId.recipients);
         } catch (e) {
             console.error(e);
         }
 
         setLoading(false);
+    };
+
+    const [submit, setSubmit] = useState(false);
+
+    const onSubmitStatusChange = async (status, note, selectedRows) => {
+        setAlertLoading(true);
+
+        try {
+            const promises = selectedRows.map(row => {
+                const data = {
+                    id: row.id,
+                    policyId: row.policyId,
+                    status: status,
+                    notes: note
+                };
+
+                const request = updateAlert(data);
+
+                return request;
+            });
+
+            const statusChange = await Promise.all(promises);
+
+            setAlerts(statusChange.map(ev => ev.data));
+
+            showSuccessModal();
+        } catch (e) {
+            console.error(e);
+        }
+
+        setAlertLoading(false);
+    };
+
+    const onSubmitStatusChangeSingle = async (status, note, row) => {
+        setSubmit(true);
+
+        try {
+            const data = {
+                id: row.id,
+                policyId: row.policyId,
+                status: status,
+                notes: note
+            };
+
+            const request = await updateAlert(data);
+
+            dispatch(setFlashNotification({
+                message: 'Update Success.',
+                isError: false
+            }));
+
+            loadAlerts(filters.state.id);
+
+            return request;
+        } catch (e) {
+            console.error(e);
+        }
+
+        setSubmit(false);
+    };
+
+    const showSuccessModal = () => {
+        dispatch(setModalContent({
+            modalContent: <SuccessModal handleCloseModal={handleCloseModal}/>,
+            size: 'md'
+        }));
     };
 
     const extractRecipients = (recipients) => {
@@ -102,10 +186,43 @@ export default function CommunicationAlertsDetail({
         filterText={filters.state.filterText}
         detailData={detailData}
         alertsData={alerts}
+        alertsList={alertsList}
+        alertLoading={alertLoading}
         messages={messages}
         recipients={recipients}
         useMediaQuery={useMediaQuery}
         breadcrumb={breadcrumb}
         sidebarMenu={sidebarMenu}
-        handleCloseModal={handleCloseModal}/>;
+        handleCloseModal={handleCloseModal}
+        onSubmit={onSubmitStatusChange}
+        onSubmitSingle={onSubmitStatusChangeSingle}
+        submit={submit}/>;
 }
+
+const SuccessModal = ({
+    handleCloseModal
+}) => {
+    const dispatch = useDispatch();
+
+    return (
+        <div className='action-modal p-4'>
+            <div className='row action-modal__content mt-5 mb-5 d-flex justify-content-center align-items-center'>
+                <Typography variant='size-26' color='color-3'
+                    className='playfair-font'>
+                    Alert Status Updated
+                </Typography>
+                <Typography variant='size-16' color='color-3'
+                    className='mb-4 playfair-font'>
+                    You have successfully bulk reviewed the alerts
+                </Typography>
+            </div>
+            <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
+                <Button label='Close' variant='primary' className='cancel-button px-4 mr-2 py-2'
+                    onClick={handleCloseModal}/> {/* onClick={handleClose} disabled={submit} /> */}
+                {/* <Button label='Apply' isLoading={submit} variant='secondary'
+                    className='alerts__save-button px-4 py-2'
+                    onClick={handleBulkUpdate} disabled={submit} /> */}
+            </div>
+        </div>
+    );
+};

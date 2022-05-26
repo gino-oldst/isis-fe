@@ -113,10 +113,12 @@ function CommunicationSearchScreen({
         day: 'numeric'
     });
 
+    const today = new Date();
+
     const [dateState, setDateState] = useState([
         {
-            startDate: new Date(),
-            endDate: new Date(),
+            startDate: new Date(today.setHours(0, 0, 0, 0)),
+            endDate: new Date(today.setHours(0, 0, 0, 0)),
             key: 'selection'
         }
     ]);

@@ -57,10 +57,15 @@ type Props = {
     detailData: Array,
     dataId: Any,
     handleCloseModal: Function,
+    onSubmit: Function,
+    onSubmitSingle: Function,
+    submit: Boolean,
     filterText: Array,
     messages: Array,
     recipients: Array,
-    alertsData: Array
+    alertsData: Array,
+    alertList: Array,
+    alertLoading: Boolean
 }
 
 function CommunicationAlertsDetailScreen({
@@ -74,16 +79,20 @@ function CommunicationAlertsDetailScreen({
     detailData,
     dataId,
     handleCloseModal,
+    onSubmit,
+    onSubmitSingle,
+    submit,
     filterText,
     messages,
     recipients,
-    alertsData
+    alertsData,
+    alertsList,
+    alertLoading
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
     const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1199px)' });
     const isLaptopScreen = useMediaQuery({ query: '(max-width: 1450px)' });
-    const { alertsList } = useSelector(({ isisTable }) => isisTable);
 
     const renderAlertInfo = (text) => (
         <Popover id='popover-basic'>
@@ -110,6 +119,34 @@ function CommunicationAlertsDetailScreen({
         }));
     };
 
+    const showResolvedModal = (status, selectedAlert) => {
+        dispatch(setModalContent({
+            modalContent: <ResolvedModal status={status} selectedAlert={selectedAlert} handleCloseModal={handleCloseModal}/>,
+            size: 'md'
+        }));
+    };
+
+    const handleDetailStatusChange = (e, selectedAlert) => {
+        console.log(e.value, selectedAlert);
+        // onSubmit(selectedStatus, resolvedNote, alertsData)
+
+        if (e.value == 'RESOLVED') {
+            showResolvedModal(e.value, selectedAlert);
+        } else {
+            onSubmitSingle(e.value, '', selectedAlert);
+        }
+    };
+
+    useEffect(() => {
+        // scroll to active message
+        scroller.scrollTo(`${dataId}`, {
+            duration: 500,
+            smooth: true,
+            containerId: 'containerElement'
+            // offset: 50 // Scrolls to element + 50 pixels down the page
+        });
+    }, [loading]);
+
     const ActionModal = ({
         userId,
         activeModal,
@@ -117,6 +154,8 @@ function CommunicationAlertsDetailScreen({
         handleCloseModal
     }) => {
         const dispatch = useDispatch();
+        const [selectedStatus, setSelectedStatus] = useState('');
+        const [resolvedNote, setResolvedNote] = useState('');
 
         return (
             <div className='action-modal p-5'>
@@ -126,11 +165,11 @@ function CommunicationAlertsDetailScreen({
                     className='mb-4 playfair-font text-center'>
                     Update all Status
                 </Typography>
-                <div className='alerts-detail__information mt-5 w-100 mb-4' style={{ overflowX: 'hidden', overflowY: 'auto' }}>
-                    <Row>
+                <div className='alerts-detail__information mt-5 w-100 mb-4'>
+                    <Row className='modal-body'>
                         <Col lg={6}>
                             <table className='table'>
-                                {alertsData.data != null
+                                {alertsData
                                     ? <>
                                         <thead>
                                             <tr>
@@ -143,11 +182,11 @@ function CommunicationAlertsDetailScreen({
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {alertsData.data.map(alert => {
+                                            {alertsData.map(alert => {
                                                 return (<>
                                                     <tr>
                                                         <td className='pb-2'>
-                                                            <Typography color='color-3'>{alert.policyName}</Typography>
+                                                            <Typography color='color-3'>{alertsList.filter(x => x.value === alert.keywordId)[0].label}</Typography>
                                                         </td>
                                                         <td className='pb-2'>
                                                             <Typography color='color-3'>{alert.keyword}</Typography>
@@ -171,32 +210,36 @@ function CommunicationAlertsDetailScreen({
                             </table>
                         </Col>
                         <Col>
-                            <FormGroup className='mb-3'>
+                            <FormGroup className='mb-3 mt-2'>
                                 <Select
                                     name='status'
+                                    isSearchable={false}
+                                    onChange={selected => setSelectedStatus(selected.value)}
                                     options={[{
                                         name: 'OPEN',
                                         label: <Badge status='Open' />,
-                                        value: <Badge status='Open'/>
+                                        value: 'OPEN'
                                     }, {
                                         name: 'IN_REVIEW',
                                         label: <Badge status='In Review' />,
-                                        value: <Badge status='In Review'/>
+                                        value: 'IN_REVIEW'
                                     }, {
                                         name: 'RESOLVED',
                                         label: <Badge status='Resolved' />,
-                                        value: <Badge status='Resolved'/>
+                                        value: 'RESOLVED'
                                     }, {
                                         name: 'ARCHIVED',
                                         label: <Badge status='Archived' />,
-                                        value: <Badge status='Archived'/>
+                                        value: 'ARCHIVED'
                                     }]} />
                             </FormGroup>
-                            <FormGroup className='mb-5'>
-                                <Label for='notes'>Reasons for resolving</Label>
-                                <Input type='textarea' rows={5} name='notes'
-                                    placeholder='Leave blank if there is no change to apply' value={alert.notes} /> {/* onChange={handleChange} /> */}
-                            </FormGroup>
+                            {selectedStatus == 'RESOLVED' &&
+                                <FormGroup className='mb-5'>
+                                    <Label for='notes'>Reasons for resolving</Label>
+                                    <Input type='textarea' rows={5} name='notes'
+                                        placeholder='Leave blank if there is no change to apply' value={alert.notes} onChange={e => setResolvedNote(e.target.value)} />
+                                </FormGroup>
+                            }
                         </Col>
                     </Row>
                 </div>
@@ -204,7 +247,7 @@ function CommunicationAlertsDetailScreen({
                     <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
                         onClick={handleCloseModal} /> {/* onClick={handleClose} disabled={submit} /> */}
                     <Button label='Apply' variant='primary' className='alerts-detail__save-button px-4 py-2'
-                        onClick={showSuccessModal}/>
+                        onClick={e => onSubmit(selectedStatus, resolvedNote, alertsData)}/>
                     {/* <Button label='Apply' isLoading={submit} variant='secondary'
                         className='alerts-detail__save-button px-4 py-2'
                         onClick={handleBulkUpdate} disabled={submit} /> */}
@@ -230,12 +273,50 @@ function CommunicationAlertsDetailScreen({
                     </Typography>
                     <Typography variant='size-16' color='color-3'
                         className='mb-4 playfair-font'>
-                        You have successfully bulk reviewed the alerts
+                        You have successfully updated the alerts
                     </Typography>
                 </div>
                 <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
                     <Button label='Close' variant='primary' className='cancel-button px-4 mr-2 py-2'
                         onClick={handleCloseModal}/> {/* onClick={handleClose} disabled={submit} /> */}
+                </div>
+            </div>
+        );
+    };
+
+    const ResolvedModal = ({
+        userId,
+        activeModal,
+        status,
+        selectedAlert,
+        handleCloseModal
+    }) => {
+        const dispatch = useDispatch();
+        const [resolvedNote, setResolvedNote] = useState('');
+
+        return (
+            <div className='action-modal p-5'>
+                <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
+                    onClick={handleCloseModal}/>
+                <Typography variant='size-30' color='color-3'
+                    className='mb-4 playfair-font text-center'>
+                    Reasons for resolving
+                </Typography>
+                <div className='alerts-detail__information mt-5 w-100 m2-4'>
+                    <Row className='modal-body'>
+                        <Col>
+                            <FormGroup className='mb-2'>
+                                <Input type='textarea' rows={5} name='notes'
+                                    placeholder='Leave blank if there is no change to apply' value={alert.notes} onChange={e => setResolvedNote(e.target.value)} />
+                            </FormGroup>
+                        </Col>
+                    </Row>
+                </div>
+                <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
+                    <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
+                        onClick={handleCloseModal} /> {/* onClick={handleClose} disabled={submit} /> */}
+                    <Button label='Apply' variant='primary' className='alerts-detail__save-button px-4 py-2'
+                        onClick={e => onSubmitSingle(status, resolvedNote, selectedAlert)}/>
                     {/* <Button label='Apply' isLoading={submit} variant='secondary'
                         className='alerts-detail__save-button px-4 py-2'
                         onClick={handleBulkUpdate} disabled={submit} /> */}
@@ -243,16 +324,6 @@ function CommunicationAlertsDetailScreen({
             </div>
         );
     };
-
-    useEffect(() => {
-        // scroll to active message
-        scroller.scrollTo(`${dataId}`, {
-            duration: 500,
-            smooth: true,
-            containerId: 'containerElement'
-            // offset: 50 // Scrolls to element + 50 pixels down the page
-        });
-    }, [loading]);
 
     return (
         <div className='alerts-detail'>
@@ -282,9 +353,9 @@ function CommunicationAlertsDetailScreen({
                                             <Typography color='color-3' className='mr-3 mb-2' weight='semi-bold'
                                                 style={{ fontSize: '24px', lineHeight: '24pt' }}>Alert</Typography>
                                             <Button weight='light' disabled={loading} className='ml-4 mr-4 alerts-detail__bulk-review'
-                                                disabled={true} onClick={showActionsModal} label='Update all Status'/>
+                                                disabled={loading} onClick={showActionsModal} label='Update all Status'/>
                                         </div>
-                                        {loading
+                                        {alertLoading || loading
                                             ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3'>
                                                 <span className='sr-only'>Loading...</span>
                                             </Spinner>
@@ -306,7 +377,7 @@ function CommunicationAlertsDetailScreen({
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                {alertsData.data.map(alert => {
+                                                                {alertsData.map(alert => {
                                                                     return (<>
                                                                         <tr>
                                                                             <td className='pb-2'>
@@ -320,37 +391,37 @@ function CommunicationAlertsDetailScreen({
                                                                                     <Select
                                                                                         name='status'
                                                                                         className='w-100 pr-2'
-                                                                                        isDisabled={true}
+                                                                                        isDisabled={false}
+                                                                                        onChange={e => handleDetailStatusChange(e, alert)}
                                                                                         defaultValue={{
                                                                                             label: <Badge status={alert.status} />,
-                                                                                            value: <Badge status={alert.status}/>
+                                                                                            value: alert.status
                                                                                         }}
                                                                                         options={[{
                                                                                             name: 'OPEN',
                                                                                             label: <Badge status='Open' />,
-                                                                                            value: <Badge status='Open'/>
+                                                                                            value: 'OPEN'
                                                                                         }, {
                                                                                             name: 'IN_REVIEW',
                                                                                             label: <Badge status='In Review' />,
-                                                                                            value: <Badge status='In Review'/>
+                                                                                            value: 'IN_REVIEW'
                                                                                         }, {
                                                                                             name: 'RESOLVED',
                                                                                             label: <Badge status='Resolved' />,
-                                                                                            value: <Badge status='Resolved'/>
+                                                                                            value: 'RESOLVED'
                                                                                         }, {
                                                                                             name: 'ARCHIVED',
                                                                                             label: <Badge status='Archived' />,
-                                                                                            value: <Badge status='Archived'/>
+                                                                                            value: 'ARCHIVED'
                                                                                         }]} />
                                                                                     {alert.status == 'RESOLVED' &&
                                                                                         <div>
-                                                                                            <OverlayTrigger style={{ cursor: 'pointer' }} placement='bottom-start' overlay={renderAlertInfo('Donec sollicitudin molestie malesuada. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Donec sollicitudin molestie malesuada. Cras ultricies ligula sed magna dictum porta. Donec sollicitudin molestie malesuada. Cras ultricies ligula sed magna dictum porta.')}>
+                                                                                            <OverlayTrigger style={{ cursor: 'pointer' }} placement='bottom-start' overlay={renderAlertInfo(alert.notes)}>
                                                                                                 <FaInfoCircle style={{ color: '#004C98', cursor: 'pointer' }} size={24}/>
                                                                                             </OverlayTrigger>
                                                                                         </div>
                                                                                     }
                                                                                 </div>
-                                                                                {/* onChange={handleChange} /> */}
                                                                             </td>
                                                                         </tr>
                                                                     </>);
@@ -386,7 +457,7 @@ function CommunicationAlertsDetailScreen({
                                                         <span className='sr-only'>Loading...</span>
                                                     </Spinner>
                                                     : recipients != null
-                                                        ? truncateText(recipients.join(', '), 400)
+                                                        ? recipients
                                                         : 'N/A'
                                                 }
                                             </Typography>

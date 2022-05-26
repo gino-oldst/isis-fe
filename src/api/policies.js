@@ -9,7 +9,7 @@ const GET_KEYWORD_SEARCH_DATA_NUMBERED = `${config.apiStorage}/storage-service/k
 export async function getPolicySearchData(page, size, sort, filters) {
     const filterBody = {};
     const sortColumn = sort.column;
-    const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sortColumn},${sort.type}` : '';
+    const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sortColumn},${sort.type}` : '&sort=number,ASC';
 
     return await makeApiCall(`${GET_KEYWORD_SEARCH_DATA_NUMBERED}?page=${page}&size=${size}${withSorting()}`, 'POST', filterBody);
 }

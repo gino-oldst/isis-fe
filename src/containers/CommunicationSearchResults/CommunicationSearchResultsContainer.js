@@ -126,6 +126,14 @@ export default function CommunicationSearchResultsContainer({
         } catch (e) {
             if (e.status == 500 || e.status == 502 || e.status == 503 || e.status == 504 || e.status == 408 || e.status == 404 || e.status == 400) {
                 setIsTimeout(true);
+
+                // reset the table
+                const resetData = [];
+                const resetSearchIds = [];
+                const resetTotalNoOfRecords = 0;
+                const resetTotalPages = 0;
+
+                dispatch(setCommunicationSearchData(resetData, resetSearchIds, resetTotalNoOfRecords, resetTotalPages));
             }
         }
 

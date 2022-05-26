@@ -69,7 +69,7 @@ const initialState = {
             },
             {
                 header: 'Status',
-                accessor: 'status',
+                accessor: 'policiesStatus',
                 disableFilters: true,
                 clickable: false
             }

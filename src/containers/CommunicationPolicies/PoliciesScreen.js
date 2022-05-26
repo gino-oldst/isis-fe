@@ -2,7 +2,7 @@
 import React, { useState, useEffect, createRef } from 'react';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
-import Table from '../../components/base/Table/Table';
+import Table from '../../components/base/IsisTable/IsisTable';
 import Button from '../../components/base/Button/Button';
 import Select from '../../components/base/Select/Select';
 import Badge from '../../components/base/Badge/Badge';

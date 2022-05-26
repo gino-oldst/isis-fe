@@ -10,6 +10,22 @@ const REPLACE_COMMUNICATION_ALERTS_DETAILS = 'REPLACE_COMMUNICATION_ALERTS_DETAI
 const FILTER_COMMUNICATION_ALERTS_DATA = 'FILTER_COMMUNICATION_ALERTS_DATA';
 const SET_LOADING = 'SET_LOADING';
 const SET_COMMUNICATION_ALERTS_DATE_RANGE = 'SET_COMMUNICATION_ALERTS_DATE_RANGE';
+const SET_MESSAGE_ALERTS = 'SET_MESSAGE_ALERTS';
+const SET_ALERTS_LIST = 'SET_ALERTS_LIST';
+
+export function setAlertsListDetail(data: Object) {
+    return {
+        type: SET_ALERTS_LIST,
+        data
+    };
+}
+
+export function setMessageAlerts(data: Object) {
+    return {
+        type: SET_MESSAGE_ALERTS,
+        data
+    };
+}
 
 export function setSelectedCommnunicationAlert(data: Object) {
     return {
@@ -18,11 +34,10 @@ export function setSelectedCommnunicationAlert(data: Object) {
     };
 }
 
-export function setCommunicationAlertsData(data: Array, alertIds: Array, totalNoOfRecords: Integer, totalPages: Integer) {
+export function setCommunicationAlertsData(data: Array, totalNoOfRecords: Integer, totalPages: Integer) {
     return {
         type: SET_COMMUNICATION_ALERTS_DATA,
         data,
-        alertIds,
         totalNoOfRecords,
         totalPages
     };
@@ -146,15 +161,36 @@ const initialState = {
         data: {},
         assignees: [],
         alertSpecifics: {}
-    }
+    },
+    messageAlerts: {
+        alerts: {}
+    },
+    alertsList: {}
 };
 
 export default function communicationAlerts(state: Object = initialState, action: Object):
   | any
   | {
-    table: {}
+    table: {},
+    selected: {},
+    columnFilterValues: null,
+    messageAlerts: {},
+    alertsList: {}
   } {
     switch (action.type) {
+        case SET_ALERTS_LIST:
+            return {
+                ...state,
+                alertsList: action.data
+            };
+        case SET_MESSAGE_ALERTS:
+            return {
+                ...state,
+                messageAlerts: {
+                    ...state.messageAlerts,
+                    alerts: action.data
+                }
+            };
         case SET_LOADING:
             return {
                 ...state,
@@ -169,7 +205,6 @@ export default function communicationAlerts(state: Object = initialState, action
                 table: {
                     ...state.table,
                     data: action.data,
-                    alertIds: action.id,
                     totalNoOfRecords: action.totalNoOfRecords,
                     totalPages: action.totalPages,
                     loading: false

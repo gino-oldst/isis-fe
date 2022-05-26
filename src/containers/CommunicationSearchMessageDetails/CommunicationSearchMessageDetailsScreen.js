@@ -153,15 +153,12 @@ function CommunicationSearchMessageDetailsScreen({
                                     </Row>
                                     <Row className='mt-5'>
                                         <Col lg={7}>
-                                            <div className='mb-4'>
+                                            {/* <div className='mb-4'>
                                                 <div className='d-flex align-items-center justify-content-between'>
                                                     <Typography color='color-3' className='mr-3 mb-2' weight='semi-bold'
                                                         style={{ fontSize: '24px', lineHeight: '24pt' }}>Alert</Typography>
-                                                    {/* <Button weight='light' disabled={detailData.alerts ? 'true' : 'false'} className='ml-4 mr-4 alerts__bulk-review'
-                                                        label='Update all Status'/> */}
                                                 </div>
                                                 <table className='table' style={{ minWidth: '300px !important' }}>
-                                                    {/* detailData.alerts.length > 0 */}
                                                     {detailData.alerts != null
                                                         ? <>
                                                             <thead>
@@ -190,10 +187,6 @@ function CommunicationSearchMessageDetailsScreen({
                                                                             <Select
                                                                                 className='status-select'
                                                                                 name='status'
-                                                                                // defaultValue={{
-                                                                                //     label: <Badge status={selectedAlert.status} />,
-                                                                                //     value: <Badge status={selectedAlert.status}/>
-                                                                                // }}
                                                                                 options={[{
                                                                                     name: 'OPEN',
                                                                                     label: <Badge status='Open' />,
@@ -216,7 +209,6 @@ function CommunicationSearchMessageDetailsScreen({
                                                                                 <FaInfoCircle style={{ color: '#004C98', marginLeft: '10px' }} size={24}/>
                                                                             </OverlayTrigger>
                                                                         </div>
-                                                                        {/* onChange={handleChange} /> */}
                                                                     </td>
                                                                 </tr>
                                                             </tbody>
@@ -227,7 +219,7 @@ function CommunicationSearchMessageDetailsScreen({
                                                         </>
                                                     }
                                                 </table>
-                                            </div>
+                                            </div> */}
                                             <div className='pt-30 pb-30 communication-search-message-details__messages'>
                                                 <Row>
                                                     <Col>

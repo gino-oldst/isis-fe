@@ -554,17 +554,15 @@ function IsisTable({
                         <tr {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers.map(column => (
                                 <th {...column.getHeaderProps()}>
-                                    <span onClick={() => column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
-                                            column.id !== 'expander' && column.id !== 'status' && column.id !== 'date' &&
-                                            column.id !== 'alertSource' && column.id !== 'sender' && column.id !== 'recipient' && column.id !== 'recipients' && handleSort(column.id == 'senderSearch' ? 'sender' : column.id)}
-                                    className={() => column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
-                                    column.id !== 'expander' && column.id !== 'date' &&
-                                    column.id !== 'alertSource' && column.id !== 'sender' && column.id !== 'recipient' && 'cursor-pointer'}>
+                                    <span onClick={() => column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
+                                            column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' &&
+                                            handleSort(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
+                                    className={() => column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
+                                    column.id !== 'expander' && column.id !== 'recipient' && 'cursor-pointer'}>
                                         {column.render('Header')}
                                         {column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
-                                            column.id !== 'expander' && column.id !== 'status' && column.id !== 'date' &&
-                                            column.id !== 'alertSource' && column.id !== 'sender' && column.id !== 'recipient' && column.id !== 'recipients' &&
-                                            renderSortControl(column.id == 'senderSearch' ? 'sender' : column.id)}
+                                            column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' &&
+                                            renderSortControl(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
                                     </span>
                                     {column.canFilter ? column.render('Filter') : null}
                                 </th>
@@ -896,7 +894,7 @@ export default function ReactTable({
                     );
                 } else if (accessor == 'sender') {
                     return (
-                        <div className='d-flex flex-column' style={{ maxWidth: '200px' }}>
+                        <div className='d-flex flex-column text-wrap'>
                             {cell.cell.row.original.alerts.data[0].sender != null
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
                                     {cell.cell.row.original.alerts.data[0].sender}
@@ -917,17 +915,15 @@ export default function ReactTable({
                         </div>
                     );
                 } else if (accessor == 'recipient') {
-                    var recipients = [];
-
-                    if (cell.cell.row.original.recipients) {
-                        recipients = [...new Set(cell.cell.row.original.recipients.data.map(item => item.recipient))];
-                    }
+                    const recipients = [...new Set(cell.cell.row.original.alerts.data[0].recipients
+                        ? cell.cell.row.original.alerts.data[0].recipients.map(item => item)
+                        : '')];
 
                     return (
-                        <div className='d-flex flex-column' style={{ maxWidth: '200px' }}>
+                        <div className='d-flex flex-column'>
                             {recipients
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
-                                    {truncateText(recipients.join(', '), 400)}
+                                    {recipients.join(', ')}
                                 </Typography>
                                 : 'N/A'
                             }
@@ -962,6 +958,11 @@ export default function ReactTable({
                     // row.original.alerts.data
                     const keywords = [...new Set(cell.cell.row.original.alerts.data.map(item => item.keyword))];
 
+                    const recipients = [...new Set(cell.cell.row.original.alerts.data[0].recipients
+                        ? cell.cell.row.original.alerts.data[0].recipients.map(item => item)
+                        : '')];
+                    const strRecipients = recipients.join(', ');
+
                     return (
                         <div className='d-flex' style={{ maxWidth: '300px' }}>
                             <div {...cell.cell.row.getToggleRowExpandedProps()} className='table__number-square d-flex justify-content-center align-items-center'>
@@ -971,11 +972,15 @@ export default function ReactTable({
                             </div>
                             <Typography weight={'bold'} variant={'size-16'} color='color-3'
                                 className='color-link-text cursor-pointer pl-3 table__box-label'
-                                onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords)}>
+                                onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients)}>
                                 {truncateText(cell.cell.row.original.alerts.data[0].commMessageId, 10)}
                             </Typography>
                         </div>
                     );
+                } else if (accessor == 'policiesStatus') {
+                    const status = (cell.cell.row.original.status).toLowerCase();
+
+                    return <Badge status={status}/>;
                 } else {
                     return (<span>{cell.value == null ? '' : cell.value}</span>);
                 }

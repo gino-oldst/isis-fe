@@ -109,7 +109,7 @@ function CommunicationAlertsScreen({
     const showActionsModal = () => {
         dispatch(setModalContent({
             modalContent: <ActionModal handleCloseModal={handleCloseModal}/>,
-            size: 'lg'
+            size: 'xl'
         }));
     };
 
@@ -191,7 +191,7 @@ function CommunicationAlertsScreen({
                         <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
                             onClick={handleCloseModal} disabled={submit}/>
                         <Button label='Apply' variant='primary' className='alerts__save-button px-4 py-2'
-                            onClick={e => onSubmit(selectedStatus, resolvedNote, selectedRows)}/>
+                            disabled={selectedRows.length === 0} onClick={e => onSubmit(selectedStatus, resolvedNote, selectedRows)}/>
                         {/* <Button label='Apply' isLoading={submit} variant='secondary'
                             className='alerts__save-button px-4 py-2'
                             onClick={handleBulkUpdate} disabled={submit} /> */}
@@ -253,10 +253,12 @@ function CommunicationAlertsScreen({
         day: 'numeric'
     });
 
+    const today = new Date();
+
     const [dateState, setDateState] = useState([
         {
-            startDate: new Date(),
-            endDate: new Date(),
+            startDate: new Date(today.setHours(0, 0, 0, 0)),
+            endDate: new Date(today.setHours(0, 0, 0, 0)),
             key: 'selection'
         }
     ]);
@@ -278,6 +280,8 @@ function CommunicationAlertsScreen({
             label: row.label,
             value: row.value
         }))];
+
+        console.log(table.totalPages);
 
         setAlertOptions(updatedList);
     }, [keywords]);
@@ -417,11 +421,13 @@ function CommunicationAlertsScreen({
                                                                     <div className='d-flex time-wrapper'>
                                                                         <div className='rdrTime'>
                                                                             <Input type='time' name='timeStart' placeholder='hh:mm'
-                                                                                required={true} formNoValidate={true} onChange={e => handleTime(e)}/>
+                                                                                defaultValue={moment(dateState[0].startDate).format('HH:mm')}
+                                                                                onChange={e => handleTime(e)}/>
                                                                         </div>
                                                                         <div className='rdrTime'>
                                                                             <Input type='time' name='timeEnd' placeholder='hh:mm'
-                                                                                required={true} formNoValidate={true} onChange={e => handleTime(e)}/>
+                                                                                defaultValue={moment(dateState[0].endDate).format('HH:mm')}
+                                                                                onChange={e => handleTime(e)}/>
                                                                         </div>
                                                                     </div>
                                                                 </DropdownItem>

@@ -8,7 +8,7 @@ import moment from 'moment';
 // };
 
 // GET EMAILS of FILTERS
-const GET_EMAIL_DATA = `${config.apiStorage}/storage-service/external/search/paged`;
+const GET_EMAIL_DATA = `${config.apiStorage}/storage-service/external/search?sort=firstName,lastName,ASC`;
 
 export async function getEmails(likeEmail, likeFirstName, likeLastName) {
     return await makeApiCall(`${GET_EMAIL_DATA}`, 'POST', {
@@ -51,7 +51,6 @@ export async function getCommunicationSearchData(page, size, sort, filters) {
     previousKeyword = filters.filterText;
 
     const filterBody = {
-        id: filters.filterId,
         message: filters.filterText,
         senders: filters.filterSenders,
         recipients: filters.filterRecipients,
@@ -60,8 +59,12 @@ export async function getCommunicationSearchData(page, size, sort, filters) {
         dateSentTo: filters.filterDateTo
     };
 
+    if (filters.filterId != '' || filters.filterId) {
+        filterBody.id = filters.filterId;
+    }
+
     const sortColumn = sort.column;
-    const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sortColumn},${sort.type}` : '';
+    const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sortColumn},${sort.type}` : '&sort=timeSent,DESC';
 
     return await makeApiCall(`${GET_SEARCH_DATA}?page=${page}&size=${size}${withSorting()}`, 'POST', filterBody);
 }

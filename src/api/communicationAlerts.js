@@ -10,12 +10,12 @@ export async function getCommunicationAlertData(page, size, sort, alert, status,
         statusTypes: status.length > 0 ? [...status.map(row => { return row.value; })] : [],
         dateFrom: dFrom,
         dateTo: dTo,
-        senders: senders
-        // recipients: recipients
+        senders: senders,
+        recipients: recipients
     };
 
     const sortColumn = sort.column;
-    const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sortColumn},${sort.type}` : '';
+    const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sortColumn},${sort.type}` : '&sort=timeSent,DESC';
 
     return await makeApiCall(`${GET_ALERT_DATA}?page=${page}&size=${size}${withSorting()}`, 'POST', filterBody);
 }

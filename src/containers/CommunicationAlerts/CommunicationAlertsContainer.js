@@ -73,9 +73,24 @@ export default function CommunicationAlertsContainer({
 
         try {
             const alerts = await getCommunicationAlertData(page, size, sort, alert, status, dFrom, dTo, sources, senders, recipients);
-            const { data, alertIds, totalNoOfRecords, totalPages } = alerts.data;
+            const { data, totalNoOfRecords, totalPages } = alerts.data;
 
-            dispatch(setCommunicationAlertsData(data, alertIds, totalNoOfRecords, totalPages));
+            dispatch(setCommunicationAlertsData(data, totalNoOfRecords, totalPages));
+
+            // console.log(senders);
+            // console.log(recipients);
+            // console.log(dateFrom);
+            // console.log(dateTo);
+            // console.log(source);
+            // console.log(alert);
+            // console.log(status);
+
+            // history.push('/communication_alerts', filterDate);
+            // history.push('/communication_alerts', senders);
+            // history.push('/communication_alerts', recipients);
+            // history.push('/communication_alerts', source);
+            // history.push('/communication_alerts', alert);
+            // history.push('/communication_alerts', status);
         } catch (e) {
             if (e.status == 500 || e.status == 502 || e.status == 503 || e.status == 504 || e.status == 408 || e.status == 404 || e.status == 400) {
                 setIsTimeout(true);
@@ -121,37 +136,17 @@ export default function CommunicationAlertsContainer({
 
         dispatch(setAlertsList(keywords));
         setKeywords(keywords);
-        // const { data } = emails.data;
-
-        // const emailList = data.map((account) => ({
-        //     value: account.email,
-        //     label: `${account.email} (${account.firstName} ${account.lastName})`
-        // }));
-
-        // const dataCopy = {
-        //     emails: emailList,
-        //     keywords: keywords
-        // };
-
-        // console.log(dataCopy);
-
-        // dispatch(setColumnFilterValues(dataCopy));
     };
 
     const tableIsFiltered = () => {
         return !!appliedFilters.filter(filter => filter.value.length > 0).length;
     };
 
-    const viewCommunicationAlertDetails = async (id, chainLinkId, filterText) => {
-        // history.push({
-        //     pathname: `/communication_alerts_detail/${id}`,
-        //     state: { id: id }
-        // });
+    const viewCommunicationAlertDetails = async (id, chainLinkId, filterText, recipients) => {
         history.push({
             pathname: `/communication_alerts_detail/${id}`,
-            state: { id: id, chainLinkId: chainLinkId, filterText: filterText }
+            state: { id: id, chainLinkId: chainLinkId, filterText: filterText, recipients }
         });
-        // window.location.href = `/communication_alerts_detail/${id}`;
     };
 
     const showSuccessModal = () => {
@@ -164,7 +159,7 @@ export default function CommunicationAlertsContainer({
     const [submit, setSubmit] = useState(false);
 
     const onSubmitStatusChange = async (status, note, selectedRows) => {
-        setSubmit(true);
+        setLoading(true);
 
         try {
             const promises = selectedRows.map(row => {
@@ -189,13 +184,25 @@ export default function CommunicationAlertsContainer({
             const statusChange = await Promise.all(promises);
 
             // console.log(statusChange);
+            // loadCommAlertsData(
+            //     activePage,
+            //     pageSize,
+            //     sort,
+            //     alert,
+            //     status,
+            //     dateFrom,
+            //     dateTo,
+            //     source,
+            //     senders,
+            //     recipients
+            // );
 
             showSuccessModal();
         } catch (e) {
             console.error(e);
         }
 
-        setSubmit(false);
+        setLoading(false);
     };
 
     const handleSource = (event) => {
