@@ -32,7 +32,8 @@ import {
     Input,
     Label,
     Alert,
-    Spinner
+    Spinner,
+    Form
 } from 'reactstrap';
 import { useIsMount } from '../../hooks/useIsMount';
 
@@ -45,6 +46,7 @@ import { setLoading, setAlertsDateRange } from '../../redux/modules/alerts';
 import Highlighter from 'react-highlight-words';
 import { Nav, OverlayTrigger, Popover, PopoverContent, Tab } from 'react-bootstrap';
 import { Element, Link, scroller, Button as ScrollButton } from 'react-scroll';
+import logo from '../../assets/logos/mariana_logo_sml.png';
 
 type Props = {
     loading: Boolean,
@@ -65,7 +67,11 @@ type Props = {
     recipients: Array,
     alertsData: Array,
     alertList: Array,
-    alertLoading: Boolean
+    alertLoading: Boolean,
+    onSubmitStatusChangeSingleWithReview: Function,
+    activities: Array,
+    activityLoading: Boolean,
+    onSubmitComment: Function
 }
 
 function CommunicationAlertsDetailScreen({
@@ -87,7 +93,11 @@ function CommunicationAlertsDetailScreen({
     recipients,
     alertsData,
     alertsList,
-    alertLoading
+    alertLoading,
+    onSubmitStatusChangeSingleWithReview,
+    activities,
+    activityLoading,
+    onSubmitComment
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -104,6 +114,10 @@ function CommunicationAlertsDetailScreen({
             </PopoverContent>
         </Popover>
     );
+
+    const userEvents = activities.filter(row => row.type === 'USER_EVENT');
+
+    const systemEvents = activities.filter(row => row.type === 'SYSTEM_EVENT');
 
     const showActionsModal = () => {
         dispatch(setModalContent({
@@ -316,7 +330,7 @@ function CommunicationAlertsDetailScreen({
                     <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
                         onClick={handleCloseModal} /> {/* onClick={handleClose} disabled={submit} /> */}
                     <Button label='Apply' variant='primary' className='alerts-detail__save-button px-4 py-2'
-                        onClick={e => onSubmitSingle(status, resolvedNote, selectedAlert)}/>
+                        onClick={e => onSubmitStatusChangeSingleWithReview(status, resolvedNote, selectedAlert)}/>
                     {/* <Button label='Apply' isLoading={submit} variant='secondary'
                         className='alerts-detail__save-button px-4 py-2'
                         onClick={handleBulkUpdate} disabled={submit} /> */}
@@ -392,6 +406,7 @@ function CommunicationAlertsDetailScreen({
                                                                                         name='status'
                                                                                         className='w-100 pr-2'
                                                                                         isDisabled={false}
+                                                                                        isSearchable={false}
                                                                                         onChange={e => handleDetailStatusChange(e, alert)}
                                                                                         defaultValue={{
                                                                                             label: <Badge status={alert.status} />,
@@ -542,13 +557,17 @@ function CommunicationAlertsDetailScreen({
                                 </Row>
                                 <Row>
                                     <Col lg={4} className='mt-5 mb-4'>
-                                        <Typography color='color-3' className='mr-3' weight='semi-bold'
-                                            style={{ fontSize: '24px', lineHeight: '32pt' }}>Comment</Typography>
-                                        <Input type='textarea' name='alertComment' id='alertComment'
-                                            className='mb-2' disabled={true} rows={4}
-                                            placeholder='Comment here...' />
-                                        <Button label='Add Comment' disabled={true} variant='primary'
-                                            className='ok-button px-4 mt-3 mr-2 py-2' />
+                                        <Form onSubmit={onSubmitComment}>
+                                            <fieldset disabled={loading}>
+                                                <Typography color='color-3' className='mr-3' weight='semi-bold'
+                                                    style={{ fontSize: '24px', lineHeight: '32pt' }}>Comment</Typography>
+                                                <Input type='textarea' name='alertComment' id='alertComment'
+                                                    className='mb-2' disabled={loading} rows={4}
+                                                    placeholder='Comment here...' name='user_comment'/>
+                                                <Button label='Add Comment' type='submit' disabled={loading}
+                                                    variant='primary' className='ok-button px-4 mt-3 mr-2 py-2' />
+                                            </fieldset>
+                                        </Form>
                                     </Col>
                                 </Row>
                                 <Row>
@@ -562,54 +581,112 @@ function CommunicationAlertsDetailScreen({
                                                         <Nav.Link disabled={true}>Show</Nav.Link>
                                                     </Nav.Item>
                                                     <Nav.Item>
-                                                        <Nav.Link disabled={true} eventKey='link-0'>ALL</Nav.Link>
+                                                        <Nav.Link disabled={activityLoading || loading} eventKey='link-0'>ALL</Nav.Link>
                                                     </Nav.Item>
                                                     <Nav.Item>
-                                                        <Nav.Link disabled={true} eventKey='link-1'>MESSAGE ACTIVITIES</Nav.Link>
+                                                        <Nav.Link disabled={activityLoading || loading} eventKey='link-1'>MESSAGE ACTIVITIES</Nav.Link>
                                                     </Nav.Item>
                                                     <Nav.Item>
-                                                        <Nav.Link disabled={true} eventKey='link-2'>ALERT ACTIVITIES</Nav.Link>
+                                                        <Nav.Link disabled={activityLoading || loading} eventKey='link-2'>ALERT ACTIVITIES</Nav.Link>
                                                     </Nav.Item>
                                                 </Nav>
-                                                {/* <div className='overflow-auto pr-2'>
-                                                    <Tab.Content>
-                                                        <Tab.Pane eventKey='link-0'>
-                                                            <div key={1} className='alert-detail__activity-info d-flex align-items-center mb-4'>
-                                                                <span className='activity-icon'><span className='text-light'>J</span></span>
-                                                                <div className='d-block'>
-                                                                    <Typography color='color-3' variant='size-16'>James Allan added a comment.</Typography>
-                                                                    <Typography color='color-3' variant='size-14' className='text-muted'>17/12/21, 8:12 AM</Typography>
-                                                                    <Typography color='color-3 mt-2' variant='size-14' >Donec rutrum congue leo eget malesuada. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. </Typography>
-                                                                </div>
-                                                            </div>
-                                                            <div key={2} className='alert-detail__activity-info d-flex align-items-center'>
-                                                                <span className='activity-icon'><span className='text-light'>J</span></span>
-                                                                <div className='d-block'>
-                                                                    <Typography color='color-3' variant='size-16'>James Allan viewed the alert.</Typography>
-                                                                    <Typography color='color-3' variant='size-14' className='text-muted'>17/12/21, 8:02 AM</Typography>
-                                                                </div>
-                                                            </div>
-                                                        </Tab.Pane>
-                                                        <Tab.Pane eventKey='link-1'>
-                                                            <div key={2} className='alert-detail__activity-info d-flex align-items-center'>
-                                                                <span className='activity-icon'><span className='text-light'>J</span></span>
-                                                                <div className='d-block'>
-                                                                    <Typography color='color-3' variant='size-16'>James Allan viewed the alert.</Typography>
-                                                                    <Typography color='color-3' variant='size-14' className='text-muted'>17/12/21, 8:02 AM</Typography>
-                                                                </div>
-                                                            </div>
-                                                        </Tab.Pane>
-                                                        <Tab.Pane eventKey='link-2'>
-                                                            <div key={2} className='alert-detail__activity-info d-flex align-items-center'>
-                                                                <span className='activity-icon'><span className='text-light'>J</span></span>
-                                                                <div className='d-block'>
-                                                                    <Typography color='color-3' variant='size-16'>James Allan viewed the alert.</Typography>
-                                                                    <Typography color='color-3' variant='size-14' className='text-muted'>17/12/21, 8:02 AM</Typography>
-                                                                </div>
-                                                            </div>
-                                                        </Tab.Pane>
-                                                    </Tab.Content>
-                                                </div> */}
+                                                <div className='overflow-auto pr-2'>
+                                                    {activityLoading || loading
+                                                        ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3'>
+                                                            <span className='sr-only'>Loading...</span>
+                                                        </Spinner>
+                                                        : <>
+                                                            <Tab.Content>
+                                                                <Tab.Pane eventKey='link-0'>
+                                                                    <div id='containerElement' className='alerts-detail__message-activity pr-5 pt-1 pb-5 mb-4 mt-4'>
+                                                                        <div>
+                                                                            { activities.map(activity => {
+                                                                                return (activity.type == 'SYSTEM_EVENT'
+                                                                                    ? <>
+                                                                                        <div key={1} className='alert-detail__activity-info d-flex align-items-start mb-4'>
+                                                                                            {/* <span className='activity-icon'><span className='text-light'>J</span></span> */}
+                                                                                            <img src={logo} alt='Mariana_UFP_logo' className='login__logo' />
+                                                                                            <div className='d-block'>
+                                                                                                <Typography color='color-3' variant='size-16'>{activity.event}</Typography>
+                                                                                                <Typography color='color-3' variant='size-14' className='text-muted'>{moment(activity.dateCreated).utc().local().format('DD/MM/YYYY h:mm A')}</Typography>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </>
+                                                                                    : <>
+                                                                                        <div key={2} className='alert-detail__activity-info d-flex align-items-center mb-4'>
+                                                                                            <span className='activity-icon'><span className='text-light'>{activity.executorId.charAt(0)}</span></span>
+                                                                                            <div className='d-block'>
+                                                                                                <Typography color='color-3' variant='size-16'>User {truncateText(activity.executorId, 8)} added a comment.</Typography>
+                                                                                                <Typography color='color-3' variant='size-14' className='text-muted'>{moment(activity.dateCreated).utc().local().format('DD/MM/YYYY h:mm A')}</Typography>
+                                                                                                <Typography color='color-3 mt-2' variant='size-14' >{activity.event}</Typography>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </>);
+                                                                            })}
+                                                                            { activities.length === 0 &&
+                                                                                <div key={2} className='alert-detail__activity-info d-flex align-items-center'>
+                                                                                    <div className='d-block'>
+                                                                                        <Typography color='color-3' variant='size-16'>No Activities</Typography>
+                                                                                    </div>
+                                                                                </div>
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                </Tab.Pane>
+                                                                <Tab.Pane eventKey='link-1'>
+                                                                    <div id='containerElement' className='alerts-detail__message-activity pr-5 pt-1 pb-5 mb-4 mt-4'>
+                                                                        <div>
+                                                                            { userEvents.map(activity => {
+                                                                                return (<>
+                                                                                    <div key={2} className='alert-detail__activity-info d-flex align-items-center mb-4'>
+                                                                                        <span className='activity-icon'><span className='text-light'>{activity.executorId.charAt(0)}</span></span>
+                                                                                        <div className='d-block'>
+                                                                                            <Typography color='color-3' variant='size-16'>User {truncateText(activity.executorId, 8)} added a comment.</Typography>
+                                                                                            <Typography color='color-3' variant='size-14' className='text-muted'>{moment(activity.dateCreated).utc().local().format('DD/MM/YYYY h:mm A')}</Typography>
+                                                                                            <Typography color='color-3 mt-2' variant='size-14' >{activity.event}</Typography>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </>);
+                                                                            })}
+                                                                            { userEvents.length === 0 &&
+                                                                                <div key={2} className='alert-detail__activity-info d-flex align-items-center'>
+                                                                                    <div className='d-block text-muted text-center'>
+                                                                                        <Typography color='color-3' variant='size-16'>No Activities</Typography>
+                                                                                    </div>
+                                                                                </div>
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                </Tab.Pane>
+                                                                <Tab.Pane eventKey='link-2'>
+                                                                    <div id='containerElement' className='alerts-detail__message-activity pr-5 pt-1 pb-5 mb-4 mt-4'>
+                                                                        <div>
+                                                                            { systemEvents.map(activity => {
+                                                                                return (<>
+                                                                                    <div key={1} className='alert-detail__activity-info d-flex align-items-start mb-4'>
+                                                                                        {/* <span className='activity-icon'><span className='text-light'>J</span></span> */}
+                                                                                        <img src={logo} alt='Mariana_UFP_logo' className='login__logo' />
+                                                                                        <div className='d-block'>
+                                                                                            <Typography color='color-3' variant='size-16'>{activity.event}</Typography>
+                                                                                            <Typography color='color-3' variant='size-14' className='text-muted'>{moment(activity.dateCreated).utc().local().format('DD/MM/YYYY h:mm A')}</Typography>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </>);
+                                                                            })}
+                                                                            { systemEvents.length === 0 &&
+                                                                                <div key={2} className='alert-detail__activity-info d-flex align-items-center'>
+                                                                                    <div className='d-block text-muted text-center'>
+                                                                                        <Typography color='color-3' variant='size-16'>No Activities</Typography>
+                                                                                    </div>
+                                                                                </div>
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                </Tab.Pane>
+                                                            </Tab.Content>
+                                                        </>
+                                                    }
+                                                </div>
                                             </div>
                                         </Tab.Container>
                                     </Col>

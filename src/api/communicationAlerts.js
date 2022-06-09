@@ -7,7 +7,7 @@ export async function getCommunicationAlertData(page, size, sort, alert, status,
     const filterBody = {
         keywordIds: alert.length > 0 ? [...alert.map(row => { return row.value; })] : [],
         sources: sources.length > 0 ? [...sources.map(row => { return row.value; })] : [],
-        statusTypes: status.length > 0 ? [...status.map(row => { return row.value; })] : [],
+        statusTypes: status.length > 0 ? [...status.map(row => { return row.value; })] : ['OPEN', 'RESOLVED', 'IN_REVIEW'],
         dateFrom: dFrom,
         dateTo: dTo,
         senders: senders,
@@ -59,4 +59,37 @@ export async function getKeywords() {
     }));
 
     return alertList;
+}
+
+const DOWNLOAD_ALERTS_LIST = '/storage-service/download/alerts';
+
+export async function downloadCommAlertsList(alert, status, dFrom, dTo, sources, senders, recipients) {
+    const filterBody = {
+        keywordIds: alert.length > 0 ? [...alert.map(row => { return row.value; })] : [],
+        sources: sources.length > 0 ? [...sources.map(row => { return row.value; })] : [],
+        statusTypes: status.length > 0 ? [...status.map(row => { return row.value; })] : ['OPEN', 'RESOLVED', 'IN_REVIEW'],
+        dateFrom: dFrom,
+        dateTo: dTo,
+        senders: senders,
+        recipients: recipients
+    };
+
+    return await makeApiCall(DOWNLOAD_ALERTS_LIST, 'POST', filterBody);
+}
+
+const GET_ACTIVITY_LIST = `${config.apiStorage}/storage-service/message-activity/search`;
+
+export async function getActivityList(messageId, type) {
+    const filterBody = {
+        messageId: messageId
+        // type: type
+    };
+
+    return await makeApiCall(GET_ACTIVITY_LIST, 'POST', filterBody);
+}
+
+const POST_MESSAGE_ACTIVITY = `${config.apiStorage}/storage-service/message-activity`;
+
+export async function postComment(requestBody) {
+    return await makeApiCall(POST_MESSAGE_ACTIVITY, 'POST', requestBody);
 }

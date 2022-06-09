@@ -9,7 +9,7 @@ import filterSample from '../CommunicationAlerts/filters.json';
 import moment from 'moment';
 
 // To be removed once we move to with backend
-import { getCommunicationSearchData, getEmails, getEmailsAll } from '../../api/communicationSearch';
+import { downloadCommSearchList, getCommunicationSearchData, getEmails, getEmailsAll } from '../../api/communicationSearch';
 import { setCommunicationSearchData, setColumnFilterValues, setSearchFilterValues } from '../../redux/modules/communicationSearch';
 import { setActivePage } from '../../redux/modules/isisTable';
 import { filter } from 'underscore';
@@ -255,6 +255,12 @@ export default function CommunicationSearchResultsContainer({
             formValid = false;
         }
 
+        if (moment(filterSearchForm.filterDateFrom).format('YYYY-MM-DD') === moment(filterSearchForm.filterDateTo).format('YYYY-MM-DD') &&
+            moment(filterSearchForm.filterDateFrom).format('HH:mm') > moment(filterSearchForm.filterDateTo).format('HH:mm')) {
+            initialError.errorDate = 'Date From Overlaps Date To';
+            formValid = false;
+        }
+
         if (formValid) {
             dispatch(setActivePage(0));
             loadSearchData(
@@ -345,10 +351,15 @@ export default function CommunicationSearchResultsContainer({
         dispatch(setColumnFilterValues(dataCopy));
     };
 
+    const handleDownloadSearchData = async () => {
+        await downloadCommSearchList(filterSearchForm);
+    };
+
     return <CommunicationSearchResultsScreen
         loading={loading}
         sidebarMenu={sidebarMenu}
         handleUniqueID={handleUniqueID}
+        handleDownloadSearchData={handleDownloadSearchData}
         handleKeyword={handleKeyword}
         defaultSources={filterSearchForm.filterSource}
         breadcrumb={breadcrumb}

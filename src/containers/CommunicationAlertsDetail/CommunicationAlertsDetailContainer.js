@@ -12,7 +12,7 @@ import {
     DATE_TO_UTC
 } from '../../utils/helpers';
 import { getCommunicationSearchData, getCommunicationMessageDetail, getMessageThread, getRecipients } from '../../api/communicationSearch';
-import { getKeywords, getMessageAlerts, updateAlert } from '../../api/communicationAlerts';
+import { getActivityList, getKeywords, getMessageAlerts, postComment, updateAlert } from '../../api/communicationAlerts';
 import Typography from '../../components/base/Typography/Typography';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import Button from '../../components/base/Button/Button';
@@ -39,6 +39,7 @@ export default function CommunicationAlertsDetail({
     const [alertLoading, setAlertLoading] = useState(false);
     const { isRowsSelected, selectedRows, appliedFilters } = useSelector(({ table }) => table);
     const { messageAlerts, alertsList } = useSelector(({ communicationAlerts }) => communicationAlerts);
+    const { profileData } = useSelector(({ authentication }) => authentication);
     // const { alertsList } = useSelector(({ isisTable }) => isisTable);
     // const { table, selected, dateRange } = useSelector(({ alerts }) => alerts);
     // const behaviours = useSelector(({ behaviours }) => behaviours);
@@ -62,6 +63,7 @@ export default function CommunicationAlertsDetail({
     useEffect(() => {
         loadSearchData(filters.state);
         loadAlerts(filters.state.id);
+        loadActivity(filters.state.id);
     }, [filters]);
 
     const [messages, setMessages] = useState([]);
@@ -69,10 +71,43 @@ export default function CommunicationAlertsDetail({
     const [alerts, setAlerts] = useState([]);
 
     const loadAlerts = async (id) => {
-        const alertsData = await getMessageAlerts(id);
+        setAlertLoading(true);
 
-        // dispatch(setMessageAlerts(alertsData.data));
-        setAlerts(alertsData.data.data);
+        try {
+            const alertsData = await getMessageAlerts(id);
+
+            // dispatch(setMessageAlerts(alertsData.data));
+            const sortedData = JSON.parse(JSON.stringify(alertsData.data.data)).sort((a, b) => a.id > b.id ? 1 : -1);
+
+            setAlerts(sortedData);
+        } catch (e) {
+            console.error(e);
+        }
+
+        setAlertLoading(false);
+    };
+
+    // const [selectedActivityType, setSelectedActivityType] = useState('');
+    const [activities, setActivities] = useState([]);
+    const [activityLoading, setActivityLoading] = useState(false);
+
+    const loadActivity = async (id) => {
+        setActivityLoading(true);
+
+        try {
+            const activities = await getActivityList(id);
+
+            // dispatch(setMessageAlerts(alertsData.data));
+            const sortedData = activities.data.data.sort(function(left, right) {
+                return moment.utc(right.dateCreated).diff(moment.utc(left.dateCreated));
+            });
+
+            setActivities(sortedData);
+        } catch (e) {
+            console.error(e);
+        }
+
+        setActivityLoading(false);
     };
 
     const loadSearchData = async (commMessageId) => {
@@ -88,7 +123,7 @@ export default function CommunicationAlertsDetail({
 
             setMessages(data);
 
-            if (Object.keys(alertsList). length === 0) {
+            if (Object.keys(alertsList).length === 0) {
                 const keywords = await getKeywords();
 
                 dispatch(setAlertsListDetail(keywords));
@@ -130,7 +165,7 @@ export default function CommunicationAlertsDetail({
 
             setAlerts(statusChange.map(ev => ev.data));
 
-            showSuccessModal();
+            showSuccessModal('You have successfully bulk reviewed the alerts');
         } catch (e) {
             console.error(e);
         }
@@ -139,8 +174,6 @@ export default function CommunicationAlertsDetail({
     };
 
     const onSubmitStatusChangeSingle = async (status, note, row) => {
-        setSubmit(true);
-
         try {
             const data = {
                 id: row.id,
@@ -151,24 +184,64 @@ export default function CommunicationAlertsDetail({
 
             const request = await updateAlert(data);
 
+            loadAlerts(filters.state.id);
+
+            dispatch(setFlashNotification({
+                message: 'Alert Status Update Success.',
+                isError: false
+            }));
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const onSubmitStatusChangeSingleWithReview = async (status, note, row) => {
+        try {
+            const data = {
+                id: row.id,
+                policyId: row.policyId,
+                status: status,
+                notes: note
+            };
+
+            const request = await postComment(data);
+
+            dispatch(setFlashNotification({
+                message: 'Comment Added.',
+                isError: false
+            }));
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const onSubmitComment = async (event) => {
+        event.preventDefault();
+
+        try {
+            const requestBody = {
+                messageId: filters.state.id,
+                executorId: profileData.userId,
+                event: event.target.alertComment.value,
+                type: 'USER_EVENT'
+            };
+
+            const request = await postComment(requestBody);
+
+            loadActivity(filters.state.id);
+
             dispatch(setFlashNotification({
                 message: 'Update Success.',
                 isError: false
             }));
-
-            loadAlerts(filters.state.id);
-
-            return request;
         } catch (e) {
             console.error(e);
         }
-
-        setSubmit(false);
     };
 
-    const showSuccessModal = () => {
+    const showSuccessModal = (message) => {
         dispatch(setModalContent({
-            modalContent: <SuccessModal handleCloseModal={handleCloseModal}/>,
+            modalContent: <SuccessModal message={message} handleCloseModal={handleCloseModal}/>,
             size: 'md'
         }));
     };
@@ -196,11 +269,16 @@ export default function CommunicationAlertsDetail({
         handleCloseModal={handleCloseModal}
         onSubmit={onSubmitStatusChange}
         onSubmitSingle={onSubmitStatusChangeSingle}
-        submit={submit}/>;
+        onSubmitStatusChangeSingleWithReview={onSubmitStatusChangeSingleWithReview}
+        submit={submit}
+        activities={activities}
+        activityLoading={activityLoading}
+        onSubmitComment={onSubmitComment}/>;
 }
 
 const SuccessModal = ({
-    handleCloseModal
+    handleCloseModal,
+    message
 }) => {
     const dispatch = useDispatch();
 
@@ -213,7 +291,7 @@ const SuccessModal = ({
                 </Typography>
                 <Typography variant='size-16' color='color-3'
                     className='mb-4 playfair-font'>
-                    You have successfully bulk reviewed the alerts
+                    {message}
                 </Typography>
             </div>
             <div className='action-modal__buttons d-flex justify-content-center align-items-center'>

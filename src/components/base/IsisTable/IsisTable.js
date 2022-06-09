@@ -374,6 +374,7 @@ function SelectColumnFilter({
 }
 
 // For row selection
+// Marking this as to look into
 const IndeterminateCheckbox = React.forwardRef(
     ({ indeterminate, ...rest }, ref) => {
         const defaultRef = React.useRef();
@@ -409,7 +410,8 @@ function IsisTable({
     hideHeader,
     renderRowSubComponent,
     isDisabled,
-    fetching
+    fetching,
+    toggleSelection
 }) {
     const [isAsc, setIsAsc] = useState(true);
     const [sortBy, setSortBy] = useState('id');
@@ -455,7 +457,8 @@ function IsisTable({
         gotoPage,
         previousPage,
         setPageSize,
-        state: { pageSize, expanded }
+        state: { pageSize, expanded },
+        toggleAllRowsSelected
     } = useTable(
         {
             columns,
@@ -479,7 +482,7 @@ function IsisTable({
                         </div>
                     ),
                     Cell: ({ row }) => (
-                        <div style={{ padding: '10px 0' }} className='d-flex align-items-center'>
+                        <div style={{ padding: '10px 0' }} className='selectrs d-flex align-items-center'>
                             <IndeterminateCheckbox
                                 disabled={isDisabled}
                                 {...row.getToggleRowSelectedProps()}/>
@@ -491,6 +494,12 @@ function IsisTable({
         }
     );
 
+    const { toggle, selectedRows } = useSelector(({ isisTable }) => isisTable);
+
+    useEffect(() => {
+        toggleAllRowsSelected(false);
+    }, [toggle]);
+
     useEffect(() => {
         // dispatch(setAppliedFilters(state.filters));
         dispatch(setFilteredRows(page.map(p => p.original.id)));
@@ -499,11 +508,104 @@ function IsisTable({
     const dispatch = useDispatch();
     const maxPage = 3; // max page for pagination button
 
-    const selectedRows = rows.filter(row => row.isSelected === true);
+    const selectedRowsIsis = rows.filter(row => row.isSelected === true);
+    const [previousSelectedRows, setPreviousSelectedRows] = useState([]);
+    /**
+     *
+     * Store past Selected Rows and Current Selected Rows
+     * Comapare past and current selected rows
+     * if object is in the past and not in current
+     * then slice it from the redux row selected or its clone
+     *
+     */
+
+    const getDifference = (array1, array2) => {
+        return array1.filter(({ value: id1 }) => !array2.some(({ value: id2 }) => id2 === id1));
+    };
 
     useEffect(() => {
-        dispatch(setIsRowSelected(selectedRows.length, [...selectedRows.map(row => { return row.original; })]));
-    }, [selectedRows.length]);
+        // const result = selectedRowsIsis.filter(o1 => selectedRows.some(o2 => o1.id === o2.id));
+        // const results = arrayOne.filter(({ value: id1 }) => !arrayTwo.some(({ value: id2 }) => id2. === id1));
+
+        // this is to be spliced
+        var selectedRowsClone = JSON.parse(JSON.stringify(selectedRows));
+
+        var notInSelected = [];
+        var toBeSpliced = [];
+        var compareList = [];
+        var dispatchList = [];
+
+        // See if not existing in previous selected row if not in currently selected
+        if (selectedRowsClone.length > selectedRowsIsis.length) {
+            toBeSpliced = selectedRowsClone.filter(function(o1) {
+                return selectedRowsIsis.length === 0
+                    ? o1
+                    : !selectedRowsIsis.some(function(o2) {
+                        return o1.alerts.data[0].commMessageId === o2.original.alerts.data[0].commMessageId; // return the ones with equal id
+                    });
+            });
+        }
+
+        // Splice from the array
+        // myArray.findIndex(x => x.alerts.data[0].commMessageId === 'stevie')
+        toBeSpliced.map(row => {
+            if (row.alerts.data.length === row.alerts.totalNoOfRecords) {
+                selectedRowsClone.splice(selectedRowsClone.findIndex(item => item.alerts.data[0].commMessageId === row.alerts.data[0].commMessageId), 1);
+            }
+        });
+        // selectedRowsClone.splice(selectedRowsClone.indexOf(data.id), 1);
+
+        selectedRowsIsis.map(row => {
+            var index = selectedRowsClone.findIndex(item => item.alerts.data.length < row.original.alerts.data.length && item.alerts.data[0].commMessageId === row.original.alerts.data[0].commMessageId);
+
+            if (index > -1) {
+                selectedRowsClone.splice(index, 1);
+            }
+        });
+
+        // check if there are candidates to be appended to the redux selectedRow
+        notInSelected = selectedRowsIsis.map((row, index) => {
+            if (selectedRowsClone.length > 0) {
+                return selectedRowsClone.map(srow => {
+                    if (row.original.alerts.data[0].commMessageId != srow.alerts.data[0].commMessageId) {
+                        return row;
+                    } else {
+                        return null;
+                    }
+                })[0];
+            } else {
+                return row;
+            }
+        }).filter(function(element) {
+            return element !== null;
+        });
+
+        // selectedRowsIsis.map(row => {
+        //     if (selectedRowsClone.length > 0) {
+        //         selectedRowsClone.map((srow, index) => {
+        //             if (srow.alerts.data.length < row.original.alerts.data.length) {
+        //                 selectedRowsClone.splice(index, 1);
+        //             }
+        //         });
+        //     }
+        // });
+
+        // after knowing which is not selected splice it from the selectedRowsClone
+
+        // console.log(notInSelected);
+
+        compareList = [...selectedRowsClone, ...notInSelected.map(row => { return row.original; })];
+        dispatchList = compareList.map(JSON.stringify).reverse() // convert to JSON string the array content, then reverse it (to check from end to begining)
+            .filter(function(item, index, compareList) { return compareList.indexOf(item, index + 1) === -1; }) // check if there is any occurence of the item in whole array
+            .reverse().map(JSON.parse); // revert it to original state
+        console.log(dispatchList);
+
+        setPreviousSelectedRows(selectedRowsIsis);
+
+        // add Row Selected Items...
+        // dispatch(setIsRowSelected(selectedRowsIsis.length, [...selectedRows, ...notInSelected.map(row => { return row.original; })]));
+        dispatch(setIsRowSelected(dispatchList.length, dispatchList));
+    }, [selectedRowsIsis.length]);
 
     // set pageSize to redux that triggers alerts list api call
     useEffect(() => {
@@ -698,6 +800,148 @@ function multiSelectFilter(rows, columnIds, filterValue) {
 
 /* Subrows */
 function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
+    const dispatch = useDispatch();
+    const { toggle, selectedRows } = useSelector(({ isisTable }) => isisTable);
+    const [checked, setChecked] = useState([]);
+    const [parentRowSelected, setParentRowSelected] = useState(false);
+
+    // const selectedRows = rows.filter(row => row.isSelected === true);
+    useEffect(() => {
+        if (!toggle && row.isSelected && selectedRows.length > 0 && data.length > 0) {
+            var filteredList = checked.length > 0
+                ? data.map(r => { return checked.find(el => el === r.id) ? r : null; }).filter(function(element) {
+                    return element !== null;
+                })
+                : data;
+
+            console.log(filteredList);
+
+            setChecked([...filteredList.map(item => { return item.id; })]);
+            setParentRowSelected(true);
+        }
+
+        console.log(checked);
+
+        if (parentRowSelected && !row.isSelected) {
+            setChecked([]);
+            setParentRowSelected(false);
+        }
+    }, [row.isSelected, selectedRows, toggle]);
+
+    useEffect(() => {
+        if (checked.length != data.length && !row.isSelected) {
+            row.toggleRowSelected(false);
+        }
+    }, [checked]);
+
+    const alertObj = {
+        alerts: {
+            data: [],
+            totalCurrentElements: 0,
+            totalNoOfRecords: 1,
+            totalPages: 0
+        }
+    };
+
+    const handleCheck = (event, data, row) => {
+        // var updatedList = [...checked];
+        // if (event.target.checked) {
+        //     updatedList = [...checked, event.target.value];
+        // } else {
+        //     updatedList.splice(checked.indexOf(event.target.value), 1);
+        // }
+        // setChecked(updatedList);
+
+        if (event.target.checked) {
+            if (row.original.alerts.data.length == [data].length) {
+                row.toggleRowSelected(event.target.checked);
+            } else {
+                var updatedList = JSON.parse(JSON.stringify(selectedRows)); // [...selectedRows];
+                var nlist = [];
+                var xlist = [];
+                // individual wee
+                // If commMessageId is not avail on the selectedRows => Create a new alert object to add the selection data to it
+                // Else if commMessageId is avail on the selectedRows => see if the 'id' of the 'data' is avail in side the alerts and add if available
+                // Also check the objects length for selection\
+
+                // const found = updatedList.length == 0 ? false : updatedList.map(r => { return r.alerts.data.some(el => el.id === data.id); })[0];
+
+                // console.log('found', found);
+                // nlist = updatedList.map(r => { return r.alerts.data.find(el => el.commMessageId === data.commMessageId) ? r : []; });
+                nlist = updatedList.map(r => { return r.alerts.data.find(el => el.commMessageId === data.commMessageId) ? r : null; }).filter(function(element) {
+                    return element !== null;
+                });
+
+                xlist = updatedList.map(r => { return r.alerts.data.find(el => el.commMessageId != data.commMessageId) ? r : null; }).filter(function(element) {
+                    return element !== null;
+                });
+
+                if (nlist.length > 0 && updatedList.length > 0) {
+                    // console.log('add-on');
+                    // console.log(updatedList.map(r => { return r.alerts.data.find(el => el.commMessageId === data.commMessageId) ? r : ''; }));
+                    var newList = [];
+
+                    nlist[0].alerts.data.push(data);
+                    newList = [...xlist, ...nlist.map(row => { return row; })];
+
+                    setChecked([...checked, data.id]);
+
+                    if (row.original.alerts.data.length == nlist[0].alerts.data.length) {
+                        newList.splice(newList.findIndex(item => item.alerts.data[0].id === data.id), 1);
+                        dispatch(setIsRowSelected(newList.length, newList));
+                        row.toggleRowSelected(true);
+                    } else {
+                        dispatch(setIsRowSelected(newList.length, newList));
+                    }
+                } else if (nlist.length == 0 || updatedList.length == 0) {
+                    alertObj.alerts.data.push(data);
+                    alertObj.alerts.totalNoOfRecords = row.original.alerts.totalNoOfRecords;
+                    updatedList = [...updatedList, alertObj];
+                    setChecked([...checked, data.id]);
+                    dispatch(setIsRowSelected(updatedList.length, updatedList));
+                }
+            }
+        } else {
+            /**
+             * TODO
+             * 1. New splice on alerts > data
+             * 2. Deselect parent row
+             */
+            var updatedList = JSON.parse(JSON.stringify(selectedRows));
+
+            // console.log('checked', checked);
+            var newList = [...checked];
+
+            newList.splice(newList.indexOf(data.id), 1);
+
+            setChecked(newList);
+
+            console.log('splice this', selectedRows, checked);
+            updatedList.map((row, index) => {
+                if (row.alerts.data.find(el => el.id === data.id)) {
+                    row.alerts.data.splice(row.alerts.data.findIndex(el => el.id === data.id), 1);
+                }
+
+                // if (row.alerts.data == []) {
+                //     updatedList.splice(index);
+                // }
+            });
+            var index = updatedList.findIndex(item => item.alerts.data.length === 0);
+
+            if (index > -1) {
+                updatedList.splice(index);
+            }
+
+            // updatedList.splice(, 1);
+            dispatch(setIsRowSelected(1, updatedList));
+        }
+
+        // setChecked(event.target.checked);
+
+        // From row.original filter and splice the ones not included in the selection
+        // console.log(event.target.checked, data, row, updatedList);
+    };
+
     if (loading) {
         return (
             <tr>
@@ -717,15 +961,17 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                         {...rowProps}
                         key={`${rowProps.key}-expanded-${i}`}>
                         {row.cells.map((cell) => {
+                            // This is the row for the collapsable...
+                            // the selection part deserves a look into
+                            // maybe customize it's checkbox to cater individually selected alerts
                             if (cell.column.id == 'selection') {
                                 return (
                                     <td {...cell.getCellProps()}>
-                                        {cell.render(cell.column.SubCell ? 'SubCell' : 'Cell', {
-                                            value:
-                                                cell.column.accessor &&
-                                                cell.column.accessor(x, i),
-                                            row: { ...row, original: x }
-                                        })}
+                                        {/* {JSON.stringify(checked.includes(x.id))}
+                                        {JSON.stringify(checked)}
+                                        {i} */}
+                                        <input checked={row.isSelected ? row.isSelected : checked.includes(x.id)} id='smakatxxx' type='checkbox'
+                                            onChange={e => handleCheck(e, x, row)}/>
                                     </td>
                                 );
                             } else if (cell.column.id == 'expander') {
@@ -766,7 +1012,7 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
 function SubRowAsync({ row, rowProps, visibleColumns }) {
     const [loading, setLoading] = React.useState(true);
     const [data, setData] = React.useState([]);
-    const alertData = row.original.alerts.data;
+    var alertData = JSON.parse(JSON.stringify(row.original.alerts.data)).sort((a, b) => a.id > b.id ? 1 : -1);
     const { alertsList } = useSelector(({ isisTable }) => isisTable);
 
     React.useEffect(() => {
@@ -810,6 +1056,7 @@ type Props = {
     isDisabled: boolean,
     fetching: boolean,
     viewDetails: Function,
+    toggleSelection: Boolean
 }
 
 export default function ReactTable({
@@ -829,7 +1076,8 @@ export default function ReactTable({
     hideHeader = false,
     isDisabled = false,
     fetching,
-    viewDetails
+    viewDetails,
+    toggleSelection
 }: Props): React$Element<any> {
     const columns = useMemo(
         () => tableColumns.map(column => {
@@ -981,6 +1229,12 @@ export default function ReactTable({
                     const status = (cell.cell.row.original.status).toLowerCase();
 
                     return <Badge status={status}/>;
+                } else if (accessor == 'status') {
+                    return (
+                        <div className='alert-status-column' style={{ minWidth: '200px !important' }}>
+                            <span>{cell.value == null ? '' : cell.value}</span>
+                        </div>
+                    );
                 } else {
                     return (<span>{cell.value == null ? '' : cell.value}</span>);
                 }
@@ -1124,7 +1378,8 @@ export default function ReactTable({
                 fetching={fetching}
                 hideHeader={hideHeader}
                 isDisabled={isDisabled}
-                renderRowSubComponent={renderSubRowComponent}/>
+                renderRowSubComponent={renderSubRowComponent}
+                toggleSelection={toggleSelection}/>
         </div>
     );
 }

@@ -18,7 +18,17 @@ const storageKey = {
     accessToken: 'accessToken',
     onboard: 'onboard',
     tokenValidUntil: 'tokenValidUntil',
-    sidebarState: 'sidebarState'
+    sidebarState: 'sidebarState',
+    alertSearchParams: 'alertSearchParams'
+};
+
+const alertsStorageKey = {
+    status: 'status',
+    dateFrom: 'dateFrom',
+    dateTo: 'dateTo',
+    source: 'source',
+    senders: 'senders',
+    recipients: 'recipients'
 };
 
 const ALERT_ESCALATION_OPTIONS = {
@@ -39,7 +49,7 @@ const COMMUNICATION_ALERT_SOURCE_OPTIONS = {
     // EMAIL: 'EMAIL',
     REUTERS: 'REUTERS',
     BLOOMBERG_CHAT: 'BLOOMBERG_CHAT',
-    BLOOMBERG_EMAIL: 'BLOOMBERG_EMAIL'
+    BLOOMBERG_MAIL: 'BLOOMBERG_MAIL'
 };
 
 const COMMUNICATION_ALERT_STATUS_OPTIONS = {

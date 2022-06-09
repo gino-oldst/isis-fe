@@ -54,6 +54,27 @@ export default async function makeApiCall(
         };
     } else if (endpoint.includes('generate-token')) {
         request.headers = {};
+    } else if (endpoint.includes('/download/messages') || endpoint.includes('/download/alerts')) {
+        fetch(`${config.apiStorage}${endpoint}`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.status !== 200) return response;
+
+            response.blob().then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+
+                a.href = url;
+                a.download = `${endpoint.includes('/download/messages') ? 'search-messages' : 'alerts-list'}.csv`;
+                a.click();
+            });
+        }).catch(err => console.error(err));
     } else if (endpoint.includes('download')) {
         fetch(`${config.apiUrl}${endpoint}`, {
             method: 'POST',

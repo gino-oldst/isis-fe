@@ -68,11 +68,18 @@ type Props = {
     onSearchClick: Function,
     handleSource: Function,
     handleAlert: Function,
+    handleCloseBulkUpdate: Function,
     handleStatus: Function,
     defaultSource: Array<any>,
     defaultStatus: Array<any>,
     defaultAlert: Array<any>,
-    isTimeout: Boolean
+    defaultRecipients: Array<any>,
+    defaultSenders: Array<any>,
+    isTimeout: Boolean,
+    toggleCheck: Boolean,
+    errorForm: Array<Any>,
+    handleDownloadAlertData: Function,
+    handleCloseSuccessModal: Function
 }
 
 function CommunicationAlertsScreen({
@@ -93,6 +100,7 @@ function CommunicationAlertsScreen({
     setFilterDate,
     handleRecipientChange,
     handleSenderChange,
+    handleCloseBulkUpdate,
     loadOptions,
     onSearchClick,
     handleSource,
@@ -101,21 +109,27 @@ function CommunicationAlertsScreen({
     defaultSource,
     defaultStatus,
     defaultAlert,
-    isTimeout
+    defaultRecipients,
+    defaultSenders,
+    isTimeout,
+    toggleCheck,
+    errorForm,
+    handleDownloadAlertData,
+    handleCloseSuccessModal
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
 
     const showActionsModal = () => {
         dispatch(setModalContent({
-            modalContent: <ActionModal handleCloseModal={handleCloseModal}/>,
+            modalContent: <ActionModal handleCloseBulkUpdate={handleCloseBulkUpdate}/>,
             size: 'xl'
         }));
     };
 
     const showSuccessModal = () => {
         dispatch(setModalContent({
-            modalContent: <SuccessModal handleCloseModal={handleCloseModal}/>,
+            modalContent: <SuccessModal handleCloseModal={handleCloseSuccessModal}/>,
             size: 'md'
         }));
     };
@@ -124,7 +138,7 @@ function CommunicationAlertsScreen({
         userId,
         activeModal,
         loadAlerts,
-        handleCloseModal
+        handleCloseBulkUpdate
     }) => {
         const dispatch = useDispatch();
         const [selectedStatus, setSelectedStatus] = useState('');
@@ -133,7 +147,7 @@ function CommunicationAlertsScreen({
         return (
             <div className='action-modal p-4'>
                 <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
-                    onClick={handleCloseModal}/>
+                    onClick={handleCloseBulkUpdate}/>
                 <Typography variant='size-26' color='color-3'
                     className='mb-4 playfair-font'>
                     Bulk Action
@@ -189,7 +203,7 @@ function CommunicationAlertsScreen({
                     }
                     <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
                         <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
-                            onClick={handleCloseModal} disabled={submit}/>
+                            onClick={handleCloseBulkUpdate} disabled={submit}/>
                         <Button label='Apply' variant='primary' className='alerts__save-button px-4 py-2'
                             disabled={selectedRows.length === 0} onClick={e => onSubmit(selectedStatus, resolvedNote, selectedRows)}/>
                         {/* <Button label='Apply' isLoading={submit} variant='secondary'
@@ -257,11 +271,22 @@ function CommunicationAlertsScreen({
 
     const [dateState, setDateState] = useState([
         {
-            startDate: new Date(today.setHours(0, 0, 0, 0)),
-            endDate: new Date(today.setHours(0, 0, 0, 0)),
+            startDate: '',
+            endDate: '',
             key: 'selection'
         }
     ]);
+
+    useEffect(() => {
+        var newDate = [{
+            startDate: filterDate[0].startDate ? filterDate[0].startDate : new Date(today.setHours(0, 0, 0, 0)),
+            endDate: filterDate[0].endDate ? filterDate[0].endDate : new Date(today.setHours(23, 59, 0, 0)),
+            key: 'selection'
+        }];
+
+        setDateState(newDate);
+        console.log(filterDate);
+    }, [filterDate]);
 
     const sourceOptions = [{ label: 'Select All', value: 'all' }, ...Object.keys(COMMUNICATION_ALERT_SOURCE_OPTIONS).map(row => ({
         label: row,
@@ -290,25 +315,43 @@ function CommunicationAlertsScreen({
 
     const convertedEndDate = moment(dateState[0].endDate).utc().local().format('MMM. DD, YYYY hh:mm A'); // for adding time in format hh:mm A
 
+    const onResetDate = () => {
+        const clonedDateF = JSON.parse(JSON.stringify(dateState));
+        const clonedDateS = JSON.parse(JSON.stringify(dateState));
+
+        clonedDateF[0].startDate = '';
+        clonedDateF[0].endDate = '';
+        setFilterDate(clonedDateF);
+
+        clonedDateS[0].startDate = new Date(today.setHours(0, 0, 0, 0));
+        clonedDateS[0].endDate = new Date(today.setHours(23, 59, 0, 0));
+        setDateState(clonedDateS);
+    };
+
     const handleDates = (dates) => {
         var copyDates = dateState[0];
+
+        const clonedDate = JSON.parse(JSON.stringify(dates));
+
+        clonedDate[0].startDate = new Date(clonedDate[0].startDate);
+        clonedDate[0].endDate = new Date(clonedDate[0].endDate);
 
         Object.keys(copyDates).map((e, i) => {
             if (e == 'startDate') {
                 var hours = parseInt(copyDates[e].getHours());
                 var minutes = parseInt(copyDates[e].getMinutes());
 
-                dates[0].startDate.setHours(hours, minutes, 0, 0);
+                clonedDate[0].startDate.setHours(hours, minutes, 0, 0);
             } else if (e == 'endDate') {
                 var hours = parseInt(copyDates[e].getHours());
                 var minutes = parseInt(copyDates[e].getMinutes());
 
-                dates[0].endDate.setHours(hours, minutes, 0, 0);
+                clonedDate[0].endDate.setHours(hours, minutes, 0, 0);
             }
         });
 
-        setDateState(dates);
-        setFilterDate(dates);
+        setDateState(clonedDate);
+        setFilterDate(clonedDate);
     };
 
     const handleTime = (event) => {
@@ -352,8 +395,10 @@ function CommunicationAlertsScreen({
                                             <Typography color='color-3' className='alerts__title pl-0'>Communication Alerts</Typography>
                                         </Col>
                                         <Col lg={6} className='text-right pr-0'>
-                                            <Button weight='light' className='alerts__bulk-review' label='Bulk Review'
-                                                disabled={false} onClick={showActionsModal}/>
+                                            <Button weight='light' className='alerts__bulk-review mr-2' label='Bulk Review'
+                                                disabled={selectedRows.length === 0} onClick={showActionsModal}/>
+                                            <Button weight='light' className='alerts__bulk-review' label='Download Data'
+                                                disabled={loading} onClick={handleDownloadAlertData}/>
                                         </Col>
                                     </Row>
                                 </div>
@@ -430,8 +475,17 @@ function CommunicationAlertsScreen({
                                                                                 onChange={e => handleTime(e)}/>
                                                                         </div>
                                                                     </div>
+                                                                    <div className='d-flex flex-row-reverse pt-3'>
+                                                                        <Button label='Reset' variant='outline-dark' type='button'
+                                                                            onClick={onResetDate} className='btn-sm px-4 py-2'/>
+                                                                    </div>
                                                                 </DropdownItem>
                                                             </DropdownButton>
+                                                            {errorForm.errorDate !== '' &&
+                                                                <Typography variant='size-14' className='form-text text-danger'>
+                                                                    {errorForm.errorDate}
+                                                                </Typography>
+                                                            }
                                                         </FormGroup>
                                                     </Col>
                                                 </Row>
@@ -461,6 +515,9 @@ function CommunicationAlertsScreen({
                                                             <Label for='filterSender'>Sender</Label>
                                                             <AsyncSelect
                                                                 isMulti={true}
+                                                                value={defaultSenders.length > 0
+                                                                    ? defaultSenders.map(row => ({ label: row.label, value: row.value }))
+                                                                    : []}
                                                                 cacheOptions={true}
                                                                 loadOptions={loadOptions}
                                                                 components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
@@ -475,6 +532,9 @@ function CommunicationAlertsScreen({
                                                             <Label for='filterRecipient'>Recipient</Label>
                                                             <AsyncSelect
                                                                 isMulti={true}
+                                                                value={defaultRecipients.length > 0
+                                                                    ? defaultRecipients.map(row => ({ label: row.label, value: row.value }))
+                                                                    : []}
                                                                 cacheOptions={true}
                                                                 loadOptions={loadOptions}
                                                                 components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
@@ -487,7 +547,7 @@ function CommunicationAlertsScreen({
                                                 </Row>
                                                 <Row>
                                                     <Col>
-                                                        <Button label='Search' variant='primary' type='submit'
+                                                        <Button label='Search' variant='primary' type='button'
                                                             onClick={onSearchClick} className='alerts__save-button px-4 py-2'/>
                                                     </Col>
                                                 </Row>
@@ -497,6 +557,7 @@ function CommunicationAlertsScreen({
                                 </Row>
                                 <div className='alerts__information mt-5'>
                                     <Row>
+                                        {/* {JSON.stringify(selectedRows)} */}
                                         <Col lg={12}>
                                             <Table className='alerts__table table-responsive table-striped'
                                                 loading={loading}
@@ -510,7 +571,8 @@ function CommunicationAlertsScreen({
                                                 pagination={true}
                                                 sortable={true}
                                                 fetching={table.loading}
-                                                viewDetails={viewCommunicationAlertDetails}/>
+                                                viewDetails={viewCommunicationAlertDetails}
+                                                toggleSelection={toggleCheck}/>
                                         </Col>
                                     </Row>
                                 </div>

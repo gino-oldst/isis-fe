@@ -165,3 +165,22 @@ export async function getRecipients(chainLinkId) {
 
     return await makeApiCall(`${GET_RECIPIENTS}`, 'POST', filterBody);
 }
+
+const DOWNLOAD_SEARCH_LIST = '/storage-service/download/messages';
+
+export async function downloadCommSearchList(filters: Object) {
+    const filterBody = {
+        message: filters.filterText,
+        senders: filters.filterSenders,
+        recipients: filters.filterRecipients,
+        sources: filters.filterSource.length > 0 ? [...filters.filterSource.map(row => { return row.value; })] : [],
+        dateSentFrom: filters.filterDateFrom,
+        dateSentTo: filters.filterDateTo
+    };
+
+    if (filters.filterId != '' || filters.filterId) {
+        filterBody.id = filters.filterId;
+    }
+
+    return await makeApiCall(DOWNLOAD_SEARCH_LIST, 'POST', filterBody);
+}

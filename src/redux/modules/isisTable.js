@@ -12,6 +12,14 @@ const SET_ALL_ROWS_SELECTED = 'SET_ALL_ROWS_SELECTED';
 const RESET_STATE = 'RESET_STATE';
 const SET_ALERTS_DATE_RANGE = 'SET_ALERTS_DATE_RANGE';
 const SET_ALERTS_LIST = 'SET_ALERTS_LIST';
+const SET_TOGGLE = 'SET_TOGGLE';
+
+export function setToggle(data: Boolean) {
+    return {
+        type: SET_TOGGLE,
+        data
+    };
+}
 
 export function setAlertsList(data: Object) {
     return {
@@ -109,6 +117,7 @@ const initialState = {
     filteredRows: [],
     filtersReset: false,
     alertsList: null,
+    toggle: false,
     appliedFilters: [
         {
             id: 'status',
@@ -149,6 +158,11 @@ const initialState = {
 
 export default function isisTable(state: Object = initialState, action: Object) {
     switch (action.type) {
+        case SET_TOGGLE:
+            return {
+                ...state,
+                toggle: action.data
+            };
         case SET_ALERTS_LIST:
             return {
                 ...state,
@@ -163,6 +177,8 @@ export default function isisTable(state: Object = initialState, action: Object) 
                 }
             };
         case SET_IS_ROW_SELECTED:
+            console.log('from the redux => ', action.count, action.selectedRows);
+
             return {
                 ...state,
                 isRowsSelected: action.count,

@@ -86,7 +86,8 @@ type Props = {
     handleKeyword: Function,
     defaultSources: Array<any>,
     errorForm: Array<Any>,
-    isTimeout: Boolean
+    isTimeout: Boolean,
+    handleDownloadSearchData: Function
 }
 
 function CommunicationSearchResultsScreen({
@@ -122,7 +123,8 @@ function CommunicationSearchResultsScreen({
     handleUniqueID,
     handleKeyword,
     errorForm,
-    isTimeout
+    isTimeout,
+    handleDownloadSearchData
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -159,22 +161,27 @@ function CommunicationSearchResultsScreen({
     const handleDates = (dates) => {
         var copyDates = dateState[0];
 
+        const clonedDate = JSON.parse(JSON.stringify(dates));
+
+        clonedDate[0].startDate = new Date(clonedDate[0].startDate);
+        clonedDate[0].endDate = new Date(clonedDate[0].endDate);
+
         Object.keys(copyDates).map((e, i) => {
             if (e == 'startDate') {
                 var hours = parseInt(copyDates[e].getHours());
                 var minutes = parseInt(copyDates[e].getMinutes());
 
-                dates[0].startDate.setHours(hours, minutes, 0, 0);
+                clonedDate[0].startDate.setHours(hours, minutes, 0, 0);
             } else if (e == 'endDate') {
                 var hours = parseInt(copyDates[e].getHours());
                 var minutes = parseInt(copyDates[e].getMinutes());
 
-                dates[0].endDate.setHours(hours, minutes, 0, 0);
+                clonedDate[0].endDate.setHours(hours, minutes, 0, 0);
             }
         });
 
-        setDateState(dates);
-        setFilterDate(dates);
+        setDateState(clonedDate);
+        setFilterDate(clonedDate);
     };
 
     const handleTime = (event) => {
@@ -214,8 +221,8 @@ function CommunicationSearchResultsScreen({
                             <CardBody>
                                 <div className='search-results__header d-flex align-items-center justify-content-between'>
                                     <Typography color='color-3' className='search-results__title'>Search Results</Typography>
-                                    {/* <Button weight='light' className='ml-4 mr-4 search-results__bulk-review' label='Bulk Review'
-                                        onClick={showActionsModal}/> */}
+                                    <Button weight='light' className='search-results__download' label='Download Data'
+                                        disabled={loading} onClick={handleDownloadSearchData}/>
                                 </div>
                                 <Row className='pl-2'>
                                     <Col lg={12}>
@@ -332,12 +339,12 @@ function CommunicationSearchResultsScreen({
                                                                     <div className='d-flex time-wrapper'>
                                                                         <div className='rdrTime'>
                                                                             <Input type='time' name='timeStart' placeholder='hh:mm'
-                                                                                value={moment(dateState[0].startDate).format('hh:mm')} required={true} formNoValidate={true}
+                                                                                value={moment(dateState[0].startDate).format('HH:mm')} required={true} formNoValidate={true}
                                                                                 onChange={e => handleTime(e)}/>
                                                                         </div>
                                                                         <div className='rdrTime'>
                                                                             <Input type='time' name='timeEnd' placeholder='hh:mm'
-                                                                                value={moment(dateState[0].endDate).format('hh:mm')} required={true} formNoValidate={true}
+                                                                                value={moment(dateState[0].endDate).format('HH:mm')} required={true} formNoValidate={true}
                                                                                 onChange={e => handleTime(e)}/>
                                                                         </div>
                                                                     </div>
@@ -373,7 +380,7 @@ function CommunicationSearchResultsScreen({
                                                 tableData={table.data}
                                                 tablePagination={table.totalPages}
                                                 totalNoOfRecords={table.totalNoOfRecords}
-                                                selectableRows={true}
+                                                selectableRows={false}
                                                 activePage={activePage}
                                                 pagination={true}
                                                 sortable={true}

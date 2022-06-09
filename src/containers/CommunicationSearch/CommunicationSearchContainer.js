@@ -175,6 +175,13 @@ export default function CommunicationSearchContainer({
             formValid = false;
         }
 
+        // moment(dateState[0].startDate).format('HH:mm')
+        if (moment(filterSearchForm.filterDateFrom).format('YYYY-MM-DD') === moment(filterSearchForm.filterDateTo).format('YYYY-MM-DD') &&
+            moment(filterSearchForm.filterDateFrom).format('HH:mm') > moment(filterSearchForm.filterDateTo).format('HH:mm')) {
+            initialError.errorDate = 'Date From Overlaps Date To';
+            formValid = false;
+        }
+
         if (formValid) {
             history.push('/communication_search_results', filterSearchForm);
         } else {

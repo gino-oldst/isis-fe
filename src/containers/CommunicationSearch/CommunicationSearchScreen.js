@@ -118,7 +118,7 @@ function CommunicationSearchScreen({
     const [dateState, setDateState] = useState([
         {
             startDate: new Date(today.setHours(0, 0, 0, 0)),
-            endDate: new Date(today.setHours(0, 0, 0, 0)),
+            endDate: new Date(today.setHours(23, 59, 0, 0)),
             key: 'selection'
         }
     ]);
@@ -130,22 +130,27 @@ function CommunicationSearchScreen({
     const handleDates = (dates) => {
         var copyDates = dateState[0];
 
+        const clonedDate = JSON.parse(JSON.stringify(dates));
+
+        clonedDate[0].startDate = new Date(clonedDate[0].startDate);
+        clonedDate[0].endDate = new Date(clonedDate[0].endDate);
+
         Object.keys(copyDates).map((e, i) => {
             if (e == 'startDate') {
                 var hours = parseInt(copyDates[e].getHours());
                 var minutes = parseInt(copyDates[e].getMinutes());
 
-                dates[0].startDate.setHours(hours, minutes, 0, 0);
+                clonedDate[0].startDate.setHours(hours, minutes, 0, 0);
             } else if (e == 'endDate') {
                 var hours = parseInt(copyDates[e].getHours());
                 var minutes = parseInt(copyDates[e].getMinutes());
 
-                dates[0].endDate.setHours(hours, minutes, 0, 0);
+                clonedDate[0].endDate.setHours(hours, minutes, 0, 0);
             }
         });
 
-        setDateState(dates);
-        setFilterDate(dates);
+        setDateState(clonedDate);
+        setFilterDate(clonedDate);
     };
 
     const handleTime = (event) => {

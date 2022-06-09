@@ -29,7 +29,7 @@ export default function AppModal({ className = '', title, children, onToggle, fo
             {isDemo && <Button label='Show modal' onClick={handleClose}/>}
 
             <Modal show={isDemo ? show : isShow} centered={true} onHide={handleClose}
-                size={size}>
+                size={size} keyboard={false} backdrop={'static'}>
                 {title && (
                     <Modal.Header closeButton={true}>
                         <Modal.Title>{title}</Modal.Title>

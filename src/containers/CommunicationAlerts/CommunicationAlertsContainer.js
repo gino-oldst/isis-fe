@@ -16,13 +16,15 @@ import debounce from 'debounce-async';
 
 // To be removed once we move to with backend
 import filterSample from './filters.json';
-import { getCommunicationAlertData, getKeywords, updateAlert } from '../../api/communicationAlerts';
+import { downloadCommAlertsList, getCommunicationAlertData, getKeywords, updateAlert } from '../../api/communicationAlerts';
 import { getEmails, getEmailsAll } from '../../api/communicationSearch';
 import { set } from 'date-fns';
 import Typography from '../../components/base/Typography/Typography';
 import Button from '../../components/base/Button/Button';
 import { setModalContent } from '../../redux/modules/modalEvent';
-import { setAlertsList } from '../../redux/modules/isisTable';
+import { setAlertsList, setIsRowSelected, setToggle } from '../../redux/modules/isisTable';
+import Storage from '../../utils/Storage';
+import { storageKey } from '../../config/constants';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -38,8 +40,8 @@ export default function CommunicationAlertsContainer({
 }: Props): React$Element<any> {
     const history = useHistory();
     const dispatch = useDispatch();
-    const [loading, setLoading] = useState(true);
-    const { pageSize, activePage, appliedFilters, selectedRows, areRowsSelectedAll, sort, dateRange } = useSelector(({ isisTable }) => isisTable);
+    const [loading, setLoading] = useState(false);
+    const { pageSize, activePage, appliedFilters, selectedRows, areRowsSelectedAll, sort, dateRange, toggle } = useSelector(({ isisTable }) => isisTable);
     const { table, selected } = useSelector(({ communicationAlerts }) => communicationAlerts);
     const [keywords, setKeywords] = useState([]);
     const [senders, setSenders] = useState([]);
@@ -49,6 +51,11 @@ export default function CommunicationAlertsContainer({
     const [source, setSource] = useState([]);
     const [alert, setAlert] = useState([]);
     const [status, setStatus] = useState([]);
+    const [submit, setSubmit] = useState(false);
+
+    const [senderStore, setSenderStore] = useState([]);
+    const [recipientStore, setRecipientStore] = useState([]);
+
     const breadcrumb = [
         {
             label: 'Home',
@@ -68,51 +75,22 @@ export default function CommunicationAlertsContainer({
 
     const [isTimeout, setIsTimeout] = useState(false);
 
-    const loadCommAlertsData = async (page, size, sort, alert, status, dFrom, dTo, sources, senders, recipients) => {
-        setLoading(true);
-
-        try {
-            const alerts = await getCommunicationAlertData(page, size, sort, alert, status, dFrom, dTo, sources, senders, recipients);
-            const { data, totalNoOfRecords, totalPages } = alerts.data;
-
-            dispatch(setCommunicationAlertsData(data, totalNoOfRecords, totalPages));
-
-            // console.log(senders);
-            // console.log(recipients);
-            // console.log(dateFrom);
-            // console.log(dateTo);
-            // console.log(source);
-            // console.log(alert);
-            // console.log(status);
-
-            // history.push('/communication_alerts', filterDate);
-            // history.push('/communication_alerts', senders);
-            // history.push('/communication_alerts', recipients);
-            // history.push('/communication_alerts', source);
-            // history.push('/communication_alerts', alert);
-            // history.push('/communication_alerts', status);
-        } catch (e) {
-            if (e.status == 500 || e.status == 502 || e.status == 503 || e.status == 504 || e.status == 408 || e.status == 404 || e.status == 400) {
-                setIsTimeout(true);
-            }
-        }
-
-        setLoading(false);
-    };
-
     useEffect(() => {
+        loadSearchValuesFromStorage();
         loadColumnFilterValues();
     }, []);
 
     useEffect(() => {
-        // const dateFrom = filterDate[0].startDate != '' ? moment(filterDate[0].startDate).utc().local().format('YYYY-MM-DD hh:mm A') : ''; // for adding time in format hh:mm A
-        // const dateTo = filterDate[0].endDate != '' ? moment(filterDate[0].endDate).utc().local().format('YYYY-MM-DD hh:mm A') : ''; // for adding time in format hh:mm A
-
         const dateFrom = filterDate[0].startDate != '' ? moment(filterDate[0].startDate).utc().local().format('YYYY-MM-DDTHH:mm:ss') : '';
         const dateTo = filterDate[0].endDate != '' ? moment(filterDate[0].endDate).utc().local().format('YYYY-MM-DDTHH:mm:ss') : '';
 
         setDateFrom(dateFrom);
         setDateTo(dateTo);
+
+        setErrorForm({
+            ...errorForm,
+            errorDate: ''
+        });
     }, [filterDate]);
 
     useEffect(() => {
@@ -128,7 +106,57 @@ export default function CommunicationAlertsContainer({
             senders,
             recipients
         );
-    }, [pageSize, activePage, sort]);
+    }, [pageSize, activePage, sort, submit]);
+
+    const loadCommAlertsData = async (page, size, sort, alert, status, dFrom, dTo, sources, senders, recipients) => {
+        setLoading(true);
+
+        const alertSearchParams = JSON.parse(Storage.getItem(storageKey.alertSearchParams));
+        var filterAlert = [];
+        var filterStatus = [];
+        var filterSources = [];
+        var filterSender = [];
+        var filterRecipient = [];
+        var filterDateFrom = '';
+        var filterDateTo = '';
+
+        // alert, status, dFrom, dTo, sources, senders, recipients
+        if (alertSearchParams) {
+            filterAlert = alert.length === 0 ? alertSearchParams.alert : alert;
+            filterStatus = status.length === 0 ? alertSearchParams.status : status;
+            filterSources = sources.length === 0 ? alertSearchParams.source : sources;
+            filterDateFrom = filterDateFrom === '' ? alertSearchParams.dateFrom : dFrom;
+            filterDateTo = filterDateTo === '' ? alertSearchParams.dateTo : dTo;
+
+            var slist = [];
+            var rlist = [];
+
+            alertSearchParams.senders.map(sender => {
+                slist.push(sender.value);
+            });
+
+            alertSearchParams.recipients.map(recipient => {
+                rlist.push(recipient.value);
+            });
+
+            filterSender = senders.length === 0 ? slist : senders;
+            filterRecipient = recipients.length === 0 ? rlist : recipients;
+        }
+
+        try {
+            const alerts = await getCommunicationAlertData(page, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient);
+            const { data, totalNoOfRecords, totalPages } = alerts.data;
+
+            dispatch(setCommunicationAlertsData(data, totalNoOfRecords, totalPages));
+            dispatch(setIsRowSelected(0, []));
+        } catch (e) {
+            if (e.status == 500 || e.status == 502 || e.status == 503 || e.status == 504 || e.status == 408 || e.status == 404 || e.status == 400) {
+                setIsTimeout(true);
+            }
+        }
+
+        setLoading(false);
+    };
 
     const loadColumnFilterValues = async () => {
         // const emails = await getEmails();
@@ -136,6 +164,47 @@ export default function CommunicationAlertsContainer({
 
         dispatch(setAlertsList(keywords));
         setKeywords(keywords);
+    };
+
+    const loadSearchValuesFromStorage = async () => {
+        const alertSearchParams = JSON.parse(Storage.getItem(storageKey.alertSearchParams));
+
+        if (alertSearchParams) {
+            console.log('alertSearchParams', alertSearchParams);
+            console.log(alertSearchParams.senders);
+            setAlert(alertSearchParams.alert);
+            setSource(alertSearchParams.source);
+            setStatus(alertSearchParams.status);
+
+            var slist = [];
+            var rlist = [];
+
+            alertSearchParams.senders.map(sender => {
+                slist.push(sender.value);
+            });
+
+            alertSearchParams.recipients.map(recipient => {
+                rlist.push(recipient.value);
+            });
+
+            setSenders(slist);
+            setSenderStore(alertSearchParams.senders);
+
+            setRecipients(rlist);
+            setRecipientStore(alertSearchParams.recipients);
+
+            var newDate = {
+                startDate: alertSearchParams.dateFrom ? new Date(alertSearchParams.dateFrom) : '',
+                endDate: alertSearchParams.dateTo ? new Date(alertSearchParams.dateTo) : ''
+            };
+
+            setFilterDate([newDate]);
+            // setFilterDate({
+            //     ...filterDate,
+            //     startDate: alertSearchParams.dateFrom ? new Date(alertSearchParams.dateFrom) : '',
+            //     endDate: alertSearchParams.dateTo ? new Date(alertSearchParams.dateTo) : ''
+            // });
+        }
     };
 
     const tableIsFiltered = () => {
@@ -156,16 +225,12 @@ export default function CommunicationAlertsContainer({
         }));
     };
 
-    const [submit, setSubmit] = useState(false);
+    const [toggleCheck, setToggleCheck] = useState(false);
 
     const onSubmitStatusChange = async (status, note, selectedRows) => {
-        setLoading(true);
-
         try {
             const promises = selectedRows.map(row => {
-                // const messageId = row.message.id;
-
-                row.alerts.data.map(async alert => {
+                row.alerts.data.map(alert => {
                     const data = {
                         id: alert.id,
                         policyId: alert.policyId,
@@ -173,36 +238,45 @@ export default function CommunicationAlertsContainer({
                         notes: note
                     };
 
-                    const request = await updateAlert(data);
-
-                    // console.log(request);
-
-                    return request;
+                    return updateAlert(data).then(function(results) {
+                        return results;
+                    });
                 });
             });
 
-            const statusChange = await Promise.all(promises);
+            Promise.all(promises).then(function(values) {
+                setTimeout(() => {
+                    onSearchClick();
 
-            // console.log(statusChange);
-            // loadCommAlertsData(
-            //     activePage,
-            //     pageSize,
-            //     sort,
-            //     alert,
-            //     status,
-            //     dateFrom,
-            //     dateTo,
-            //     source,
-            //     senders,
-            //     recipients
-            // );
+                    showSuccessModal();
 
-            showSuccessModal();
+                    dispatch(setToggle(!toggle));
+                    dispatch(setIsRowSelected(0, []));
+                }, 1000);
+            });
         } catch (e) {
             console.error(e);
         }
+    };
 
-        setLoading(false);
+    const handleCloseBulkUpdate = () => {
+        var stat = !toggle;
+
+        dispatch(setToggle(stat));
+        dispatch(setIsRowSelected(0, []));
+        onSearchClick();
+
+        handleCloseModal();
+    };
+
+    const handleCloseSuccessModal = () => {
+        var stat = !toggle;
+
+        dispatch(setToggle(stat));
+        dispatch(setIsRowSelected(0, []));
+        onSearchClick();
+
+        handleCloseModal();
     };
 
     const handleSource = (event) => {
@@ -225,10 +299,7 @@ export default function CommunicationAlertsContainer({
         });
 
         setSenders(list);
-        // setFilterSearchForm({
-        //     ...filterSearchForm,
-        //     filterSenders: list
-        // });
+        setSenderStore(updatedList);
     };
 
     const handleRecipientChange = (updatedList) => {
@@ -239,10 +310,7 @@ export default function CommunicationAlertsContainer({
         });
 
         setRecipients(list);
-        // setFilterSearchForm({
-        //     ...filterSearchForm,
-        //     filterRecipients: list
-        // });
+        setRecipientStore(updatedList);
     };
 
     const [lastOptions, setLastOptions] = useState([]);
@@ -263,12 +331,56 @@ export default function CommunicationAlertsContainer({
         }, 300);
     }, [setLastOptions]);
 
+    const [errorForm, setErrorForm] = useState({
+        errorDate: ''
+    });
+
     const onSearchClick = () => {
         // alert, status, dFrom, dTo, sources, senders, recipients
-        loadCommAlertsData(
-            activePage,
-            pageSize,
-            sort,
+        var formValid = true;
+        const initialError = {
+            errorDate: ''
+        };
+
+        if (moment(dateFrom).format('YYYY-MM-DD') === moment(dateTo).format('YYYY-MM-DD') &&
+            moment(dateFrom).format('HH:mm') > moment(dateTo).format('HH:mm')) {
+            initialError.errorDate = 'Date From Overlaps Date To';
+            formValid = false;
+        }
+
+        if (formValid) {
+            Storage.removeItem(storageKey.alertSearchParams);
+            Storage.setItem(storageKey.alertSearchParams, JSON.stringify({
+                alert: alert,
+                status: status,
+                dateFrom: dateFrom,
+                dateTo: dateTo,
+                source: source,
+                senders: senderStore,
+                recipients: recipientStore
+            }));
+            loadCommAlertsData(
+                activePage,
+                pageSize,
+                sort,
+                alert,
+                status,
+                dateFrom,
+                dateTo,
+                source,
+                senders,
+                recipients
+            );
+        } else {
+            setErrorForm({
+                ...errorForm,
+                errorDate: initialError.errorDate
+            });
+        }
+    };
+
+    const handleDownloadAlertData = async () => {
+        await downloadCommAlertsList(
             alert,
             status,
             dateFrom,
@@ -277,13 +389,6 @@ export default function CommunicationAlertsContainer({
             senders,
             recipients
         );
-        // console.log(senders);
-        // console.log(recipients);
-        // console.log(dateFrom);
-        // console.log(dateTo);
-        // console.log(source);
-        // console.log(alert);
-        // console.log(status);
     };
 
     return <CommunicationAlertsScreen
@@ -308,11 +413,18 @@ export default function CommunicationAlertsContainer({
         handleSource={handleSource}
         handleAlert={handleAlert}
         handleStatus={handleStatus}
+        handleDownloadAlertData={handleDownloadAlertData}
         loadOptions={loadOptions}
         setFilterDate={setFilterDate}
         defaultSource={source}
         defaultStatus={status}
-        defaultAlert={alert}/>;
+        defaultAlert={alert}
+        defaultRecipients={recipientStore}
+        defaultSenders={senderStore}
+        handleCloseBulkUpdate={handleCloseBulkUpdate}
+        toggleCheck={toggleCheck}
+        errorForm={errorForm}
+        handleCloseSuccessModal={handleCloseSuccessModal}/>;
 }
 
 const SuccessModal = ({
