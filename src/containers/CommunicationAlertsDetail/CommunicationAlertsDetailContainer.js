@@ -165,6 +165,8 @@ export default function CommunicationAlertsDetail({
 
             setAlerts(statusChange.map(ev => ev.data));
 
+            loadActivity(filters.state.id);
+
             showSuccessModal('You have successfully bulk reviewed the alerts');
         } catch (e) {
             console.error(e);
@@ -186,6 +188,8 @@ export default function CommunicationAlertsDetail({
 
             loadAlerts(filters.state.id);
 
+            loadActivity(filters.state.id);
+
             dispatch(setFlashNotification({
                 message: 'Alert Status Update Success.',
                 isError: false
@@ -204,12 +208,18 @@ export default function CommunicationAlertsDetail({
                 notes: note
             };
 
-            const request = await postComment(data);
+            const request = await updateAlert(data);
+
+            loadAlerts(filters.state.id);
+
+            loadActivity(filters.state.id);
 
             dispatch(setFlashNotification({
-                message: 'Comment Added.',
+                message: 'Adding of Resolution Success.',
                 isError: false
             }));
+
+            handleCloseModal();
         } catch (e) {
             console.error(e);
         }

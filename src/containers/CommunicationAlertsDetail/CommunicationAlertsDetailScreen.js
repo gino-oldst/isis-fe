@@ -141,9 +141,6 @@ function CommunicationAlertsDetailScreen({
     };
 
     const handleDetailStatusChange = (e, selectedAlert) => {
-        console.log(e.value, selectedAlert);
-        // onSubmit(selectedStatus, resolvedNote, alertsData)
-
         if (e.value == 'RESOLVED') {
             showResolvedModal(e.value, selectedAlert);
         } else {
