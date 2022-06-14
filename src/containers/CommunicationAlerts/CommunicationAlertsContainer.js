@@ -120,7 +120,6 @@ export default function CommunicationAlertsContainer({
         var filterDateFrom = '';
         var filterDateTo = '';
 
-        // alert, status, dFrom, dTo, sources, senders, recipients
         if (alertSearchParams) {
             filterAlert = alert.length === 0 ? alertSearchParams.alert : alert;
             filterStatus = status.length === 0 ? alertSearchParams.status : status;
@@ -170,8 +169,6 @@ export default function CommunicationAlertsContainer({
         const alertSearchParams = JSON.parse(Storage.getItem(storageKey.alertSearchParams));
 
         if (alertSearchParams) {
-            console.log('alertSearchParams', alertSearchParams);
-            console.log(alertSearchParams.senders);
             setAlert(alertSearchParams.alert);
             setSource(alertSearchParams.source);
             setStatus(alertSearchParams.status);
@@ -199,11 +196,6 @@ export default function CommunicationAlertsContainer({
             };
 
             setFilterDate([newDate]);
-            // setFilterDate({
-            //     ...filterDate,
-            //     startDate: alertSearchParams.dateFrom ? new Date(alertSearchParams.dateFrom) : '',
-            //     endDate: alertSearchParams.dateTo ? new Date(alertSearchParams.dateTo) : ''
-            // });
         }
     };
 
@@ -336,7 +328,6 @@ export default function CommunicationAlertsContainer({
     });
 
     const onSearchClick = () => {
-        // alert, status, dFrom, dTo, sources, senders, recipients
         var formValid = true;
         const initialError = {
             errorDate: ''
@@ -446,10 +437,7 @@ const SuccessModal = ({
             </div>
             <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
                 <Button label='Close' variant='primary' className='cancel-button px-4 mr-2 py-2'
-                    onClick={handleCloseModal}/> {/* onClick={handleClose} disabled={submit} /> */}
-                {/* <Button label='Apply' isLoading={submit} variant='secondary'
-                    className='alerts__save-button px-4 py-2'
-                    onClick={handleBulkUpdate} disabled={submit} /> */}
+                    onClick={handleCloseModal}/>
             </div>
         </div>
     );

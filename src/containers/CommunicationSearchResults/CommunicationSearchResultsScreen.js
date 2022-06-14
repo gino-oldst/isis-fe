@@ -388,27 +388,6 @@ function CommunicationSearchResultsScreen({
                                                 viewDetails={handleItemClick}
                                                 filterKeyword={filterKeyword}
                                                 isTimeout={isTimeout}/>
-                                            {/* <BootstrapTable className='search-results__table'
-                                                isHover={true}
-                                                withSearch={true}
-                                                withPagination={true}
-                                                headers={[
-                                                    { key: 'id', label: 'ID #' },
-                                                    { key: 'subject', label: 'Subject & Message' },
-                                                    { key: 'source', label: 'Source' },
-                                                    // { key: 'keyword', label: 'Alert' },
-                                                    // { key: 'status', label: 'Status' },
-                                                    { key: 'timeSent', label: 'Date & Time' }
-                                                ]}
-                                                list={table}
-                                                searchKeys={['chainLinkId', 'message']}
-                                                placeHolder='Enter search for Id and Keyword'
-                                                handleSelectAll={handleSelectAll}
-                                                handleItemCheck={handleItemCheck}
-                                                handleItemClick={handleItemClick}
-                                                isCheckAll={isCheckAll}
-                                                isLoading={loading}
-                                                loadSearchData={loadSearchData}/> */}
                                         </Col>
                                     </Row>
                                 </div>

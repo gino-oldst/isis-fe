@@ -524,10 +524,6 @@ function IsisTable({
     };
 
     useEffect(() => {
-        // const result = selectedRowsIsis.filter(o1 => selectedRows.some(o2 => o1.id === o2.id));
-        // const results = arrayOne.filter(({ value: id1 }) => !arrayTwo.some(({ value: id2 }) => id2. === id1));
-
-        // this is to be spliced
         var selectedRowsClone = JSON.parse(JSON.stringify(selectedRows));
 
         var notInSelected = [];
@@ -547,13 +543,11 @@ function IsisTable({
         }
 
         // Splice from the array
-        // myArray.findIndex(x => x.alerts.data[0].commMessageId === 'stevie')
         toBeSpliced.map(row => {
             if (row.alerts.data.length === row.alerts.totalNoOfRecords) {
                 selectedRowsClone.splice(selectedRowsClone.findIndex(item => item.alerts.data[0].commMessageId === row.alerts.data[0].commMessageId), 1);
             }
         });
-        // selectedRowsClone.splice(selectedRowsClone.indexOf(data.id), 1);
 
         selectedRowsIsis.map(row => {
             var index = selectedRowsClone.findIndex(item => item.alerts.data.length < row.original.alerts.data.length && item.alerts.data[0].commMessageId === row.original.alerts.data[0].commMessageId);
@@ -580,30 +574,13 @@ function IsisTable({
             return element !== null;
         });
 
-        // selectedRowsIsis.map(row => {
-        //     if (selectedRowsClone.length > 0) {
-        //         selectedRowsClone.map((srow, index) => {
-        //             if (srow.alerts.data.length < row.original.alerts.data.length) {
-        //                 selectedRowsClone.splice(index, 1);
-        //             }
-        //         });
-        //     }
-        // });
-
-        // after knowing which is not selected splice it from the selectedRowsClone
-
-        // console.log(notInSelected);
-
         compareList = [...selectedRowsClone, ...notInSelected.map(row => { return row.original; })];
         dispatchList = compareList.map(JSON.stringify).reverse() // convert to JSON string the array content, then reverse it (to check from end to begining)
             .filter(function(item, index, compareList) { return compareList.indexOf(item, index + 1) === -1; }) // check if there is any occurence of the item in whole array
             .reverse().map(JSON.parse); // revert it to original state
-        console.log(dispatchList);
 
         setPreviousSelectedRows(selectedRowsIsis);
 
-        // add Row Selected Items...
-        // dispatch(setIsRowSelected(selectedRowsIsis.length, [...selectedRows, ...notInSelected.map(row => { return row.original; })]));
         dispatch(setIsRowSelected(dispatchList.length, dispatchList));
     }, [selectedRowsIsis.length]);
 
@@ -805,7 +782,6 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
     const [checked, setChecked] = useState([]);
     const [parentRowSelected, setParentRowSelected] = useState(false);
 
-    // const selectedRows = rows.filter(row => row.isSelected === true);
     useEffect(() => {
         if (!toggle && row.isSelected && selectedRows.length > 0 && data.length > 0) {
             var filteredList = checked.length > 0
@@ -814,13 +790,9 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                 })
                 : data;
 
-            console.log(filteredList);
-
             setChecked([...filteredList.map(item => { return item.id; })]);
             setParentRowSelected(true);
         }
-
-        console.log(checked);
 
         if (parentRowSelected && !row.isSelected) {
             setChecked([]);
@@ -859,15 +831,7 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                 var updatedList = JSON.parse(JSON.stringify(selectedRows)); // [...selectedRows];
                 var nlist = [];
                 var xlist = [];
-                // individual wee
-                // If commMessageId is not avail on the selectedRows => Create a new alert object to add the selection data to it
-                // Else if commMessageId is avail on the selectedRows => see if the 'id' of the 'data' is avail in side the alerts and add if available
-                // Also check the objects length for selection\
 
-                // const found = updatedList.length == 0 ? false : updatedList.map(r => { return r.alerts.data.some(el => el.id === data.id); })[0];
-
-                // console.log('found', found);
-                // nlist = updatedList.map(r => { return r.alerts.data.find(el => el.commMessageId === data.commMessageId) ? r : []; });
                 nlist = updatedList.map(r => { return r.alerts.data.find(el => el.commMessageId === data.commMessageId) ? r : null; }).filter(function(element) {
                     return element !== null;
                 });
@@ -877,8 +841,6 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                 });
 
                 if (nlist.length > 0 && updatedList.length > 0) {
-                    // console.log('add-on');
-                    // console.log(updatedList.map(r => { return r.alerts.data.find(el => el.commMessageId === data.commMessageId) ? r : ''; }));
                     var newList = [];
 
                     nlist[0].alerts.data.push(data);
@@ -902,21 +864,14 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                 }
             }
         } else {
-            /**
-             * TODO
-             * 1. New splice on alerts > data
-             * 2. Deselect parent row
-             */
             var updatedList = JSON.parse(JSON.stringify(selectedRows));
 
-            // console.log('checked', checked);
             var newList = [...checked];
 
             newList.splice(newList.indexOf(data.id), 1);
 
             setChecked(newList);
 
-            console.log('splice this', selectedRows, checked);
             updatedList.map((row, index) => {
                 if (row.alerts.data.find(el => el.id === data.id)) {
                     row.alerts.data.splice(row.alerts.data.findIndex(el => el.id === data.id), 1);
@@ -932,14 +887,8 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                 updatedList.splice(index);
             }
 
-            // updatedList.splice(, 1);
             dispatch(setIsRowSelected(1, updatedList));
         }
-
-        // setChecked(event.target.checked);
-
-        // From row.original filter and splice the ones not included in the selection
-        // console.log(event.target.checked, data, row, updatedList);
     };
 
     if (loading) {

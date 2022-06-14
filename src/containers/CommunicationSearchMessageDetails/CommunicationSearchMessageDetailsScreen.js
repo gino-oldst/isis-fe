@@ -56,13 +56,6 @@ type Props = {
     useMediaQuery: Function,
     detailData: Array,
     dataId: Any,
-    handleMessageBeforeIncrement: Function,
-    handleMessageBeforeDecrement: Function,
-    handleMessageAfterIncrement: Function,
-    handleMessageAfterDecrement: Function,
-    handleBackMessage: Function,
-    handlePreviousMessage: Function,
-    handleNextMessage: Function,
     loadMessageStatus: String,
     messages: Array,
     recipients: Array,
@@ -78,13 +71,6 @@ function CommunicationSearchMessageDetailsScreen({
     sidebarMenu,
     detailData,
     dataId,
-    handleMessageBeforeIncrement,
-    handleMessageBeforeDecrement,
-    handleMessageAfterIncrement,
-    handleMessageAfterDecrement,
-    handleBackMessage,
-    handlePreviousMessage,
-    handleNextMessage,
     loadMessageStatus,
     messages,
     recipients,
@@ -242,24 +228,6 @@ function CommunicationSearchMessageDetailsScreen({
                                                     </Spinner>
                                                     : <>
                                                         <div className='d-flex flex-column'>
-                                                            {/* {loadMessageStatus == 'before'
-                                                                ? <Button label='Load message Alerted' variant='outline-primary' className='ok-button px-4 mr-2 py-2'
-                                                                    onClick={handleBackMessage}/>
-                                                                : <Button label='Load next message' disabled={loadMessageStatus == 'after'} variant='outline-primary'
-                                                                    onClick={handleNextMessage} className='ok-button px-4 mr-2 py-2'/>
-                                                            } */}
-                                                            {/* {loadMessageStatus == 'before' &&
-                                                                <Button disabled={messageButtonDisable} label='Load previous message' variant='outline-primary'
-                                                                    className='ok-button px-4 mr-2 py-2' onClick={handleMessageBeforeIncrement}/>
-                                                            }
-                                                            {loadMessageStatus == 'after' &&
-                                                                <Button label='Load previous message' variant='outline-primary' className='ok-button px-4 mr-2 py-2'
-                                                                    onClick={handleMessageAfterDecrement}/>
-                                                            }
-                                                            {loadMessageStatus == 'message' &&
-                                                                <Button label='Load previous message' variant='outline-primary' className='ok-button px-4 mr-2 py-2'
-                                                                    onClick={handleMessageBeforeIncrement}/>
-                                                            } */}
                                                             <div id='containerElement' className='communication-search-message-details__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
                                                                 <div>
                                                                     {messages.map(message => {
@@ -278,24 +246,6 @@ function CommunicationSearchMessageDetailsScreen({
                                                                     })}
                                                                 </div>
                                                             </div>
-                                                            {/* {loadMessageStatus == 'before' &&
-                                                                <Button label='Load next message' variant='outline-primary' className='ok-button px-4 mr-2 py-2'
-                                                                    onClick={handleMessageBeforeDecrement}/>
-                                                            }
-                                                            {loadMessageStatus == 'after' &&
-                                                                <Button disabled={messageButtonDisable} label='Load next message' variant='outline-primary'
-                                                                    className='ok-button px-4 mr-2 py-2' onClick={handleMessageAfterIncrement}/>
-                                                            }
-                                                            {loadMessageStatus == 'message' &&
-                                                                <Button label='Load next message' variant='outline-primary' className='ok-button px-4 mr-2 py-2'
-                                                                    onClick={handleMessageAfterIncrement}/>
-                                                            } */}
-                                                            {/* {loadMessageStatus == 'after'
-                                                                ? <Button label='Load message Alerted' variant='outline-primary' className='ok-button px-4 mr-2 py-2'
-                                                                    onClick={handleBackMessage}/>
-                                                                : <Button label='Load next message' disabled={loadMessageStatus == 'before'} variant='outline-primary'
-                                                                    onClick={handleNextMessage} className='ok-button px-4 mr-2 py-2'/>
-                                                            } */}
                                                         </div>
                                                     </>
                                                 }

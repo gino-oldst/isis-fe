@@ -51,126 +51,9 @@ export default function CommunicationSearchMessageDetailsContainer({
         }
     ];
 
-    // useEffect(() => {
-    //     loadSearchData(filters.state);
-    // }, [filters]);
-
     useEffect(() => {
         loadSearchData(filters.state);
     }, []);
-
-    // todo - Move this func to Highlight Component also improve upon
-    // before
-    const handleMessageBeforeIncrement = (increment) => {
-        if (count == (messageStorage.before.length - 1)) {
-            setMessageButtonDisable(true);
-        }
-
-        if (count < (messageStorage.before.length - 1)) {
-            const updateArr = [];
-            var _count = count;
-
-            if (count < messageStorage.before.length && loadMessageStatus == 'before') {
-                _count = _count + 1;
-                updateArr.push(messageStorage.before[_count]);
-                setMessages(updateArr);
-                setCount(_count);
-            } else {
-                updateArr.push(messageStorage.before[_count]);
-                setMessages(updateArr);
-            }
-
-            setLoadMessageStatus('before');
-        }
-    };
-
-    const handleMessageBeforeDecrement = (index) => {
-        if (count > 0) {
-            setLoadMessageStatus('before');
-            const updateArr = [];
-            var _count = count;
-
-            _count = _count - 1;
-            updateArr.push(messageStorage.before[_count]);
-            setMessages(updateArr);
-            setCount(_count);
-
-            if (_count < (messageStorage.before.length - 1)) {
-                setMessageButtonDisable(false);
-            }
-        } else {
-            handleBackMessage();
-            setCount(0);
-        }
-    };
-
-    // After
-    const handleMessageAfterIncrement = (increment) => {
-        if (count == (messageStorage.after.length - 1)) {
-            setMessageButtonDisable(true);
-        }
-
-        if (count < (messageStorage.after.length - 1)) {
-            const updateArr = [];
-            var _count = count;
-
-            if (count < messageStorage.after.length && loadMessageStatus == 'after') {
-                _count = _count + 1;
-                updateArr.push(messageStorage.after[_count]);
-                setMessages(updateArr);
-                setCount(_count);
-            } else {
-                updateArr.push(messageStorage.after[_count]);
-                setMessages(updateArr);
-            }
-
-            setLoadMessageStatus('after');
-        }
-    };
-
-    const handleMessageAfterDecrement = (index) => {
-        if (count > 0) {
-            setLoadMessageStatus('after');
-            const updateArr = [];
-            var _count = count;
-
-            _count = _count - 1;
-            updateArr.push(messageStorage.after[_count]);
-            setMessages(updateArr);
-            setCount(_count);
-
-            if (_count < (messageStorage.after.length - 1)) {
-                setMessageButtonDisable(false);
-            }
-        } else {
-            handleBackMessage();
-            setCount(0);
-        }
-    };
-
-    const handlePreviousMessage = () => {
-        setLoadMessageStatus('before');
-        const updateArr = [];
-
-        updateArr.push(messageStorage.before);
-        setMessages(updateArr);
-    };
-
-    const handleBackMessage = () => {
-        setLoadMessageStatus('message');
-        const updateArr = [];
-
-        updateArr.push(messageStorage.message);
-        setMessages(updateArr);
-    };
-
-    const handleNextMessage = () => {
-        setLoadMessageStatus('after');
-        const updateArr = [];
-
-        updateArr.push(messageStorage.after);
-        setMessages(updateArr);
-    };
 
     const handleAddComment = async (comment) => {
         const formData = {
@@ -207,9 +90,6 @@ export default function CommunicationSearchMessageDetailsContainer({
     };
 
     const loadMessage = (messageData) => {
-        // this load the default message
-        // without the before and after threads inside an array
-
         const updateArr = [];
 
         messageData.before.map(item => {
@@ -236,10 +116,6 @@ export default function CommunicationSearchMessageDetailsContainer({
             const search = await getCommunicationMessageDetail(commMessageId.id);
 
             setDetailData(search.data);
-
-            // const messages = await getRecentMessages(commMessageId.id, 10);
-            // console.log(commMessageId.chainLinkId);
-            // loadMessage(messages.data);
 
             const messages = await getMessageThread(commMessageId.chainLinkId, search.data.timeSent);
             const { data, totalNoOfRecords, totalPages } = messages.data;
@@ -273,13 +149,6 @@ export default function CommunicationSearchMessageDetailsContainer({
         useMediaQuery={useMediaQuery}
         breadcrumb={breadcrumb}
         sidebarMenu={sidebarMenu}
-        handleMessageBeforeIncrement={handleMessageBeforeIncrement}
-        handleMessageBeforeDecrement={handleMessageBeforeDecrement}
-        handleMessageAfterIncrement={handleMessageAfterIncrement}
-        handleMessageAfterDecrement={handleMessageAfterDecrement}
-        handleBackMessage={handleBackMessage}
-        handlePreviousMessage={handlePreviousMessage}
-        handleNextMessage={handleNextMessage}
         loadMessageStatus={loadMessageStatus}
         messages={messages}
         messageButtonDisable={messageButtonDisable}

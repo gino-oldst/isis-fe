@@ -7,8 +7,6 @@ import type { Menu } from '../../types';
 import dataSample from '../CommunicationAlerts/MOCK_DATA.json';
 import filterSample from '../CommunicationAlerts/filters.json';
 import moment from 'moment';
-
-// To be removed once we move to with backend
 import { downloadCommSearchList, getCommunicationSearchData, getEmails, getEmailsAll } from '../../api/communicationSearch';
 import { setCommunicationSearchData, setColumnFilterValues, setSearchFilterValues } from '../../redux/modules/communicationSearch';
 import { setActivePage } from '../../redux/modules/isisTable';
@@ -78,10 +76,6 @@ export default function CommunicationSearchResultsContainer({
         );
     }, [pageSize, activePage, sort]);
 
-    // useEffect(() => {
-    //     handleAppliedFiltersChange(appliedFilters, sort, dateRange);
-    // }, [appliedFilters, sort, dateRange]);
-
     useEffect(() => {
         // const dateFrom = filterDate[0].startDate != '' ? moment(filterDate[0].startDate).utc().local().format('YYYY-MM-DD hh:mm A') : ''; // for adding time in format hh:mm A
         // const dateTo = filterDate[0].endDate != '' ? moment(filterDate[0].endDate).utc().local().format('YYYY-MM-DD hh:mm A') : ''; // for adding time in format hh:mm A
@@ -107,13 +101,9 @@ export default function CommunicationSearchResultsContainer({
         setLoading(true);
 
         try {
-            // await loadColumnFilterValues();
-
             const search = await getCommunicationSearchData(page, size, sort, appliedFilters);
 
             const { data, searchIds, totalNoOfRecords, totalPages } = search.data;
-
-            // console.log(data);
 
             // Map data and add the keyword to object as filterKeyword
             data.map(item => {
@@ -224,14 +214,6 @@ export default function CommunicationSearchResultsContainer({
     });
 
     const handleSearchClick = (event) => {
-        // const id = event.target.filterId.value;
-        // const keyword = event.target.filterText.value;
-
-        // setFilterSearchForm({
-        //     ...filterSearchForm,
-        //     filterId: searchId,
-        //     filterText: keyword
-        // });
         var formValid = true;
         const initialError = {
             errorDate: '',
@@ -292,8 +274,6 @@ export default function CommunicationSearchResultsContainer({
         var updatedList = [];
 
         appliedFilters.map(ev => {
-            // console.log(ev, sort, dateRange);
-
             switch (ev.id.toLowerCase()) {
                 case 'source':
                     // console.log(ev);
@@ -322,27 +302,10 @@ export default function CommunicationSearchResultsContainer({
         const emails = await getEmails();
 
         const { data } = emails.data;
-
-        // const { data } = filterSample;
-
-        // console.log(JSON.stringify(filterSample));
-        // console.log(JSON.stringify(data));
-        // let dataCopy = data;
-
-        // const keys = Object.keys(data);
-
-        // keys.forEach(key => {
-        //     dataCopy = {
-        //         ...data,
-        //         [key]: data[key].sort()
-        //     };
-        // });
         const emailList = data.map((account) => ({
             value: account.email,
             label: `${account.email} (${account.firstName} ${account.lastName})`
         }));
-
-        // console.log(emails);
 
         const dataCopy = {
             emails: emailList
