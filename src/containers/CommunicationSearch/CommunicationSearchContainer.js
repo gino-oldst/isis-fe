@@ -253,7 +253,7 @@ export default function CommunicationSearchContainer({
             Storage.setItem(storageKey.searchParams, JSON.stringify({
                 filterSearchForm: filterSearchForm
             }));
-            // history.push('/communication_search_results', filterSearchForm);
+            history.push('/communication_search_results', filterSearchForm);
         } else {
             setErrorForm({
                 ...errorForm,

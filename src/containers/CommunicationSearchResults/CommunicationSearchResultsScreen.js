@@ -285,7 +285,7 @@ function CommunicationSearchResultsScreen({
                                                             <Label for='filterSender'>Sender</Label>
                                                             <AsyncSelect
                                                                 isMulti={true}
-                                                                value={defaultSender.map(row => ({ label: row, value: row }))}
+                                                                value={defaultSender.map(row => ({ label: row.label, value: row.value }))}
                                                                 cacheOptions={true}
                                                                 loadOptions={loadOptions}
                                                                 components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
@@ -305,7 +305,7 @@ function CommunicationSearchResultsScreen({
                                                             <Label for='filterRecipient'>Recipient</Label>
                                                             <AsyncSelect
                                                                 isMulti={true}
-                                                                value={defaultRecipients.map(row => ({ label: row, value: row }))}
+                                                                value={defaultSender.map(row => ({ label: row.label, value: row.value }))}
                                                                 cacheOptions={true}
                                                                 loadOptions={loadOptions}
                                                                 components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
