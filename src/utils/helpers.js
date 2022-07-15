@@ -198,3 +198,5 @@ export const truncateText = (str, n) => {
 export const isoToUTCLocal = (value) => {
     return moment(value).utc().local().format('DD/MM/YYYY hh:mm A');
 };
+
+export const isDisclaimer = (str: string): boolean => /\[\[:(.*?)\:]\]|\bCopyright 2021 Goldman Sachs\b/gm.test(str);
