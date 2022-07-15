@@ -19,7 +19,8 @@ const storageKey = {
     onboard: 'onboard',
     tokenValidUntil: 'tokenValidUntil',
     sidebarState: 'sidebarState',
-    alertSearchParams: 'alertSearchParams'
+    alertSearchParams: 'alertSearchParams',
+    searchParams: 'searchParams'
 };
 
 const alertsStorageKey = {

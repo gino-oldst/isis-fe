@@ -52,8 +52,8 @@ export async function getCommunicationSearchData(page, size, sort, filters) {
 
     const filterBody = {
         message: filters.filterText,
-        senders: filters.filterSenders,
-        recipients: filters.filterRecipients,
+        senders: filters.filterSenders.length > 0 ? [...filters.filterSenders.map(row => { return row.value; })] : [],
+        recipients: filters.filterRecipients.length > 0 ? [...filters.filterRecipients.map(row => { return row.value; })] : [],
         sources: filters.filterSource.length > 0 ? [...filters.filterSource.map(row => { return row.value; })] : [],
         dateSentFrom: filters.filterDateFrom,
         dateSentTo: filters.filterDateTo

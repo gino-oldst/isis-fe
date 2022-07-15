@@ -12,6 +12,8 @@ import debounce from 'debounce-async';
 
 import { setCommunicationSearchData, setSearchFilterValues } from '../../redux/modules/communicationSearch';
 import { getEmails } from '../../api/communicationSearch';
+import { storageKey } from '../../config/constants';
+import Storage from '../../utils/Storage';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -84,6 +86,70 @@ export default function CommunicationSearchContainer({
         });
     }, [filterDate]);
 
+    useEffect(() => {
+        setTimeout(() => {
+            loadSearchValuesFromStorage();
+        }, 100);
+    }, []);
+
+    const loadSearchValuesFromStorage = async () => {
+        const searchParams = JSON.parse(Storage.getItem(storageKey.searchParams));
+
+        console.log(searchParams);
+
+        // if (searchParams) {
+        //     var values = searchParams.filterSearchForm;
+
+        //     for (var key in values) {
+        //         console.log(key, values[key]); // alerts key
+        //         if (key === 'filterDateFrom' || key === 'filterDateTo ') {
+        //             var newDate = {
+        //                 startDate: alertSearchParams.dateFrom ? new Date(alertSearchParams.dateFrom) : '',
+        //                 endDate: alertSearchParams.dateTo ? new Date(alertSearchParams.dateTo) : ''
+        //             };
+        //         }
+        //     }
+        //     // setFilterSearchForm({
+        //     //     ...filterSearchForm,
+        //     //     [name]: value
+        //     // });
+        //     // setFilterSearchForm({
+        //     //     ...filterSearchForm,
+        //     //     filterSenders: list
+        //     // });
+        // }
+        if (searchParams) {
+            var values = searchParams.filterSearchForm;
+
+            var newFilters = {
+                filterId: values.filterId,
+                filterText: values.filterText,
+                filterDateFrom: '',
+                filterDateTo: '',
+                filterSenders: [],
+                filterRecipients: [],
+                filterSource: []
+            };
+
+            setFilterSearchForm(filterSearchForm => {
+                return {
+                    ...filterSearchForm,
+                    filterId: values.filterId,
+                    filterText: values.filterText,
+                    filterSenders: values.filterSenders,
+                    filterRecipients: values.filterRecipients
+                };
+            });
+
+            var newDate = {
+                startDate: values.filterDateFrom ? new Date(values.filterDateFrom) : '',
+                endDate: values.filterDateTo ? new Date(values.filterDateTo) : ''
+            };
+
+            setFilterDate([newDate]);
+        }
+    };
+
     const handleSenderChange = (updatedList) => {
         var list = [];
 
@@ -94,7 +160,7 @@ export default function CommunicationSearchContainer({
         setFilterSender(list);
         setFilterSearchForm({
             ...filterSearchForm,
-            filterSenders: list
+            filterSenders: updatedList
         });
         setErrorForm({
             ...errorForm,
@@ -112,7 +178,7 @@ export default function CommunicationSearchContainer({
         setFilterRecipient(list);
         setFilterSearchForm({
             ...filterSearchForm,
-            filterRecipients: list
+            filterRecipients: updatedList
         });
         setErrorForm({
             ...errorForm,
@@ -183,7 +249,11 @@ export default function CommunicationSearchContainer({
         }
 
         if (formValid) {
-            history.push('/communication_search_results', filterSearchForm);
+            Storage.removeItem(storageKey.searchP);
+            Storage.setItem(storageKey.searchParams, JSON.stringify({
+                filterSearchForm: filterSearchForm
+            }));
+            // history.push('/communication_search_results', filterSearchForm);
         } else {
             setErrorForm({
                 ...errorForm,
@@ -238,5 +308,6 @@ export default function CommunicationSearchContainer({
         handleSource={handleSource}
         handleStatus={handleStatus}
         loadOptions={loadOptions}
-        errorForm={errorForm}/>;
+        errorForm={errorForm}
+        filterSearchForm={filterSearchForm}/>;
 }

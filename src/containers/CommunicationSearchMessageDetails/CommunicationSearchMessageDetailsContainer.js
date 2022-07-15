@@ -45,6 +45,10 @@ export default function CommunicationSearchMessageDetailsContainer({
             path: '/communication_search'
         },
         {
+            label: 'Search Results',
+            path: '/communication_search_results'
+        },
+        {
             label: filters.state.id,
             path: `communication_search_message_details/${filters.state.id}`,
             disabled: true

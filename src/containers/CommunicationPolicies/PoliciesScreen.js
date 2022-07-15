@@ -76,7 +76,7 @@ function CommunicationPoliciesScreen({
                                     tablePagination={table.totalPages}
                                     totalNoOfRecords={table.totalNoOfRecords}
                                     activePage={activePage}
-                                    pagination={false}
+                                    pagination={true}
                                     sortable={false}
                                     fetching={table.loading}/>
                             </CardBody>

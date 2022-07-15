@@ -70,7 +70,8 @@ type Props = {
     filterSender: Array<any>,
     filterRecipient: Array<any>,
     loadOptions: Function,
-    errorForm: Array<Any>
+    errorForm: Array<Any>,
+    filterSearchForm: Array<Any>
 }
 
 function CommunicationSearchScreen({
@@ -90,7 +91,8 @@ function CommunicationSearchScreen({
     filterSender,
     filterRecipient,
     loadOptions,
-    errorForm
+    errorForm,
+    filterSearchForm
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -122,6 +124,16 @@ function CommunicationSearchScreen({
             key: 'selection'
         }
     ]);
+
+    useEffect(() => {
+        var newDate = [{
+            startDate: filterDate[0].startDate ? filterDate[0].startDate : new Date(today.setHours(0, 0, 0, 0)),
+            endDate: filterDate[0].endDate ? filterDate[0].endDate : new Date(today.setHours(23, 59, 0, 0)),
+            key: 'selection'
+        }];
+
+        setDateState(newDate);
+    }, [filterDate]);
 
     const convertedStartDate = moment(dateState[0].startDate).utc().local().format('MMM. DD, YYYY hh:mm A'); // for adding time in format hh:mm A
 
@@ -238,7 +250,7 @@ function CommunicationSearchScreen({
                                                                 </InputGroupText>
                                                             </InputGroupAddon>
                                                             <Input name='filterId' type='text' onChange={onChange}
-                                                                className='shadow-none isis-control' placeholder='Search Unique ID'/>
+                                                                defaultValue={filterSearchForm.filterId} className='shadow-none isis-control' placeholder='Search Unique ID'/>
                                                         </InputGroup>
                                                     </FormGroup>
                                                     <FormGroup>
@@ -250,7 +262,7 @@ function CommunicationSearchScreen({
                                                                 </InputGroupText>
                                                             </InputGroupAddon>
                                                             <Input name='filterText' type='text' onChange={onChange}
-                                                                className='shadow-none isis-control' placeholder='Search a Keyword'/>
+                                                                defaultValue={filterSearchForm.filterText} className='shadow-none isis-control' placeholder='Search a Keyword'/>
                                                         </InputGroup>
                                                     </FormGroup>
                                                     <FormGroup>
@@ -263,6 +275,9 @@ function CommunicationSearchScreen({
                                                             validator={(value) => validateEmail(value)}/> */}
                                                         <AsyncSelect
                                                             isMulti={true}
+                                                            value={filterSearchForm.filterSenders.length > 0
+                                                                ? filterSearchForm.filterSenders.map(row => ({ label: row.label, value: row.value }))
+                                                                : []}
                                                             cacheOptions={true}
                                                             loadOptions={loadOptions}
                                                             components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
@@ -280,6 +295,9 @@ function CommunicationSearchScreen({
                                                         <Label>Recipient*</Label>
                                                         <AsyncSelect
                                                             isMulti={true}
+                                                            value={filterSearchForm.filterRecipients.length > 0
+                                                                ? filterSearchForm.filterRecipients.map(row => ({ label: row.label, value: row.value }))
+                                                                : []}
                                                             cacheOptions={true}
                                                             loadOptions={loadOptions}
                                                             components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}

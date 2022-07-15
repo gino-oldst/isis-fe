@@ -285,7 +285,6 @@ function CommunicationAlertsScreen({
         }];
 
         setDateState(newDate);
-        console.log(filterDate);
     }, [filterDate]);
 
     const sourceOptions = [{ label: 'Select All', value: 'all' }, ...Object.keys(COMMUNICATION_ALERT_SOURCE_OPTIONS).map(row => ({
@@ -305,8 +304,6 @@ function CommunicationAlertsScreen({
             label: row.label,
             value: row.value
         }))];
-
-        console.log(table.totalPages);
 
         setAlertOptions(updatedList);
     }, [keywords]);
