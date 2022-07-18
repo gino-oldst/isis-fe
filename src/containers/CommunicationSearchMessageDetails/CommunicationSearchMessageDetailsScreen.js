@@ -236,7 +236,7 @@ function CommunicationSearchMessageDetailsScreen({
                                                                             ? <>
                                                                                 <Element name={message.id} className={`element mb-4 ${message.id == dataId && 'active-message'}`}>
                                                                                     <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {JSON.stringify(isDisclaimer(message.message) ? 'true' : 'false')} {isoToUTCLocal(message.timeSent)}</Typography>
+                                                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>
                                                                                     <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
                                                                                         <Highlighter highlightClassName='alertKeyword'
                                                                                             style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
@@ -249,7 +249,7 @@ function CommunicationSearchMessageDetailsScreen({
                                                                             : <>
                                                                                 <Element name={message.id} className={`element mb-4 ${message.id == dataId && 'active-message'}`}>
                                                                                     <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {JSON.stringify(isDisclaimer(message.message) ? 'true' : 'false')} {isoToUTCLocal(message.timeSent)}</Typography>
+                                                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>
                                                                                     <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
                                                                                         <Highlighter highlightClassName='alertKeyword'
                                                                                             style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
