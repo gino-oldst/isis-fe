@@ -135,6 +135,14 @@ export const UTCTOUK_TIME = time => {
         .format('YYYY-MM-DDTHH:mm:ss');
 };
 
+export const DATE_TO_UTC_LOCAL = (date, format = 'YYYY-MM-DDTHH:mm:ss') => {
+    return moment(date).utc().local().format(format);
+};
+
+export const DATE_TO_SHORT_DATE = (date, format = 'YYYY-MM-DDTHH:mm:ss') => {
+    return moment(date).utc().local().format(format);
+};
+
 export const DATE_TO_UTC = (date, format = 'YYYY-MM-DDTHH:mm:ss') => {
     return moment.tz(date, 'Europe/London').utc().format(format);
 };

@@ -1,56 +1,28 @@
 // @flow
-import React, { useState, useEffect, createRef } from 'react';
 import moment from 'moment';
-import { useDispatch, useSelector } from 'react-redux';
-import Table from '../../components/base/Table/Table';
-import Button from '../../components/base/Button/Button';
-import Select, { components } from 'react-select';
-import Badge from '../../components/base/Badge/Badge';
-import DatePicker from '../../components/base/DatePicker/DatePicker';
-import ReactDatePicker from 'react-datepicker';
-import Typography from '../../components/base/Typography/Typography';
-import Breadcrumbs from '../../components/base/Breadcrumbs/Breadcrumbs';
-import CollapsibleSidebar from '../../components/base/CollapsibleSidebar/CollapsibleSidebarContainer';
-import withLoading from '../../components/modules/withLoading/withLoading';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import CustomDropdown from '../../components/base/CustomDropdown/CustomDropdown';
-import filterIcon from '../../assets/images/ic_filter.svg';
-import type { Menu } from '../../types';
-import {
-    setDateRangeLocal,
-    getDateRangeLocal,
-    isValidEmail
-} from '../../utils/helpers';
-import {
-    Card,
-    CardBody,
-    DropdownItem,
-    FormGroup,
-    Form,
-    Input,
-    Label,
-    Alert,
-    Row,
-    Col,
-    InputGroup,
-    InputGroupAddon,
-    InputGroupText,
-    FormFeedback,
-    FormText
-} from 'reactstrap';
+import React, { useEffect, useState } from 'react';
+import { DropdownButton } from 'react-bootstrap';
 import { FaSearch } from 'react-icons/fa';
 import { MdInsertComment } from 'react-icons/md';
-import { useIsMount } from '../../hooks/useIsMount';
+import { useDispatch } from 'react-redux';
+import {
+    Card,
+    CardBody, Col, DropdownItem, Form, FormGroup, Input, InputGroup,
+    InputGroupAddon,
+    InputGroupText, Label, Row
+} from 'reactstrap';
+import Breadcrumbs from '../../components/base/Breadcrumbs/Breadcrumbs';
+import Button from '../../components/base/Button/Button';
+import CollapsibleSidebar from '../../components/base/CollapsibleSidebar/CollapsibleSidebarContainer';
+import Typography from '../../components/base/Typography/Typography';
+import withLoading from '../../components/modules/withLoading/withLoading';
+import type { Menu } from '../../types';
 import './communication_search.scss';
-import { setModalContent } from '../../redux/modules/modalEvent';
-import { DropdownButton, OverlayTrigger, Popover } from 'react-bootstrap';
 
+import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
+import { DateRangePicker } from 'react-date-range';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
-import { DateRangePicker } from 'react-date-range';
-import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
-import ReactTagInput from '@pathofdev/react-tag-input';
-import { setFlashNotification } from '../../redux/modules/flashNotification';
 import AsyncSelect from 'react-select/async';
 
 type Props = {
@@ -71,7 +43,9 @@ type Props = {
     filterRecipient: Array<any>,
     loadOptions: Function,
     errorForm: Array<Any>,
-    filterSearchForm: Array<Any>
+    filterSearchForm: Array<Any>,
+    status:Array<Any>,
+    source:Array<Any>
 }
 
 function CommunicationSearchScreen({
@@ -92,16 +66,11 @@ function CommunicationSearchScreen({
     filterRecipient,
     loadOptions,
     errorForm,
-    filterSearchForm
+    filterSearchForm,
+    status,
+    source
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
-    const { profileData } = useSelector(({ authentication }) => authentication);
-
-    const options = [
-        { value: 'alex@mcgfutures.com', label: 'alex@mcgfutures.com' },
-        { value: 'chevillon@nyenburgh.com', label: 'chevillon@nyenburgh.com' },
-        { value: 'daniel.caplin@marianacap.com', label: 'daniel.caplin@marianacap.com' }
-    ];
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -190,41 +159,6 @@ function CommunicationSearchScreen({
         setFilterDate(clonedDate);
     };
 
-    const logout = () => {
-        window.location.href = '/communication_search_results';
-    };
-
-    const [status, setStatus] = useState([
-        { id: 1, value: 'open', name: 'Open', isChecked: false },
-        { id: 2, value: 'inReview', name: 'In Review', isChecked: false },
-        { id: 3, value: 'resolved', name: 'Resolved', isChecked: false },
-        { id: 4, value: 'archived', name: 'Archived', isChecked: false },
-        { id: 5, value: 'notAvailable', name: 'Not Available', isChecked: false }
-    ]);
-
-    const [source, setSource] = useState([
-        // { id: 1, value: 'EMAIL', name: 'Email', isChecked: false, disabled: true },
-        { id: 2, value: 'REUTERS', name: 'Reuters', isChecked: false, disabled: false },
-        { id: 3, value: 'BLOOMBERG_CHAT', name: 'Bloomberg Chat', isChecked: false, disabled: false },
-        { id: 4, value: 'BLOOMBERG_EMAIL', name: 'Bloomberg Email', isChecked: false, disabled: false }
-    ]);
-
-    const [tags, setTags] = React.useState(['example tag']);
-
-    const validateEmail = (value) => {
-        const isEmail = isValidEmail(value);
-
-        if (!isEmail) {
-            dispatch(setFlashNotification({
-                message: 'Please enter an e-mail address.',
-                isError: true
-            }));
-        }
-
-        // Return boolean to indicate validity
-        return isEmail;
-    };
-
     return (
         <div className='communication-search'>
             <CollapsibleSidebar
@@ -267,12 +201,6 @@ function CommunicationSearchScreen({
                                                     </FormGroup>
                                                     <FormGroup>
                                                         <Label>Sender*</Label>
-                                                        {/* <ReactTagInput
-                                                            tags={filterSender}
-                                                            placeholder='Select Sender'
-                                                            removeOnBackspace={true}
-                                                            onChange={(newTags) => handleSenderChange(newTags)}
-                                                            validator={(value) => validateEmail(value)}/> */}
                                                         <AsyncSelect
                                                             isMulti={true}
                                                             value={filterSearchForm.filterSenders.length > 0

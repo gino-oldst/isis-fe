@@ -15,7 +15,6 @@ import { setCommunicationAlertsData, setColumnFilterValues } from '../../redux/m
 import debounce from 'debounce-async';
 
 // To be removed once we move to with backend
-import filterSample from './filters.json';
 import { downloadCommAlertsList, getCommunicationAlertData, getKeywords, updateAlert } from '../../api/communicationAlerts';
 import { getEmails, getEmailsAll } from '../../api/communicationSearch';
 import { set } from 'date-fns';
@@ -371,15 +370,19 @@ export default function CommunicationAlertsContainer({
     };
 
     const handleDownloadAlertData = async () => {
-        await downloadCommAlertsList(
-            alert,
-            status,
-            dateFrom,
-            dateTo,
-            source,
-            senders,
-            recipients
-        );
+        try {
+            await downloadCommAlertsList(
+                alert,
+                status,
+                dateFrom,
+                dateTo,
+                source,
+                senders,
+                recipients
+            );
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return <CommunicationAlertsScreen

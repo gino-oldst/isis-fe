@@ -141,10 +141,12 @@ function CommunicationSearchResultsScreen({
         day: 'numeric'
     });
 
+    const today = new Date();
+
     const [dateState, setDateState] = useState([
         {
-            startDate: filterDate[0].startDate,
-            endDate: filterDate[0].endDate,
+            startDate: new Date(today.setHours(0, 0, 0, 0)),
+            endDate: new Date(today.setHours(23, 59, 0, 0)),
             key: 'selection'
         }
     ]);
@@ -153,6 +155,16 @@ function CommunicationSearchResultsScreen({
         label: row,
         value: row
     }))];
+
+    useEffect(() => {
+        var newDate = [{
+            startDate: filterDate[0].startDate ? filterDate[0].startDate : new Date(today.setHours(0, 0, 0, 0)),
+            endDate: filterDate[0].endDate ? filterDate[0].endDate : new Date(today.setHours(23, 59, 0, 0)),
+            key: 'selection'
+        }];
+
+        setDateState(newDate);
+    }, [filterDate]);
 
     const convertedStartDate = moment(dateState[0].startDate).utc().local().format('MMM. DD, YYYY hh:mm A'); // for adding time in format hh:mm A
 
@@ -285,7 +297,9 @@ function CommunicationSearchResultsScreen({
                                                             <Label for='filterSender'>Sender</Label>
                                                             <AsyncSelect
                                                                 isMulti={true}
-                                                                value={defaultSender.map(row => ({ label: row.label, value: row.value }))}
+                                                                value={defaultSender.length > 0
+                                                                    ? defaultSender.map(row => ({ label: row.label, value: row.value }))
+                                                                    : []}
                                                                 cacheOptions={true}
                                                                 loadOptions={loadOptions}
                                                                 components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
@@ -305,7 +319,9 @@ function CommunicationSearchResultsScreen({
                                                             <Label for='filterRecipient'>Recipient</Label>
                                                             <AsyncSelect
                                                                 isMulti={true}
-                                                                value={defaultSender.map(row => ({ label: row.label, value: row.value }))}
+                                                                value={defaultRecipients.length > 0
+                                                                    ? defaultRecipients.map(row => ({ label: row.label, value: row.value }))
+                                                                    : []}
                                                                 cacheOptions={true}
                                                                 loadOptions={loadOptions}
                                                                 components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}

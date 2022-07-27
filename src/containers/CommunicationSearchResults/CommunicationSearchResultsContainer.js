@@ -12,6 +12,8 @@ import { setCommunicationSearchData, setColumnFilterValues, setSearchFilterValue
 import { setActivePage } from '../../redux/modules/isisTable';
 import { filter } from 'underscore';
 import debounce from 'debounce-async';
+import { storageKey } from '../../config/constants';
+import Storage from '../../utils/Storage';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -33,16 +35,9 @@ export default function CommunicationSearchResultsContainer({
     const { pageSize, activePage, appliedFilters, areRowsSelectedAll, sort, dateRange } = useSelector(({ isisTable }) => isisTable);
     const { table, selected, searchFilterValue } = useSelector(({ communicationSearch }) => communicationSearch);
     const { emails, profileData } = useSelector(({ authentication }) => authentication);
-    const [filterSearchForm, setFilterSearchForm] = useState(filters.state);
     const [searchId, setSearchId] = useState('');
     const [keyword, setKeyword] = useState('');
     const [lastOptions, setLastOptions] = useState([]);
-    const [filterDate, setFilterDate] = useState([
-        {
-            startDate: filterSearchForm.filterDateFrom ? new Date(filterSearchForm.filterDateFrom) : '',
-            endDate: filterSearchForm.filterDateTo ? new Date(filterSearchForm.filterDateTo) : ''
-        }
-    ]);
     const breadcrumb = [
         {
             label: 'Home',
@@ -57,15 +52,29 @@ export default function CommunicationSearchResultsContainer({
             path: 'communication_search_results'
         }
     ];
-
-    useEffect(() => {
-        loadSearchData(
-            activePage,
-            pageSize,
-            sort,
-            filterSearchForm
-        );
-    }, []);
+    // const [filterSearchForm, setFilterSearchForm] = useState(filters.state);
+    // const [filterDate, setFilterDate] = useState([
+    //     {
+    //         startDate: filterSearchForm.filterDateFrom ? new Date(filterSearchForm.filterDateFrom) : '',
+    //         endDate: filterSearchForm.filterDateTo ? new Date(filterSearchForm.filterDateTo) : ''
+    //     }
+    // ]);
+    const [filterDate, setFilterDate] = useState([
+        {
+            startDate: '',
+            endDate: ''
+        }
+    ]);
+    const [filterSearchForm, setFilterSearchForm] = useState({
+        filterId: '',
+        filterText: '',
+        filterDateFrom: '',
+        filterDateTo: '',
+        filterSenders: [],
+        filterRecipients: [],
+        filterStatus: [],
+        filterSource: []
+    });
 
     useEffect((e) => {
         loadSearchData(
@@ -75,6 +84,47 @@ export default function CommunicationSearchResultsContainer({
             filterSearchForm
         );
     }, [pageSize, activePage, sort]);
+
+    useEffect(() => {
+        setTimeout(() => {
+            loadSearchValuesFromStorage();
+        }, 100);
+    }, []);
+
+    const loadSearchValuesFromStorage = async () => {
+        const searchParams = JSON.parse(Storage.getItem(storageKey.searchParams));
+
+        if (searchParams) {
+            var values = searchParams.filterSearchForm;
+
+            var newFilters = {
+                filterId: values.filterId,
+                filterText: values.filterText,
+                filterDateFrom: '',
+                filterDateTo: '',
+                filterSenders: [],
+                filterRecipients: [],
+                filterSource: []
+            };
+
+            setFilterSearchForm(filterSearchForm => {
+                return {
+                    ...filterSearchForm,
+                    filterId: values.filterId,
+                    filterText: values.filterText,
+                    filterSenders: values.filterSenders,
+                    filterRecipients: values.filterRecipients
+                };
+            });
+
+            var newDate = {
+                startDate: values.filterDateFrom ? new Date(values.filterDateFrom) : '',
+                endDate: values.filterDateTo ? new Date(values.filterDateTo) : ''
+            };
+
+            setFilterDate([newDate]);
+        }
+    };
 
     useEffect(() => {
         // const dateFrom = filterDate[0].startDate != '' ? moment(filterDate[0].startDate).utc().local().format('YYYY-MM-DD hh:mm A') : ''; // for adding time in format hh:mm A
@@ -100,8 +150,28 @@ export default function CommunicationSearchResultsContainer({
     const loadSearchData = async (page, size, sort, appliedFilters) => {
         setLoading(true);
 
+        const searchParams = JSON.parse(Storage.getItem(storageKey.searchParams));
+        var values = searchParams.filterSearchForm;
+        var newFilters = {
+            filterId: '',
+            filterText: '',
+            filterDateFrom: '',
+            filterDateTo: '',
+            filterSenders: [],
+            filterRecipients: [],
+            filterSource: []
+        };
+
+        newFilters.filterId = appliedFilters.filterId === '' ? values.filterId : appliedFilters.filterId;
+        newFilters.filterText = appliedFilters.filterText === '' ? values.filterId : appliedFilters.filterText;
+        newFilters.filterSources = appliedFilters.filterSource.length === 0 ? values.filterSource : appliedFilters.filterSource;
+        newFilters.filterSenders = appliedFilters.filterSenders.length === 0 ? values.filterSenders : appliedFilters.filterSenders;
+        newFilters.filterRecipients = appliedFilters.filterRecipients.length === 0 ? values.filterRecipients : appliedFilters.filterRecipients;
+        newFilters.filterDateFrom = appliedFilters.filterDateFrom === '' ? values.filterDateFrom : appliedFilters.filterDateFrom;
+        newFilters.filterDateTo = appliedFilters.filterDateTo === '' ? values.filterDateTo : appliedFilters.filterDateTo;
+
         try {
-            const search = await getCommunicationSearchData(page, size, sort, appliedFilters);
+            const search = await getCommunicationSearchData(page, size, sort, newFilters);
 
             const { data, searchIds, totalNoOfRecords, totalPages } = search.data;
 
@@ -110,7 +180,7 @@ export default function CommunicationSearchResultsContainer({
                 item.keyword = appliedFilters.filterText;
             });
 
-            history.push('/communication_search_results', filterSearchForm);
+            // history.push('/communication_search_results', filterSearchForm);
 
             dispatch(setCommunicationSearchData(data, searchIds, totalNoOfRecords, totalPages));
         } catch (e) {
@@ -137,11 +207,14 @@ export default function CommunicationSearchResultsContainer({
         });
     };
 
+    const [senderStore, setSenderStore] = useState([]);
+    const [recipientStore, setRecipientStore] = useState([]);
+
     const handleSenderChange = (updatedList) => {
         var list = [];
 
         updatedList.map(op => {
-            list.push(op.value);
+            list.push({ label: op.label, value: op.value });
         });
 
         setFilterSearchForm({
@@ -158,7 +231,7 @@ export default function CommunicationSearchResultsContainer({
         var list = [];
 
         updatedList.map(op => {
-            list.push(op.value);
+            list.push({ label: op.label, value: op.value });
         });
 
         setFilterSearchForm({
@@ -244,6 +317,10 @@ export default function CommunicationSearchResultsContainer({
         }
 
         if (formValid) {
+            Storage.removeItem(storageKey.searchParams);
+            Storage.setItem(storageKey.searchParams, JSON.stringify({
+                filterSearchForm: filterSearchForm
+            }));
             dispatch(setActivePage(0));
             loadSearchData(
                 activePage,

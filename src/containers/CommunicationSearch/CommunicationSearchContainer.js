@@ -1,19 +1,16 @@
 // @flow
-import React, { useState, useEffect, useMemo } from 'react';
+import debounce from 'debounce-async';
+import moment from 'moment';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import moment from 'moment';
-import CommunicationSearchScreen from './CommunicationSearchScreen';
 import type { Menu } from '../../types';
-import {
-    DATE_TO_UTC
-} from '../../utils/helpers';
-import debounce from 'debounce-async';
+import CommunicationSearchScreen from './CommunicationSearchScreen';
 
-import { setCommunicationSearchData, setSearchFilterValues } from '../../redux/modules/communicationSearch';
 import { getEmails } from '../../api/communicationSearch';
 import { storageKey } from '../../config/constants';
 import Storage from '../../utils/Storage';
+import { DATE_TO_UTC_LOCAL } from '../../utils/helpers';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -47,6 +44,21 @@ export default function CommunicationSearchContainer({
         }
     ]);
 
+    const [status, setStatus] = useState([
+        { id: 1, value: 'open', name: 'Open', isChecked: false },
+        { id: 2, value: 'inReview', name: 'In Review', isChecked: false },
+        { id: 3, value: 'resolved', name: 'Resolved', isChecked: false },
+        { id: 4, value: 'archived', name: 'Archived', isChecked: false },
+        { id: 5, value: 'notAvailable', name: 'Not Available', isChecked: false }
+    ]);
+
+    const [source, setSource] = useState([
+        // { id: 1, value: 'EMAIL', name: 'Email', isChecked: false, disabled: true },
+        { id: 2, value: 'REUTERS', name: 'Reuters', isChecked: false, disabled: false },
+        { id: 3, value: 'BLOOMBERG_CHAT', name: 'Bloomberg Chat', isChecked: false, disabled: false },
+        { id: 4, value: 'BLOOMBERG_EMAIL', name: 'Bloomberg Email', isChecked: false, disabled: false }
+    ]);
+
     const [filterSearchForm, setFilterSearchForm] = useState({
         filterId: '',
         filterText: '',
@@ -68,11 +80,8 @@ export default function CommunicationSearchContainer({
     });
 
     useEffect(() => {
-        // const dateFrom = filterDate[0].startDate != '' ? moment(filterDate[0].startDate).utc().local().format('YYYY-MM-DD hh:mm A') : ''; // for adding time in format hh:mm A
-        // const dateTo = filterDate[0].endDate != '' ? moment(filterDate[0].endDate).utc().local().format('YYYY-MM-DD hh:mm A') : ''; // for adding time in format hh:mm A
-
-        const dateFrom = filterDate[0].startDate != '' ? moment(filterDate[0].startDate).utc().local().format('YYYY-MM-DDTHH:mm:ss') : '';
-        const dateTo = filterDate[0].endDate != '' ? moment(filterDate[0].endDate).utc().local().format('YYYY-MM-DDTHH:mm:ss') : '';
+        const dateFrom = filterDate[0].startDate != '' ? DATE_TO_UTC_LOCAL(filterDate[0].startDate) : '';
+        const dateTo = filterDate[0].endDate != '' ? DATE_TO_UTC_LOCAL(filterDate[0].endDate) : '';
 
         setFilterSearchForm({
             ...filterSearchForm,
@@ -95,29 +104,6 @@ export default function CommunicationSearchContainer({
     const loadSearchValuesFromStorage = async () => {
         const searchParams = JSON.parse(Storage.getItem(storageKey.searchParams));
 
-        console.log(searchParams);
-
-        // if (searchParams) {
-        //     var values = searchParams.filterSearchForm;
-
-        //     for (var key in values) {
-        //         console.log(key, values[key]); // alerts key
-        //         if (key === 'filterDateFrom' || key === 'filterDateTo ') {
-        //             var newDate = {
-        //                 startDate: alertSearchParams.dateFrom ? new Date(alertSearchParams.dateFrom) : '',
-        //                 endDate: alertSearchParams.dateTo ? new Date(alertSearchParams.dateTo) : ''
-        //             };
-        //         }
-        //     }
-        //     // setFilterSearchForm({
-        //     //     ...filterSearchForm,
-        //     //     [name]: value
-        //     // });
-        //     // setFilterSearchForm({
-        //     //     ...filterSearchForm,
-        //     //     filterSenders: list
-        //     // });
-        // }
         if (searchParams) {
             var values = searchParams.filterSearchForm;
 
@@ -249,7 +235,7 @@ export default function CommunicationSearchContainer({
         }
 
         if (formValid) {
-            Storage.removeItem(storageKey.searchP);
+            Storage.removeItem(storageKey.searchParams);
             Storage.setItem(storageKey.searchParams, JSON.stringify({
                 filterSearchForm: filterSearchForm
             }));
@@ -309,5 +295,7 @@ export default function CommunicationSearchContainer({
         handleStatus={handleStatus}
         loadOptions={loadOptions}
         errorForm={errorForm}
-        filterSearchForm={filterSearchForm}/>;
+        filterSearchForm={filterSearchForm}
+        // status={status}
+        source={source}/>;
 }

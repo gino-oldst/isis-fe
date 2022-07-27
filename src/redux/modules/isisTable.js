@@ -177,7 +177,7 @@ export default function isisTable(state: Object = initialState, action: Object) 
                 }
             };
         case SET_IS_ROW_SELECTED:
-            console.log('from the redux => ', action.count, action.selectedRows);
+            // console.log('from the redux => ', action.count, action.selectedRows);
 
             return {
                 ...state,
