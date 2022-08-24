@@ -240,7 +240,7 @@ function CommunicationSearchMessageDetailsScreen({
                                                                                     <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
                                                                                         <Highlighter highlightClassName='alertKeyword'
                                                                                             style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
-                                                                                            searchWords={filterText}
+                                                                                            searchWords={[filterText]}
                                                                                             autoEscape={true}
                                                                                             textToHighlight={message.message}/>
                                                                                     </div>

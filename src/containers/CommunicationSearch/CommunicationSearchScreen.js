@@ -24,6 +24,7 @@ import { DateRangePicker } from 'react-date-range';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import AsyncSelect from 'react-select/async';
+import { DATE_TO_SHORT_DATE } from '../../utils/helpers';
 
 type Props = {
     loading: Boolean,
@@ -104,9 +105,9 @@ function CommunicationSearchScreen({
         setDateState(newDate);
     }, [filterDate]);
 
-    const convertedStartDate = moment(dateState[0].startDate).utc().local().format('MMM. DD, YYYY hh:mm A'); // for adding time in format hh:mm A
+    const convertedStartDate = DATE_TO_SHORT_DATE(dateState[0].startDate);
 
-    const convertedEndDate = moment(dateState[0].endDate).utc().local().format('MMM. DD, YYYY hh:mm A'); // for adding time in format hh:mm A
+    const convertedEndDate = DATE_TO_SHORT_DATE(dateState[0].endDate);
 
     const handleDates = (dates) => {
         var copyDates = dateState[0];
