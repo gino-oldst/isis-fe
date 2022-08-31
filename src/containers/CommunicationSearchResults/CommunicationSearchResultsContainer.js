@@ -163,8 +163,8 @@ export default function CommunicationSearchResultsContainer({
         };
 
         newFilters.filterId = appliedFilters.filterId === '' ? values.filterId : appliedFilters.filterId;
-        newFilters.filterText = appliedFilters.filterText === '' ? values.filterId : appliedFilters.filterText;
-        newFilters.filterSources = appliedFilters.filterSource.length === 0 ? values.filterSource : appliedFilters.filterSource;
+        newFilters.filterText = appliedFilters.filterText === '' ? values.filterText : appliedFilters.filterText;
+        newFilters.filterSource = appliedFilters.filterSource.length === 0 ? values.filterSource : appliedFilters.filterSource;
         newFilters.filterSenders = appliedFilters.filterSenders.length === 0 ? values.filterSenders : appliedFilters.filterSenders;
         newFilters.filterRecipients = appliedFilters.filterRecipients.length === 0 ? values.filterRecipients : appliedFilters.filterRecipients;
         newFilters.filterDateFrom = appliedFilters.filterDateFrom === '' ? values.filterDateFrom : appliedFilters.filterDateFrom;
