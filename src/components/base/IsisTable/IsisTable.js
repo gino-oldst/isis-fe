@@ -795,13 +795,16 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
         }
 
         if (parentRowSelected && !row.isSelected) {
-            setChecked([]);
+            if (checked.length == data.length && parentRowSelected) {
+                setChecked([]);
+            }
+
             setParentRowSelected(false);
         }
     }, [row.isSelected, selectedRows, toggle]);
 
     useEffect(() => {
-        if (checked.length != data.length && !row.isSelected) {
+        if (checked.length != data.length && !parentRowSelected) {
             row.toggleRowSelected(false);
         }
     }, [checked]);
@@ -871,6 +874,7 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
             newList.splice(newList.indexOf(data.id), 1);
 
             setChecked(newList);
+            setParentRowSelected(false);
 
             updatedList.map((row, index) => {
                 if (row.alerts.data.find(el => el.id === data.id)) {
@@ -887,7 +891,7 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                 updatedList.splice(index);
             }
 
-            dispatch(setIsRowSelected(1, updatedList));
+            dispatch(setIsRowSelected(updatedList.length, updatedList));
         }
     };
 
@@ -918,8 +922,9 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                                     <td {...cell.getCellProps()}>
                                         {/* {JSON.stringify(checked.includes(x.id))}
                                         {JSON.stringify(checked)}
-                                        {i} */}
-                                        <input checked={row.isSelected ? row.isSelected : checked.includes(x.id)} id='smakatxxx' type='checkbox'
+                                        {JSON.stringify(x.id)}
+                                        {JSON.stringify(row.isSelected)} */}
+                                        <input checked={row.isSelected ? row.isSelected : checked.includes(x.id)} id='row-checkbox' type='checkbox'
                                             onChange={e => handleCheck(e, x, row)}/>
                                     </td>
                                 );

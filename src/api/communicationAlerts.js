@@ -1,7 +1,8 @@
 import { config } from '../config/constants';
 import makeApiCall from '../api/makeApiCall';
 
-const GET_ALERT_DATA = `${config.apiStorage}/storage-service/quick-communication/search/paged`;
+// const GET_ALERT_DATA = `${config.apiStorage}/storage-service/quick-communication/search/paged`;
+const GET_ALERT_DATA = `${config.apiStorage}/storage-service/quick-communication/thread-search/paged`;
 
 export async function getCommunicationAlertData(page, size, sort, alert, status, dFrom, dTo, sources, senders, recipients) {
     const filterBody = {
