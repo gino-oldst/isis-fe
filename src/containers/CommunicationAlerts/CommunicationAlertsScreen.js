@@ -18,7 +18,9 @@ import filterIcon from '../../assets/images/ic_filter.svg';
 import type { Menu } from '../../types';
 import {
     setDateRangeLocal,
-    getDateRangeLocal
+    getDateRangeLocal,
+    sourceMaker,
+    statusMaker
 } from '../../utils/helpers';
 import {
     Row,
@@ -439,9 +441,9 @@ function CommunicationAlertsScreen({
                                                                         : handleStatus(selected);
                                                                 }}
                                                                 value={defaultStatus.length > 0
-                                                                    ? defaultStatus.map(row => ({ label: row.label, value: row.value }))
+                                                                    ? defaultStatus.map(row => ({ label: statusMaker(row.label), value: row.value }))
                                                                     : []}
-                                                                options={statusOptions}/>
+                                                                options={statusOptions.map(row => ({ label: statusMaker(row.label), value: row.value }))}/>
                                                         </FormGroup>
                                                     </Col>
                                                     <Col>
@@ -502,9 +504,9 @@ function CommunicationAlertsScreen({
                                                                         : handleSource(selected);
                                                                 }}
                                                                 value={defaultSource.length > 0
-                                                                    ? defaultSource.map(row => ({ label: row.label, value: row.value }))
+                                                                    ? defaultSource.map(row => ({ label: sourceMaker(row.label), value: row.value }))
                                                                     : []}
-                                                                options={sourceOptions}/>
+                                                                options={sourceOptions.map(row => ({ label: sourceMaker(row.label), value: row.value }))}/>
                                                         </FormGroup>
                                                     </Col>
                                                     <Col>

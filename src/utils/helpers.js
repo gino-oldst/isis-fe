@@ -12,6 +12,40 @@ export function capitalize(str: string): string {
     return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
 
+export function sourceMaker(str: string): string {
+    var ret = '';
+
+    if (str == 'BLOOMBERG_CHAT') {
+        ret = 'Bloomberg Chat';
+    } else if (str == 'BLOOMBERG_MAIL') {
+        ret = 'Bloomberg Mail';
+    } else if (str == 'REUTERS') {
+        ret = 'Reuters';
+    } else {
+        ret = str;
+    }
+
+    return ret;
+}
+
+export function statusMaker(str: string): string {
+    var ret = '';
+
+    if (str == 'OPEN') {
+        ret = 'Open';
+    } else if (str == 'RESOLVED') {
+        ret = 'Resolved';
+    } else if (str == 'ARCHIVED') {
+        ret = 'Archived';
+    } else if (str == 'IN_REVIEW') {
+        ret = 'In Review';
+    } else {
+        ret = str;
+    }
+
+    return ret;
+}
+
 export function camelize(str: string): string {
     return str.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
 }

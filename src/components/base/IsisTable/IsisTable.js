@@ -11,7 +11,7 @@ import CustomDropdown from '../../base/CustomDropdown/CustomDropdown';
 import Select from '../../base/Select/Select';
 import makeAnimated from 'react-select/animated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { kFormatter, getTextColor, truncateText, capitalize, numberWithCommas } from '../../../utils/helpers';
+import { kFormatter, getTextColor, truncateText, capitalize, sourceMaker, numberWithCommas } from '../../../utils/helpers';
 import { ALERT_ESCALATION_OPTIONS, ALERT_STATUS_OPTIONS, COMMUNICATION_ALERT_SOURCE_OPTIONS, COMMUNICATION_ALERT_STATUS_OPTIONS } from '../../../config/constants';
 import {
     Table as ReactstrapTable,
@@ -801,7 +801,16 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
 
             setParentRowSelected(false);
         }
-    }, [row.isSelected, selectedRows, toggle]);
+    }, [selectedRows]);
+
+    useEffect(() => {
+        if (row.isSelected || toggle) {
+            var rowData = row.original.alerts.data;
+
+            setChecked([...rowData.map(item => { return item.id; })]);
+            setParentRowSelected(true);
+        }
+    }, [row.isSelected, toggle]);
 
     useEffect(() => {
         if (checked.length != data.length && !parentRowSelected) {
@@ -1149,7 +1158,7 @@ export default function ReactTable({
                         <div className='d-flex flex-column'>
                             {cell.cell.row.original.alerts.data[0].source != null
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
-                                    {capitalize(cell.cell.row.original.alerts.data[0].source)}
+                                    {sourceMaker(cell.cell.row.original.alerts.data[0].source)}
                                 </Typography>
                                 : 'N/A'
                             }
