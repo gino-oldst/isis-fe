@@ -59,7 +59,7 @@ export default function LoginContainer({
 
                     dispatch(setEmails(emails));
 
-                    history.replace('/dashboard');
+                    history.replace('/communication_search');
                 }
             }
         } catch (err) {
