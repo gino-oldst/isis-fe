@@ -207,8 +207,8 @@ function CommunicationSearchScreen({
                                                             value={filterSearchForm.filterSenders.length > 0
                                                                 ? filterSearchForm.filterSenders.map(row => ({ label: row.label, value: row.value }))
                                                                 : []}
-                                                            cacheOptions={true}
                                                             noOptionsMessage={() => 'Enter a Sender'}
+                                                            cacheOptions={true}
                                                             loadOptions={loadOptions}
                                                             components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
                                                             name='filterSender'
@@ -228,8 +228,8 @@ function CommunicationSearchScreen({
                                                             value={filterSearchForm.filterRecipients.length > 0
                                                                 ? filterSearchForm.filterRecipients.map(row => ({ label: row.label, value: row.value }))
                                                                 : []}
-                                                            cacheOptions={true}
                                                             noOptionsMessage={() => 'Enter a Recipient'}
+                                                            cacheOptions={true}
                                                             loadOptions={loadOptions}
                                                             components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
                                                             name='filterRecipient'

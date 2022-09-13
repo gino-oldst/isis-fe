@@ -18,7 +18,9 @@ import filterIcon from '../../assets/images/ic_filter.svg';
 import type { Menu } from '../../types';
 import {
     setDateRangeLocal,
-    getDateRangeLocal
+    getDateRangeLocal,
+    sourceMaker,
+    statusMaker
 } from '../../utils/helpers';
 import {
     Row,
@@ -300,12 +302,11 @@ function CommunicationAlertsScreen({
     const [alertOptions, setAlertOptions] = useState([]);
 
     useEffect(() => {
-        const updatedList = [{ label: 'Select All', value: 'all' }, ...keywords.sort((a, b) => a.label.match(/\d+/) - b.label.match(/\d+/)).map(row => ({
+        const updatedList = [{ label: 'Select All', value: 'all' }, ...keywords.map(row => ({
             label: row.label,
             value: row.value
         }))];
 
-        console.log(updatedList);
         setAlertOptions(updatedList);
     }, [keywords]);
 
@@ -440,9 +441,9 @@ function CommunicationAlertsScreen({
                                                                         : handleStatus(selected);
                                                                 }}
                                                                 value={defaultStatus.length > 0
-                                                                    ? defaultStatus.map(row => ({ label: row.label, value: row.value }))
+                                                                    ? defaultStatus.map(row => ({ label: statusMaker(row.label), value: row.value }))
                                                                     : []}
-                                                                options={statusOptions}/>
+                                                                options={statusOptions.map(row => ({ label: statusMaker(row.label), value: row.value }))}/>
                                                         </FormGroup>
                                                     </Col>
                                                     <Col>
@@ -503,9 +504,9 @@ function CommunicationAlertsScreen({
                                                                         : handleSource(selected);
                                                                 }}
                                                                 value={defaultSource.length > 0
-                                                                    ? defaultSource.map(row => ({ label: row.label, value: row.value }))
+                                                                    ? defaultSource.map(row => ({ label: sourceMaker(row.label), value: row.value }))
                                                                     : []}
-                                                                options={sourceOptions}/>
+                                                                options={sourceOptions.map(row => ({ label: sourceMaker(row.label), value: row.value }))}/>
                                                         </FormGroup>
                                                     </Col>
                                                     <Col>
@@ -516,9 +517,9 @@ function CommunicationAlertsScreen({
                                                                 value={defaultSenders.length > 0
                                                                     ? defaultSenders.map(row => ({ label: row.label, value: row.value }))
                                                                     : []}
+                                                                noOptionsMessage={() => 'Enter a Sender'}
                                                                 cacheOptions={true}
                                                                 loadOptions={loadOptions}
-                                                                noOptionsMessage={() => 'Enter a Sender'}
                                                                 components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
                                                                 name='filterSender'
                                                                 className='filter-select'
@@ -534,9 +535,9 @@ function CommunicationAlertsScreen({
                                                                 value={defaultRecipients.length > 0
                                                                     ? defaultRecipients.map(row => ({ label: row.label, value: row.value }))
                                                                     : []}
+                                                                noOptionsMessage={() => 'Enter a Recipient'}
                                                                 cacheOptions={true}
                                                                 loadOptions={loadOptions}
-                                                                noOptionsMessage={() => 'Enter a Recipient'}
                                                                 components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
                                                                 name='filterRecipient'
                                                                 className='filter-select'

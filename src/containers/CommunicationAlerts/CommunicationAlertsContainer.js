@@ -160,6 +160,8 @@ export default function CommunicationAlertsContainer({
         // const emails = await getEmails();
         const keywords = await getKeywords();
 
+        var sortedKeywords = keywords.sort((a, b) => a.label.match(/\d+/) - b.label.match(/\d+/));
+
         dispatch(setAlertsList(keywords));
         setKeywords(keywords);
     };
