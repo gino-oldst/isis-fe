@@ -18,9 +18,7 @@ import filterIcon from '../../assets/images/ic_filter.svg';
 import type { Menu } from '../../types';
 import {
     setDateRangeLocal,
-    getDateRangeLocal,
-    sourceMaker,
-    statusMaker
+    getDateRangeLocal
 } from '../../utils/helpers';
 import {
     Row,
@@ -302,11 +300,12 @@ function CommunicationAlertsScreen({
     const [alertOptions, setAlertOptions] = useState([]);
 
     useEffect(() => {
-        const updatedList = [{ label: 'Select All', value: 'all' }, ...keywords.map(row => ({
+        const updatedList = [{ label: 'Select All', value: 'all' }, ...keywords.sort((a, b) => a.label.match(/\d+/) - b.label.match(/\d+/)).map(row => ({
             label: row.label,
             value: row.value
         }))];
 
+        console.log(updatedList);
         setAlertOptions(updatedList);
     }, [keywords]);
 
@@ -441,9 +440,9 @@ function CommunicationAlertsScreen({
                                                                         : handleStatus(selected);
                                                                 }}
                                                                 value={defaultStatus.length > 0
-                                                                    ? defaultStatus.map(row => ({ label: statusMaker(row.label), value: row.value }))
+                                                                    ? defaultStatus.map(row => ({ label: row.label, value: row.value }))
                                                                     : []}
-                                                                options={statusOptions.map(row => ({ label: statusMaker(row.label), value: row.value }))}/>
+                                                                options={statusOptions}/>
                                                         </FormGroup>
                                                     </Col>
                                                     <Col>
@@ -504,9 +503,9 @@ function CommunicationAlertsScreen({
                                                                         : handleSource(selected);
                                                                 }}
                                                                 value={defaultSource.length > 0
-                                                                    ? defaultSource.map(row => ({ label: sourceMaker(row.label), value: row.value }))
+                                                                    ? defaultSource.map(row => ({ label: row.label, value: row.value }))
                                                                     : []}
-                                                                options={sourceOptions.map(row => ({ label: sourceMaker(row.label), value: row.value }))}/>
+                                                                options={sourceOptions}/>
                                                         </FormGroup>
                                                     </Col>
                                                     <Col>
@@ -519,6 +518,7 @@ function CommunicationAlertsScreen({
                                                                     : []}
                                                                 cacheOptions={true}
                                                                 loadOptions={loadOptions}
+                                                                noOptionsMessage={() => 'Enter a Reciepient'}
                                                                 components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
                                                                 name='filterSender'
                                                                 className='filter-select'
@@ -536,6 +536,7 @@ function CommunicationAlertsScreen({
                                                                     : []}
                                                                 cacheOptions={true}
                                                                 loadOptions={loadOptions}
+                                                                noOptionsMessage={() => 'Enter a Reciepient'}
                                                                 components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
                                                                 name='filterRecipient'
                                                                 className='filter-select'

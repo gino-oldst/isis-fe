@@ -208,6 +208,7 @@ function CommunicationSearchScreen({
                                                                 ? filterSearchForm.filterSenders.map(row => ({ label: row.label, value: row.value }))
                                                                 : []}
                                                             cacheOptions={true}
+                                                            noOptionsMessage={() => 'Enter a Recipient'}
                                                             loadOptions={loadOptions}
                                                             components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
                                                             name='filterSender'
@@ -228,6 +229,7 @@ function CommunicationSearchScreen({
                                                                 ? filterSearchForm.filterRecipients.map(row => ({ label: row.label, value: row.value }))
                                                                 : []}
                                                             cacheOptions={true}
+                                                            noOptionsMessage={() => 'Enter a Recipient'}
                                                             loadOptions={loadOptions}
                                                             components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
                                                             name='filterRecipient'
