@@ -518,7 +518,7 @@ function CommunicationAlertsScreen({
                                                                     : []}
                                                                 cacheOptions={true}
                                                                 loadOptions={loadOptions}
-                                                                noOptionsMessage={() => 'Enter a Reciepient'}
+                                                                noOptionsMessage={() => 'Enter a Sender'}
                                                                 components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
                                                                 name='filterSender'
                                                                 className='filter-select'
@@ -536,7 +536,7 @@ function CommunicationAlertsScreen({
                                                                     : []}
                                                                 cacheOptions={true}
                                                                 loadOptions={loadOptions}
-                                                                noOptionsMessage={() => 'Enter a Reciepient'}
+                                                                noOptionsMessage={() => 'Enter a Recipient'}
                                                                 components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
                                                                 name='filterRecipient'
                                                                 className='filter-select'

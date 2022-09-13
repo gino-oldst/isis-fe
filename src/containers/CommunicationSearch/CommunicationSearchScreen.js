@@ -208,7 +208,7 @@ function CommunicationSearchScreen({
                                                                 ? filterSearchForm.filterSenders.map(row => ({ label: row.label, value: row.value }))
                                                                 : []}
                                                             cacheOptions={true}
-                                                            noOptionsMessage={() => 'Enter a Recipient'}
+                                                            noOptionsMessage={() => 'Enter a Sender'}
                                                             loadOptions={loadOptions}
                                                             components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
                                                             name='filterSender'
