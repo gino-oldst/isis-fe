@@ -277,11 +277,9 @@ function CommunicationSearchScreen({
                                                             </Typography>
                                                         }
                                                     </FormGroup>
-                                                    <Button label='Search' variant='secondary' type='submit'
-                                                        className='communication-search__save-button px-4 py-2'/>
                                                 </div>
                                             </Col>
-                                            <Col lg={3} className='offset-1'>
+                                            <Col lg={3} className='offset-lg-1 '>
                                                 {/* <div className='communication-search__status-filters'>
                                                     <Typography color='color-3' className='mr-auto' weight='bold'
                                                         variant='size-16'>Status</Typography>
@@ -302,7 +300,7 @@ function CommunicationSearchScreen({
                                                         ))}
                                                     </CheckboxGroup>
                                                 </div> */}
-                                                <div className='communication-search__status-filters'>
+                                                <div className='communication-search__status-filters mb-4'>
                                                     <Typography color='color-3' className='mr-auto' weight='bold'
                                                         variant='size-16'>Source</Typography>
                                                     <CheckboxGroup onChange={handleSource}>
@@ -326,6 +324,12 @@ function CommunicationSearchScreen({
                                                         <Typography weight='light' className='my-1 mx-2'>Download</Typography>
                                                     </>} */}
                                                 </div>
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col>
+                                                <Button label='Search' variant='secondary' type='submit'
+                                                    className='communication-search__save-button px-4 py-2'/>
                                             </Col>
                                         </Row>
                                     </Form>
