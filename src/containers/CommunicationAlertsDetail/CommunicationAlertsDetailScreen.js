@@ -21,7 +21,9 @@ import {
     getDateRangeLocal,
     isoToUTCLocal,
     truncateText,
-    isDisclaimer
+    isDisclaimer,
+    sourceMaker,
+    isDebug
 } from '../../utils/helpers';
 import {
     Row,
@@ -356,7 +358,7 @@ function CommunicationAlertsDetailScreen({
                                         <Typography color='color-3' className='alerts-detail__title mb-0 mr-auto' weight='regular'
                                             style={{ fontSize: '32px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : 'No Subject'} {/* RE: Trading Message */}</Typography>
                                         <Typography color='color-3' className='mr-auto' weight='bold'
-                                            style={{ fontSize: '16px', lineHeight: '24pt' }}>{detailData.source != null ? detailData.source : 'No Source'} {/* Email */}</Typography>
+                                            style={{ fontSize: '16px', lineHeight: '24pt' }}>{detailData.source != null ? sourceMaker(detailData.source) : 'No Source'} {/* Email */}</Typography>
                                     </Col>
                                 </Row>
                                 <Row className='mt-5'>
@@ -530,6 +532,10 @@ function CommunicationAlertsDetailScreen({
                                                                                     autoEscape={true}
                                                                                     textToHighlight={message.message}/>
                                                                             </div>
+                                                                            {isDebug()
+                                                                                ? <Typography color='color-1' className='mr-3 text-right' weight='regular'
+                                                                                    style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}>ID: {message.id} </Typography>
+                                                                                : ''}
                                                                         </Element>
                                                                     </>
                                                                     : <>
@@ -543,6 +549,10 @@ function CommunicationAlertsDetailScreen({
                                                                                     autoEscape={true}
                                                                                     textToHighlight={message.message}/>
                                                                             </div>
+                                                                            {isDebug()
+                                                                                ? <Typography color='color-1' className='mr-3 text-right' weight='regular'
+                                                                                    style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}> ID: {message.id} </Typography>
+                                                                                : ''}
                                                                         </Element>
                                                                     </>);
                                                             })}

@@ -2,6 +2,7 @@
 import namor from 'namor';
 import moment from 'moment';
 import _ from 'underscore';
+import { config } from '../config/constants';
 
 /**
  * Capitalize a string
@@ -11,6 +12,10 @@ import _ from 'underscore';
 export function capitalize(str: string): string {
     return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
+
+export const isDebug = () => {
+    return config.environmentName === 'DEV';
+};
 
 export function sourceMaker(str: string): string {
     var ret = '';

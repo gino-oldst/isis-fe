@@ -55,11 +55,11 @@ export default function LoginContainer({
                         username: loginForm.username
                     }));
 
+                    history.replace('/communication_search');
+
                     const emails = await getEmailsAll();
 
                     dispatch(setEmails(emails));
-
-                    history.replace('/communication_search');
                 }
             }
         } catch (err) {
