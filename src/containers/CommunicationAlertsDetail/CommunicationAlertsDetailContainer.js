@@ -118,6 +118,22 @@ export default function CommunicationAlertsDetail({
             const messages = await getMessageThread(commMessageId.chainLinkId, search.data.timeSent);
             const { data, totalNoOfRecords, totalPages } = messages.data;
 
+            for (let i = 0; i < data.length; i++) {
+                var tempData = data[i];
+
+                if (i == 0) {
+                    data[i].showSender = true;
+                } else {
+                    var prevTempData = data[i - 1];
+
+                    if (tempData.sender == prevTempData.sender) {
+                        data[i].showSender = false;
+                    } else {
+                        data[i].showSender = true;
+                    }
+                }
+            }
+
             setMessages(data);
 
             if (Object.keys(alertsList).length === 0) {
