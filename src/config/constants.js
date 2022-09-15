@@ -4,8 +4,12 @@ const config = {
     apiXApiKey: process.env.REACT_APP_X_API_KEY,
     apiSecretKey: process.env.REACT_APP_SECRET_KEY,
     oauth2Url: process.env.REACT_APP_OAUTH2_URL,
+    environmentName: process.env.REACT_APP_ENVIRONMENT_NAME,
+
+    // ISIS
     adminApplAuthHeader: process.env.REACT_APP_ADMIN_APP_AUTH_HEADER,
-    environmentName: process.env.REACT_APP_ENVIRONMENT_NAME
+    apiStorage: process.env.REACT_APP_STORAGE_API_HOST,
+    apiAuth: process.env.REACT_APP_AUTH_API_HOST
 };
 
 // keys for localstorage
@@ -14,7 +18,18 @@ const storageKey = {
     accessToken: 'accessToken',
     onboard: 'onboard',
     tokenValidUntil: 'tokenValidUntil',
-    sidebarState: 'sidebarState'
+    sidebarState: 'sidebarState',
+    alertSearchParams: 'alertSearchParams',
+    searchParams: 'searchParams'
+};
+
+const alertsStorageKey = {
+    status: 'status',
+    dateFrom: 'dateFrom',
+    dateTo: 'dateTo',
+    source: 'source',
+    senders: 'senders',
+    recipients: 'recipients'
 };
 
 const ALERT_ESCALATION_OPTIONS = {
@@ -30,9 +45,28 @@ const ALERT_STATUS_OPTIONS = {
     IN_REVIEW: 'IN_REVIEW'
 };
 
+//  ISIS
+const COMMUNICATION_ALERT_SOURCE_OPTIONS = {
+    // EMAIL: 'EMAIL',
+    REUTERS: 'REUTERS',
+    BLOOMBERG_CHAT: 'BLOOMBERG_CHAT',
+    BLOOMBERG_MAIL: 'BLOOMBERG_MAIL'
+};
+
+const COMMUNICATION_ALERT_STATUS_OPTIONS = {
+    OPEN: 'OPEN',
+    RESOLVED: 'RESOLVED',
+    ARCHIVED: 'ARCHIVED',
+    IN_REVIEW: 'IN_REVIEW'
+};
+
 export {
     config,
     storageKey,
     ALERT_ESCALATION_OPTIONS,
-    ALERT_STATUS_OPTIONS
+    ALERT_STATUS_OPTIONS,
+
+    //  ISIS
+    COMMUNICATION_ALERT_SOURCE_OPTIONS,
+    COMMUNICATION_ALERT_STATUS_OPTIONS
 };

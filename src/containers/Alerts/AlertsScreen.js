@@ -163,7 +163,7 @@ function AlertsScreen({
             ...dateRangeFilterValues,
             [type]: moment.tz(value, 'Europe/London').startOf('day').utc()
         });
-
+        
         setDateRangeValues({
             ...dateRangeValues,
             [type]: value

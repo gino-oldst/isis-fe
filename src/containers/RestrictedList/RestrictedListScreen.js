@@ -84,7 +84,7 @@ function RestrictedListScreen({
                                 activePage={activePage}
                                 selectableRows={false}
                                 globalFilter={false}
-                                pagination={true}
+                                   pagination={true}
                                 fetching={table.loading}
                                 sortable={true} />
                         </CardBody>

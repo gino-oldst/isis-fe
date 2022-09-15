@@ -18,6 +18,9 @@ export default function Badge({
         case 'resolved':
             color = 'bg-badge-green text-dark';
             break;
+        case 'enabled':
+            color = 'bg-badge-green text-dark';
+            break;
         case 'archived':
             color = 'bg-badge-gray';
             break;

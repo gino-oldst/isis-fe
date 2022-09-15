@@ -6,9 +6,10 @@ import { useHistory } from 'react-router-dom';
 import Login from './LoginScreen';
 import Storage from '../../utils/Storage';
 import { storageKey } from '../../config/constants';
-import { authUser } from '../../redux/modules/authentication';
+import { authUser, setEmails } from '../../redux/modules/authentication';
 import { userLogin } from '../../api/auth';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
+import { getEmailsAll } from '../../api/communicationSearch';
 
 type Props = {
     handleCloseModal: Function
@@ -23,7 +24,8 @@ export default function LoginContainer({
     const [errMsg, setErrMsg] = useState('');
     const [loginForm, setLoginForm] = useState({
         username: '',
-        password: ''
+        password: '',
+        grant_type: 'password'
     });
 
     const onSubmit = async e => {
@@ -42,18 +44,22 @@ export default function LoginContainer({
                 } else {
                     const { data } = response;
 
-                    Storage.setItem(storageKey.accessToken, JSON.stringify(data.token));
+                    Storage.setItem(storageKey.accessToken, JSON.stringify(data.access_token));
                     Storage.setItem(storageKey.user, JSON.stringify({
-                        userId: data.userId,
+                        userId: data.jti,
                         username: loginForm.username
                     }));
 
                     dispatch(authUser({
-                        userId: data.userId,
+                        userId: data.jti,
                         username: loginForm.username
                     }));
 
-                    history.replace('/dashboard');
+                    history.replace('/communication_search');
+
+                    const emails = await getEmailsAll();
+
+                    dispatch(setEmails(emails));
                 }
             }
         } catch (err) {

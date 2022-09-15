@@ -37,37 +37,60 @@ const loading = () => (
 function App() {
     const history = useHistory();
     const dispatch = useDispatch();
-    const { modalContent, onToggle, ...modalEvent } = useSelector(({ modalEvent }) => modalEvent);
+    const { size, modalContent, onToggle, ...modalEvent } = useSelector(({ modalEvent }) => modalEvent);
     const { isAuthed, profileData } = useSelector(({ authentication }) => authentication);
 
     const sidebarMenu = [{
-        label: 'Dashboard',
-        onClick: () => {
-            dispatch(resetTableState());
-            history.push('/dashboard');
-        },
-        key: 'dashboard'
-    }, {
         label: 'Alerts',
         onClick: () => {
-            history.push('/alerts');
+            dispatch(resetTableState());
+            history.push('/communication_alerts');
         },
-        key: 'alert'
+        key: 'communication_alerts'
     }, {
-        label: 'Behaviours',
+        label: 'Search Message',
         onClick: () => {
             dispatch(resetTableState());
-            history.push('/behaviours');
+            history.push('/communication_search');
         },
-        key: 'behaviour'
+        key: 'communication_search'
     }, {
-        label: 'Restricted List',
+        label: 'Policies',
         onClick: () => {
             dispatch(resetTableState());
-            history.push('/restricted_list');
+            history.push('/communication_policies');
         },
-        key: 'restricted_list'
+        key: 'communication_policies'
     }];
+
+    // const sidebarMenu = [{
+    //     label: 'Dashboard',
+    //     onClick: () => {
+    //         dispatch(resetTableState());
+    //         history.push('/dashboard');
+    //     },
+    //     key: 'dashboard'
+    // }, {
+    //     label: 'Alerts',
+    //     onClick: () => {
+    //         history.push('/alerts');
+    //     },
+    //     key: 'alert'
+    // }, {
+    //     label: 'Behaviours',
+    //     onClick: () => {
+    //         dispatch(resetTableState());
+    //         history.push('/behaviours');
+    //     },
+    //     key: 'behaviour'
+    // }, {
+    //     label: 'Restricted List',
+    //     onClick: () => {
+    //         dispatch(resetTableState());
+    //         history.push('/restricted_list');
+    //     },
+    //     key: 'restricted_list'
+    // }];
 
     const handleCloseModal = () => {
         dispatch(clearModalContent());
@@ -77,7 +100,7 @@ function App() {
     const NavbarLinks = () => {
         return (
             <Nav className='navlinks-right'>
-                <Notifications eventTypes='click' />
+                {/* <Notifications eventTypes='click' />` */}
                 <UncontrolledDropdown nav={true} direction='down' className='mr-4'>
                     <NavbarAccount />
                 </UncontrolledDropdown>
@@ -107,7 +130,8 @@ function App() {
             <AppModal
                 {...modalEvent}
                 isShow={!!modalContent}
-                onToggle={handleCloseModal}>
+                onToggle={handleCloseModal}
+                size={size}>
                 {modalContent}
             </AppModal>
         </AppLoadingContainer>
@@ -148,7 +172,7 @@ function RouteWithSubRoutes({ component: Component, isAuthed, handleCloseModal, 
             render={props => (
                 isAuthed
                     ? <Redirect to={{
-                        pathname: '/dashboard',
+                        pathname: '/communication_search',
                         state: { from: props.location }
                     }}/>
                     : <Component {...props} routes={props.routes} handleCloseModal={handleCloseModal} />
