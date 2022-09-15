@@ -140,8 +140,6 @@ export default function CommunicationSearchMessageDetailsContainer({
                 }
             }
 
-            console.log(data);
-
             setMessages(data);
 
             const recipients = await getRecipients(search.data.chainLinkId);
