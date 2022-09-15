@@ -1,7 +1,158 @@
+@import "../../../styles/utils/_variables";
+@import "../../../styles/utils/_mixins";
 
-@import '../../../styles/utils/_variables';
-@import '../../../styles/utils/_mixins';
+.table {
+    &__filter-icon {
+        margin-left: 0.5rem;
+        margin-bottom: 0.3rem;
+        color: $color-sidebar-2;
+        font-size: 1rem;
 
-.normal-table {
+        &-active {
+            margin-left: 0.5rem;
+            margin-bottom: 0;
+            color: $color-sidebar-2;
+            font-size: 1rem;
+        }
+    }
 
+    &__sort-icon {
+        margin-left: 0.5rem;
+        color: $color-sidebar-2;
+        font-size: 1rem;
+    }
+
+    &__filter-options {
+        max-height: 130px;
+        padding: 0.2rem 1.5rem;
+        font-weight: 600;
+
+        .form-check {
+            padding-bottom: 0.2rem;
+        }
+    }
+
+    &__quantity-filter-options,
+    &__date-filter-options {
+        padding: 0.3rem 1.2rem;
+    }
+
+    .form-check-label {
+        font-weight: 500;
+        font-size: 1.1rem;
+    }
+
+    .MuiOutlinedInput-input {
+        padding: 8px 0 !important;
+        font-size: 1rem !important;
+    }
+
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .dropdown-menu {
+        margin-left: -150px;
+        width: 280px;
+
+        .dropdown-divider {
+            border-top: 1px solid #dee2e6;
+        }
+    }
+
+    // react-select dropdown field
+    .css-g1d714-ValueContainer {
+        max-height: 140px;
+        overflow: auto;
+    }
+
+    thead > tr > th:nth-child(1) > div > div {
+        margin-left: -55px !important;
+    } // margin for first column filter dropdown (resitrcted list)
+
+    thead > tr > th:nth-child(2) > div > div {
+        margin-left: -135px !important;
+    } // margin for first column filter dropdown (alerts)
+
+    .dropdown-date-type-header .form-group {
+        width: 230px !important;
+        position: relative;
+        bottom: 0.5em;
+    }
+
+    .dropdown-date-type-header .dropdown-item:last-child {
+        height: 50px;
+    }
+
+    &__filter-reset-button {
+        border: $bg-download-button;
+        background-color: $bg-download-button;
+        border-radius: 0.2rem;
+
+        &:hover,
+        &:focus,
+        &:active {
+            background-color: darken($bg-download-button, 10%) !important;
+            border-color: darken($bg-download-button, 10%) !important;
+        }
+    }
+
+    .date-picker__icon {
+        position: absolute;
+        top: 8px;
+        left: 120px;
+        z-index: 100;
+    }
+
+    .react-datepicker-wrapper {
+        width: 60%;
+    }
+
+    &__date-picker {
+        width: 90%;
+        padding-left: 32px;
+        font-size: 1.1rem;
+        border-radius: 5px;
+        border: solid 2px #f1f1f1;
+    }
+}
+
+.pagination-pagesize {
+    float: left;
+
+    .form-control {
+        width: auto !important;
+    }
+}
+
+.pagination {
+    span {
+        color: black;
+        float: left;
+        text-decoration: none;
+        transition: background-color 0.3s;
+
+        border-radius: 30px;
+        margin-right: 10px;
+        width: 40px;
+        height: 40px;
+        padding: 8px 8px;
+        background: #fff;
+        text-align: center;
+
+        &.active {
+            border: 1px solid $color-sidebar-2;
+        }
+    }
+
+    .pagination-navigate {
+        font-size: 0.9rem !important;
+        padding: 10px 6px 6px 6px !important;
+        margin-left: 10px !important;
+        margin-right: 10px !important;
+    }
+}
+
+.pagination-goto-page {
+    float: right;
 }

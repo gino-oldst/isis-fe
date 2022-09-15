@@ -11,10 +11,11 @@ type Props = {
     onToggle: Function,
     isDemo?: boolean,
     isShow: boolean,
+    size?: ModalSize,
     footer?: string | React.Node
 }
 
-export default function AppModal({ className = '', title, children, onToggle, footer, isDemo, isShow }: Props): React$Element<any> {
+export default function AppModal({ className = '', title, children, onToggle, footer, isDemo, isShow, size }: Props): React$Element<any> {
     const [show, setShow] = React.useState(isShow);
 
     const handleClose = () => {
@@ -27,7 +28,8 @@ export default function AppModal({ className = '', title, children, onToggle, fo
         <React.Fragment>
             {isDemo && <Button label='Show modal' onClick={handleClose}/>}
 
-            <Modal show={isDemo ? show : isShow} centered={true} onHide={handleClose}>
+            <Modal show={isDemo ? show : isShow} centered={true} onHide={handleClose}
+                size={size} keyboard={false} backdrop={'static'}>
                 {title && (
                     <Modal.Header closeButton={true}>
                         <Modal.Title>{title}</Modal.Title>

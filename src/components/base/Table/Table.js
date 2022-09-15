@@ -11,8 +11,8 @@ import CustomDropdown from '../../base/CustomDropdown/CustomDropdown';
 import Select from '../../base/Select/Select';
 import makeAnimated from 'react-select/animated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { kFormatter, getTextColor } from '../../../utils/helpers';
-import { ALERT_ESCALATION_OPTIONS, ALERT_STATUS_OPTIONS } from '../../../config/constants';
+import { kFormatter, getTextColor, truncateText } from '../../../utils/helpers';
+import { ALERT_ESCALATION_OPTIONS, ALERT_STATUS_OPTIONS, COMMUNICATION_ALERT_SOURCE_OPTIONS } from '../../../config/constants';
 import {
     Table as ReactstrapTable,
     DropdownItem,
@@ -26,7 +26,7 @@ import { components } from 'react-select';
 import filterIcon from '../../../assets/images/ic_filter.svg';
 import './table.scss';
 
-import { useTable, useRowSelect, useFilters, useGlobalFilter, usePagination, useSortBy, useAsyncDebounce } from 'react-table';
+import { useTable, useRowSelect, useFilters, useGlobalFilter, usePagination, useSortBy, useAsyncDebounce, useExpanded } from 'react-table';
 import { setIsRowSelected, setTablePageSize, setActivePage, setAppliedFilters, resetAppliedFilters, setFilteredRows, setSortedColumn, setAllRowsSelected } from '../../../redux/modules/table';
 
 // Define a default UI for filtering
@@ -94,7 +94,7 @@ function SelectColumnFilter({
     const { appliedFilters, filtersReset } = useSelector(({ table }) => table);
 
     const header = Header.toLowerCase();
-    const columnFiltersWithCheckbox = ['behaviourCode', 'escalation', 'assignedUser', 'status'];
+    const columnFiltersWithCheckbox = ['behaviourCode', 'escalation', 'assignedUser', 'status', 'source'];
     const columnFiltersSearcheable = ['book', 'client'];
     const columnFiltersWithSearchbox = ['isin', 'summary'];
     const rootPath = window.location.pathname.split('/')[1];
@@ -306,11 +306,18 @@ function SelectColumnFilter({
                         onChange={e => handleFilterChange(e, statusOpt.toUpperCase())}/>
                 }));
                 break;
+            case 'source':
+                options = Object.keys(COMMUNICATION_ALERT_SOURCE_OPTIONS).map(statusOpt => ({
+                    label: statusOpt,
+                    inputComponent: <Input type='checkbox' checked={selectFilter.includes(statusOpt.toUpperCase()) || appliedFilters.filter(filter => filter.id === 'status' && filter.value.includes(statusOpt)).length}
+                        onChange={e => handleFilterChange(e, statusOpt.toUpperCase())}/>
+                }));
+                break;
             default:
                 break;
         }
 
-        if (header === 'alert type') {
+        if (header === 'alert type' || header === 'source') {
             return <>
                 <FormGroup key={'select_all'} check={true}>
                     <Label check={true}>
@@ -392,6 +399,8 @@ function Table({
     globalFilter,
     pagination,
     sortable,
+    hideHeader,
+    renderRowSubComponent,
     fetching
 }) {
     const [isAsc, setIsAsc] = useState(true);
@@ -438,7 +447,7 @@ function Table({
         gotoPage,
         previousPage,
         setPageSize,
-        state: { pageSize }
+        state: { pageSize, expanded }
     } = useTable(
         {
             columns,
@@ -449,6 +458,7 @@ function Table({
         useFilters,
         useGlobalFilter,
         useSortBy,
+        useExpanded,
         usePagination,
         useRowSelect,
         hooks => { // push column for the checkbox
@@ -530,7 +540,7 @@ function Table({
                             </th>
                         </tr>
                     }
-                    {headerGroups.map(headerGroup => (
+                    {!hideHeader && headerGroups.map(headerGroup => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers.map(column => (
                                 <th {...column.getHeaderProps()}>
@@ -555,11 +565,20 @@ function Table({
                             prepareRow(row);
 
                             return (
-                                <tr {...row.getRowProps()} className={`${row.isSelected ? 'selected-row' : ''}`}>
-                                    {row.cells.map(cell => {
-                                        return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
-                                    })}
-                                </tr>
+                                <React.Fragment {...row.getRowProps()}>
+                                    <tr className={`${row.isSelected ? 'selected-row' : ''}`}>
+                                        {row.cells.map(cell => {
+                                            return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+                                        })}
+                                    </tr>
+                                    {row.isExpanded
+                                        ? <tr>
+                                            <td colSpan={visibleColumns.length}>
+                                                {renderRowSubComponent({ row })}
+                                            </td>
+                                        </tr>
+                                        : null}
+                                </React.Fragment>
                             );
                         })
                     }
@@ -678,6 +697,7 @@ type Props = {
     globalFilter: boolean,
     pagination: boolean,
     sortable: boolean,
+    hideHeader: boolean,
     fetching: boolean,
     viewDetails: Function,
 }
@@ -695,6 +715,7 @@ export default function ReactTable({
     globalFilter = false,
     pagination = false,
     sortable = false,
+    hideHeader = false,
     fetching,
     viewDetails
 }: Props): React$Element<any> {
@@ -708,7 +729,7 @@ export default function ReactTable({
                 disableFilters: column.disableFilters,
                 Filter: SelectColumnFilter,
                 filter: multiSelectFilter,
-                Cell: e => column.accessor === 'alertDate'
+                Cell: (e, row) => column.accessor === 'alertDate'
                     ? <span>{moment(e.value).format('DD/MM/YY')}</span>
                     : <span className={`${column.clickable
                         ? 'color-link-text cursor-pointer'
@@ -718,7 +739,9 @@ export default function ReactTable({
                             ? viewDetails(e.cell.row)
                             : column.accessor === 'name'
                                 ? viewDetails(e.cell.row.original)
-                                : null}>{column.accessor === 'quantity'
+                                : rootPath === 'communication_alerts' && column.accessor === 'id'
+                                    ? viewDetails(e.cell.row.original)
+                                    : null}>{column.accessor === 'quantity'
                             ? kFormatter(e.cell.row.original.quantity)
                             : column.accessor === 'client'
                                 ? e.cell.row.original.behaviourCode !== 'HIGH_ORDER_COUNT_MUFP' ? e.cell.row.original.client : 'MUFP Total'
@@ -728,7 +751,9 @@ export default function ReactTable({
                                         ? <Badge status={e.value} />
                                         : column.accessor === 'parameterValues'
                                             ? e.value.split(',').map(val => <div>{val.replace(':', ': ')}</div>)
-                                            : e.value}</span>,
+                                            : rootPath === 'communication_alerts' && column.accessor === 'id'
+                                                ? truncateText(e.value, 10)
+                                                : e.value}</span>,
                 sortType: column.accessor === 'date'
                     ? (a, b, c, d) => {
                         a = new Date(a.values.date).getTime();
@@ -740,6 +765,16 @@ export default function ReactTable({
             };
         }),
         []
+    );
+
+    const renderSubRowComponent = React.useCallback(
+        ({ row }) => (
+            <pre>
+                <code>
+                    {JSON.stringify({ values: row.values }, null, 2)}
+                </code>
+            </pre>
+        ), []
     );
 
     return (
@@ -755,7 +790,9 @@ export default function ReactTable({
                 globalFilter={globalFilter}
                 pagination={pagination}
                 sortable={sortable}
-                fetching={fetching} />
+                fetching={fetching}
+                hideHeader={hideHeader}
+                renderRowSubComponent={renderSubRowComponent} />
         </div>
     );
 }

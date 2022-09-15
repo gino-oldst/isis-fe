@@ -129,6 +129,10 @@ const initialState = {
         {
             id: 'summary',
             value: []
+        },
+        {
+            id: 'source',
+            value: []
         }
     ],
     sort: {

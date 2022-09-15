@@ -2,6 +2,7 @@
 import namor from 'namor';
 import moment from 'moment';
 import _ from 'underscore';
+import { config } from '../config/constants';
 
 /**
  * Capitalize a string
@@ -10,6 +11,44 @@ import _ from 'underscore';
  */
 export function capitalize(str: string): string {
     return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+}
+
+export const isDebug = () => {
+    return config.environmentName === 'DEV';
+};
+
+export function sourceMaker(str: string): string {
+    var ret = '';
+
+    if (str == 'BLOOMBERG_CHAT') {
+        ret = 'Bloomberg Chat';
+    } else if (str == 'BLOOMBERG_MAIL') {
+        ret = 'Bloomberg Mail';
+    } else if (str == 'REUTERS') {
+        ret = 'Reuters';
+    } else {
+        ret = str;
+    }
+
+    return ret;
+}
+
+export function statusMaker(str: string): string {
+    var ret = '';
+
+    if (str == 'OPEN') {
+        ret = 'Open';
+    } else if (str == 'RESOLVED') {
+        ret = 'Resolved';
+    } else if (str == 'ARCHIVED') {
+        ret = 'Archived';
+    } else if (str == 'IN_REVIEW') {
+        ret = 'In Review';
+    } else {
+        ret = str;
+    }
+
+    return ret;
 }
 
 export function camelize(str: string): string {
@@ -135,6 +174,14 @@ export const UTCTOUK_TIME = time => {
         .format('YYYY-MM-DDTHH:mm:ss');
 };
 
+export const DATE_TO_UTC_LOCAL = (date, format = 'YYYY-MM-DDTHH:mm:ss') => {
+    return moment(date).utc().local().format(format);
+};
+
+export const DATE_TO_SHORT_DATE = (date, format = 'MMM. DD, YYYY hh:mm A') => {
+    return moment(date).utc().local().format(format);
+};
+
 export const DATE_TO_UTC = (date, format = 'YYYY-MM-DDTHH:mm:ss') => {
     return moment.tz(date, 'Europe/London').utc().format(format);
 };
@@ -190,3 +237,13 @@ export const getDateRangeLocal = (key) => {
 export const numberWithCommas = (value) => {
     return value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : value;
 };
+
+export const truncateText = (str, n) => {
+    return (str.length > n) ? str.substr(0, n - 1) + '...' : str;
+};
+
+export const isoToUTCLocal = (value) => {
+    return moment(value).utc().local().format('DD/MM/YYYY hh:mm A');
+};
+
+export const isDisclaimer = (str: string): boolean => /\[\[:(.*?)\:]\]|\bCopyright 2021 Goldman Sachs\b/gm.test(str);

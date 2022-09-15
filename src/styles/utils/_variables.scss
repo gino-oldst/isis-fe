@@ -89,8 +89,8 @@ $color-badge-violet: #996888;
 // fonts: base styles
 $font-family-1: "Source Sans Pro", "Helvetica Neue", helvetica, arial,
     sans-serif;
-// $font-family-2: "Playfair Display", serif;\
-$font-family-2: 'Raleway', sans-serif;
+$font-family-2: "Playfair Display", serif;
+// $font-family-2: 'Raleway', sans-serif;
 $font-family-3: "Open Sans", serif;
 $font-size-base: 1rem;
 
@@ -116,3 +116,11 @@ $zindex-dropdown: 1100;
 $zindex-notify: 1300;
 $zindex-modal: 1400;
 $zindex-overlay: 100;
+
+
+//-------------------------------------//
+// SPACING
+$spacing: 1.75rem;
+$spacing-double: $spacing * 2;
+$spacing-third: $spacing * 3;
+$spacing-half: $spacing / 2;

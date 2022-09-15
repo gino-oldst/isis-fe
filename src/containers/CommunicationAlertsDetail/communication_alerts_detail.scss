@@ -1,0 +1,225 @@
+@import "../../styles/utils/_variables";
+@import "../../styles/utils/_mixins";
+
+.alerts-detail {
+    height: 100%;
+    display: flex;
+
+    &__detail-heading{
+        font-size: 40px !important;
+        font-family: $font-family-2;
+    }
+
+    &__message-thread {
+        max-height: 800px;
+        overflow: scroll;
+    }
+    
+    &__message-activity {
+        max-height: 400px;
+        overflow: scroll;
+    }
+
+    &__content {
+        padding: 0.6rem 2rem;
+        margin-bottom: 80px;
+    }
+
+    &__title {
+        margin-top: 0.35rem;
+        margin-bottom: 2rem;
+        font-size: 2rem !important;
+        font-family: $font-family-2;
+    }
+
+    &__date-filter-options {
+        max-height: 130px;
+        padding: 0.2rem 1.5rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+
+        .form-check {
+            padding-bottom: 0.2rem;
+        }
+    }
+
+    &__date-picker {
+        .btn-group {
+            width: 25%;
+        }
+    }
+
+    &__messages{
+        width: 600px;
+    }
+
+    .MuiInputAdornment-root.MuiInputAdornment-positionEnd {
+        display: none;
+    }
+
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .dropdown-menu {
+        width: 300px;
+
+        .dropdown-divider {
+            border-top: 1px solid #dee2e6;
+        }
+    }
+
+    &__filter-reset-button {
+        border: $bg-download-button;
+        background-color: $bg-download-button;
+        border-radius: 0.2rem;
+
+        &:hover,
+        &:focus,
+        &:active {
+            background-color: darken($bg-download-button, 10%) !important;
+            border-color: darken($bg-download-button, 10%) !important;
+        }
+    }
+
+    &__download-button,
+    &__save-button,
+    &__bulk-action-button {
+        border: $bg-download-button;
+        background-color: $bg-download-button;
+        border-radius: 0.2rem;
+
+        &:hover,
+        &:focus,
+        &:active {
+            background-color: darken($bg-download-button, 10%) !important;
+            border-color: darken($bg-download-button, 10%) !important;
+        }
+    }
+
+    .table-responsive {
+        min-height: 550px;
+    }
+
+    .table {
+        min-width: 300px;
+
+        thead {
+            font-size: 1.2rem;
+
+            th {
+                border-top: 0;
+                text-align: left;
+            }
+        }
+
+        tbody {
+            td {
+                padding: 1.1rem 0 1.1rem 0.8rem;
+                text-align: left;
+                font-size: 1.1rem;
+            }
+        }
+
+        .selected-row {
+            background: rgba(0, 74, 147, 0.075);
+        }
+    }
+
+    @media (max-width: 1200px) {
+        &__header {
+            display: block !important;
+        }
+    }
+
+    .date-picker__icon {
+        position: absolute;
+        top: 6px;
+        left: 120px;
+        z-index: 100;
+    }
+
+    .react-datepicker-wrapper {
+        width: 60%;
+    }
+
+    .activity-icon {
+        border-radius: 30px;
+        margin-right: 10px;
+        width: 40px;
+        height: 40px;
+        padding: 8px 8px;
+        text-align: center;
+        background: $color-sidebar-2;
+    }
+
+    .info-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .activity-icon {
+        border-radius: 30px;
+        margin-right: 10px;
+        width: 40px;
+        height: 40px;
+        padding: 8px 8px;
+        text-align: center;
+        background: $color-sidebar-2;
+    }
+
+    .alertKeyword {
+        font-weight: 700;
+        color: #F05F5F;
+        background-color: rgba(240, 95, 95, 0.1) !important;
+    }
+
+    .status-select {
+        width: 300px;
+    }
+
+    .pt-30 {
+        padding-top: 30px !important;
+    }
+
+    .pb-30 {
+        padding-bottom: 30px !important;
+    }
+
+    .ok-button {
+        width: 220px;
+        padding: 20px !important;
+        font-size: 16px;
+    }
+
+    .pb-40 {
+        padding-bottom: 100px;
+    }
+
+    .active-message {
+        background: #15273E;
+        border-radius: 4px;
+        p {
+            color: #FFFFFF !important;
+        }
+    }
+
+    .element{
+        padding: 10px;
+    }
+}
+
+.popover{
+    padding: 15px !important;
+    max-width:523px !important;
+}
+
+.action-modal{
+    .table th{
+        border-top: 0px !important;
+    }
+}
+
+.modal-body{
+    min-height: 280px !important;
+}

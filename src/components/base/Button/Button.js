@@ -10,17 +10,26 @@ type Props = {
     label: string,
     className?: string,
     isLoading?: boolean,
-    onClick?: Function
+    onClick?: Function,
+    iconLeft?: any,
+    iconRight?: any
 }
 
-export default function AppButton({ variant, label, className = '', isLoading = false, onClick, ...rest }: Props): React$Element<any> {
+export default function AppButton({ iconLeft: IconLeft, iconRight: IconRight, variant, label, className = '', isLoading = false, onClick, ...rest }: Props): React$Element<any> {
     return (
         <Button
             {...rest}
             variant={variant || 'primary'}
             className={className}
             onClick={onClick || null}>
-            {isLoading && <Spinner size='sm' className='mr-2' style={{ marginBottom: '2px' }} />} {label}
+            {isLoading && <Spinner size='sm' className='mr-2' style={{ marginBottom: '2px' }} />}
+            {IconLeft && (
+                <IconLeft className='mr-2'/>
+            )}
+            {label}
+            {IconRight && (
+                <IconRight className='ml-2'/>
+            )}
         </Button>
     );
 }

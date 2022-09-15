@@ -1,0 +1,91 @@
+{
+    "data": {
+        "totalNoOfRecords": 11,
+        "totalPages": 2,
+        "totalCurrentElements": 10,
+        "data": [
+            {
+                "id": "Alert 1",
+                "keyword": "Bloody",
+                "status": "Enabled"
+            },
+            {
+                "id": "Alert 2",
+                "keyword": "Shit",
+                "status": "Enabled"
+            },
+            {
+                "id": "Alert 3",
+                "keyword": "Retard",
+                "status": "Enabled"
+            },
+            {
+                "id": "Alert 4",
+                "keyword": "Flame",
+                "status": "Enabled"
+            },
+            {
+                "id": "Alert 5",
+                "keyword": "Bot",
+                "status": "Enabled"
+            },
+            {
+                "id": "Alert 6",
+                "keyword": "Donec sollicitudin",
+                "status": "Enabled"
+            },
+            {
+                "id": "Alert 7",
+                "keyword": "Queer",
+                "status": "Enabled"
+            },
+            {
+                "id": "Alert 8",
+                "keyword": "Shitty",
+                "status": "Enabled"
+            },
+            {
+                "id": "Alert 9",
+                "keyword": "Acknowledge",
+                "status": "Disabled"
+            },
+            {
+                "id": "Alert 10",
+                "keyword": "Avg",
+                "status": "Enabled"
+            }
+        ],
+        "responseStatus": "success"
+    },
+    "status": 200,
+    "statusText": "",
+    "headers": {
+        "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+        "content-type": "application/json",
+        "expires": "0",
+        "pragma": "no-cache"
+    },
+    "config": {
+        "url": "/measure/behaviour/list?page=0&size=10",
+        "method": "post",
+        "data": "{}",
+        "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInNjb3BlcyI6IkFETUlOIiwiaWF0IjoxNjQ3MjM5NTAwLCJleHAiOjE2NDc3NDAxNTR9.h_YDx4tLMMFyy8mIIdt2ZAVjmglCblEEIjsrufRNaPc"
+        },
+        "baseURL": "https://measure.kopona.io",
+        "transformRequest": [
+            null
+        ],
+        "transformResponse": [
+            null
+        ],
+        "timeout": 60000,
+        "xsrfCookieName": "XSRF-TOKEN",
+        "xsrfHeaderName": "X-XSRF-TOKEN",
+        "maxContentLength": -1,
+        "maxBodyLength": -1
+    },
+    "request": {}
+}

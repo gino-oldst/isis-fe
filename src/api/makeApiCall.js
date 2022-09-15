@@ -1,13 +1,17 @@
 import axios from 'axios';
+import { Form } from 'reactstrap';
 import { config } from '../config/constants';
 import { getAuthToken } from '../utils/Auth';
 
+// export const cancelTokenSource = axios.CancelToken.source();
+
 export const api = axios.create({
-    baseURL: config.apiUrl,
+    // baseURL: config.apiUrl,
+    // cancelToken: cancelTokenSource.token,
     headers: {
         'Content-Type': 'application/json'
     },
-    timeout: 1000 * 60
+    timeout: 1000 * 120 // 2mins timeout
 });
 
 /**
@@ -32,23 +36,45 @@ export function serialize(data: Object) {
 export default async function makeApiCall(
     endpoint: string,
     method: string,
-    data: Object = null
+    data: FormData = null
 ) {
     const accessToken = await getAuthToken();
 
     const request = {
         method,
         url: endpoint,
-        data: data ? (endpoint.includes('oauth') ? serialize(data) : data) : ''
+        // data: data ? (endpoint.includes('oauth') ? serialize(data) : data) : ''
+        data
     };
 
     if (endpoint.includes('oauth')) {
         request.headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'multipart/form-data;',
             Authorization: `Basic ${config.adminApplAuthHeader}`
         };
     } else if (endpoint.includes('generate-token')) {
         request.headers = {};
+    } else if (endpoint.includes('/download/messages') || endpoint.includes('/download/alerts')) {
+        fetch(`${config.apiStorage}${endpoint}`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+            if (response.status !== 200) return response;
+
+            response.blob().then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+
+                a.href = url;
+                a.download = `${endpoint.includes('/download/messages') ? 'search-messages' : 'alerts-list'}.csv`;
+                a.click();
+            });
+        }).catch(err => console.error(err));
     } else if (endpoint.includes('download')) {
         fetch(`${config.apiUrl}${endpoint}`, {
             method: 'POST',
@@ -84,8 +110,10 @@ export default async function makeApiCall(
         if (err.response) {
             const errData = {};
 
-            errData.status = err.response.status;
-            errData.message = err.response.message;
+            errData.status = err.response.status ? err.response.status : err.response.data.status;
+            errData.message = err.response.message ? err.response.message : err.response.data.message;
+
+            // cancelTokenSource.cancel('Request was canceled');
 
             throw errData;
         } else {
@@ -93,6 +121,8 @@ export default async function makeApiCall(
 
             errDataNetwork.status = 503;
             errDataNetwork.message = 'Network Unreachable';
+
+            // cancelTokenSource.cancel('Request was canceled');
             throw errDataNetwork;
         }
     }

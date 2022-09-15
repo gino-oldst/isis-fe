@@ -26,7 +26,14 @@ export default function Breadcrumbs({
                     )
                     : (
                         links.map((link, idx) => {
-                            return <BreadcrumbItem key={idx} active={links.length === idx + 1}><a href='#' onClick={() => history.push(`${link.path}`)}>{link.label}</a></BreadcrumbItem>;
+                            return <>
+                                <BreadcrumbItem key={idx} active={links.length === idx + 1}>
+                                    {link.disabled
+                                        ? <span>{link.label}</span>
+                                        : <a href='#' onClick={() => history.push(`${link.path}`)}>{link.label}</a>
+                                    }
+                                </BreadcrumbItem>
+                            </>;
                         })
                     )}
             </Breadcrumb>
