@@ -19,7 +19,8 @@ import type { Menu } from '../../types';
 import {
     setDateRangeLocal,
     getDateRangeLocal,
-    numberWithCommas
+    numberWithCommas,
+    sourceMaker
 } from '../../utils/helpers';
 import {
     Card,
@@ -285,9 +286,9 @@ function CommunicationSearchResultsScreen({
                                                                         : handleSource(selected);
                                                                 }}
                                                                 value={defaultSources.length > 0
-                                                                    ? defaultSources.map(row => ({ label: row.label, value: row.value }))
+                                                                    ? defaultSources.map(row => ({ label: sourceMaker(row.label), value: row.value }))
                                                                     : []}
-                                                                options={sourceOptions}/>
+                                                                options={sourceOptions.map(row => ({ label: sourceMaker(row.label), value: row.value }))}/>
                                                         </FormGroup>
                                                     </Col>
                                                 </Row>
@@ -306,7 +307,8 @@ function CommunicationSearchResultsScreen({
                                                                 name='filterSender'
                                                                 className='filter-select'
                                                                 onChange={(newTags) => handleSenderChange(newTags)}
-                                                                placeholder={'Select Sender...'}/>
+                                                                placeholder={'Select Sender...'}
+                                                                noOptionsMessage={() => 'Enter a Sender'}/>
                                                             {errorForm.errorSenders !== '' &&
                                                                 <Typography variant='size-14' className='form-text text-danger'>
                                                                     {errorForm.errorSenders}
@@ -328,7 +330,8 @@ function CommunicationSearchResultsScreen({
                                                                 name='filterRecipient'
                                                                 className='filter-select'
                                                                 onChange={(newTags) => handleRecipientChange(newTags)}
-                                                                placeholder={'Select Recipient...'}/>
+                                                                placeholder={'Select Recipient...'}
+                                                                noOptionsMessage={() => 'Enter a Recipient'}/>
                                                             {errorForm.errorRecipients !== '' &&
                                                                 <Typography variant='size-14' className='form-text text-danger'>
                                                                     {errorForm.errorRecipients}
