@@ -1055,7 +1055,7 @@ export default function ReactTable({
                     return (
                         <div>
                             <span title={cell.value} className={'font-weight-bold color-link-text cursor-pointer'} onClick={() => viewDetails(cell.value, cell.cell.row.original.chainLinkId, cell.cell.row.original.keyword)}>
-                                {truncateText(cell.value, 20)}
+                                {cell.value}
                             </span>
                         </div>
                     );
@@ -1077,8 +1077,8 @@ export default function ReactTable({
                     );
                 } else if (accessor == 'message') {
                     return (
-                        <div className='d-flex flex-column'>
-                            <Typography size={14} color='color-3' className='table__box-label' >
+                        <div className='table__text-cell d-flex flex-column'>
+                            <Typography size={14} color='color-3' className='table__box-label pl-0' >
                                 {cell.cell.row.original.subject == null ? 'No Subject' : cell.cell.row.original.subject}
                             </Typography>
                             <Highlighter className='table__box-label' highlightClassName='alertKeyword'
@@ -1094,7 +1094,7 @@ export default function ReactTable({
                     );
                 } else if (accessor == 'source') {
                     return (
-                        <div className='d-flex flex-column'>
+                        <div className='table__text-cell d-flex flex-column'>
                             {cell.value != null
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
                                     {capitalize(cell.value)}
@@ -1175,7 +1175,7 @@ export default function ReactTable({
                     const strRecipients = recipients.join(', ');
 
                     return (
-                        <div className='d-flex' style={{ maxWidth: '300px' }}>
+                        <div className='d-flex justify-content-center align-items-center' style={{ maxWidth: '400px' }}>
                             <div {...cell.cell.row.getToggleRowExpandedProps()} className='table__number-square d-flex justify-content-center align-items-center'>
                                 <Typography weight={'bold'} variant={'size-16'} color='color-3'>
                                     {cell.cell.row.original.alerts.data.length}
@@ -1184,7 +1184,7 @@ export default function ReactTable({
                             <Typography weight={'bold'} variant={'size-16'} color='color-3'
                                 className='color-link-text cursor-pointer pl-3 table__box-label'
                                 onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients)}>
-                                {truncateText(cell.cell.row.original.alerts.data[0].commMessageId, 10)}
+                                {cell.cell.row.original.alerts.data[0].commMessageId}
                             </Typography>
                         </div>
                     );

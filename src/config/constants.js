@@ -9,7 +9,8 @@ const config = {
     // ISIS
     adminApplAuthHeader: process.env.REACT_APP_ADMIN_APP_AUTH_HEADER,
     apiStorage: process.env.REACT_APP_STORAGE_API_HOST,
-    apiAuth: process.env.REACT_APP_AUTH_API_HOST
+    apiAuth: process.env.REACT_APP_AUTH_API_HOST,
+    versionName: process.env.REACT_APP_VERSION_VALUE
 };
 
 // keys for localstorage

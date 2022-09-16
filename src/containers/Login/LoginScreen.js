@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import logo from '../../assets/logos/mariana_logo.png';
 
 import { setModalContent } from '../../redux/modules/modalEvent';
+import { config } from '../../config/constants';
 
 type Props = {
     onSubmit: Function,
@@ -59,6 +60,11 @@ export default function Login({
                             Forgot Password?
                             <span className='cursor-pointer color-sidebar-2 ml-1'
                                 onClick={showContactDetailsModal}>Contact admin for help.</span>
+                        </Typography>
+                        <Typography
+                            variant='size-14' color='color-1'
+                            className='login__forgot-pass text-center mt-4'>
+                            Isis {config.versionName}-{config.environmentName.toLowerCase()}
                         </Typography>
                     </Form>
                 </div>
