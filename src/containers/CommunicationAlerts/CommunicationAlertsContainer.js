@@ -54,6 +54,9 @@ export default function CommunicationAlertsContainer({
 
     const [senderStore, setSenderStore] = useState([]);
     const [recipientStore, setRecipientStore] = useState([]);
+    const [tableResultStore, setTableResultStore] = useState([]);
+
+    const [isTimeout, setIsTimeout] = useState(false);
 
     const breadcrumb = [
         {
@@ -65,14 +68,13 @@ export default function CommunicationAlertsContainer({
             path: '/communication_alerts'
         }
     ];
+
     const [filterDate, setFilterDate] = useState([
         {
             startDate: '',
             endDate: ''
         }
     ]);
-
-    const [isTimeout, setIsTimeout] = useState(false);
 
     useEffect(() => {
         loadSearchValuesFromStorage();
@@ -145,6 +147,8 @@ export default function CommunicationAlertsContainer({
             const alerts = await getCommunicationAlertData(page, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient);
             const { data, totalNoOfRecords, totalPages } = alerts.data;
 
+            setTableResultStore(alerts.data);
+
             dispatch(setCommunicationAlertsData(data, totalNoOfRecords, totalPages));
             dispatch(setIsRowSelected(0, []));
         } catch (e) {
@@ -168,6 +172,8 @@ export default function CommunicationAlertsContainer({
 
     const loadSearchValuesFromStorage = async () => {
         const alertSearchParams = JSON.parse(Storage.getItem(storageKey.alertSearchParams));
+
+        console.log(alertSearchParams);
 
         if (alertSearchParams) {
             setAlert(alertSearchParams.alert);
@@ -349,7 +355,8 @@ export default function CommunicationAlertsContainer({
                 dateTo: dateTo,
                 source: source,
                 senders: senderStore,
-                recipients: recipientStore
+                recipients: recipientStore,
+                data: tableResultStore
             }));
             loadCommAlertsData(
                 activePage,
