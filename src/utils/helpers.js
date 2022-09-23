@@ -247,3 +247,15 @@ export const isoToUTCLocal = (value) => {
 };
 
 export const isDisclaimer = (str: string): boolean => /\[\[:(.*?)\:]\]|\bCopyright 2021 Goldman Sachs\b/gm.test(str);
+
+// export const isDisclaimer = (str: string): boolean => {
+//     var status = false;
+
+//     if (/^[\[\[\:\:\]\]]([\s\S]*)$/gm.test(str)) {
+//         status = true;
+//     } else if (/^[*][*][*]([\s\S]*)Disclaimer:([\s\S]*)$/gm.test(str)) {
+//         status = true;
+//     }
+
+//     return status;
+// };

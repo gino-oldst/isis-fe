@@ -524,9 +524,11 @@ function CommunicationAlertsDetailScreen({
                                                                     return (!isDisclaimer(message.message)
                                                                         ? <>
                                                                             <Element name={message.id} className={`element mb-1 ${message.id == dataId && 'active-message'}`}>
-                                                                                {message.showSender &&
+                                                                                {/* {message.showSender &&
                                                                                     <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>}
+                                                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>} */}
+                                                                                <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                                                    style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>
                                                                                 <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
                                                                                     <Highlighter highlightClassName='alertKeyword'
                                                                                         style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
@@ -542,9 +544,11 @@ function CommunicationAlertsDetailScreen({
                                                                         </>
                                                                         : <>
                                                                             <Element name={message.id} className={`element mb-1 ${message.id == dataId && 'active-message'}`}>
-                                                                                {message.showSender &&
+                                                                                {/* {message.showSender &&
                                                                                     <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>}
+                                                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>} */}
+                                                                                <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                                                    style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>
                                                                                 <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
                                                                                     <Highlighter highlightClassName='alertKeyword'
                                                                                         style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}

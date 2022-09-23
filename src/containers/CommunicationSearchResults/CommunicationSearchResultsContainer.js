@@ -38,6 +38,7 @@ export default function CommunicationSearchResultsContainer({
     const [searchId, setSearchId] = useState('');
     const [keyword, setKeyword] = useState('');
     const [lastOptions, setLastOptions] = useState([]);
+    const [tableResultStore, setTableResultStore] = useState([]);
     const breadcrumb = [
         {
             label: 'Home',
@@ -52,19 +53,19 @@ export default function CommunicationSearchResultsContainer({
             path: 'communication_search_results'
         }
     ];
-    // const [filterSearchForm, setFilterSearchForm] = useState(filters.state);
-    // const [filterDate, setFilterDate] = useState([
-    //     {
-    //         startDate: filterSearchForm.filterDateFrom ? new Date(filterSearchForm.filterDateFrom) : '',
-    //         endDate: filterSearchForm.filterDateTo ? new Date(filterSearchForm.filterDateTo) : ''
-    //     }
-    // ]);
     const [filterDate, setFilterDate] = useState([
         {
             startDate: '',
             endDate: ''
         }
     ]);
+
+    const [errorForm, setErrorForm] = useState({
+        errorDate: '',
+        errorSenders: '',
+        errorRecipients: ''
+    });
+
     const [filterSearchForm, setFilterSearchForm] = useState({
         filterId: '',
         filterText: '',
@@ -81,7 +82,8 @@ export default function CommunicationSearchResultsContainer({
             activePage,
             pageSize,
             sort,
-            filterSearchForm
+            filterSearchForm,
+            false
         );
     }, [pageSize, activePage, sort]);
 
@@ -147,10 +149,13 @@ export default function CommunicationSearchResultsContainer({
 
     const [isTimeout, setIsTimeout] = useState(false);
 
-    const loadSearchData = async (page, size, sort, appliedFilters) => {
+    const loadSearchData = async (page, size, sort, appliedFilters, isRequery) => {
         setLoading(true);
 
         const searchParams = JSON.parse(Storage.getItem(storageKey.searchParams));
+
+        console.log(searchParams, isRequery);
+
         var values = searchParams.filterSearchForm;
         var newFilters = {
             filterId: '',
@@ -171,9 +176,14 @@ export default function CommunicationSearchResultsContainer({
         newFilters.filterDateTo = appliedFilters.filterDateTo === '' ? values.filterDateTo : appliedFilters.filterDateTo;
 
         try {
-            const search = await getCommunicationSearchData(page, size, sort, newFilters);
-
+            const search = searchParams != null && !isRequery ? searchParams : await getCommunicationSearchData(page, size, sort, newFilters);
             const { data, searchIds, totalNoOfRecords, totalPages } = search.data;
+
+            Storage.removeItem(storageKey.searchParams);
+            Storage.setItem(storageKey.searchParams, JSON.stringify({
+                filterSearchForm: newFilters,
+                data: search.data
+            }));
 
             // Map data and add the keyword to object as filterKeyword
             data.map(item => {
@@ -280,12 +290,6 @@ export default function CommunicationSearchResultsContainer({
         });
     };
 
-    const [errorForm, setErrorForm] = useState({
-        errorDate: '',
-        errorSenders: '',
-        errorRecipients: ''
-    });
-
     const handleSearchClick = (event) => {
         var formValid = true;
         const initialError = {
@@ -319,14 +323,16 @@ export default function CommunicationSearchResultsContainer({
         if (formValid) {
             Storage.removeItem(storageKey.searchParams);
             Storage.setItem(storageKey.searchParams, JSON.stringify({
-                filterSearchForm: filterSearchForm
+                filterSearchForm: filterSearchForm,
+                data: tableResultStore
             }));
             dispatch(setActivePage(0));
             loadSearchData(
                 activePage,
                 pageSize,
                 sort,
-                filterSearchForm
+                filterSearchForm,
+                true
             );
         } else {
             setErrorForm({

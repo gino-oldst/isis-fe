@@ -105,14 +105,18 @@ export default function CommunicationAlertsContainer({
             dateTo,
             source,
             senders,
-            recipients
+            recipients,
+            false
         );
     }, [pageSize, activePage, sort, submit]);
 
-    const loadCommAlertsData = async (page, size, sort, alert, status, dFrom, dTo, sources, senders, recipients) => {
+    const loadCommAlertsData = async (page, size, sort, alert, status, dFrom, dTo, sources, senders, recipients, isRequery) => {
         setLoading(true);
 
         const alertSearchParams = JSON.parse(Storage.getItem(storageKey.alertSearchParams));
+
+        console.log(alertSearchParams, isRequery);
+
         var filterAlert = [];
         var filterStatus = [];
         var filterSources = [];
@@ -144,10 +148,21 @@ export default function CommunicationAlertsContainer({
         }
 
         try {
-            const alerts = await getCommunicationAlertData(page, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient);
+            const alerts = alertSearchParams != null && !isRequery ? alertSearchParams : await getCommunicationAlertData(page, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient);
             const { data, totalNoOfRecords, totalPages } = alerts.data;
 
-            setTableResultStore(alerts.data);
+            // setTableResultStore(alerts.data);
+            Storage.removeItem(storageKey.alertSearchParams);
+            Storage.setItem(storageKey.alertSearchParams, JSON.stringify({
+                alert: alert,
+                status: status,
+                dateFrom: dateFrom,
+                dateTo: dateTo,
+                source: source,
+                senders: senderStore,
+                recipients: recipientStore,
+                data: alerts.data
+            }));
 
             dispatch(setCommunicationAlertsData(data, totalNoOfRecords, totalPages));
             dispatch(setIsRowSelected(0, []));
@@ -172,8 +187,6 @@ export default function CommunicationAlertsContainer({
 
     const loadSearchValuesFromStorage = async () => {
         const alertSearchParams = JSON.parse(Storage.getItem(storageKey.alertSearchParams));
-
-        console.log(alertSearchParams);
 
         if (alertSearchParams) {
             setAlert(alertSearchParams.alert);
@@ -368,7 +381,8 @@ export default function CommunicationAlertsContainer({
                 dateTo,
                 source,
                 senders,
-                recipients
+                recipients,
+                true
             );
         } else {
             setErrorForm({
