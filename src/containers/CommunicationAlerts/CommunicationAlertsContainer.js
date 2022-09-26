@@ -115,8 +115,6 @@ export default function CommunicationAlertsContainer({
 
         const alertSearchParams = JSON.parse(Storage.getItem(storageKey.alertSearchParams));
 
-        console.log(alertSearchParams, isRequery);
-
         var filterAlert = [];
         var filterStatus = [];
         var filterSources = [];
