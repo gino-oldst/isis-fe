@@ -540,6 +540,12 @@ function CommunicationAlertsDetailScreen({
                                                                                     ? <Typography color='color-1' className='mr-3 text-right' weight='regular'
                                                                                         style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}>ID: {message.id} </Typography>
                                                                                     : ''}
+                                                                                {/* {message.showSender
+                                                                                    ? <div className='message-box-event' style={{ padding: '20px 20px', background: 'none' }}>
+                                                                                        <Typography color='color-1' className='mr-3 text-center' weight='regular'
+                                                                                            style={{ backgroundColor: '121212', fontSize: '14px', lineHeight: '24pt' }}>09/15/2022 20:51:32 *** KIA REZAI (MARIANA UFP LLP) has removed the following user(s): KIA REZAI (MARIANA UFP LLP) </Typography>
+                                                                                    </div>
+                                                                                    : ''} */}
                                                                             </Element>
                                                                         </>
                                                                         : <>
@@ -560,6 +566,12 @@ function CommunicationAlertsDetailScreen({
                                                                                     ? <Typography color='color-1' className='mr-3 text-right' weight='regular'
                                                                                         style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}> ID: {message.id} </Typography>
                                                                                     : ''}
+                                                                                {/* {message.showSender
+                                                                                    ? <div className='message-box-event' style={{ padding: '20px 20px', background: 'none' }}>
+                                                                                        <Typography color='color-1' className='mr-3 text-center' weight='regular'
+                                                                                            style={{ backgroundColor: '121212', fontSize: '14px', lineHeight: '24pt' }}>09/15/2022 20:51:32 *** KIA REZAI (MARIANA UFP LLP) has removed the following user(s): KIA REZAI (MARIANA UFP LLP) </Typography>
+                                                                                    </div>
+                                                                                    : ''} */}
                                                                             </Element>
                                                                         </>);
                                                                 })}
