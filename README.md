@@ -76,3 +76,10 @@ In the event of error in node-sass
 then
 
 `yarn add sass`
+
+If Using Local Backend:
+
+```
+REACT_APP_STORAGE_API_HOST = "http://localhost:5001"
+REACT_APP_AUTH_API_HOST = "http://localhost:5004"
+```
