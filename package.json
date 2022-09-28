@@ -28,6 +28,7 @@
         "domakey": "^0.0.6",
         "dotenv": "^10.0.0",
         "history": "^4.10.1",
+        "idb-keyval": "^6.2.0",
         "jwt-decode": "^3.1.2",
         "lodash.debounce": "^4.0.8",
         "match-sorter": "^6.3.0",

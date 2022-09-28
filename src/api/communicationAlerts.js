@@ -11,8 +11,8 @@ export async function getCommunicationAlertData(page, size, sort, alert, status,
         statusTypes: status.length > 0 ? [...status.map(row => { return row.value; })] : ['OPEN', 'RESOLVED', 'IN_REVIEW'],
         dateFrom: dFrom,
         dateTo: dTo,
-        senders: senders,
-        recipients: recipients
+        senders: senders.length > 0 ? [...senders.map(row => { return row.value; })] : [],
+        recipients: recipients.length > 0 ? [...recipients.map(row => { return row.value; })] : []
     };
 
     const sortColumn = sort.column;

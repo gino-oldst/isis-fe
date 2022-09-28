@@ -23,6 +23,7 @@ import Button from '../../components/base/Button/Button';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import { setAlertsList, setIsRowSelected, setToggle } from '../../redux/modules/isisTable';
 import Storage from '../../utils/Storage';
+import StorageIDB from '../../utils/StorageIDB';
 import { storageKey } from '../../config/constants';
 
 type Props = {
@@ -77,8 +78,10 @@ export default function CommunicationAlertsContainer({
     ]);
 
     useEffect(() => {
-        loadSearchValuesFromStorage();
-        loadColumnFilterValues();
+        setTimeout(() => {
+            loadSearchValuesFromStorage();
+            loadColumnFilterValues();
+        }, 100);
     }, []);
 
     useEffect(() => {
@@ -95,25 +98,27 @@ export default function CommunicationAlertsContainer({
     }, [filterDate]);
 
     useEffect(() => {
-        loadCommAlertsData(
-            activePage,
-            pageSize,
-            sort,
-            alert,
-            status,
-            dateFrom,
-            dateTo,
-            source,
-            senders,
-            recipients,
-            false
-        );
+        setTimeout(() => {
+            loadCommAlertsData(
+                activePage,
+                pageSize,
+                sort,
+                alert,
+                status,
+                dateFrom,
+                dateTo,
+                source,
+                senders,
+                recipients,
+                false
+            );
+        }, 100);
     }, [pageSize, activePage, sort, submit]);
 
     const loadCommAlertsData = async (page, size, sort, alert, status, dFrom, dTo, sources, senders, recipients, isRequery) => {
         setLoading(true);
 
-        const alertSearchParams = JSON.parse(Storage.getItem(storageKey.alertSearchParams));
+        const alertSearchParams = JSON.parse(await StorageIDB.getItem(storageKey.alertSearchParams));
 
         var filterAlert = [];
         var filterStatus = [];
@@ -130,41 +135,34 @@ export default function CommunicationAlertsContainer({
             filterDateFrom = filterDateFrom === '' ? alertSearchParams.dateFrom : dFrom;
             filterDateTo = filterDateTo === '' ? alertSearchParams.dateTo : dTo;
 
-            var slist = [];
-            var rlist = [];
+            const slist = alertSearchParams.senders.length > 0 ? [...alertSearchParams.senders.map(row => { return row; })] : [];
+            const rlist = alertSearchParams.recipients.length > 0 ? [...alertSearchParams.recipients.map(row => { return row; })] : [];
 
-            alertSearchParams.senders.map(sender => {
-                slist.push(sender.value);
-            });
-
-            alertSearchParams.recipients.map(recipient => {
-                rlist.push(recipient.value);
-            });
-
-            filterSender = senders.length === 0 ? slist : senders;
-            filterRecipient = recipients.length === 0 ? rlist : recipients;
+            filterSender = senders.length === 0 && !isRequery ? slist : senders;
+            filterRecipient = recipients.length === 0 && !isRequery ? rlist : recipients;
         }
 
         try {
             const alerts = alertSearchParams != null && !isRequery ? alertSearchParams : await getCommunicationAlertData(page, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient);
             const { data, totalNoOfRecords, totalPages } = alerts.data;
 
-            // setTableResultStore(alerts.data);
-            Storage.removeItem(storageKey.alertSearchParams);
-            Storage.setItem(storageKey.alertSearchParams, JSON.stringify({
-                alert: alert,
-                status: status,
-                dateFrom: dateFrom,
-                dateTo: dateTo,
-                source: source,
-                senders: senderStore,
-                recipients: recipientStore,
-                data: alerts.data
-            }));
-
             dispatch(setCommunicationAlertsData(data, totalNoOfRecords, totalPages));
             dispatch(setIsRowSelected(0, []));
+            setTableResultStore(alerts.data);
+
+            StorageIDB.setItem(storageKey.alertSearchParams, JSON.stringify({
+                alert: filterAlert,
+                status: filterStatus,
+                dateFrom: filterDateFrom,
+                dateTo: filterDateTo,
+                source: filterSources,
+                senders: filterSender,
+                recipients: filterRecipient,
+                data: alerts.data
+            }));
         } catch (e) {
+            console.log(e);
+
             if (e.status == 500 || e.status == 502 || e.status == 503 || e.status == 504 || e.status == 408 || e.status == 404 || e.status == 400) {
                 setIsTimeout(true);
             }
@@ -174,7 +172,6 @@ export default function CommunicationAlertsContainer({
     };
 
     const loadColumnFilterValues = async () => {
-        // const emails = await getEmails();
         const keywords = await getKeywords();
 
         var sortedKeywords = keywords.sort((a, b) => a.label.match(/\d+/) - b.label.match(/\d+/));
@@ -184,7 +181,7 @@ export default function CommunicationAlertsContainer({
     };
 
     const loadSearchValuesFromStorage = async () => {
-        const alertSearchParams = JSON.parse(Storage.getItem(storageKey.alertSearchParams));
+        const alertSearchParams = JSON.parse(await StorageIDB.getItem(storageKey.alertSearchParams));
 
         if (alertSearchParams) {
             setAlert(alertSearchParams.alert);
@@ -195,11 +192,11 @@ export default function CommunicationAlertsContainer({
             var rlist = [];
 
             alertSearchParams.senders.map(sender => {
-                slist.push(sender.value);
+                slist.push({ label: sender.label, value: sender.value });
             });
 
             alertSearchParams.recipients.map(recipient => {
-                rlist.push(recipient.value);
+                rlist.push({ label: recipient.label, value: recipient.value });
             });
 
             setSenders(slist);
@@ -305,7 +302,7 @@ export default function CommunicationAlertsContainer({
         var list = [];
 
         updatedList.map(op => {
-            list.push(op.value);
+            list.push(op);
         });
 
         setSenders(list);
@@ -316,7 +313,7 @@ export default function CommunicationAlertsContainer({
         var list = [];
 
         updatedList.map(op => {
-            list.push(op.value);
+            list.push(op);
         });
 
         setRecipients(list);
@@ -358,17 +355,17 @@ export default function CommunicationAlertsContainer({
         }
 
         if (formValid) {
-            Storage.removeItem(storageKey.alertSearchParams);
-            Storage.setItem(storageKey.alertSearchParams, JSON.stringify({
-                alert: alert,
-                status: status,
-                dateFrom: dateFrom,
-                dateTo: dateTo,
-                source: source,
-                senders: senderStore,
-                recipients: recipientStore,
-                data: tableResultStore
-            }));
+            // Storage.removeItem(storageKey.alertSearchParams);
+            // Storage.setItem(storageKey.alertSearchParams, JSON.stringify({
+            //     alert: alert,
+            //     status: status,
+            //     dateFrom: dateFrom,
+            //     dateTo: dateTo,
+            //     source: source,
+            //     senders: senderStore,
+            //     recipients: recipientStore,
+            //     data: tableResultStore
+            // }));
             loadCommAlertsData(
                 activePage,
                 pageSize,
@@ -382,6 +379,16 @@ export default function CommunicationAlertsContainer({
                 recipients,
                 true
             );
+            StorageIDB.setItem(storageKey.alertSearchParams, JSON.stringify({
+                alert: alert,
+                status: status,
+                dateFrom: dateFrom,
+                dateTo: dateTo,
+                source: source,
+                senders: senderStore,
+                recipients: recipientStore,
+                data: tableResultStore
+            }));
         } else {
             setErrorForm({
                 ...errorForm,

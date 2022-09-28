@@ -18,13 +18,13 @@ export const isDebug = () => {
 };
 
 export function sourceMaker(str: string): string {
-    var ret = '';
+    let ret = '';
 
-    if (str == 'BLOOMBERG_CHAT') {
+    if (str === 'BLOOMBERG_CHAT') {
         ret = 'Bloomberg Chat';
-    } else if (str == 'BLOOMBERG_MAIL') {
+    } else if (str === 'BLOOMBERG_MAIL') {
         ret = 'Bloomberg Mail';
-    } else if (str == 'REUTERS') {
+    } else if (str === 'REUTERS') {
         ret = 'Reuters';
     } else {
         ret = str;
@@ -34,15 +34,15 @@ export function sourceMaker(str: string): string {
 }
 
 export function statusMaker(str: string): string {
-    var ret = '';
+    let ret = '';
 
-    if (str == 'OPEN') {
+    if (str === 'OPEN') {
         ret = 'Open';
-    } else if (str == 'RESOLVED') {
+    } else if (str === 'RESOLVED') {
         ret = 'Resolved';
-    } else if (str == 'ARCHIVED') {
+    } else if (str === 'ARCHIVED') {
         ret = 'Archived';
-    } else if (str == 'IN_REVIEW') {
+    } else if (str === 'IN_REVIEW') {
         ret = 'In Review';
     } else {
         ret = str;
@@ -246,7 +246,7 @@ export const isoToUTCLocal = (value) => {
     return moment(value).utc().local().format('DD/MM/YYYY hh:mm A');
 };
 
-export const isDisclaimer = (str: string): boolean => /\[\[:(.*?)\:]\]|\bCopyright 2021 Goldman Sachs\b/gm.test(str);
+export const isDisclaimer = (str: string): boolean => /\[\[:(.*?):]\]|\bCopyright 2021 Goldman Sachs\b/gm.test(str);
 
 // export const isDisclaimer = (str: string): boolean => {
 //     var status = false;

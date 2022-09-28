@@ -78,13 +78,15 @@ export default function CommunicationSearchResultsContainer({
     });
 
     useEffect((e) => {
-        loadSearchData(
-            activePage,
-            pageSize,
-            sort,
-            filterSearchForm,
-            false
-        );
+        setTimeout(() => {
+            loadSearchData(
+                activePage,
+                pageSize,
+                sort,
+                filterSearchForm,
+                false
+            );
+        }, 150);
     }, [pageSize, activePage, sort]);
 
     useEffect(() => {
@@ -154,8 +156,6 @@ export default function CommunicationSearchResultsContainer({
 
         const searchParams = JSON.parse(Storage.getItem(storageKey.searchParams));
 
-        console.log(searchParams, isRequery);
-
         var values = searchParams.filterSearchForm;
         var newFilters = {
             filterId: '',
@@ -176,7 +176,7 @@ export default function CommunicationSearchResultsContainer({
         newFilters.filterDateTo = appliedFilters.filterDateTo === '' ? values.filterDateTo : appliedFilters.filterDateTo;
 
         try {
-            const search = searchParams != null && !isRequery ? searchParams : await getCommunicationSearchData(page, size, sort, newFilters);
+            const search = searchParams.data != null && !isRequery ? searchParams : await getCommunicationSearchData(page, size, sort, newFilters);
             const { data, searchIds, totalNoOfRecords, totalPages } = search.data;
 
             Storage.removeItem(storageKey.searchParams);
