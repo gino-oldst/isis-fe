@@ -22,7 +22,8 @@ import {
     getDateRangeLocal,
     isoToUTCLocal,
     truncateText,
-    isDisclaimer
+    isDisclaimer,
+    isDebug
 } from '../../utils/helpers';
 import {
     Row,
@@ -235,9 +236,11 @@ function CommunicationSearchMessageDetailsScreen({
                                                                         return (!isDisclaimer(message.message)
                                                                             ? <>
                                                                                 <Element name={message.id} className={`element mb-1 ${message.id == dataId && 'active-message'}`}>
-                                                                                    {message.showSender &&
+                                                                                    {/* {message.showSender &&
                                                                                         <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                            style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b>{message.showSender} {isoToUTCLocal(message.timeSent)}</Typography>}
+                                                                                            style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b>{message.showSender} {isoToUTCLocal(message.timeSent)}</Typography>} */}
+                                                                                    <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>
                                                                                     <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
                                                                                         <Highlighter highlightClassName='alertKeyword'
                                                                                             style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
@@ -245,13 +248,25 @@ function CommunicationSearchMessageDetailsScreen({
                                                                                             autoEscape={true}
                                                                                             textToHighlight={message.message}/>
                                                                                     </div>
+                                                                                    {isDebug()
+                                                                                        ? <Typography color='color-1' className='mr-3 text-right' weight='regular'
+                                                                                            style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}>ID: {message.id} </Typography>
+                                                                                        : ''}
+                                                                                    {/* {message.type == 'event'
+                                                                                        ? <div className='message-box-event' style={{ padding: '20px 20px', background: 'none' }}>
+                                                                                            <Typography color='color-1' className='mr-3 text-center' weight='regular'
+                                                                                                style={{ backgroundColor: '121212', fontSize: '14px', lineHeight: '24pt' }}>09/15/2022 20:51:32 *** KIA REZAI (MARIANA UFP LLP) has removed the following user(s): KIA REZAI (MARIANA UFP LLP) </Typography>
+                                                                                        </div>
+                                                                                        : ''} */}
                                                                                 </Element>
                                                                             </>
                                                                             : <>
                                                                                 <Element name={message.id} className={`element mb-1 ${message.id == dataId && 'active-message'}`}>
-                                                                                    {message.showSender &&
+                                                                                    {/* {message.showSender &&
                                                                                         <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                            style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b>{message.showSender} {isoToUTCLocal(message.timeSent)}</Typography>}
+                                                                                            style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b>{message.showSender} {isoToUTCLocal(message.timeSent)}</Typography>} */}
+                                                                                    <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>
                                                                                     <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
                                                                                         <Highlighter highlightClassName='alertKeyword'
                                                                                             style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
@@ -259,6 +274,16 @@ function CommunicationSearchMessageDetailsScreen({
                                                                                             autoEscape={true}
                                                                                             textToHighlight={message.message}/>
                                                                                     </div>
+                                                                                    {isDebug()
+                                                                                        ? <Typography color='color-1' className='mr-3 text-right' weight='regular'
+                                                                                            style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}> ID: {message.id} </Typography>
+                                                                                        : ''}
+                                                                                    {/* {message.showSender
+                                                                                        ? <div className='message-box-event' style={{ padding: '20px 20px', background: 'none' }}>
+                                                                                            <Typography color='color-1' className='mr-3 text-center' weight='regular'
+                                                                                                style={{ backgroundColor: '121212', fontSize: '14px', lineHeight: '24pt' }}>09/15/2022 20:51:32 *** KIA REZAI (MARIANA UFP LLP) has removed the following user(s): KIA REZAI (MARIANA UFP LLP) </Typography>
+                                                                                        </div>
+                                                                                        : ''} */}
                                                                                 </Element>
                                                                             </>);
                                                                     })}

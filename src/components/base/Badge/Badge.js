@@ -5,14 +5,18 @@ import './badge.scss';
 
 type Props = {
     className?: string,
-    status: string
+    status: string,
+    text: string
 }
 
 export default function Badge({
     className = '',
-    status
+    status,
+    text
 }: Props): React$Element<any> {
     let color = '';
+
+    console.log(text);
 
     switch (status.toLowerCase()) {
         case 'resolved':
@@ -39,6 +43,9 @@ export default function Badge({
         case 'inactive':
             color = 'bg-badge-gray';
             break;
+        case 'title':
+            color = 'bg-download-button';
+            break;
         default:
             color = 'bg-badge-gray';
             break;
@@ -47,7 +54,7 @@ export default function Badge({
     return (
         <ReactBadge
             className={`badge ${className + ' ' + color}`}>
-            {status.toUpperCase()}
+            {text.toString() || status.toUpperCase()}
         </ReactBadge>
     );
 }

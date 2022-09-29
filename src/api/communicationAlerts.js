@@ -1,4 +1,5 @@
 import { config } from '../config/constants';
+import { getAlertCategoryName } from '../utils/helpers';
 import makeApiCall from '../api/makeApiCall';
 
 // const GET_ALERT_DATA = `${config.apiStorage}/storage-service/quick-communication/search/paged`;
@@ -56,7 +57,7 @@ export async function getKeywords() {
 
     const alertList = data.map((keyword) => ({
         value: keyword.id,
-        label: `Alert ${keyword.number}`
+        label: `Alert ${keyword.number} - ${getAlertCategoryName(keyword.number)}`
     }));
 
     return alertList;

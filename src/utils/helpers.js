@@ -2,7 +2,7 @@
 import namor from 'namor';
 import moment from 'moment';
 import _ from 'underscore';
-import { config } from '../config/constants';
+import { config, ALERT_CATEGORIES, COMMUNICATION_ALERT_STATUS_OPTIONS } from '../config/constants';
 
 /**
  * Capitalize a string
@@ -259,3 +259,84 @@ export const isDisclaimer = (str: string): boolean => /\[\[:(.*?):]\]|\bCopyrigh
 
 //     return status;
 // };
+
+export const getAlertCategoryName = (value) => {
+    let returnValue = '';
+
+    if (ALERT_CATEGORIES.MARKET_ABUSE.includes(value)) {
+        // Market Abuse
+        returnValue = 'Market Abuse';
+    } else if (ALERT_CATEGORIES.CONDUCT.includes(value)) {
+        // Conduct
+        returnValue = 'Conduct';
+    } else if (ALERT_CATEGORIES.MISLANGUAGE.includes(value)) {
+        // Mislanguage
+        returnValue = 'Mislanguage';
+    }
+
+    return returnValue;
+};
+
+export const getStatusCounter = (alertList) => {
+    const returnValue = {
+        marketAbuse: {
+            open: 0,
+            resolved: 0,
+            archived: 0,
+            inReview: 0
+        },
+        conduct: {
+            open: 0,
+            resolved: 0,
+            archived: 0,
+            inReview: 0
+        },
+        mislanguage: {
+            open: 0,
+            resolved: 0,
+            archived: 0,
+            inReview: 0
+        }
+    };
+
+    alertList.map(alert => {
+        const value = parseInt(alert.alertName.split(' ')[1]);
+
+        if (ALERT_CATEGORIES.MARKET_ABUSE.includes(value)) {
+            // Market Abuse
+            if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.OPEN) {
+                returnValue.marketAbuse.open += 1;
+            } else if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.RESOLVED) {
+                returnValue.marketAbuse.resolved += 1;
+            } else if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.ARCHIVED) {
+                returnValue.marketAbuse.archived += 1;
+            } else if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.IN_REVIEW) {
+                returnValue.marketAbuse.inReview += 1;
+            }
+        } else if (ALERT_CATEGORIES.CONDUCT.includes(value)) {
+            // Conduct
+            if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.OPEN) {
+                returnValue.conduct.open += 1;
+            } else if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.RESOLVED) {
+                returnValue.conduct.resolved += 1;
+            } else if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.ARCHIVED) {
+                returnValue.conduct.archived += 1;
+            } else if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.IN_REVIEW) {
+                returnValue.conduct.inReview += 1;
+            }
+        } else if (ALERT_CATEGORIES.MISLANGUAGE.includes(value)) {
+            // Mislanguage
+            if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.OPEN) {
+                returnValue.mislanguage.open += 1;
+            } else if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.RESOLVED) {
+                returnValue.mislanguage.resolved += 1;
+            } else if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.ARCHIVED) {
+                returnValue.mislanguage.archived += 1;
+            } else if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.IN_REVIEW) {
+                returnValue.mislanguage.inReview += 1;
+            }
+        }
+    });
+
+    return returnValue;
+};

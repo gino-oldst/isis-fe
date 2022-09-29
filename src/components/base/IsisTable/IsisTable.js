@@ -11,7 +11,7 @@ import CustomDropdown from '../../base/CustomDropdown/CustomDropdown';
 import Select from '../../base/Select/Select';
 import makeAnimated from 'react-select/animated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { kFormatter, getTextColor, truncateText, capitalize, sourceMaker, numberWithCommas } from '../../../utils/helpers';
+import { kFormatter, getTextColor, truncateText, capitalize, sourceMaker, numberWithCommas, getStatusCounter } from '../../../utils/helpers';
 import { ALERT_ESCALATION_OPTIONS, ALERT_STATUS_OPTIONS, COMMUNICATION_ALERT_SOURCE_OPTIONS, COMMUNICATION_ALERT_STATUS_OPTIONS } from '../../../config/constants';
 import {
     Table as ReactstrapTable,
@@ -1193,10 +1193,34 @@ export default function ReactTable({
 
                     return <Badge status={status}/>;
                 } else if (accessor == 'status') {
+                    const alertsList = cell.cell.row.original.alerts.data;
+
+                    const stats = getStatusCounter(alertsList);
+
                     return (
-                        <div className='alert-status-column' style={{ minWidth: '200px !important' }}>
-                            <span>{cell.value == null ? '' : cell.value}</span>
-                        </div>
+                        <>
+                            <div className='alert-status-column d-flex align-items-center mb-3' style={{ minWidth: '200px !important' }}>
+                                <Badge status={'title'} text={'Market Abuse'} className='mr-2'/>
+                                <Badge status={'open'} text={stats.marketAbuse.open} className='mr-2'/>
+                                <Badge status={'resolved'} text={stats.marketAbuse.resolved} className='mr-2'/>
+                                <Badge status={'archived'} text={stats.marketAbuse.archived} className='mr-2'/>
+                                <Badge status={'in_review'} text={stats.marketAbuse.inReview}/>
+                            </div>
+                            <div className='alert-status-column d-flex align-items-center mb-3' style={{ minWidth: '200px !important' }}>
+                                <Badge status={'title'} text={'Conduct'} className='mr-2'/>
+                                <Badge status={'open'} text={stats.conduct.open} className='mr-2'/>
+                                <Badge status={'resolved'} text={stats.conduct.resolved} className='mr-2'/>
+                                <Badge status={'archived'} text={stats.conduct.archived} className='mr-2'/>
+                                <Badge status={'in_review'} text={stats.conduct.inReview}/>
+                            </div>
+                            <div className='alert-status-column d-flex align-items-center' style={{ minWidth: '200px !important' }}>
+                                <Badge status={'title'} text={'Mislanguage'} className='mr-2'/>
+                                <Badge status={'open'} text={stats.mislanguage.open} className='mr-2'/>
+                                <Badge status={'resolved'} text={stats.mislanguage.resolved} className='mr-2'/>
+                                <Badge status={'archived'} text={stats.mislanguage.archived} className='mr-2'/>
+                                <Badge status={'in_review'} text={stats.mislanguage.inReview}/>
+                            </div>
+                        </>
                     );
                 } else {
                     return (<span>{cell.value == null ? '' : cell.value}</span>);
