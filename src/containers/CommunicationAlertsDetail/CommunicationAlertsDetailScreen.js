@@ -126,7 +126,8 @@ function CommunicationAlertsDetailScreen({
 
     const showActionsModal = () => {
         dispatch(setModalContent({
-            modalContent: <ActionModal handleCloseModal={handleCloseModal}/>,
+            modalContent: <ActionModal handleCloseModal={handleCloseModal}
+                predefinedReasons={predefinedReasons}/>,
             size: 'lg'
         }));
     };
@@ -168,11 +169,28 @@ function CommunicationAlertsDetailScreen({
         userId,
         activeModal,
         loadAlerts,
-        handleCloseModal
+        handleCloseModal,
+        predefinedReasons
     }) => {
         const dispatch = useDispatch();
         const [selectedStatus, setSelectedStatus] = useState('');
         const [resolvedNote, setResolvedNote] = useState('');
+
+        const [selectedReason, setSelectedReason] = useState('');
+        const [currentNotes, setCurrentNotes] = useState(null);
+
+        const handleAddPredefinedReason = () => {
+            const reason = currentNotes ? currentNotes + '\n' + selectedReason : selectedReason;
+
+            if (selectedReason != '') {
+                handleChangeReason(reason);
+            }
+        };
+
+        const handleChangeReason = (value) => {
+            setCurrentNotes(value);
+            setResolvedNote(value);
+        };
 
         return (
             <div className='action-modal p-5'>
@@ -251,11 +269,32 @@ function CommunicationAlertsDetailScreen({
                                     }]} />
                             </FormGroup>
                             {selectedStatus == 'RESOLVED' &&
-                                <FormGroup className='mb-5'>
-                                    <Label for='notes'>Reasons for resolving</Label>
-                                    <Input type='textarea' rows={5} name='notes'
-                                        placeholder='Leave blank if there is no change to apply' value={alert.notes} onChange={e => setResolvedNote(e.target.value)} />
-                                </FormGroup>
+                                <div>
+                                    <FormGroup className='mb-2'>
+                                        <Label for='predefinedReasonSelect'>Predefined Reasons</Label>
+                                        <Input type='select' name='select' id='predefinedReasonSelect'
+                                            onChange={(e) => setSelectedReason(e.target.value)}>
+                                            <option disabled={true} value='' selected={true}>
+                                                Select a predefined reason (optional)
+                                            </option>
+                                            {
+                                                predefinedReasons.map(reason => {
+                                                    return (<option value={reason.value}>{reason.value}</option>);
+                                                })
+                                            }
+                                        </Input>
+                                    </FormGroup>
+                                    <div className='action-modal__buttons d-flex justify-content-center align-items-center m-2'>
+                                        <Button label='Add' variant='primary' className='predefined-reason__add-button px-4 py-2'
+                                            onClick={e => handleAddPredefinedReason()}/>
+                                    </div>
+                                    <FormGroup className='mb-5'>
+                                        <Label for='notes'>Reasons for resolving</Label>
+                                        <Input type='textarea' rows={5} name='notes'
+                                            placeholder='Leave blank if there is no change to apply' defaultValue={currentNotes}
+                                            value={currentNotes} onChange={e => handleChangeReason(e.target.value)} />
+                                    </FormGroup>
+                                </div>
                             }
                         </Col>
                     </Row>
