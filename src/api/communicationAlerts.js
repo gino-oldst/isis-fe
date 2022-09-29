@@ -94,3 +94,13 @@ const POST_MESSAGE_ACTIVITY = `${config.apiStorage}/storage-service/message-acti
 export async function postComment(requestBody) {
     return await makeApiCall(POST_MESSAGE_ACTIVITY, 'POST', requestBody);
 }
+
+const RETRIEVE_PREDEFINED_REASONS = `${config.apiStorage}/storage-service/predefined-reason/search`;
+
+export async function retrievePredefinedReasons(filters: Object) {
+    const filterBody = {
+        deleted: filters.filterDelete
+    };
+
+    return await makeApiCall(RETRIEVE_PREDEFINED_REASONS, 'POST', filterBody);
+}

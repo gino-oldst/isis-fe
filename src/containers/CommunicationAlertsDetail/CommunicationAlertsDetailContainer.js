@@ -12,7 +12,7 @@ import {
     DATE_TO_UTC
 } from '../../utils/helpers';
 import { getCommunicationSearchData, getCommunicationMessageDetail, getMessageThread, getRecipients } from '../../api/communicationSearch';
-import { getActivityList, getKeywords, getMessageAlerts, postComment, updateAlert } from '../../api/communicationAlerts';
+import { getActivityList, getKeywords, getMessageAlerts, postComment, updateAlert, retrievePredefinedReasons } from '../../api/communicationAlerts';
 import Typography from '../../components/base/Typography/Typography';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import Button from '../../components/base/Button/Button';
@@ -61,11 +61,13 @@ export default function CommunicationAlertsDetail({
         loadSearchData(filters.state);
         loadAlerts(filters.state.id);
         loadActivity(filters.state.id);
+        loadPredefinedReasons();
     }, [filters]);
 
     const [messages, setMessages] = useState([]);
     const [recipients, setRecipients] = useState('');
     const [alerts, setAlerts] = useState([]);
+    const [predefinedReasons, setPredefinedReasons] = useState([]);
 
     const loadAlerts = async (id) => {
         setAlertLoading(true);
@@ -82,6 +84,16 @@ export default function CommunicationAlertsDetail({
         }
 
         setAlertLoading(false);
+    };
+
+    const loadPredefinedReasons = async () => {
+        try {
+            const predefinedReasonsData = await retrievePredefinedReasons({ delete: false });
+
+            setPredefinedReasons(predefinedReasonsData.data.data);
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     // const [selectedActivityType, setSelectedActivityType] = useState('');
@@ -296,7 +308,8 @@ export default function CommunicationAlertsDetail({
         submit={submit}
         activities={activities}
         activityLoading={activityLoading}
-        onSubmitComment={onSubmitComment}/>;
+        onSubmitComment={onSubmitComment}
+        predefinedReasons={predefinedReasons}/>;
 }
 
 const SuccessModal = ({
