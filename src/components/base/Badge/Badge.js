@@ -1,22 +1,23 @@
 // @flow
 import React from 'react';
-import { Badge as ReactBadge } from 'reactstrap';
+import { Badge as ReactBadge, Tooltip } from 'reactstrap';
 import './badge.scss';
 
 type Props = {
     className?: string,
     status: string,
-    text: string
+    text?: string,
+    isCustom?: Boolean
 }
 
 export default function Badge({
     className = '',
     status,
-    text
+    text,
+    isCustom = false
 }: Props): React$Element<any> {
     let color = '';
-
-    console.log(text);
+    const message = isCustom ? text : status.toUpperCase();
 
     switch (status.toLowerCase()) {
         case 'resolved':
@@ -52,9 +53,27 @@ export default function Badge({
     }
 
     return (
-        <ReactBadge
-            className={`badge ${className + ' ' + color}`}>
-            {text.toString() || status.toUpperCase()}
-        </ReactBadge>
+        <>
+            {status === 'title' || !isCustom &&
+                <ReactBadge
+                    className={`badge ${className + ' ' + color}`}>
+                    {message}
+                </ReactBadge>
+            }
+            {status === 'title' &&
+                <ReactBadge
+                    className={`badge ${className + ' ' + color}`}>
+                    {message}
+                </ReactBadge>
+            }
+            {status !== 'title' && isCustom &&
+                <div data-toggle='tooltip' data-placement='top' title={`${status.toUpperCase()}`}>
+                    <ReactBadge
+                        className={`badge ${className + ' ' + color}`}>
+                        {message}
+                    </ReactBadge>
+                </div>
+            }
+        </>
     );
 }

@@ -41,7 +41,7 @@ export default function CommunicationAlertsContainer({
     const history = useHistory();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
-    const { pageSize, activePage, appliedFilters, selectedRows, areRowsSelectedAll, sort, dateRange, toggle } = useSelector(({ isisTable }) => isisTable);
+    const { pageSize, activePage, appliedFilters, selectedRows, areRowsSelectedAll, sort, dateRange, toggle, isTablePageSelect } = useSelector(({ isisTable }) => isisTable);
     const { table, selected } = useSelector(({ communicationAlerts }) => communicationAlerts);
     const [keywords, setKeywords] = useState([]);
     const [senders, setSenders] = useState([]);
@@ -58,6 +58,7 @@ export default function CommunicationAlertsContainer({
     const [tableResultStore, setTableResultStore] = useState([]);
 
     const [isTimeout, setIsTimeout] = useState(false);
+    const [pageStore, setPageStore] = useState('');
 
     const breadcrumb = [
         {
@@ -128,12 +129,19 @@ export default function CommunicationAlertsContainer({
         var filterDateFrom = '';
         var filterDateTo = '';
         var isPageChange = 0;
+        var insidePage = 0;
 
         if (alertSearchParams) {
             isPageChange = alertSearchParams.activePage !== page;
-            page = alertSearchParams.activePage !== 0 ? page : alertSearchParams.activePage;
+            insidePage = isTablePageSelect ? page : alertSearchParams.activePage;
 
-            console.log(page);
+            // console.log(page, insidePage, alertSearchParams.activePage);
+            // console.log(isRequery, isTablePageSelect);
+
+            if (isRequery) {
+                insidePage = 0;
+            }
+            // setPageStore(page);
 
             filterAlert = alert.length === 0 && !isRequery ? alertSearchParams.alert : alert;
             filterStatus = status.length === 0 && !isRequery ? alertSearchParams.status : status;
@@ -152,13 +160,13 @@ export default function CommunicationAlertsContainer({
             const alerts = alertSearchParams != null && !isRequery
                 ? !isPageChange
                     ? alertSearchParams
-                    : await getCommunicationAlertData(page, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient)
+                    : await getCommunicationAlertData(insidePage, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient)
                 : await getCommunicationAlertData(page, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient);
             const { data, totalNoOfRecords, totalPages } = alerts.data;
 
             dispatch(setCommunicationAlertsData(data, totalNoOfRecords, totalPages));
             dispatch(setIsRowSelected(0, []));
-            dispatch(setActivePage(page));
+            dispatch(setActivePage(insidePage));
             setTableResultStore(alerts.data);
 
             StorageIDB.setItem(storageKey.alertSearchParams, JSON.stringify({
@@ -170,7 +178,7 @@ export default function CommunicationAlertsContainer({
                 senders: filterSender,
                 recipients: filterRecipient,
                 data: alerts.data,
-                activePage: page
+                activePage: insidePage
             }));
         } catch (e) {
             console.log(e);
@@ -431,7 +439,9 @@ export default function CommunicationAlertsContainer({
         onSearchClick={onSearchClick}
         userId={userId}
         table={table}
+
         activePage={activePage}
+
         useMediaQuery={useMediaQuery}
         breadcrumb={breadcrumb}
         sidebarMenu={sidebarMenu}

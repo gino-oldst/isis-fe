@@ -27,7 +27,7 @@ import filterIcon from '../../../assets/images/ic_filter.svg';
 import './table.scss';
 
 import { useTable, useRowSelect, useFilters, useGlobalFilter, usePagination, useSortBy, useAsyncDebounce, useExpanded } from 'react-table';
-import { setIsRowSelected, setTablePageSize, setActivePage, setAppliedFilters, resetAppliedFilters, setAlertsDateRange, setFilteredRows, setSortedColumn, setAllRowsSelected } from '../../../redux/modules/isisTable';
+import { setIsRowSelected, setTablePageSize, setActivePage, setAppliedFilters, resetAppliedFilters, setAlertsDateRange, setFilteredRows, setSortedColumn, setAllRowsSelected, setTablePageChange } from '../../../redux/modules/isisTable';
 import Highlighter from 'react-highlight-words';
 import makeData from './makeData';
 import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
@@ -591,6 +591,8 @@ function IsisTable({
 
     const setTableActivePage = page => {
         dispatch(setActivePage(page));
+        // add another dispatch here
+        dispatch(setTablePageChange(true));
     };
 
     const handleSort = (key) => {
@@ -1199,27 +1201,95 @@ export default function ReactTable({
 
                     return (
                         <>
-                            <div className='alert-status-column d-flex align-items-center mb-3' style={{ minWidth: '200px !important' }}>
-                                <Badge status={'title'} text={'Market Abuse'} className='mr-2'/>
-                                <Badge status={'open'} text={stats.marketAbuse.open} className='mr-2'/>
-                                <Badge status={'resolved'} text={stats.marketAbuse.resolved} className='mr-2'/>
-                                <Badge status={'archived'} text={stats.marketAbuse.archived} className='mr-2'/>
-                                <Badge status={'in_review'} text={stats.marketAbuse.inReview}/>
-                            </div>
-                            <div className='alert-status-column d-flex align-items-center mb-3' style={{ minWidth: '200px !important' }}>
-                                <Badge status={'title'} text={'Conduct'} className='mr-2'/>
-                                <Badge status={'open'} text={stats.conduct.open} className='mr-2'/>
-                                <Badge status={'resolved'} text={stats.conduct.resolved} className='mr-2'/>
-                                <Badge status={'archived'} text={stats.conduct.archived} className='mr-2'/>
-                                <Badge status={'in_review'} text={stats.conduct.inReview}/>
-                            </div>
-                            <div className='alert-status-column d-flex align-items-center' style={{ minWidth: '200px !important' }}>
-                                <Badge status={'title'} text={'Mislanguage'} className='mr-2'/>
-                                <Badge status={'open'} text={stats.mislanguage.open} className='mr-2'/>
-                                <Badge status={'resolved'} text={stats.mislanguage.resolved} className='mr-2'/>
-                                <Badge status={'archived'} text={stats.mislanguage.archived} className='mr-2'/>
-                                <Badge status={'in_review'} text={stats.mislanguage.inReview}/>
-                            </div>
+                            {/* {JSON.stringify(stats.marketAbuse.open != 0 || stats.marketAbuse.resolved != 0 || stats.marketAbuse.archived != 0 || stats.marketAbuse.inReview != 0)} */}
+                            { (stats.marketAbuse.open != 0 || stats.marketAbuse.resolved != 0 ||
+                                stats.marketAbuse.archived != 0 || stats.marketAbuse.inReview != 0) &&
+                                <div className='alert-status-column d-flex align-items-center mb-3' style={{ minWidth: '200px !important' }}>
+                                    <Badge status={'title'} text={'Market Abuse'} isCustom='true'
+                                        className='mr-2'/>
+                                    {stats.marketAbuse.open != 0 &&
+                                        <Badge status={'open'} text={stats.marketAbuse.open} isCustom='true'
+                                            className='mr-2'/>
+                                    }
+                                    {stats.marketAbuse.resolved != 0 &&
+                                        <Badge status={'resolved'} text={stats.marketAbuse.resolved} isCustom='true'
+                                            className='mr-2'/>
+                                    }
+                                    {stats.marketAbuse.archived != 0 &&
+                                        <Badge status={'archived'} text={stats.marketAbuse.archived} isCustom='true'
+                                            className='mr-2'/>
+                                    }
+                                    {stats.marketAbuse.inReview != 0 &&
+                                        <Badge status={'in_review'} text={stats.marketAbuse.inReview} isCustom='true'/>
+                                    }
+                                </div>
+                            }
+                            { (stats.conduct.open > 0 || stats.conduct.resolved > 0 ||
+                                stats.conduct.archived > 0 || stats.conduct.inReview > 0) &&
+                                <div className='alert-status-column d-flex align-items-center mb-3' style={{ minWidth: '200px !important' }}>
+                                    <Badge status={'title'} text={'Conduct'} isCustom='true'
+                                        className='mr-2'/>
+                                    {stats.conduct.open != 0 &&
+                                        <Badge status={'open'} text={stats.conduct.open} isCustom='true'
+                                            className='mr-2'/>
+                                    }
+                                    {stats.conduct.resolved != 0 &&
+                                        <Badge status={'resolved'} text={stats.conduct.resolved} isCustom='true'
+                                            className='mr-2'/>
+                                    }
+                                    {stats.conduct.archived != 0 &&
+                                        <Badge status={'archived'} text={stats.conduct.archived} isCustom='true'
+                                            className='mr-2'/>
+                                    }
+                                    {stats.conduct.inReview != 0 &&
+                                        <Badge status={'in_review'} text={stats.conduct.inReview} isCustom='true'/>
+                                    }
+                                </div>
+                            }
+                            { (stats.mislanguage.open > 0 || stats.mislanguage.resolved > 0 ||
+                                stats.mislanguage.archived > 0 || stats.mislanguage.inReview > 0) &&
+                                <div className='alert-status-column d-flex align-items-center mb-3' style={{ minWidth: '200px !important' }}>
+                                    <Badge status={'title'} text={'Mislanguage'} isCustom='true'
+                                        className='mr-2'/>
+                                    {stats.mislanguage.open != 0 &&
+                                        <Badge status={'open'} text={stats.mislanguage.open} isCustom='true'
+                                            className='mr-2'/>
+                                    }
+                                    {stats.mislanguage.resolved != 0 &&
+                                        <Badge status={'resolved'} text={stats.mislanguage.resolved} isCustom='true'
+                                            className='mr-2'/>
+                                    }
+                                    {stats.mislanguage.archived != 0 &&
+                                        <Badge status={'archived'} text={stats.mislanguage.archived} isCustom='true'
+                                            className='mr-2'/>
+                                    }
+                                    {stats.mislanguage.inReview != 0 &&
+                                        <Badge status={'in_review'} text={stats.mislanguage.inReview} isCustom='true'/>
+                                    }
+                                </div>
+                            }
+                            { (stats.others.open > 0 || stats.others.resolved > 0 ||
+                                stats.others.archived > 0 || stats.others.inReview > 0) &&
+                                <div className='alert-status-column d-flex align-items-center' style={{ minWidth: '200px !important' }}>
+                                    <Badge status={'title'} text={'Others'} isCustom='true'
+                                        className='mr-2'/>
+                                    {stats.others.open != 0 &&
+                                        <Badge status={'open'} text={stats.others.open} isCustom='true'
+                                            className='mr-2'/>
+                                    }
+                                    {stats.others.resolved != 0 &&
+                                        <Badge status={'resolved'} text={stats.others.resolved} isCustom='true'
+                                            className='mr-2'/>
+                                    }
+                                    {stats.others.archived != 0 &&
+                                        <Badge status={'archived'} text={stats.others.archived} isCustom='true'
+                                            className='mr-2'/>
+                                    }
+                                    {stats.others.inReview != 0 &&
+                                        <Badge status={'in_review'} text={stats.others.inReview} isCustom='true'/>
+                                    }
+                                </div>
+                            }
                         </>
                     );
                 } else {

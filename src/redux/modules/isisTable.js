@@ -13,6 +13,7 @@ const RESET_STATE = 'RESET_STATE';
 const SET_ALERTS_DATE_RANGE = 'SET_ALERTS_DATE_RANGE';
 const SET_ALERTS_LIST = 'SET_ALERTS_LIST';
 const SET_TOGGLE = 'SET_TOGGLE';
+const SET_TABLE_PAGE_CHANGED = 'SET_TABLE_PAGE_CHANGED';
 
 export function setToggle(data: Boolean) {
     return {
@@ -110,6 +111,13 @@ export function setAlertsDateRange(target: String, date: String) {
     };
 }
 
+export function setTablePageChange(change: boolean) {
+    return {
+        type: SET_TABLE_PAGE_CHANGED,
+        change
+    };
+}
+
 const initialState = {
     isRowsSelected: false,
     areRowsSelectedAll: false,
@@ -150,6 +158,7 @@ const initialState = {
     },
     pageSize: 10,
     activePage: 0,
+    isTablePageSelect: false,
     dateRange: {
         start: moment().subtract(7, 'd'),
         end: moment()
@@ -158,6 +167,11 @@ const initialState = {
 
 export default function isisTable(state: Object = initialState, action: Object) {
     switch (action.type) {
+        case SET_TABLE_PAGE_CHANGED:
+            return {
+                ...state,
+                isTablePageSelect: action.change
+            };
         case SET_TOGGLE:
             return {
                 ...state,

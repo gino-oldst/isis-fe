@@ -296,6 +296,12 @@ export const getStatusCounter = (alertList) => {
             resolved: 0,
             archived: 0,
             inReview: 0
+        },
+        others: {
+            open: 0,
+            resolved: 0,
+            archived: 0,
+            inReview: 0
         }
     };
 
@@ -326,6 +332,17 @@ export const getStatusCounter = (alertList) => {
             }
         } else if (ALERT_CATEGORIES.MISLANGUAGE.includes(value)) {
             // Mislanguage
+            if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.OPEN) {
+                returnValue.mislanguage.open += 1;
+            } else if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.RESOLVED) {
+                returnValue.mislanguage.resolved += 1;
+            } else if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.ARCHIVED) {
+                returnValue.mislanguage.archived += 1;
+            } else if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.IN_REVIEW) {
+                returnValue.mislanguage.inReview += 1;
+            }
+        } else {
+            // Others
             if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.OPEN) {
                 returnValue.mislanguage.open += 1;
             } else if (alert.status === COMMUNICATION_ALERT_STATUS_OPTIONS.RESOLVED) {
