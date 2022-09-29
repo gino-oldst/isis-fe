@@ -133,15 +133,11 @@ export default function CommunicationAlertsContainer({
 
         if (alertSearchParams) {
             isPageChange = alertSearchParams.activePage !== page;
-            insidePage = isTablePageSelect ? page : alertSearchParams.activePage;
-
-            // console.log(page, insidePage, alertSearchParams.activePage);
-            // console.log(isRequery, isTablePageSelect);
+            insidePage = isTablePageSelect ? page : alertSearchParams.activePage || 0;
 
             if (isRequery) {
                 insidePage = 0;
             }
-            // setPageStore(page);
 
             filterAlert = alert.length === 0 && !isRequery ? alertSearchParams.alert : alert;
             filterStatus = status.length === 0 && !isRequery ? alertSearchParams.status : status;
