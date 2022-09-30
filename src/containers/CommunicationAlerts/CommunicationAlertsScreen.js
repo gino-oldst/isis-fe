@@ -559,7 +559,7 @@ function CommunicationAlertsScreen({
                                 <div className='alerts__information mt-5'>
                                     <Row>
                                         {/* {JSON.stringify(selectedRows)} */}
-                                        <Col lg={12}>
+                                        <Col lg={12} className='overflow-auto'>
                                             <Table className='alerts__table table-responsive table-striped'
                                                 loading={loading}
                                                 isTimeout={isTimeout}

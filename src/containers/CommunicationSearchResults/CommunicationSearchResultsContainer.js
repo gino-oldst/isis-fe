@@ -32,7 +32,7 @@ export default function CommunicationSearchResultsContainer({
     const [loading, setLoading] = useState(true);
     const [isCheckAll, setIsCheckAll] = useState(false);
     const [currPage, setCurrPage] = useState(false);
-    const { pageSize, activePage, appliedFilters, areRowsSelectedAll, sort, dateRange } = useSelector(({ isisTable }) => isisTable);
+    const { pageSize, activePage, appliedFilters, areRowsSelectedAll, sort, dateRange, isTablePageSelect } = useSelector(({ isisTable }) => isisTable);
     const { table, selected, searchFilterValue } = useSelector(({ communicationSearch }) => communicationSearch);
     const { emails, profileData } = useSelector(({ authentication }) => authentication);
     const [searchId, setSearchId] = useState('');
@@ -166,6 +166,8 @@ export default function CommunicationSearchResultsContainer({
             filterRecipients: [],
             filterSource: []
         };
+        var isPageChange = 0;
+        var insidePage = 0;
 
         newFilters.filterId = appliedFilters.filterId === '' ? values.filterId : appliedFilters.filterId;
         newFilters.filterText = appliedFilters.filterText === '' ? values.filterText : appliedFilters.filterText;
@@ -175,15 +177,20 @@ export default function CommunicationSearchResultsContainer({
         newFilters.filterDateFrom = appliedFilters.filterDateFrom === '' ? values.filterDateFrom : appliedFilters.filterDateFrom;
         newFilters.filterDateTo = appliedFilters.filterDateTo === '' ? values.filterDateTo : appliedFilters.filterDateTo;
 
-        try {
-            const search = searchParams.data != null && !isRequery ? searchParams : await getCommunicationSearchData(page, size, sort, newFilters);
-            const { data, searchIds, totalNoOfRecords, totalPages } = search.data;
+        isPageChange = searchParams.activePage !== page;
+        insidePage = isTablePageSelect ? page : searchParams.activePage || 0;
 
-            Storage.removeItem(storageKey.searchParams);
-            Storage.setItem(storageKey.searchParams, JSON.stringify({
-                filterSearchForm: newFilters,
-                data: search.data
-            }));
+        if (isRequery) {
+            insidePage = 0;
+        }
+
+        try {
+            const search = searchParams.data != null && !isRequery
+                ? !isTablePageSelect
+                    ? searchParams
+                    : await getCommunicationSearchData(insidePage, size, sort, newFilters)
+                : await getCommunicationSearchData(page, size, sort, newFilters);
+            const { data, searchIds, totalNoOfRecords, totalPages } = search.data;
 
             // Map data and add the keyword to object as filterKeyword
             data.map(item => {
@@ -193,6 +200,14 @@ export default function CommunicationSearchResultsContainer({
             // history.push('/communication_search_results', filterSearchForm);
 
             dispatch(setCommunicationSearchData(data, searchIds, totalNoOfRecords, totalPages));
+            dispatch(setActivePage(insidePage));
+
+            Storage.removeItem(storageKey.searchParams);
+            Storage.setItem(storageKey.searchParams, JSON.stringify({
+                filterSearchForm: newFilters,
+                data: search.data,
+                activePage: insidePage
+            }));
         } catch (e) {
             if (e.status == 500 || e.status == 502 || e.status == 503 || e.status == 504 || e.status == 408 || e.status == 404 || e.status == 400) {
                 setIsTimeout(true);

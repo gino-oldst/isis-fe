@@ -21,7 +21,7 @@ import { set } from 'date-fns';
 import Typography from '../../components/base/Typography/Typography';
 import Button from '../../components/base/Button/Button';
 import { setModalContent } from '../../redux/modules/modalEvent';
-import { setAlertsList, setIsRowSelected, setToggle } from '../../redux/modules/isisTable';
+import { setAlertsList, setIsRowSelected, setToggle, setActivePage } from '../../redux/modules/isisTable';
 import Storage from '../../utils/Storage';
 import StorageIDB from '../../utils/StorageIDB';
 import { storageKey } from '../../config/constants';
@@ -41,7 +41,7 @@ export default function CommunicationAlertsContainer({
     const history = useHistory();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
-    const { pageSize, activePage, appliedFilters, selectedRows, areRowsSelectedAll, sort, dateRange, toggle } = useSelector(({ isisTable }) => isisTable);
+    const { pageSize, activePage, appliedFilters, selectedRows, areRowsSelectedAll, sort, dateRange, toggle, isTablePageSelect } = useSelector(({ isisTable }) => isisTable);
     const { table, selected } = useSelector(({ communicationAlerts }) => communicationAlerts);
     const [keywords, setKeywords] = useState([]);
     const [senders, setSenders] = useState([]);
@@ -58,6 +58,7 @@ export default function CommunicationAlertsContainer({
     const [tableResultStore, setTableResultStore] = useState([]);
 
     const [isTimeout, setIsTimeout] = useState(false);
+    const [pageStore, setPageStore] = useState('');
 
     const breadcrumb = [
         {
@@ -127,13 +128,22 @@ export default function CommunicationAlertsContainer({
         var filterRecipient = [];
         var filterDateFrom = '';
         var filterDateTo = '';
+        var isPageChange = 0;
+        var insidePage = 0;
 
         if (alertSearchParams) {
-            filterAlert = alert.length === 0 ? alertSearchParams.alert : alert;
-            filterStatus = status.length === 0 ? alertSearchParams.status : status;
-            filterSources = sources.length === 0 ? alertSearchParams.source : sources;
-            filterDateFrom = filterDateFrom === '' ? alertSearchParams.dateFrom : dFrom;
-            filterDateTo = filterDateTo === '' ? alertSearchParams.dateTo : dTo;
+            isPageChange = alertSearchParams.activePage !== page;
+            insidePage = isTablePageSelect ? page : alertSearchParams.activePage || 0;
+
+            if (isRequery) {
+                insidePage = 0;
+            }
+
+            filterAlert = alert.length === 0 && !isRequery ? alertSearchParams.alert : alert;
+            filterStatus = status.length === 0 && !isRequery ? alertSearchParams.status : status;
+            filterSources = sources.length === 0 && !isRequery ? alertSearchParams.source : sources;
+            filterDateFrom = dFrom === '' && !isRequery ? alertSearchParams.dateFrom : dFrom;
+            filterDateTo = dTo === '' && !isRequery ? alertSearchParams.dateTo : dTo;
 
             const slist = alertSearchParams.senders.length > 0 ? [...alertSearchParams.senders.map(row => { return row; })] : [];
             const rlist = alertSearchParams.recipients.length > 0 ? [...alertSearchParams.recipients.map(row => { return row; })] : [];
@@ -143,11 +153,16 @@ export default function CommunicationAlertsContainer({
         }
 
         try {
-            const alerts = alertSearchParams != null && !isRequery ? alertSearchParams : await getCommunicationAlertData(page, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient);
+            const alerts = alertSearchParams != null && !isRequery
+                ? !isPageChange
+                    ? alertSearchParams
+                    : await getCommunicationAlertData(insidePage, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient)
+                : await getCommunicationAlertData(page, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient);
             const { data, totalNoOfRecords, totalPages } = alerts.data;
 
             dispatch(setCommunicationAlertsData(data, totalNoOfRecords, totalPages));
             dispatch(setIsRowSelected(0, []));
+            dispatch(setActivePage(insidePage));
             setTableResultStore(alerts.data);
 
             StorageIDB.setItem(storageKey.alertSearchParams, JSON.stringify({
@@ -158,7 +173,8 @@ export default function CommunicationAlertsContainer({
                 source: filterSources,
                 senders: filterSender,
                 recipients: filterRecipient,
-                data: alerts.data
+                data: alerts.data,
+                activePage: insidePage
             }));
         } catch (e) {
             console.log(e);
@@ -419,7 +435,9 @@ export default function CommunicationAlertsContainer({
         onSearchClick={onSearchClick}
         userId={userId}
         table={table}
+
         activePage={activePage}
+
         useMediaQuery={useMediaQuery}
         breadcrumb={breadcrumb}
         sidebarMenu={sidebarMenu}

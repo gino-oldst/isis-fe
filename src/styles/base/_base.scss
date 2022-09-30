@@ -210,6 +210,9 @@ blockquote {
 .bg-badge-violet {
     background-color: $color-badge-violet;
 }
+.outline-badge-gray {
+    border: 1px solid $color-badge-gray;
+}
 
 // fonts
 .playfair-font {

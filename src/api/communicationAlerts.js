@@ -1,4 +1,5 @@
-import { config } from '../config/constants';
+import { config, ALERT_CATEGORIES } from '../config/constants';
+import { getAlertCategoryName } from '../utils/helpers';
 import makeApiCall from '../api/makeApiCall';
 
 // const GET_ALERT_DATA = `${config.apiStorage}/storage-service/quick-communication/search/paged`;
@@ -56,8 +57,36 @@ export async function getKeywords() {
 
     const alertList = data.map((keyword) => ({
         value: keyword.id,
-        label: `Alert ${keyword.number}`
+        label: `Alert ${keyword.number} - ${getAlertCategoryName(keyword.number)}`
     }));
+
+    // const marketAbuseList = [];
+
+    // data.forEach((keyword) => {
+    //     if (ALERT_CATEGORIES._marketAbuse.includes(keyword.word)) {
+    //         marketAbuseList.push(keyword.number);
+    //     }
+    // });
+
+    // const conductList = [];
+
+    // data.forEach((keyword) => {
+    //     if (ALERT_CATEGORIES._conduct.includes(keyword.word)) {
+    //         conductList.push(keyword.number);
+    //     }
+    // });
+
+    // const mislanguageList = [];
+
+    // data.forEach((keyword) => {
+    //     if (ALERT_CATEGORIES._mislanguage.includes(keyword.word)) {
+    //         mislanguageList.push(keyword.number);
+    //     }
+    // });
+
+    // console.log('marketAbuseList', marketAbuseList);
+    // console.log('conductList', conductList);
+    // console.log('mislanguageList', mislanguageList);
 
     return alertList;
 }
