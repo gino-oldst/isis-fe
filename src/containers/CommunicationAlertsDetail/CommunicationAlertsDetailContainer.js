@@ -232,6 +232,11 @@ export default function CommunicationAlertsDetail({
                 isError: false
             }));
 
+            Storage.removeItem('tempUpdatedInDetails');
+            Storage.setItem('tempUpdatedInDetails', JSON.stringify({
+                tempUpdatedInDetails: true
+            }));
+
             handleCloseModal();
         } catch (e) {
             console.error(e);

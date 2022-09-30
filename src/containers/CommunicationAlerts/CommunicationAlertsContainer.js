@@ -120,6 +120,7 @@ export default function CommunicationAlertsContainer({
         setLoading(true);
 
         const alertSearchParams = JSON.parse(await StorageIDB.getItem(storageKey.alertSearchParams));
+        const tempUpdatedInDetails = JSON.parse(await Storage.getItem('tempUpdatedInDetails'));
 
         var filterAlert = [];
         var filterStatus = [];
@@ -153,11 +154,23 @@ export default function CommunicationAlertsContainer({
         }
 
         try {
-            const alerts = alertSearchParams != null && !isRequery
-                ? !isPageChange
-                    ? alertSearchParams
-                    : await getCommunicationAlertData(insidePage, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient)
-                : await getCommunicationAlertData(page, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient);
+            let alerts = [];
+
+            if (tempUpdatedInDetails.tempUpdatedInDetails) {
+                alerts = await getCommunicationAlertData(page, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient);
+
+                Storage.removeItem('tempUpdatedInDetails');
+                Storage.setItem('tempUpdatedInDetails', JSON.stringify({
+                    tempUpdatedInDetails: false
+                }));
+            } else {
+                alerts = alertSearchParams != null && !isRequery
+                    ? !isPageChange
+                        ? alertSearchParams
+                        : await getCommunicationAlertData(insidePage, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient)
+                    : await getCommunicationAlertData(page, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient);
+            }
+
             const { data, totalNoOfRecords, totalPages } = alerts.data;
 
             dispatch(setCommunicationAlertsData(data, totalNoOfRecords, totalPages));
@@ -175,6 +188,11 @@ export default function CommunicationAlertsContainer({
                 recipients: filterRecipient,
                 data: alerts.data,
                 activePage: insidePage
+            }));
+
+            Storage.removeItem('tempUpdatedInDetails');
+            Storage.setItem('tempUpdatedInDetails', JSON.stringify({
+                tempUpdatedInDetails: false
             }));
         } catch (e) {
             console.log(e);
@@ -404,6 +422,11 @@ export default function CommunicationAlertsContainer({
                 senders: senderStore,
                 recipients: recipientStore,
                 data: tableResultStore
+            }));
+
+            Storage.removeItem('tempUpdatedInDetails');
+            Storage.setItem('tempUpdatedInDetails', JSON.stringify({
+                tempUpdatedInDetails: false
             }));
         } else {
             setErrorForm({
