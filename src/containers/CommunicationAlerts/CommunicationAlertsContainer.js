@@ -15,7 +15,7 @@ import { setCommunicationAlertsData, setColumnFilterValues } from '../../redux/m
 import debounce from 'debounce-async';
 
 // To be removed once we move to with backend
-import { downloadCommAlertsList, getCommunicationAlertData, getKeywords, updateAlert } from '../../api/communicationAlerts';
+import { downloadCommAlertsList, getCommunicationAlertData, getKeywords, updateAlert, retrievePredefinedReasons } from '../../api/communicationAlerts';
 import { getEmails, getEmailsAll } from '../../api/communicationSearch';
 import { set } from 'date-fns';
 import Typography from '../../components/base/Typography/Typography';
@@ -60,6 +60,18 @@ export default function CommunicationAlertsContainer({
     const [isTimeout, setIsTimeout] = useState(false);
     const [pageStore, setPageStore] = useState('');
 
+    const [predefinedReasons, setPredefinedReasons] = useState([]);
+
+    const loadPredefinedReasons = async () => {
+        try {
+            const predefinedReasonsData = await retrievePredefinedReasons({ delete: false });
+
+            setPredefinedReasons(predefinedReasonsData.data.data);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     const breadcrumb = [
         {
             label: 'Home',
@@ -82,6 +94,7 @@ export default function CommunicationAlertsContainer({
         setTimeout(() => {
             loadSearchValuesFromStorage();
             loadColumnFilterValues();
+            loadPredefinedReasons();
         }, 100);
     }, []);
 
@@ -464,7 +477,8 @@ export default function CommunicationAlertsContainer({
         handleCloseBulkUpdate={handleCloseBulkUpdate}
         toggleCheck={toggleCheck}
         errorForm={errorForm}
-        handleCloseSuccessModal={handleCloseSuccessModal}/>;
+        handleCloseSuccessModal={handleCloseSuccessModal}
+        predefinedReasons={predefinedReasons}/>;
 }
 
 const SuccessModal = ({

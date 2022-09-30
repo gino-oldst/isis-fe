@@ -13,6 +13,7 @@ import {
 } from '../../utils/helpers';
 import { setBehavioursData } from '../../redux/modules/behaviours';
 import { setAlertsData, setAssignees, setColumnFilterValues } from '../../redux/modules/alerts';
+import { retrievePredefinedReasons } from '../../api/communicationAlerts';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -29,6 +30,7 @@ export default function AlertsContainer({
     const [loading, setLoading] = useState(true);
     const { isRowsSelected, selectedRows, appliedFilters } = useSelector(({ table }) => table);
     const { table, selected, dateRange } = useSelector(({ alerts }) => alerts);
+    const [predefinedReasons, setPredefinedReasons] = useState([]);
     const behaviours = useSelector(({ behaviours }) => behaviours);
     const breadcrumb = [
         {
@@ -43,7 +45,18 @@ export default function AlertsContainer({
 
     useEffect(() => {
         loadAlertsData();
+        loadPredefinedReasons();
     }, []);
+
+    const loadPredefinedReasons = async () => {
+        try {
+            const predefinedReasonsData = await retrievePredefinedReasons({ delete: false });
+
+            setPredefinedReasons(predefinedReasonsData.data.data);
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     const viewAlertDetails = async (row) => {
         history.push(`/alert/${row.id}`);
@@ -150,5 +163,6 @@ export default function AlertsContainer({
         handleCloseModal={handleCloseModal}
         sidebarMenu={sidebarMenu}
         tableIsFiltered={tableIsFiltered}
-        handleDownloadAlertsList={handleDownloadAlertsList} />;
+        handleDownloadAlertsList={handleDownloadAlertsList}
+        predefinedReasons={predefinedReasons} />;
 }
