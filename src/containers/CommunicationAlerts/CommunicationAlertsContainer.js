@@ -120,7 +120,7 @@ export default function CommunicationAlertsContainer({
         setLoading(true);
 
         const alertSearchParams = JSON.parse(await StorageIDB.getItem(storageKey.alertSearchParams));
-        const tempUpdatedInDetails = JSON.parse(await Storage.getItem('tempUpdatedInDetails'));
+        const tempUpdatedInDetails = JSON.parse(await Storage.getItem(storageKey.tempUpdatedInDetails));
 
         var filterAlert = [];
         var filterStatus = [];
@@ -131,6 +131,11 @@ export default function CommunicationAlertsContainer({
         var filterDateTo = '';
         var isPageChange = 0;
         var insidePage = 0;
+        var updateInMsg = false;
+
+        if (tempUpdatedInDetails) {
+            updateInMsg = tempUpdatedInDetails;
+        }
 
         if (alertSearchParams) {
             isPageChange = alertSearchParams.activePage !== page;
@@ -156,13 +161,11 @@ export default function CommunicationAlertsContainer({
         try {
             let alerts = [];
 
-            if (tempUpdatedInDetails.tempUpdatedInDetails) {
-                alerts = await getCommunicationAlertData(page, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient);
+            if (updateInMsg) {
+                alerts = await getCommunicationAlertData(insidePage, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient);
 
-                Storage.removeItem('tempUpdatedInDetails');
-                Storage.setItem('tempUpdatedInDetails', JSON.stringify({
-                    tempUpdatedInDetails: false
-                }));
+                Storage.removeItem(storageKey.tempUpdatedInDetails);
+                Storage.setItem(storageKey.tempUpdatedInDetails, false);
             } else {
                 alerts = alertSearchParams != null && !isRequery
                     ? !isPageChange
@@ -190,10 +193,8 @@ export default function CommunicationAlertsContainer({
                 activePage: insidePage
             }));
 
-            Storage.removeItem('tempUpdatedInDetails');
-            Storage.setItem('tempUpdatedInDetails', JSON.stringify({
-                tempUpdatedInDetails: false
-            }));
+            Storage.removeItem(storageKey.tempUpdatedInDetails);
+            Storage.setItem(storageKey.tempUpdatedInDetails, false);
         } catch (e) {
             console.log(e);
 
@@ -424,10 +425,8 @@ export default function CommunicationAlertsContainer({
                 data: tableResultStore
             }));
 
-            Storage.removeItem('tempUpdatedInDetails');
-            Storage.setItem('tempUpdatedInDetails', JSON.stringify({
-                tempUpdatedInDetails: false
-            }));
+            Storage.removeItem(storageKey.tempUpdatedInDetails);
+            Storage.setItem(storageKey.tempUpdatedInDetails, false);
         } else {
             setErrorForm({
                 ...errorForm,

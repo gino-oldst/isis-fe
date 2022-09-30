@@ -21,7 +21,8 @@ const storageKey = {
     tokenValidUntil: 'tokenValidUntil',
     sidebarState: 'sidebarState',
     alertSearchParams: 'alertSearchParams',
-    searchParams: 'searchParams'
+    searchParams: 'searchParams',
+    tempUpdatedInDetails: 'tempUpdatedInDetails'
 };
 
 const alertsStorageKey = {
