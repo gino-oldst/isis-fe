@@ -1099,7 +1099,7 @@ export default function ReactTable({
                         <div className='table__text-cell d-flex flex-column'>
                             {cell.value != null
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
-                                    {capitalize(cell.value)}
+                                    {sourceMaker(cell.value)}
                                 </Typography>
                                 : 'N/A'
                             }

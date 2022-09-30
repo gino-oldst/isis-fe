@@ -39,6 +39,11 @@ const ALERT_ESCALATION_OPTIONS = {
     MANAGER: 'MANAGER'
 };
 
+const MESSAGE_TYPE = {
+    JOIN: 'Join',
+    LEAVE: 'Leave'
+};
+
 const ALERT_STATUS_OPTIONS = {
     OPEN: 'OPEN',
     RESOLVED: 'RESOLVED',
@@ -62,9 +67,12 @@ const COMMUNICATION_ALERT_STATUS_OPTIONS = {
 };
 
 const ALERT_CATEGORIES = {
-    MARKET_ABUSE: [113, 100, 71, 105, 26, 101, 119, 41, 7, 5, 32, 106, 34, 103, 114, 137, 107, 75, 2, 6, 64, 81, 51, 49, 37, 4, 13, 139, 109, 61, 62, 52, 122, 35, 28, 67, 93, 57, 43, 29, 131, 53, 65, 72, 99, 77, 39, 50],
-    CONDUCT: [92, 88, 15, 134, 42, 82, 3, 79, 126, 124, 36, 25, 60, 68, 78, 108, 120, 135, 27, 54, 12, 24, 132, 136, 16, 73, 55, 98, 111, 94, 87, 38, 116, 125, 112, 45, 31, 83, 115, 97, 138, 47, 90, 104, 66, 9, 85, 63],
-    MISLANGUAGE: [46, 21, 69, 91, 20, 86, 95, 118, 30, 129, 123, 121, 133, 117, 89, 18, 130, 14, 141, 19, 40, 59, 10, 102, 44, 22, 58, 76, 17, 110, 33, 127, 84, 96, 56, 128, 1, 70, 8, 0, 23, 74, 11, 48, 140, 80, 142]
+    MARKET_ABUSE: [34, 26, 24, 31, 7, 38, 1, 12, 21, 19, 22, 10, 29, 40, 5, 3, 36, 37, 15, 2, 35, 20, 28, 6, 41, 32, 42, 17, 16, 44, 43, 14, 13, 25, 33, 9, 18, 23, 30, 11, 4, 39, 27],
+    CONDUCT: [74, 69, 77, 46, 64, 56, 63, 47, 70, 54, 67, 75, 52, 60, 65, 49, 72, 66, 73, 51, 53, 50, 68, 71, 58, 45, 59, 61, 62, 76, 57, 55, 48],
+    MISLANGUAGE: [89, 82, 117, 79, 81, 121, 130, 83, 78, 132, 128, 116, 99, 109, 120, 136, 92, 104, 95, 84, 118, 100, 97, 101, 96, 113, 86, 108, 93, 98, 105, 115, 106, 129, 139, 110, 103, 133, 114, 126, 135, 91, 107, 87, 112, 131, 134, 122, 137, 90, 119, 124, 102, 94, 111, 138, 85, 123],
+    _marketAbuse: ['avertir', 'avoir une info', 'Banged the drum', 'Banging the drum', 'caché', 'confidential', 'confidentiel', 'Dodgy', 'Frontran', 'Frontranfronran', 'Frontrun', 'hidden', 'Hint', 'info', 'information privilégiée', 'informer', 'Inside Information', 'Layered', 'Layering', 'Mark the close', 'Mark the open', 'Marking the close', 'Marking the open', 'non public', 'non publique', 'not public', 'Painted the tape', 'Painting the tape', 'privacy', 'privileged', 'privilégié', 'Pump and dump', 'Rmor', 'Rumor', 'Secret', 'Spoof', 'Spoofed', 'Spoofing', 'Tip', 'Tip-off', 'Tipped off', 'Trash and cash', 'Wash', 'wash trade'],
+    _conduct: ['Bribe', 'Compliance', 'Facebook', 'FCB', 'Fcebook', 'Gift', 'Insta', 'Instagram', 'Issue', 'Laundering', 'message vocal', 'Messenger', 'Mobile', 'Money Laundering', 'msg vocal', 'mssger', 'Sanction', 'Sanctioned', 'Signal', 'Sms', 'Snap', 'Snapchat', 'Tele', 'Telegram', 'Vocal', 'vocal message', 'vocal msg', 'vocalmsg', 'voice message', 'voice msg', 'voicemsg', 'WhatsApp', 'WS'],
+    _mislanguage: ['Abruti', 'Arse', 'Arsehole', 'Asshole', 'Bastard', 'Batard', 'batarde', 'Bitch', 'Bordel', 'cabron', 'Capullo', 'Casse couilles', 'Coma mierde', 'Con', 'Connard', 'Connasse', 'Conne', 'Cono', 'Coño de su madre', 'Cunt', 'Dork', 'enclé', 'Enculé', 'Enfoiré', 'f**k', 'F*cl', 'FDP', 'Feignasse', 'Fils de pute', 'Fuck', 'Fuckface', 'Fvck', 'Gilipollas', 'Hija de puta', 'Hijo de puta', 'Jerk', 'JODER', 'Knob', 'MARICÓN', 'Me cago en', 'Me cago en tí', 'Merde', 'mierda', 'Motherfucker', 'Nique sa mère', 'No me jodas', 'NTM', 'Pendejo', 'Piece of shit', 'Piss Off', 'Pouffiasse', 'PUTA MADRE', 'Puta madre', 'Putain', 'Pute', 'Raclure', 'Sac à merde', 'Salope', 'Scumbag', 'Shit', 'Tocard', 'Tocarde', 'Trou du cul', 'Twit', 'Vete a la mierda', 'Wanker']
 };
 
 export {
@@ -76,5 +84,6 @@ export {
     //  ISIS
     COMMUNICATION_ALERT_SOURCE_OPTIONS,
     COMMUNICATION_ALERT_STATUS_OPTIONS,
-    ALERT_CATEGORIES
+    ALERT_CATEGORIES,
+    MESSAGE_TYPE
 };

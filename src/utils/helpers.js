@@ -259,6 +259,9 @@ export const isDisclaimer = (str: string): boolean => /\[\[:(.*?):]\]|\bCopyrigh
 
 //     return status;
 // };
+export const isMessageEvent = (value) => {
+    return /\[\[:(.*?):]\]|\bBloomberg created note\b/gm.test(value);
+};
 
 export const getAlertCategoryName = (value) => {
     let returnValue = '';
@@ -305,7 +308,7 @@ export const getStatusCounter = (alertList) => {
         }
     };
 
-    alertList.map(alert => {
+    alertList.forEach(alert => {
         const value = parseInt(alert.alertName.split(' ')[1]);
 
         if (ALERT_CATEGORIES.MARKET_ABUSE.includes(value)) {
