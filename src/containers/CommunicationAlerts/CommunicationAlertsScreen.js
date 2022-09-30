@@ -81,7 +81,8 @@ type Props = {
     toggleCheck: Boolean,
     errorForm: Array<Any>,
     handleDownloadAlertData: Function,
-    handleCloseSuccessModal: Function
+    handleCloseSuccessModal: Function,
+    predefinedReasons: Array<any>,
 }
 
 function CommunicationAlertsScreen({
@@ -117,14 +118,15 @@ function CommunicationAlertsScreen({
     toggleCheck,
     errorForm,
     handleDownloadAlertData,
-    handleCloseSuccessModal
+    handleCloseSuccessModal,
+    predefinedReasons
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
 
     const showActionsModal = () => {
         dispatch(setModalContent({
-            modalContent: <ActionModal handleCloseBulkUpdate={handleCloseBulkUpdate}/>,
+            modalContent: <ActionModal handleCloseBulkUpdate={handleCloseBulkUpdate} predefinedReasons={predefinedReasons}/>,
             size: 'xl'
         }));
     };
@@ -140,11 +142,25 @@ function CommunicationAlertsScreen({
         userId,
         activeModal,
         loadAlerts,
-        handleCloseBulkUpdate
+        handleCloseBulkUpdate,
+        predefinedReasons
     }) => {
         const dispatch = useDispatch();
         const [selectedStatus, setSelectedStatus] = useState('');
         const [resolvedNote, setResolvedNote] = useState('');
+        const [selectedReason, setSelectedReason] = useState('');
+
+        const handleAddPredefinedReason = () => {
+            const reason = resolvedNote ? resolvedNote + '\n' + selectedReason : selectedReason;
+
+            if (selectedReason != '') {
+                handleChangeReason(reason);
+            }
+        };
+
+        const handleChangeReason = (value) => {
+            setResolvedNote(value);
+        };
 
         return (
             <div className='action-modal p-4'>
@@ -197,11 +213,35 @@ function CommunicationAlertsScreen({
                         {/*  />{alert.resolveReason && <div>Reason: {alert.resolveReason}</div>} */}
                     </FormGroup>
                     {selectedStatus == 'RESOLVED' &&
-                        <FormGroup className='mb-5'>
-                            <Label for='notes'>Resolved Notes</Label>
-                            <Input type='textarea' rows={5} name='notes'
-                                placeholder='Leave blank if there is no change to apply' onChange={e => setResolvedNote(e.target.value)} />
-                        </FormGroup>
+                        <div>
+                            <FormGroup className='mb-2'>
+                                <Label for='predefinedReasonSelect'>Predefined Reasons</Label>
+                                <Input type='select' name='select' id='predefinedReasonSelect'
+                                    onChange={(e) => setSelectedReason(e.target.value)}>
+                                    <option disabled={true} value='' selected={true}>
+                                        Select a predefined reason (optional)
+                                    </option>
+                                    {
+                                        predefinedReasons.map(reason => {
+                                            return (<option value={reason.value}>{reason.value}</option>);
+                                        })
+                                    }
+                                </Input>
+                            </FormGroup>
+                            <div className='action-modal__buttons d-flex justify-content-center align-items-center m-2'>
+                                <Button label='Add' variant='primary' className='predefined-reason__add-button px-4 py-2'
+                                    onClick={e => handleAddPredefinedReason()}/>
+                            </div>
+                            <FormGroup className='mb-5'>
+                                <Label for='notes'>Resolved Notes</Label>
+                                <Input type='textarea' rows={5} name='notes'
+                                    placeholder='Leave blank if there is no change to apply'
+                                    defaultValue={resolvedNote}
+                                    value={resolvedNote}
+                                    onChange={e => handleChangeReason(e.target.value)} />
+                            </FormGroup>
+
+                        </div>
                     }
                     <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
                         <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'

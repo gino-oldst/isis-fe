@@ -51,7 +51,8 @@ type Props = {
     selectedRows: Array,
     sidebarMenu: Array<Menu>,
     handleCloseModal: Function,
-    handleDownloadAlertsList: Function
+    handleDownloadAlertsList: Function,
+    predefinedReasons: Array
 }
 
 function AlertsScreen({
@@ -69,7 +70,8 @@ function AlertsScreen({
     sidebarMenu,
     handleCloseModal,
     tableIsFiltered,
-    handleDownloadAlertsList
+    handleDownloadAlertsList,
+    predefinedReasons
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -128,7 +130,8 @@ function AlertsScreen({
                 alert={alert}
                 setAlert={setAlert}
                 setActiveModal={setActiveModal}
-                handleResolveReasonChange={handleResolveReasonChange} />
+                handleResolveReasonChange={handleResolveReasonChange}
+                predefinedReasons={predefinedReasons} />
         }));
     };
 
@@ -363,7 +366,8 @@ const ActionModal = ({
     alert,
     setAlert,
     setActiveModal,
-    handleResolveReasonChange
+    handleResolveReasonChange,
+    predefinedReasons
 }) => {
     const dispatch = useDispatch();
     const [submit, setSubmit] = useState(false);
@@ -372,7 +376,7 @@ const ActionModal = ({
         setActiveModal('resolve');
         dispatch(setModalContent({
             modalContent: <ResolveAlertModal handleCloseModal={handleCloseModal} handleCloseResolveAlert={handleCloseResolveAlert}
-                alert={alert} setAlert={setAlert} handleResolveReasonChange={handleResolveReasonChange} />
+                alert={alert} setAlert={setAlert} handleResolveReasonChange={handleResolveReasonChange} predefinedReasons={predefinedReasons} />
         }));
     };
 
@@ -601,7 +605,8 @@ const ErrorMsgModal = ({
 const ResolveAlertModal = ({
     handleCloseModal,
     handleCloseResolveAlert,
-    handleResolveReasonChange
+    handleResolveReasonChange,
+    predefinedReasons
 }) => {
     const [submit, setSubmit] = useState(false);
 
