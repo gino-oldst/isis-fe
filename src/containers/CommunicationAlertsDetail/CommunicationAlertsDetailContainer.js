@@ -18,6 +18,8 @@ import { setModalContent } from '../../redux/modules/modalEvent';
 import Button from '../../components/base/Button/Button';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
 import { setMessageAlerts, setAlertsListDetail } from '../../redux/modules/communicationAlerts';
+import Storage from '../../utils/Storage';
+import { storageKey } from '../../config/constants';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -197,6 +199,9 @@ export default function CommunicationAlertsDetail({
             console.error(e);
         }
 
+        Storage.removeItem(storageKey.tempUpdatedInDetails);
+        Storage.setItem(storageKey.tempUpdatedInDetails, true);
+
         setAlertLoading(false);
     };
 
@@ -219,6 +224,9 @@ export default function CommunicationAlertsDetail({
                 message: 'Alert Status Update Success.',
                 isError: false
             }));
+
+            Storage.removeItem(storageKey.tempUpdatedInDetails);
+            Storage.setItem(storageKey.tempUpdatedInDetails, true);
         } catch (e) {
             console.error(e);
         }
@@ -243,6 +251,9 @@ export default function CommunicationAlertsDetail({
                 message: 'Adding of Resolution Success.',
                 isError: false
             }));
+
+            Storage.removeItem(storageKey.tempUpdatedInDetails);
+            Storage.setItem(storageKey.tempUpdatedInDetails, true);
 
             handleCloseModal();
         } catch (e) {
