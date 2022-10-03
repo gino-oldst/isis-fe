@@ -7,6 +7,7 @@ import type { Menu } from '../../types';
 
 import dataSample from './data_sample.json';
 import { getKeywordSearch, getPolicySearchData } from '../../api/policies';
+import { getAlertCategoryName } from '../../utils/helpers';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -50,7 +51,7 @@ export default function CommunicationPoliciesContainer({
 
             data.map((policy, i) => {
                 policy.keyword = policy.word;
-                policy.alertId = `Alert ${policy.number}`;
+                policy.alertId = `Alert ${policy.number} - ${getAlertCategoryName(policy.number)}`;
                 policy.status = policy.deleted ? 'Disabled' : 'Enabled';
             });
 
