@@ -242,14 +242,14 @@ function CommunicationSearchMessageDetailsScreen({
                                                                                         <Typography color='color-3' className='mr-3 mb-2' weight='regular'
                                                                                             style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b>{message.showSender} {isoToUTCLocal(message.timeSent)}</Typography>} */}
                                                                                     {isMessageEvent(message.message) || message.type === MESSAGE_TYPE.JOIN || message.type === MESSAGE_TYPE.LEAVE
-                                                                                        ? <div className='message-box-event' style={{ padding: '20px 20px', background: 'none' }}>
-                                                                                            <Typography color='color-1' className='mr-3 text-center' weight='regular'
-                                                                                                style={{ backgroundColor: '121212', fontSize: '14px', lineHeight: '24pt' }}>{isoToUTCLocal(message.timeSent)} *** {message.type && message.sender} {message.message} </Typography>
+                                                                                        ? <div className='message-box-event'>
+                                                                                            <Typography color='color-2' className='mr-3 text-center' weight='regular'
+                                                                                                style={{ backgroundColor: '121212', fontSize: '14px', lineHeight: '24pt' }}>{isoToUTCLocal(message.timeSent)} {message.type || message.source.toLowerCase() == 'bloomberg_chat' && `*** ${message.sender}` } {message.message} </Typography>
                                                                                         </div>
                                                                                         : <>
                                                                                             <Typography color='color-3' className='mr-3 mb-2' weight='regular'
                                                                                                 style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>
-                                                                                            <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
+                                                                                            <div className='message-box'>
                                                                                                 <Highlighter highlightClassName='alertKeyword'
                                                                                                     style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
                                                                                                     searchWords={[filterText]}
@@ -270,13 +270,13 @@ function CommunicationSearchMessageDetailsScreen({
                                                                                         <Typography color='color-3' className='mr-3 mb-2' weight='regular'
                                                                                             style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b>{message.showSender} {isoToUTCLocal(message.timeSent)}</Typography>} */}
                                                                                     {isMessageEvent(message.message) || message.type === MESSAGE_TYPE.JOIN || message.type === MESSAGE_TYPE.LEAVE
-                                                                                        ? <div className='message-box-event' style={{ padding: '20px 20px', background: 'none' }}>
+                                                                                        ? <div className='message-box-event'>
                                                                                             <Typography color='color-1' className='mr-3 text-center' weight='regular'
-                                                                                                style={{ backgroundColor: '121212', fontSize: '14px', lineHeight: '24pt' }}>{isoToUTCLocal(message.timeSent)} *** {message.type && message.sender} {message.message} </Typography>
+                                                                                                style={{ backgroundColor: '121212', fontSize: '14px', lineHeight: '24pt' }}>{isoToUTCLocal(message.timeSent)} {message.type && !message.source.toLowerCase() == 'reuters' && `*** ${message.sender}` } {message.message} </Typography>
                                                                                         </div>
                                                                                         : <><Typography color='color-3' className='mr-3 mb-2' weight='regular'
                                                                                             style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>
-                                                                                        <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
+                                                                                        <div className='message-box'>
                                                                                             <Highlighter highlightClassName='alertKeyword'
                                                                                                 style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
                                                                                                 searchWords={[]}
