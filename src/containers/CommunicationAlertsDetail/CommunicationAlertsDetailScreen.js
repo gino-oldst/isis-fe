@@ -50,6 +50,7 @@ import Highlighter from 'react-highlight-words';
 import { Nav, OverlayTrigger, Popover, PopoverContent, Tab } from 'react-bootstrap';
 import { Element, Link, scroller, Button as ScrollButton } from 'react-scroll';
 import logo from '../../assets/logos/mariana_logo_sml.png';
+import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
 
 type Props = {
     loading: Boolean,
@@ -67,6 +68,8 @@ type Props = {
     submit: Boolean,
     filterText: Array,
     messages: Array,
+    handleGenerate: Function,
+    handleSelectAll: Function,
     recipients: Array,
     alertsData: Array,
     alertList: Array,
@@ -94,6 +97,8 @@ function CommunicationAlertsDetailScreen({
     submit,
     filterText,
     messages,
+    handleGenerate,
+    handleSelectAll,
     recipients,
     alertsData,
     alertsList,
@@ -124,24 +129,24 @@ function CommunicationAlertsDetailScreen({
 
     const systemEvents = activities.filter(row => row.type === 'SYSTEM_EVENT');
 
-    const showActionsModal = () => {
+    const showActionsUpdateModal = () => {
         dispatch(setModalContent({
-            modalContent: <ActionModal handleCloseModal={handleCloseModal}
+            modalContent: <ActionUpdateModal handleCloseModal={handleCloseModal}
                 predefinedReasons={predefinedReasons}/>,
             size: 'lg'
         }));
     };
 
-    const showSuccessModal = () => {
+    const showSuccessUpdateModal = () => {
         dispatch(setModalContent({
-            modalContent: <SuccessModal handleCloseModal={handleCloseModal}/>,
+            modalContent: <SuccessUpdateModal handleCloseModal={handleCloseModal}/>,
             size: 'md'
         }));
     };
 
-    const showResolvedModal = (status, selectedAlert) => {
+    const showResolvedUpdateModal = (status, selectedAlert) => {
         dispatch(setModalContent({
-            modalContent: <ResolvedModal status={status} selectedAlert={selectedAlert} handleCloseModal={handleCloseModal}
+            modalContent: <ResolvedUpdateModal status={status} selectedAlert={selectedAlert} handleCloseModal={handleCloseModal}
                 predefinedReasons={predefinedReasons}/>,
             size: 'lg'
         }));
@@ -149,10 +154,24 @@ function CommunicationAlertsDetailScreen({
 
     const handleDetailStatusChange = (e, selectedAlert) => {
         if (e.value == 'RESOLVED') {
-            showResolvedModal(e.value, selectedAlert);
+            showResolvedUpdateModal(e.value, selectedAlert);
         } else {
             onSubmitSingle(e.value, '', selectedAlert);
         }
+    };
+
+    const showActionsModal = () => {
+        dispatch(setModalContent({
+            modalContent: <ActionModal handleCloseModal={handleCloseModal} />,
+            size: 'lg'
+        }));
+    };
+
+    const showSuccessModal = () => {
+        dispatch(setModalContent({
+            modalContent: <SuccessModal handleCloseModal={handleCloseModal} />,
+            size: 'md'
+        }));
     };
 
     useEffect(() => {
@@ -171,6 +190,121 @@ function CommunicationAlertsDetailScreen({
         loadAlerts,
         handleCloseModal,
         predefinedReasons
+    }) => {
+        const dispatch = useDispatch();
+
+        return (
+            <div className='action-modal p-5'>
+                <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
+                    onClick={handleCloseModal} />
+                <Typography color='color-3' className='mr-auto' weight='regular'
+                    style={{ fontSize: '16px', lineHeight: '24pt' }}>{detailData.source != null ? detailData.source : 'No Source'} {/* Email */}</Typography>
+                <div className='d-flex flex-column'>
+                    {/* <FormGroup check={true} className='mb-1'>
+                            <Label check={true} className='d-flex align-items-center'>
+                                <AllCheckerCheckbox/>
+                                <span className='box-label'>(Select All)</span>
+                            </Label>
+                        </FormGroup> */}
+                    <CheckboxGroup
+                        onChange = {handleSelectAll}>
+                        <FormGroup check={true} className='mb-1'>
+                            <Label check={true} className='d-flex align-items-center'>
+                                <AllCheckerCheckbox/>
+                                <h4 className='box-label'>(Select All)</h4>
+                            </Label>
+                        </FormGroup>
+                        <div id='containerElement' className='alerts-detail__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
+                            <div>
+                                {messages.map(message => {
+                                    return (!isDisclaimer(message.message)
+                                        ? <>
+                                            <Element name={message.id} className={`element mb-1 ${message.id == dataId && 'active-message'}`}>
+                                                {message.showSender &&
+                                                    <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>}
+                                                <div>
+                                                    <Checkbox class='select-option' value = {message.id} style={{ position: 'relative', bottom: '-40px' }}/>
+                                                    <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
+                                                        <Highlighter highlightClassName='alertKeyword'
+                                                            style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
+                                                            searchWords={filterText}
+                                                            autoEscape={true}
+                                                            textToHighlight={message.message}/>
+                                                    </div>
+                                                </div>
+                                                {isDebug()
+                                                    ? <Typography color='color-1' className='mr-3 text-right' weight='regular'
+                                                        style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}>ID: {message.id} </Typography>
+                                                    : ''}
+                                            </Element>
+                                        </>
+                                        : <>
+                                            <Element name={message.id} className={`element mb-1 ${message.id == dataId && 'active-message'}`}>
+                                                {message.showSender &&
+                                                    <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>}
+                                                <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
+                                                    <Highlighter highlightClassName='alertKeyword'
+                                                        style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
+                                                        searchWords={[]}
+                                                        autoEscape={true}
+                                                        textToHighlight={message.message}/>
+                                                </div>
+                                                {isDebug()
+                                                    ? <Typography color='color-1' className='mr-3 text-right' weight='regular'
+                                                        style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}> ID: {message.id} </Typography>
+                                                    : ''}
+                                            </Element>
+                                        </>);
+                                })}
+                            </div>
+                        </div>
+                    </CheckboxGroup>
+                </div>
+                <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
+                    <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
+                        onClick={handleCloseModal} />
+                    <Button label='Generate' variant='primary' className='alerts-detail__save-button px-4 py-2'
+                        onClick={handleGenerate} />
+                </div>
+            </div>
+        );
+    };
+
+    const SuccessModal = ({
+        userId,
+        activeModal,
+        loadAlerts,
+        handleCloseModal
+    }) => {
+        const dispatch = useDispatch();
+
+        return (
+            <div className='action-modal p-4'>
+                <div className='row action-modal__content mt-5 mb-5 d-flex justify-content-center align-items-center'>
+                    <Typography variant='size-26' color='color-3'
+                        className='playfair-font'>
+                      Download Alert Message Thread Successfully
+                    </Typography>
+                    <Typography variant='size-16' color='color-3'
+                        className='mb-4 playfair-font'>
+                        You have successfully Download Alert Message Thread
+                    </Typography>
+                </div>
+                <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
+                    <Button label='Close' variant='primary' className='cancel-button px-4 mr-2 py-2'
+                        onClick={handleCloseModal}/> {/* onClick={handleClose} disabled={submit} /> */}
+                </div>
+            </div>
+        );
+    };
+
+    const ActionUpdateModal = ({
+        userId,
+        activeModal,
+        loadAlerts,
+        handleCloseModal
     }) => {
         const dispatch = useDispatch();
         const [selectedStatus, setSelectedStatus] = useState('');
@@ -312,7 +446,7 @@ function CommunicationAlertsDetailScreen({
         );
     };
 
-    const SuccessModal = ({
+    const SuccessUpdateModal = ({
         userId,
         activeModal,
         loadAlerts,
@@ -340,7 +474,7 @@ function CommunicationAlertsDetailScreen({
         );
     };
 
-    const ResolvedModal = ({
+    const ResolvedUpdateModal = ({
         userId,
         activeModal,
         status,
@@ -450,7 +584,7 @@ function CommunicationAlertsDetailScreen({
                                                 <Typography color='color-3' className='mr-3 mb-2' weight='semi-bold'
                                                     style={{ fontSize: '24px', lineHeight: '24pt' }}>Alert</Typography>
                                                 <Button weight='light' disabled={loading} className='ml-4 mr-4 alerts-detail__bulk-review'
-                                                    disabled={loading} onClick={showActionsModal} label='Update all Status'/>
+                                                    disabled={loading} onClick={showActionsUpdateModal} label='Update all Status'/>
                                             </div>
                                             {alertLoading || loading
                                                 ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3'>
@@ -575,6 +709,10 @@ function CommunicationAlertsDetailScreen({
                                                     <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' to={dataId} smooth={true}
                                                         disabled={loading} containerId='containerElement' duration={500}>
                                                         Show reported message
+                                                    </Link>
+                                                    <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' onClick={showActionsModal} smooth={true}
+                                                        disabled={loading} containerId='containerElement' duration={500}>
+                                                        Show Download Message
                                                     </Link>
                                                 </Col>
                                             </Row>

@@ -5,11 +5,11 @@ import { useHistory, useLocation } from 'react-router-dom';
 import CommunicationSearchMessageDetailsScreen from './CommunicationSearchMessageDetailsScreen';
 import type { Menu } from '../../types';
 import { getCommunicationMessageDetail, getRecentMessages, addMessageActivity, getRecipients, getMessageThread } from '../../api/communicationSearch';
-
 import messageSample from './messageData.json';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
 import { uniq } from 'underscore';
 import * as Scroll from 'react-scroll';
+import HtmlToRtfBrowser from 'html-to-rtf-browser';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -32,6 +32,8 @@ export default function CommunicationSearchMessageDetailsContainer({
     const [messages, setMessages] = useState([]);
     const [messageStorage, setMessageStorage] = useState([]);
     const [count, setCount] = useState(0);
+    const [isCheckAll, setIsCheckAll] = useState(false);
+    const [isChecked, setIsChecked] = useState([]);
     const [messageButtonDisable, setMessageButtonDisable] = useState(false);
     const [loadMessageStatus, setLoadMessageStatus] = useState('message');
     const filters = useLocation();
@@ -127,6 +129,8 @@ export default function CommunicationSearchMessageDetailsContainer({
             for (let i = 0; i < data.length; i++) {
                 var tempData = data[i];
 
+                data[i].forDownload = false;
+
                 if (i == 0) {
                     data[i].showSender = true;
                 } else {
@@ -160,6 +164,56 @@ export default function CommunicationSearchMessageDetailsContainer({
         return unique;
     };
 
+    const handleSelectAll = (event) => {
+        event.map(ev => {
+            setDownloadFlag(ev);
+        });
+    };
+
+    const setDownloadFlag = (event) => {
+        for (let i = 0; i < messages.length; i++) {
+            if (messages[i].id === event.value) {
+                if (event.checked) {
+                    messages[i].forDownload = true;
+                } else {
+                    messages[i].forDownload = false;
+                }
+
+                break;
+            }
+        }
+    };
+
+    const handleGenerate = () => {
+        const htmlToRtf = new HtmlToRtfBrowser();
+        let html = '';
+
+        for (let i = 0; i < messages.length; i++) {
+            if (i == 0) {
+                html = html + `<p>Start Time:${messages[0].timeSent} </p>
+                <p>Room ID: ${messages[0].chainLinkId} </p> <p>----------------------------------------------------------------------------</p>`;
+            }
+
+            if (messages[i].forDownload) {
+                html = html + `
+                <p>${messages[i].sender}&nbsp;&nbsp;${messages[i].timeSent}<br/>${messages[i].message}</p><br/>`;
+            }
+        }
+
+        const rtf = htmlToRtf.convertHtmlToRtf(html);
+
+        // from here on, works only on browser
+        const blob = new Blob([rtf], { type: 'application/rtf;charset=utf-8' });
+        const link = window.URL.createObjectURL(blob);
+
+        window.location = link;
+
+        dispatch(setFlashNotification({
+            message: 'Download Success.',
+            isError: false
+        }));
+    };
+
     return <CommunicationSearchMessageDetailsScreen
         loading={loading}
         userId={userId}
@@ -168,9 +222,14 @@ export default function CommunicationSearchMessageDetailsContainer({
         detailData={detailData}
         useMediaQuery={useMediaQuery}
         breadcrumb={breadcrumb}
+        handleCloseModal={handleCloseModal}
         sidebarMenu={sidebarMenu}
         loadMessageStatus={loadMessageStatus}
         messages={messages}
         messageButtonDisable={messageButtonDisable}
-        recipients={recipients}/>;
+        handleSelectAll={handleSelectAll}
+        isCheckAll={isCheckAll}
+        handleGenerate={handleGenerate}
+        isChecked={isChecked}
+        recipients={recipients} />;
 }

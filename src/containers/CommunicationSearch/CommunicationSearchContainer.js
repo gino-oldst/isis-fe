@@ -190,6 +190,7 @@ export default function CommunicationSearchContainer({
     const handleSource = (event) => {
         var updatedList = [];
 
+        console.log(event);
         event.map(ev => {
             if (ev.checked) {
                 updatedList.push(ev.value);

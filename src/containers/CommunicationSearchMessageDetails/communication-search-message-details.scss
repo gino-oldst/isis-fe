@@ -5,7 +5,7 @@
     height: 100%;
     display: flex;
 
-    &__detail-heading{
+    &__detail-heading {
         font-size: 40px !important;
         font-family: $font-family-2;
     }
@@ -24,7 +24,7 @@
         margin-top: 0.35rem;
         margin-bottom: 2rem;
         font-size: 40px !important;
-        font-family: $font-family-2 !important;
+        font-family: $font-family-2  !important;
     }
 
     &__date-filter-options {
@@ -44,7 +44,7 @@
         }
     }
 
-    &__messages{
+    &__messages {
         width: 600px;
     }
 
@@ -172,10 +172,21 @@
     }
 
     .ok-button {
-        width: 220px;
+        width: 150px;
         padding: 20px !important;
         font-size: 16px;
     }
+    
+    .download-button {
+        width: 150px;
+        padding: 20px !important;
+        font-size: 16px;
+    }
+    
+    .d-flex{
+        font-size: 20px;
+    }
+    
 
     .pb-40 {
         padding-bottom: 100px;
@@ -184,12 +195,14 @@
     .active-message {
         background: #15273E;
         border-radius: 4px;
+
         p {
             color: #FFFFFF !important;
         }
     }
 
-    .element{
+    .element {
         padding: 10px;
     }
+
 }

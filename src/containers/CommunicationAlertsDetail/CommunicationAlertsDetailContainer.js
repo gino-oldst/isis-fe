@@ -18,8 +18,9 @@ import { setModalContent } from '../../redux/modules/modalEvent';
 import Button from '../../components/base/Button/Button';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
 import { setMessageAlerts, setAlertsListDetail } from '../../redux/modules/communicationAlerts';
-import Storage from '../../utils/Storage';
+import HtmlToRtfBrowser from 'html-to-rtf-browser';
 import { storageKey } from '../../config/constants';
+import Storage from '../../utils/Storage';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -298,6 +299,56 @@ export default function CommunicationAlertsDetail({
         return unique;
     };
 
+    const handleSelectAll = (event) => {
+        event.map(ev => {
+            setDownloadFlag(ev);
+        });
+    };
+
+    const setDownloadFlag = (event) => {
+        for (let i = 0; i < messages.length; i++) {
+            if (messages[i].id === event.value) {
+                if (event.checked) {
+                    messages[i].forDownload = true;
+                } else {
+                    messages[i].forDownload = false;
+                }
+
+                break;
+            }
+        }
+    };
+
+    const handleGenerate = () => {
+        const htmlToRtf = new HtmlToRtfBrowser();
+        let html = '';
+
+        for (let i = 0; i < messages.length; i++) {
+            if (i == 0) {
+                html = html + `<p>Start Time:${messages[0].timeSent} </p>
+                <p>Room ID: ${messages[0].chainLinkId} </p> <p>----------------------------------------------------------------------------</p>`;
+            }
+
+            if (messages[i].forDownload) {
+                html = html + `
+                <p>${messages[i].sender}&nbsp;&nbsp;${messages[i].timeSent}<br/>${messages[i].message}</p><br/>`;
+            }
+        }
+
+        const rtf = htmlToRtf.convertHtmlToRtf(html);
+
+        // from here on, works only on browser
+        const blob = new Blob([rtf], { type: 'application/rtf;charset=utf-8' });
+        const link = window.URL.createObjectURL(blob);
+
+        window.location = link;
+
+        dispatch(setFlashNotification({
+            message: 'Download Success.',
+            isError: false
+        }));
+    };
+
     return <CommunicationAlertsDetailScreen
         loading={loading}
         userId={userId}
@@ -308,6 +359,8 @@ export default function CommunicationAlertsDetail({
         alertsList={alertsList}
         alertLoading={alertLoading}
         messages={messages}
+        handleSelectAll={handleSelectAll}
+        handleGenerate={handleGenerate}
         recipients={recipients}
         useMediaQuery={useMediaQuery}
         breadcrumb={breadcrumb}
