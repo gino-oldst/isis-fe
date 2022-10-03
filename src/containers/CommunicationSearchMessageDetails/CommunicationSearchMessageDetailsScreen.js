@@ -42,11 +42,14 @@ import {
 import { useIsMount } from '../../hooks/useIsMount';
 
 import './communication-search-message-details.scss';
+import { Switch, Route, useHistory, Redirect } from 'react-router-dom';
+import HtmlToRtfBrowser from 'html-to-rtf-browser';
 import { MESSAGE_TYPE } from '../../config/constants';
 import { bulkUpdateAlert } from '../../api/alerts';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import { resetTableState } from '../../redux/modules/table';
 import { setLoading, setAlertsDateRange } from '../../redux/modules/alerts';
+import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
 import Highlighter from 'react-highlight-words';
 import { Nav, OverlayTrigger, Popover, PopoverContent, Tab } from 'react-bootstrap';
 import { Element, Link, scroller, Button as ScrollButton } from 'react-scroll';
@@ -58,6 +61,12 @@ type Props = {
     breadcrumb: Array,
     sidebarMenu: Array<Menu>,
     useMediaQuery: Function,
+    handleCloseModal: Function,
+    handleSelectAll: Function,
+    isCheckAll:Boolean,
+    handleGenerate:Function,
+    isChecked:Boolean,
+    onClickCloseModal: Function,
     detailData: Array,
     dataId: Any,
     loadMessageStatus: String,
@@ -74,7 +83,13 @@ function CommunicationSearchMessageDetailsScreen({
     useMediaQuery,
     sidebarMenu,
     detailData,
+    onClickCloseModal,
     dataId,
+    handleCloseModal,
+    handleSelectAll,
+    isCheckAll,
+    handleGenerate,
+    isChecked,
     loadMessageStatus,
     messages,
     recipients,
@@ -85,6 +100,7 @@ function CommunicationSearchMessageDetailsScreen({
     const { profileData } = useSelector(({ authentication }) => authentication);
     const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1199px)' });
     const isLaptopScreen = useMediaQuery({ query: '(max-width: 1450px)' });
+    const history = useHistory();
 
     const renderAlertInfo = (text) => (
         <Popover id='popover-basic'>
@@ -108,6 +124,20 @@ function CommunicationSearchMessageDetailsScreen({
         </Popover>
     );
 
+    const showActionsModal = () => {
+        dispatch(setModalContent({
+            modalContent: <ActionModal handleCloseModal={handleCloseModal} />,
+            size: 'lg'
+        }));
+    };
+
+    const showSuccessModal = () => {
+        dispatch(setModalContent({
+            modalContent: <SuccessModal handleCloseModal={handleCloseModal} />,
+            size: 'md'
+        }));
+    };
+
     useEffect(() => {
         // scroll to active message
         scroller.scrollTo(`${dataId}`, {
@@ -117,6 +147,98 @@ function CommunicationSearchMessageDetailsScreen({
             // offset: 50 // Scrolls to element + 50 pixels down the page
         });
     }, [loading]);
+
+    const ActionModal = ({
+        userId,
+        activeModal,
+        loadAlerts,
+        handleCloseModal
+    }) => {
+        const dispatch = useDispatch();
+
+        return (
+            <div className='action-modal p-5'>
+                <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
+                    onClick={handleCloseModal} />
+                <Typography color='color-3' className='mr-auto' weight='regular'
+                    style={{ fontSize: '16px', lineHeight: '24pt' }}>{detailData.source != null ? detailData.source : 'No Source'} {/* Email */}</Typography>
+                <div className='d-flex flex-column'>
+                    {/* <FormGroup check={true} className='mb-1'>
+                            <Label check={true} className='d-flex align-items-center'>
+                                <AllCheckerCheckbox/>
+                                <span className='box-label'>(Select All)</span>
+                            </Label>
+                        </FormGroup> */}
+                    <CheckboxGroup
+                        onChange = {handleSelectAll}>
+                        <FormGroup check={true} className='mb-1'>
+                            <Label check={true} className='d-flex align-items-center'>
+                                <AllCheckerCheckbox/>
+                                <h4 className='box-label'>(Select All)</h4>
+                            </Label>
+                        </FormGroup>
+                        <div id='containerElement' className='communication-search-message-details__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
+                            <div>
+                                {messages.map(message => {
+                                    return (!isDisclaimer(message.message)
+                                        ? <>
+                                            <Element name={message.id} className={`element mb-1 ${message.id == dataId && 'active-message'}`}>
+                                                {message.showSender &&
+                                                    <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '10pt' }}><b>{message.sender}</b>{message.showSender} {isoToUTCLocal(message.timeSent)}</Typography>}
+                                                <div>
+                                                    <Checkbox class='select-option' value = {message.id} style={{ position: 'relative', bottom: '-40px' }}/>
+                                                    <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
+                                                        <Highlighter highlightClassName='alertKeyword'
+                                                            style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
+                                                            searchWords={[filterText]}
+                                                            autoEscape={true}
+                                                            textToHighlight={message.message} />
+                                                    </div>
+                                                </div>
+                                            </Element>
+                                        </>
+                                        : <>
+                                            <Element name={message.id} className={`element mb-1 ${message.id == dataId && 'active-message'}`}>
+                                                {message.showSender &&
+                                                    <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b>{message.showSender} {isoToUTCLocal(message.timeSent)}</Typography>}
+                                                <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
+                                                    <Highlighter highlightClassName='alertKeyword'
+                                                        style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
+                                                        searchWords={[]}
+                                                        autoEscape={true}
+                                                        textToHighlight={message.message} />
+                                                </div>
+                                            </Element>
+                                        </>);
+                                })}
+                            </div>
+                        </div>
+                    </CheckboxGroup>
+                </div>
+                <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
+                    <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
+                        onClick={handleCloseModal} />
+                    <Button label='Generate' variant='primary' className='alerts-detail__save-button px-4 py-2'
+                        onClick={handleGenerate} />
+                </div>
+            </div>
+        );
+    };
+
+    const SuccessModal = ({
+        userId,
+        activeModal,
+        loadAlerts,
+        handleCloseModal
+    }) => {
+        const dispatch = useDispatch();
+
+        return (
+            <div className='action-modal p-4'>dsas</div>
+        );
+    };
 
     return (
         <div className='communication-search-message-details'>
@@ -218,12 +340,14 @@ function CommunicationSearchMessageDetailsScreen({
                                                         <Typography color='color-3' className='mr-3 mb-4' weight='regular'
                                                             style={{ fontSize: '16px', lineHeight: '24pt' }}>Reported message is highlighted.</Typography>
                                                     </Col>
-                                                    <Col>
-                                                        <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' to={dataId} smooth={true}
-                                                            containerId='containerElement' duration={500}>
-                                                            Show reported message
-                                                        </Link>
-                                                    </Col>
+                                                    <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' to={dataId} smooth={true}
+                                                        containerId='containerElement' duration={500}>
+                                                        Show reported message
+                                                    </Link>
+                                                    <Link className='btn btn-outline-primary download-button px-2 mr-2 py-2' onClick={showActionsModal} smooth={true}
+                                                        containerId='containerElement' duration={500}>
+                                                        Show Download Page
+                                                    </Link>
                                                 </Row>
                                                 {/* || recipients === undefined */}
                                                 {loading
@@ -416,6 +540,6 @@ function CommunicationSearchMessageDetailsScreen({
     );
 }
 
-const CommunicationSearchMessageDetails: any = withLoading<React$Element<Props>>(CommunicationSearchMessageDetailsScreen);
+const CommunicationSearchMessageDetails: any = withLoading <React$Element<Props>>(CommunicationSearchMessageDetailsScreen);
 
 export default CommunicationSearchMessageDetails;
