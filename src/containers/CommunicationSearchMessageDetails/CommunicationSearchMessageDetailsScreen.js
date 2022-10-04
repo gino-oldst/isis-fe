@@ -384,7 +384,7 @@ function CommunicationSearchMessageDetailsScreen({
                                                                                                     autoEscape={true}
                                                                                                     textToHighlight={message.message}/>
                                                                                                 {isDebug()
-                                                                                                    ? <Typography color='color-1' className='mr-3 text-right' weight='regular'
+                                                                                                    ? <Typography color='color-1' className='mr-3 text-right messageID' weight='regular'
                                                                                                         style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}>ID: {message.id} </Typography>
                                                                                                     : ''}
                                                                                             </div>

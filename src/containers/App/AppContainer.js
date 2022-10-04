@@ -25,6 +25,8 @@ import {
     Spinner
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import StorageIDB from '../../utils/StorageIDB';
+import { storageKey } from '../../config/constants';
 
 const loading = () => (
     <WrapperBackground>
@@ -143,6 +145,7 @@ const NavbarAccount = () => {
 
     const logout = () => {
         localStorage.clear();
+        StorageIDB.removeItem(storageKey.alertSearchParams);
         dispatch(setLoggingOut());
         window.location.href = '/login';
     };
