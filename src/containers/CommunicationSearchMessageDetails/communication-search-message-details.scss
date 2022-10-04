@@ -195,7 +195,11 @@
         background: #15273E;
         border-radius: 4px;
 
-        p {
+        .messageID{
+            color: #37a187 !important;
+        }
+
+        p :not(.messageID) {
             color: #FFFFFF !important;
         }
     }

@@ -165,7 +165,7 @@ function CommunicationAlertsDetailScreen({
     const showActionsModal = () => {
         dispatch(setModalContent({
             modalContent: <ActionModal handleCloseModal={handleCloseModal} />,
-            size: 'lg'
+            size: 'xl'
         }));
     };
 
@@ -222,11 +222,11 @@ function CommunicationAlertsDetailScreen({
                                     return (!isDisclaimer(message.message)
                                         ? <>
                                             <Element name={message.id} className={`element mb-1 ${message.id == dataId && 'active-message'}`}>
-                                                {/* {message.showSender &&
+                                                {message.showSender &&
                                                     <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>} */}
-                                                <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                    style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>
+                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>}
+                                                {/* <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                    style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography> */}
                                                 <div>
                                                     <Checkbox class='select-option' value = {message.id} style={{ position: 'relative', bottom: '-40px' }}/>
                                                     <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
@@ -235,32 +235,32 @@ function CommunicationAlertsDetailScreen({
                                                             searchWords={filterText}
                                                             autoEscape={true}
                                                             textToHighlight={message.message}/>
+                                                        {isDebug()
+                                                            ? <Typography color='color-1' className='mr-3 text-right messageID' weight='regular'
+                                                                style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}>ID: {message.id} </Typography>
+                                                            : ''}
                                                     </div>
                                                 </div>
-                                                {isDebug()
-                                                    ? <Typography color='color-1' className='mr-3 text-right' weight='regular'
-                                                        style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}>ID: {message.id} </Typography>
-                                                    : ''}
                                             </Element>
                                         </>
                                         : <>
                                             <Element name={message.id} className={`element mb-1 ${message.id == dataId && 'active-message'}`}>
-                                                {/* {message.showSender &&
+                                                {message.showSender &&
                                                     <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>} */}
-                                                <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                    style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>
+                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>}
+                                                {/* <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                    style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography> */}
                                                 <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
                                                     <Highlighter highlightClassName='alertKeyword'
                                                         style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
                                                         searchWords={[]}
                                                         autoEscape={true}
                                                         textToHighlight={message.message}/>
+                                                    {isDebug()
+                                                        ? <Typography color='color-1' className='mr-3 text-right messageID' weight='regular'
+                                                            style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}> ID: {message.id} </Typography>
+                                                        : ''}
                                                 </div>
-                                                {isDebug()
-                                                    ? <Typography color='color-1' className='mr-3 text-right' weight='regular'
-                                                        style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}> ID: {message.id} </Typography>
-                                                    : ''}
                                             </Element>
                                         </>);
                                 })}
@@ -750,28 +750,28 @@ function CommunicationAlertsDetailScreen({
                                                                     return (!isDisclaimer(message.message)
                                                                         ? <>
                                                                             <Element name={message.id} className={`element mb-1 ${message.id == dataId && 'active-message'}`}>
-                                                                                {/* {message.showSender &&
-                                                                                    <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b>{message.showSender} {isoToUTCLocal(message.timeSent)}</Typography>} */}
                                                                                 {isMessageEvent(message.message) || message.type === MESSAGE_TYPE.JOIN || message.type === MESSAGE_TYPE.LEAVE
                                                                                     ? <div className='message-box-event'>
                                                                                         <Typography color='color-2' className='mr-3 text-center' weight='regular'
                                                                                             style={{ backgroundColor: '121212', fontSize: '14px', lineHeight: '24pt' }}>{isoToUTCLocal(message.timeSent)} {message.type != null || message.source.toLowerCase() == 'bloomberg_chat' && `*** ${message.sender}` } {message.message} </Typography>
                                                                                     </div>
                                                                                     : <>
-                                                                                        <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                            style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>
+                                                                                        {/* <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                                                            style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography> */}
+                                                                                        {message.showSender &&
+                                                                                            <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                                                                style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>}
                                                                                         <div className='message-box'>
                                                                                             <Highlighter highlightClassName='alertKeyword'
                                                                                                 style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
                                                                                                 searchWords={filterText}
                                                                                                 autoEscape={true}
                                                                                                 textToHighlight={message.message}/>
+                                                                                            {isDebug()
+                                                                                                ? <Typography color='color-1' className='mr-3 text-right messageID' weight='regular'
+                                                                                                    style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}>ID: {message.id} </Typography>
+                                                                                                : ''}
                                                                                         </div>
-                                                                                        {isDebug()
-                                                                                            ? <Typography color='color-1' className='mr-3 text-right' weight='regular'
-                                                                                                style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}>ID: {message.id} </Typography>
-                                                                                            : ''}
                                                                                     </>
                                                                                 }
                                                                             </Element>
@@ -786,19 +786,24 @@ function CommunicationAlertsDetailScreen({
                                                                                         <Typography color='color-1' className='mr-3 text-center' weight='regular'
                                                                                             style={{ backgroundColor: '121212', fontSize: '14px', lineHeight: '24pt' }}>{isoToUTCLocal(message.timeSent)} {message.type != null || !message.source.toLowerCase() == 'bloomberg_chat' && `*** ${message.sender}` } {message.message} </Typography>
                                                                                     </div>
-                                                                                    : <><Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>
-                                                                                    <div className='message-box'>
-                                                                                        <Highlighter highlightClassName='alertKeyword'
-                                                                                            style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
-                                                                                            searchWords={[]}
-                                                                                            autoEscape={true}
-                                                                                            textToHighlight={message.message}/>
-                                                                                    </div>
-                                                                                    {isDebug()
-                                                                                        ? <Typography color='color-1' className='mr-3 text-right' weight='regular'
-                                                                                            style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}> ID: {message.id} </Typography>
-                                                                                        : ''}</>
+                                                                                    : <>
+                                                                                        {/* <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                                                            style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography> */}
+                                                                                        {message.showSender &&
+                                                                                            <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                                                                style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>}
+                                                                                        <div className='message-box'>
+                                                                                            <Highlighter highlightClassName='alertKeyword'
+                                                                                                style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
+                                                                                                searchWords={[]}
+                                                                                                autoEscape={true}
+                                                                                                textToHighlight={message.message}/>
+                                                                                            {isDebug()
+                                                                                                ? <Typography color='color-1' className='mr-3 text-right messageID' weight='regular'
+                                                                                                    style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}> ID: {message.id} </Typography>
+                                                                                                : ''}
+                                                                                        </div>
+                                                                                    </>
                                                                                 }
                                                                             </Element>
                                                                         </>);
