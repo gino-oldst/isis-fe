@@ -1,4 +1,4 @@
-import { get, set, del, update } from 'idb-keyval';
+import { get, set, del, update, clear } from 'idb-keyval';
 
 export default class StorageIDB {
     static async setItem(key, value) {
@@ -18,7 +18,7 @@ export default class StorageIDB {
         return keyValue || 'null';
     }
 
-    static removeItem(key) {
-        del(key);
+    static async removeItem(key) {
+        await clear();
     }
 }

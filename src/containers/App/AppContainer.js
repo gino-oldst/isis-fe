@@ -144,8 +144,8 @@ const NavbarAccount = () => {
     const dispatch = useDispatch();
 
     const logout = () => {
-        localStorage.clear();
         StorageIDB.removeItem(storageKey.alertSearchParams);
+        localStorage.clear();
         dispatch(setLoggingOut());
         window.location.href = '/login';
     };
