@@ -68,6 +68,7 @@ type Props = {
     onSubmit: Function,
     onSubmitSingle: Function,
     submit: Boolean,
+    isChecked:Boolean,
     filterText: Array,
     messages: Array,
     handleGenerate: Function,
@@ -98,6 +99,7 @@ function CommunicationAlertsDetailScreen({
     onSubmitSingle,
     submit,
     filterText,
+    isChecked,
     messages,
     handleGenerate,
     handleSelectAll,
@@ -209,7 +211,7 @@ function CommunicationAlertsDetailScreen({
                             </Label>
                         </FormGroup> */}
                     <CheckboxGroup
-                        onChange = {handleSelectAll}>
+                        onChange = {handleSelectAll} defaultChecked={isChecked}>
                         <FormGroup check={true} className='mb-1'>
                             <Label check={true} className='d-flex align-items-center'>
                                 <AllCheckerCheckbox/>

@@ -42,6 +42,7 @@ export default function CommunicationAlertsDetail({
     const [alertLoading, setAlertLoading] = useState(false);
     const { isRowsSelected, selectedRows, appliedFilters } = useSelector(({ table }) => table);
     const { messageAlerts, alertsList } = useSelector(({ communicationAlerts }) => communicationAlerts);
+    const [isChecked, setIsChecked] = useState(true);
     const { profileData } = useSelector(({ authentication }) => authentication);
     const [detailData, setDetailData] = useState([]);
     const breadcrumb = [
@@ -370,6 +371,7 @@ export default function CommunicationAlertsDetail({
         onSubmitSingle={onSubmitStatusChangeSingle}
         onSubmitStatusChangeSingleWithReview={onSubmitStatusChangeSingleWithReview}
         submit={submit}
+        isChecked={isChecked}
         activities={activities}
         activityLoading={activityLoading}
         onSubmitComment={onSubmitComment}

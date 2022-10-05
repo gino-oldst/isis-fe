@@ -33,7 +33,7 @@ export default function CommunicationSearchMessageDetailsContainer({
     const [messageStorage, setMessageStorage] = useState([]);
     const [count, setCount] = useState(0);
     const [isCheckAll, setIsCheckAll] = useState(false);
-    const [isChecked, setIsChecked] = useState([]);
+    const [isChecked, setIsChecked] = useState(true);
     const [messageButtonDisable, setMessageButtonDisable] = useState(false);
     const [loadMessageStatus, setLoadMessageStatus] = useState('message');
     const filters = useLocation();
