@@ -12,7 +12,7 @@ import Select from '../../base/Select/Select';
 import makeAnimated from 'react-select/animated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { kFormatter, getTextColor, truncateText, capitalize, sourceMaker, numberWithCommas, getStatusCounter } from '../../../utils/helpers';
-import { ALERT_ESCALATION_OPTIONS, ALERT_STATUS_OPTIONS, COMMUNICATION_ALERT_SOURCE_OPTIONS, COMMUNICATION_ALERT_STATUS_OPTIONS } from '../../../config/constants';
+import { ALERT_ESCALATION_OPTIONS, ALERT_STATUS_OPTIONS, COMMUNICATION_ALERT_SOURCE_OPTIONS, COMMUNICATION_ALERT_STATUS_OPTIONS, storageKey } from '../../../config/constants';
 import {
     Table as ReactstrapTable,
     DropdownItem,
@@ -32,6 +32,7 @@ import Highlighter from 'react-highlight-words';
 import makeData from './makeData';
 import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
 import DatePicker from 'react-datepicker';
+import Storage from '../../../utils/Storage';
 
 // Define a default UI for filtering
 function GlobalFilter({
@@ -597,6 +598,9 @@ function IsisTable({
 
     const handleSort = (key) => {
         setTableActivePage(0);
+
+        Storage.removeItem(storageKey.tempSorted);
+        Storage.setItem(storageKey.tempSorted, true);
 
         if (key === sortBy) {
             setIsAsc(!isAsc);

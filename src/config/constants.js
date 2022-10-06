@@ -22,7 +22,8 @@ const storageKey = {
     sidebarState: 'sidebarState',
     alertSearchParams: 'alertSearchParams',
     searchParams: 'searchParams',
-    tempUpdatedInDetails: 'tempUpdatedInDetails'
+    tempUpdatedInDetails: 'tempUpdatedInDetails',
+    tempSorted: 'sorted'
 };
 
 const alertsStorageKey = {

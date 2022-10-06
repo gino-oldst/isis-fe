@@ -134,6 +134,7 @@ export default function CommunicationAlertsContainer({
 
         const alertSearchParams = JSON.parse(await StorageIDB.getItem(storageKey.alertSearchParams));
         const tempUpdatedInDetails = JSON.parse(await Storage.getItem(storageKey.tempUpdatedInDetails));
+        const tempSorted = JSON.parse(await Storage.getItem(storageKey.tempSorted));
 
         var filterAlert = [];
         var filterStatus = [];
@@ -145,9 +146,14 @@ export default function CommunicationAlertsContainer({
         var isPageChange = 0;
         var insidePage = 0;
         var updateInMsg = false;
+        var updateInSort = false;
 
         if (tempUpdatedInDetails) {
             updateInMsg = tempUpdatedInDetails;
+        }
+
+        if (tempSorted) {
+            updateInSort = tempSorted;
         }
 
         if (alertSearchParams) {
@@ -179,6 +185,11 @@ export default function CommunicationAlertsContainer({
 
                 Storage.removeItem(storageKey.tempUpdatedInDetails);
                 Storage.setItem(storageKey.tempUpdatedInDetails, false);
+            } else if (updateInSort) {
+                alerts = await getCommunicationAlertData(insidePage, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient);
+
+                Storage.removeItem(storageKey.tempSorted);
+                Storage.setItem(storageKey.tempSorted, false);
             } else {
                 alerts = alertSearchParams != null && !isRequery
                     ? !isPageChange
