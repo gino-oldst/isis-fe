@@ -56,7 +56,7 @@ const initialState = {
         loading: false,
         columns: [
             {
-                header: 'Alert No.',
+                header: 'Alert Name',
                 accessor: 'alertId',
                 disableFilters: true,
                 clickable: false

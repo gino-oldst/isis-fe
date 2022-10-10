@@ -558,7 +558,6 @@ function CommunicationAlertsScreen({
                                                         <FormGroup className='mb-3'>
                                                             <Label for='filterSender'>Sender</Label>
                                                             <AsyncSelect
-                                                                closeMenuOnSelect={false}
                                                                 isMulti={true}
                                                                 value={defaultSenders.length > 0
                                                                     ? defaultSenders.map(row => ({ label: row.label, value: row.value }))
@@ -577,7 +576,6 @@ function CommunicationAlertsScreen({
                                                         <FormGroup className='mb-3'>
                                                             <Label for='filterRecipient'>Recipient</Label>
                                                             <AsyncSelect
-                                                                closeMenuOnSelect={false}
                                                                 isMulti={true}
                                                                 value={defaultRecipients.length > 0
                                                                     ? defaultRecipients.map(row => ({ label: row.label, value: row.value }))

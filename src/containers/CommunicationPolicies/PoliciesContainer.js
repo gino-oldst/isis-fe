@@ -51,7 +51,7 @@ export default function CommunicationPoliciesContainer({
 
             data.map((policy, i) => {
                 policy.keyword = policy.word;
-                policy.alertId = `Alert ${policy.number} - ${getAlertCategoryName(policy.number)}`;
+                policy.alertId = `Alert ${getAlertCategoryName(policy.number)}`;
                 policy.status = policy.deleted ? 'Disabled' : 'Enabled';
             });
 
