@@ -8,6 +8,8 @@ import type { Menu } from '../../types';
 import dataSample from './data_sample.json';
 import { getKeywordSearch, getPolicySearchData } from '../../api/policies';
 import { getAlertCategoryName } from '../../utils/helpers';
+import { CreateModal, DeleteModal, EditModal } from './modals';
+import { setModalContent } from '../../redux/modules/modalEvent';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -67,10 +69,35 @@ export default function CommunicationPoliciesContainer({
         history.push(`/policies/${row.original.id}`);
     };
 
+    // Modals
+    const showPolicyCreateModal = () => {
+        dispatch(setModalContent({
+            modalContent: <CreateModal handleCloseModal={handleCloseModal}/>,
+            size: 'lg'
+        }));
+    };
+
+    const showPolicyEditModal = () => {
+        dispatch(setModalContent({
+            modalContent: <EditModal handleCloseModal={handleCloseModal}/>,
+            size: 'lg'
+        }));
+    };
+
+    const showPolicyDeleteModal = () => {
+        dispatch(setModalContent({
+            modalContent: <DeleteModal handleCloseModal={handleCloseModal}/>,
+            size: 'lg'
+        }));
+    };
+
     return <CommunicationPoliciesScreen
         loading={loading}
         breadcrumb={breadcrumb}
         table={table}
         activePage={activePage}
-        sidebarMenu={sidebarMenu}/>;
+        sidebarMenu={sidebarMenu}
+        showPolicyCreateModal={showPolicyCreateModal}
+        showPolicyEditModal={showPolicyEditModal}
+        showPolicyDeleteModal={showPolicyDeleteModal}/>;
 }

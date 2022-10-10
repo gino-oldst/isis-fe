@@ -29,7 +29,8 @@ import {
     FormGroup,
     Input,
     Label,
-    Alert
+    Alert,
+    Form
 } from 'reactstrap';
 import { useIsMount } from '../../hooks/useIsMount';
 
@@ -47,7 +48,10 @@ type Props = {
     sidebarMenu: Array<Menu>,
     table: Any,
     activePage: Int,
-    viewPoliciesDetails: Function
+    viewPoliciesDetails: Function,
+    showPolicyCreateModal: Function,
+    showPolicyEditModal: Function,
+    showPolicyDeleteModal: Function
 }
 
 function CommunicationPoliciesScreen({
@@ -56,7 +60,8 @@ function CommunicationPoliciesScreen({
     sidebarMenu,
     table,
     activePage,
-    viewPoliciesDetails
+    viewPoliciesDetails,
+    showPolicyCreateModal
 }: Props): React$Element<any> {
     return (
         <div className='policies'>
@@ -68,7 +73,36 @@ function CommunicationPoliciesScreen({
                     <div className='policies__content'>
                         <Card className='px-4 py-2'>
                             <CardBody>
-                                <Typography color='color-3' className='policies__title'>Policies</Typography>
+                                <div className='alerts__header mb-4'>
+                                    <Row className='w-100 mr-0'>
+                                        <Col lg={6}>
+                                            <Typography color='color-3' className='policies__title pl-0'>Policies</Typography>
+                                        </Col>
+                                    </Row>
+                                    <Row className='w-100 mr-0'>
+                                        <Col lg={6}>
+                                            <Form>
+                                                <Label>Search Policies</Label>
+                                                <FormGroup className='mb-3'>
+                                                    <div className='d-flex'>
+                                                        <Input name='filterId'
+                                                            type='text'
+                                                            // onChange={onChange}
+                                                            // defaultValue={filterSearchForm.filterId}
+                                                            className='shadow-none isis-control'
+                                                            placeholder='Search...'/>
+                                                        <Button weight='light' className='alerts__bulk-review ml-2' label='Search'/>
+                                                    </div>
+                                                </FormGroup>
+                                                {/* <Button weight='light' className='alerts__bulk-review mr-2' label='Bulk Review'/> */}
+                                            </Form>
+                                        </Col>
+                                        <Col lg={6} className='d-flex align-items-end justify-content-end mb-3 pr-0'>
+                                            <Button weight='light' className='alerts__bulk-review mr-2' label='Add Category'
+                                                onClick={showPolicyCreateModal}/>
+                                        </Col>
+                                    </Row>
+                                </div>
                                 <Table className='policies__table'
                                     loading={loading}
                                     tableColumns={table.columns}

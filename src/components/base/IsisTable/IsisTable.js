@@ -20,7 +20,10 @@ import {
     Input,
     Label,
     Row,
-    Col
+    Col,
+    UncontrolledDropdown,
+    DropdownToggle,
+    DropdownMenu
 } from 'reactstrap';
 import { components } from 'react-select';
 import filterIcon from '../../../assets/images/ic_filter.svg';
@@ -639,14 +642,14 @@ function IsisTable({
                         <tr {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers.map(column => (
                                 <th {...column.getHeaderProps()}>
-                                    <span onClick={() => column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
+                                    <span onClick={() => column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                             column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' &&
                                             handleSort(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
-                                    className={() => column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
+                                    className={() => column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                     column.id !== 'expander' && column.id !== 'recipient' && 'cursor-pointer'}>
                                         {column.render('Header')}
                                         {column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
-                                            column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' &&
+                                            column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' &&
                                             renderSortControl(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
                                     </span>
                                     {column.canFilter ? column.render('Filter') : null}
@@ -1046,6 +1049,8 @@ export default function ReactTable({
     isDisabled = false,
     fetching,
     viewDetails,
+    viewEditModal,
+    viewDeleteModal,
     toggleSelection
 }: Props): React$Element<any> {
     const columns = useMemo(
@@ -1198,6 +1203,29 @@ export default function ReactTable({
                     const status = (cell.cell.row.original.status).toLowerCase();
 
                     return <Badge status={status}/>;
+                } else if (accessor == 'policiesAction') {
+                    return (
+                        <>
+                            <UncontrolledDropdown>
+                                <DropdownToggle
+                                    caret={true}
+                                    color='primary'>
+                                    Action ▼
+                                </DropdownToggle>
+                                <DropdownMenu left={true} className='policy-dropdown'>
+                                    <DropdownItem onClick={viewEditModal}>
+                                        View
+                                    </DropdownItem>
+                                    <DropdownItem>
+                                        Edit
+                                    </DropdownItem>
+                                    <DropdownItem>
+                                        Delete
+                                    </DropdownItem>
+                                </DropdownMenu>
+                            </UncontrolledDropdown>
+                        </>
+                    );
                 } else if (accessor == 'status') {
                     const alertsList = cell.cell.row.original.alerts.data;
 

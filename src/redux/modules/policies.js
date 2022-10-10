@@ -56,20 +56,20 @@ const initialState = {
         loading: false,
         columns: [
             {
-                header: 'Alert No.',
+                header: 'Category',
                 accessor: 'alertId',
                 disableFilters: true,
                 clickable: false
             },
             {
-                header: 'Keyword',
+                header: 'Type',
                 accessor: 'keyword',
                 disableFilters: true,
                 clickable: false
             },
             {
-                header: 'Status',
-                accessor: 'policiesStatus',
+                header: ' ',
+                accessor: 'policiesAction',
                 disableFilters: true,
                 clickable: false
             }
