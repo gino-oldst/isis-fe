@@ -1028,6 +1028,8 @@ type Props = {
     isDisabled: boolean,
     fetching: boolean,
     viewDetails: Function,
+    viewEditModal: Function,
+    viewDeleteModal: Function,
     toggleSelection: Boolean
 }
 
@@ -1210,16 +1212,16 @@ export default function ReactTable({
                                 <DropdownToggle
                                     caret={true}
                                     color='primary'>
-                                    Action ▼
+                                    Action  ▼
                                 </DropdownToggle>
                                 <DropdownMenu left={true} className='policy-dropdown'>
-                                    <DropdownItem onClick={viewEditModal}>
+                                    <DropdownItem onClick={() => viewDetails(1)}>
                                         View
                                     </DropdownItem>
-                                    <DropdownItem>
+                                    <DropdownItem onClick={viewEditModal}>
                                         Edit
                                     </DropdownItem>
-                                    <DropdownItem>
+                                    <DropdownItem onClick={viewDeleteModal}>
                                         Delete
                                     </DropdownItem>
                                 </DropdownMenu>

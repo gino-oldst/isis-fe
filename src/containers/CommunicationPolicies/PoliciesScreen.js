@@ -51,7 +51,8 @@ type Props = {
     viewPoliciesDetails: Function,
     showPolicyCreateModal: Function,
     showPolicyEditModal: Function,
-    showPolicyDeleteModal: Function
+    showPolicyDeleteModal: Function,
+    viewCommunicationPolicyDetails: Function
 }
 
 function CommunicationPoliciesScreen({
@@ -61,7 +62,10 @@ function CommunicationPoliciesScreen({
     table,
     activePage,
     viewPoliciesDetails,
-    showPolicyCreateModal
+    showPolicyCreateModal,
+    showPolicyEditModal,
+    showPolicyDeleteModal,
+    viewCommunicationPolicyDetails
 }: Props): React$Element<any> {
     return (
         <div className='policies'>
@@ -112,7 +116,10 @@ function CommunicationPoliciesScreen({
                                     activePage={activePage}
                                     pagination={true}
                                     sortable={false}
-                                    fetching={table.loading}/>
+                                    fetching={table.loading}
+                                    viewDeleteModal={showPolicyDeleteModal}
+                                    viewEditModal={showPolicyEditModal}
+                                    viewDetails={viewCommunicationPolicyDetails}/>
                             </CardBody>
                         </Card>
                     </div>

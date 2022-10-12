@@ -56,7 +56,7 @@ const initialState = {
         loading: false,
         columns: [
             {
-                header: 'Alert Name',
+                header: 'Keyword Number',
                 accessor: 'alertId',
                 disableFilters: true,
                 clickable: false
@@ -64,12 +64,6 @@ const initialState = {
             {
                 header: 'Keyword',
                 accessor: 'keyword',
-                disableFilters: true,
-                clickable: false
-            },
-            {
-                header: 'Status',
-                accessor: 'policiesStatus',
                 disableFilters: true,
                 clickable: false
             }
@@ -111,7 +105,7 @@ const initialState = {
     }
 };
 
-export default function policies(state: Object = initialState, action: Object):
+export default function policiesDetail(state: Object = initialState, action: Object):
   | any
   | {
     table: {}

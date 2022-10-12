@@ -87,8 +87,16 @@ export default function CommunicationPoliciesContainer({
     const showPolicyDeleteModal = () => {
         dispatch(setModalContent({
             modalContent: <DeleteModal handleCloseModal={handleCloseModal}/>,
-            size: 'lg'
+            size: 'md'
         }));
+    };
+
+    // Redirect
+    const viewCommunicationPolicyDetails = async (id) => {
+        history.push({
+            pathname: `/communication-policies-detail/${id}`,
+            state: { id: id }
+        });
     };
 
     return <CommunicationPoliciesScreen
@@ -99,5 +107,6 @@ export default function CommunicationPoliciesContainer({
         sidebarMenu={sidebarMenu}
         showPolicyCreateModal={showPolicyCreateModal}
         showPolicyEditModal={showPolicyEditModal}
-        showPolicyDeleteModal={showPolicyDeleteModal}/>;
+        showPolicyDeleteModal={showPolicyDeleteModal}
+        viewCommunicationPolicyDetails={viewCommunicationPolicyDetails}/>;
 }
