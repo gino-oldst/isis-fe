@@ -46,12 +46,12 @@ export default function LoginContainer({
 
                     Storage.setItem(storageKey.accessToken, JSON.stringify(data.access_token));
                     Storage.setItem(storageKey.user, JSON.stringify({
-                        userId: data.jti,
+                        userId: data.uid,
                         username: loginForm.username
                     }));
 
                     dispatch(authUser({
-                        userId: data.jti,
+                        userId: data.uid,
                         username: loginForm.username
                     }));
 
