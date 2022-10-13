@@ -5,6 +5,7 @@ const SET_PARAMETERS_DATA = 'SET_PARAMETERS_DATA';
 const REPLACE_PARAMETER_STATUS = 'REPLACE_PARAMETER_STATUS';
 const REPLACE_PARAMETERS_DATA = 'REPLACE_PARAMETERS_DATA';
 const SET_LOADING = 'SET_LOADING';
+const SET_KEYWORDS = 'SET_KEYWORDS';
 
 export function setSelectedPolicies(data: Object) {
     return {
@@ -51,19 +52,26 @@ export function setLoading() {
     };
 }
 
+export function setKeywords(data: Object) {
+    return {
+        type: SET_KEYWORDS,
+        data
+    };
+}
+
 const initialState = {
     table: {
         loading: false,
         columns: [
             {
                 header: 'Category',
-                accessor: 'alertId',
+                accessor: 'alertPolicyName',
                 disableFilters: true,
                 clickable: false
             },
             {
                 header: 'Type',
-                accessor: 'keyword',
+                accessor: 'alertPolicyInternalCode',
                 disableFilters: true,
                 clickable: false
             },
@@ -108,7 +116,8 @@ const initialState = {
         data: [],
         totalNoOfRecords: null,
         totalPages: null
-    }
+    },
+    keywords: []
 };
 
 export default function policies(state: Object = initialState, action: Object):
@@ -117,6 +126,11 @@ export default function policies(state: Object = initialState, action: Object):
     table: {}
   } {
     switch (action.type) {
+        case SET_KEYWORDS:
+            return {
+                ...state,
+                keywords: action.data
+            };
         case SET_LOADING:
             return {
                 ...state,

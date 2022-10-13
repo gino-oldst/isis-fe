@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { setPoliciesData } from '../../redux/modules/policies';
+import { setKeywords, setPoliciesData } from '../../redux/modules/policies';
 import CommunicationPoliciesDetailScreen from './PoliciesDetailScreen';
 import type { Menu } from '../../types';
 
-import { getKeywordSearch, getPolicySearchData } from '../../api/policies';
+import { getAlertPolicyDataByID, getKeywordSearch, getKeywordSearchNumbered, getPolicymapById, getPolicySearchData } from '../../api/policies';
 import { getAlertCategoryName } from '../../utils/helpers';
 import { CreateModal, DeleteModal, EditModal } from '../CommunicationPolicies/modals';
 import { setModalContent } from '../../redux/modules/modalEvent';
@@ -27,6 +27,9 @@ export default function CommunicationPoliciesDetailContainer({
     const filters = useLocation();
 
     const [loading, setLoading] = useState(true);
+    const [categoryName, setCategoryName] = useState('');
+    const [type, setType] = useState('');
+
     const { table } = useSelector(({ policiesDetail }) => policiesDetail);
     const breadcrumb = [
         {
@@ -54,16 +57,27 @@ export default function CommunicationPoliciesDetailContainer({
         setLoading(true);
 
         try {
-            const policies = await getPolicySearchData(activePage, pageSize, sort);
-            const { data, totalNoOfRecords, totalPages } = policies.data;
+            const policyData = await getAlertPolicyDataByID(filters.state.id);
 
-            data.map((policy, i) => {
-                policy.keyword = policy.word;
-                policy.alertId = `Alert ${policy.number} - ${getAlertCategoryName(policy.number)}`;
-                policy.status = policy.deleted ? 'Disabled' : 'Enabled';
+            setCategoryName(policyData.name);
+            setType(policyData.internalCode);
+
+            // Map Keywords to Policy Map
+            const policyMapData = await getPolicymapById(activePage, pageSize, sort, { id: filters.state.id });
+            const keywords = await getKeywordSearchNumbered();
+            const keywordsModal = await getKeywordSearch();
+
+            const { data, totalNoOfRecords, totalPages } = policyMapData.data;
+
+            data.map((policyMap) => {
+                var keyword = keywords.filter(a => a.id == policyMap.keywordId)[0];
+
+                policyMap.word = keyword.label;
+                policyMap.number = keyword.number;
             });
 
             dispatch(setPoliciesData(data, totalNoOfRecords, totalPages));
+            dispatch(setKeywords(keywords));
         } catch (e) {
             console.error(e);
         }
@@ -103,6 +117,8 @@ export default function CommunicationPoliciesDetailContainer({
         table={table}
         activePage={activePage}
         sidebarMenu={sidebarMenu}
+        categoryName={categoryName}
+        type={type}
         showPolicyCreateModal={showPolicyCreateModal}
         showPolicyEditModal={showPolicyEditModal}
         showPolicyDeleteModal={showPolicyDeleteModal}/>;

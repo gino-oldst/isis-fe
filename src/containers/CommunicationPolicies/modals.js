@@ -14,15 +14,12 @@ import { ImCross, ImPlus } from 'react-icons/im';
 // Create Modal
 const CreateModal = ({
     loadPolicies,
-    handleCloseModal
+    handleCloseModal,
+    onChange
 }) => {
     const dispatch = useDispatch();
-    const items = [
-        { id: 0, label: 'item 1' },
-        { id: 2, label: 'item 2' },
-        { id: 3, label: 'item 3' },
-        { id: 4, label: 'item 4' }
-    ];
+    const { keywords } = useSelector(({ policies }) => policies);
+
     const [selectedItems, setSelectedItems] = useState([]);
     const [showBox, setShowBox] = useState(false);
 
@@ -44,7 +41,7 @@ const CreateModal = ({
                         <FormGroup className='mb-3'>
                             <Label for='categoryName'>Category Name</Label>
                             <Input name='filterText' type='text' defaultValue=''
-                                className='shadow-none isis-control' placeholder='Search a Keyword'/>
+                                className='shadow-none isis-control' placeholder='Enter Category Name'/>
                         </FormGroup>
                         <FormGroup className='mb-4'>
                             <Label for='type'>Type</Label>
@@ -53,9 +50,10 @@ const CreateModal = ({
                                 className='w-100'
                                 isDisabled={false}
                                 isSearchable={false}
+                                placeholder={'Select Type...'}
                                 options={[{
                                     label: 'Inappropriate language',
-                                    value: 'inappropriate_language'
+                                    value: 'INAPPROPRIATE_LANGUAGE'
                                 }]}/>
                         </FormGroup>
                         <FormGroup className='mb-3 '>
@@ -68,7 +66,7 @@ const CreateModal = ({
                             </div>
                             <div className={`policy-word-box ${showBox ? '' : 'hidden'}`}>
                                 <FormGroup className='mb-2'>
-                                    <Label for='policy-word'>Enter Alert Word</Label>
+                                    <Label for='policy-word'>Alert Word</Label>
                                     <Input name='policy-word'
                                         type='text'
                                         // onChange={onChange}
@@ -81,8 +79,8 @@ const CreateModal = ({
                         </FormGroup>
                         <FormGroup className='mb-3'>
                             <MultiSelect
-                                items={items}
-                                selectedItems={selectedItems}/>
+                                items={keywords}
+                                onChange={onChange}/>
                         </FormGroup>
                     </Col>
                 </Row>
@@ -108,12 +106,7 @@ const EditModal = ({
     handleCloseModal
 }) => {
     const dispatch = useDispatch();
-    const items = [
-        { id: 0, label: 'item 1' },
-        { id: 2, label: 'item 2' },
-        { id: 3, label: 'item 3' },
-        { id: 4, label: 'item 4' }
-    ];
+    const { keywords } = useSelector(({ policies }) => policies);
     const [selectedItems, setSelectedItems] = useState([]);
     const [showBox, setShowBox] = useState(false);
 
@@ -146,7 +139,7 @@ const EditModal = ({
                                 isSearchable={false}
                                 options={[{
                                     label: 'Inappropriate language',
-                                    value: 'inappropriate_language'
+                                    value: 'INAPPROPRIATE_LANGUAGE'
                                 }]}/>
                         </FormGroup>
                         <FormGroup className='mb-3 '>
@@ -172,7 +165,7 @@ const EditModal = ({
                         </FormGroup>
                         <FormGroup className='mb-3'>
                             <MultiSelect
-                                items={items}
+                                items={keywords}
                                 selectedItems={selectedItems}/>
                         </FormGroup>
                     </Col>

@@ -57,13 +57,13 @@ const initialState = {
         columns: [
             {
                 header: 'Keyword Number',
-                accessor: 'alertId',
+                accessor: 'policyDetailKeywordNumber',
                 disableFilters: true,
                 clickable: false
             },
             {
                 header: 'Keyword',
-                accessor: 'keyword',
+                accessor: 'policyDetailKeyword',
                 disableFilters: true,
                 clickable: false
             }

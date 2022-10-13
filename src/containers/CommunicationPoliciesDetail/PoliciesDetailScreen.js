@@ -51,7 +51,9 @@ type Props = {
     viewPoliciesDetails: Function,
     showPolicyCreateModal: Function,
     showPolicyEditModal: Function,
-    showPolicyDeleteModal: Function
+    showPolicyDeleteModal: Function,
+    categoryName: String,
+    type: String
 }
 
 function CommunicationPoliciesDetailScreen({
@@ -63,7 +65,9 @@ function CommunicationPoliciesDetailScreen({
     viewPoliciesDetails,
     showPolicyCreateModal,
     showPolicyEditModal,
-    showPolicyDeleteModal
+    showPolicyDeleteModal,
+    categoryName,
+    type
 }: Props): React$Element<any> {
     return (
         <div className='policies'>
@@ -85,11 +89,11 @@ function CommunicationPoliciesDetailScreen({
                                         <Col lg={6}>
                                             <div className='mb-3'>
                                                 <Typography color='color-2' variant='size-16' className='pl-0'>Category Name</Typography>
-                                                <Typography color='color-3' variant='size-26' className='pl-0'>Mislanguage</Typography>
+                                                <Typography color='color-3' variant='size-26' className='pl-0'>{categoryName}</Typography>
                                             </div>
                                             <div>
                                                 <Typography color='color-2' variant='size-16' className='pl-0'>Type</Typography>
-                                                <Typography color='color-3' variant='size-26' className='pl-0'>Inappropriate Language</Typography>
+                                                <Typography color='color-3' variant='size-26' className='pl-0'>{type}</Typography>
                                             </div>
                                         </Col>
                                         <Col lg={6} className='d-flex align-items-start justify-content-end mb-3 pr-0'>

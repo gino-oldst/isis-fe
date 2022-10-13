@@ -510,7 +510,7 @@ function IsisTable({
     }, [state.filters]);
 
     const dispatch = useDispatch();
-    const maxPage = 3; // max page for pagination button
+    const maxPage = 2; // max page for pagination button
 
     const selectedRowsIsis = rows.filter(row => row.isSelected === true);
     const [previousSelectedRows, setPreviousSelectedRows] = useState([]);
@@ -643,13 +643,14 @@ function IsisTable({
                             {headerGroup.headers.map(column => (
                                 <th {...column.getHeaderProps()}>
                                     <span onClick={() => column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
-                                            column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' &&
-                                            handleSort(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
+                                            column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' && column.id !== 'policyDetailKeyword' && column.id !== 'policyDetailKeywordNumber' && column.id !== 'alertPolicyInternalCode' &&
+                                            column.id !== 'alertPolicyName' && handleSort(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
                                     className={() => column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                     column.id !== 'expander' && column.id !== 'recipient' && 'cursor-pointer'}>
                                         {column.render('Header')}
                                         {column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                             column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' &&
+                                            column.id !== 'policyDetailKeyword' && column.id !== 'policyDetailKeywordNumber' && column.id !== 'alertPolicyInternalCode' && column.id !== 'alertPolicyName' &&
                                             renderSortControl(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
                                     </span>
                                     {column.canFilter ? column.render('Filter') : null}
@@ -1205,7 +1206,25 @@ export default function ReactTable({
                     const status = (cell.cell.row.original.status).toLowerCase();
 
                     return <Badge status={status}/>;
+                } else if (accessor == 'alertPolicyName') {
+                    const value = cell.cell.row.original.name;
+
+                    return <span>{value}</span>;
+                } else if (accessor == 'alertPolicyInternalCode') {
+                    const value = cell.cell.row.original.internalCode;
+
+                    return <span>{value}</span>;
+                } else if (accessor == 'policyDetailKeywordNumber') {
+                    const value = cell.cell.row.original.number;
+
+                    return <span>{value}</span>;
+                } else if (accessor == 'policyDetailKeyword') {
+                    const value = cell.cell.row.original.word;
+
+                    return <span>{value}</span>;
                 } else if (accessor == 'policiesAction') {
+                    const rowData = cell.cell.row.original;
+
                     return (
                         <>
                             <UncontrolledDropdown>
@@ -1215,10 +1234,10 @@ export default function ReactTable({
                                     Action  ▼
                                 </DropdownToggle>
                                 <DropdownMenu left={true} className='policy-dropdown'>
-                                    <DropdownItem onClick={() => viewDetails(1)}>
+                                    <DropdownItem onClick={() => viewDetails(rowData.id, rowData.name, rowData.internalCode)}>
                                         View
                                     </DropdownItem>
-                                    <DropdownItem onClick={viewEditModal}>
+                                    <DropdownItem onClick={() => viewEditModal(rowData.id, rowData.name, rowData.internalCode)}>
                                         Edit
                                     </DropdownItem>
                                     <DropdownItem onClick={viewDeleteModal}>

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { setPoliciesData } from '../../redux/modules/policies';
+import { setKeywords, setPoliciesData } from '../../redux/modules/policies';
 import CommunicationPoliciesScreen from './PoliciesScreen';
 import type { Menu } from '../../types';
 
 import dataSample from './data_sample.json';
-import { getKeywordSearch, getPolicySearchData } from '../../api/policies';
+import { getAlertPoliciesData, getKeywordSearch, getPolicySearchData } from '../../api/policies';
 import { getAlertCategoryName } from '../../utils/helpers';
 import { CreateModal, DeleteModal, EditModal } from './modals';
 import { setModalContent } from '../../redux/modules/modalEvent';
@@ -26,6 +26,7 @@ export default function CommunicationPoliciesContainer({
     const history = useHistory();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
+    const [selectedKeywords, setSelectedKeywords] = useState([]);
     const { table } = useSelector(({ policies }) => policies);
     const breadcrumb = [
         {
@@ -48,16 +49,19 @@ export default function CommunicationPoliciesContainer({
         setLoading(true);
 
         try {
-            const policies = await getPolicySearchData(activePage, pageSize, sort);
-            const { data, totalNoOfRecords, totalPages } = policies.data;
+            // const policies = await getPolicySearchData(activePage, pageSize, sort);
+            // data.map((policy, i) => {
+            //     policy.keyword = policy.word;
+            //     policy.alertId = `Alert ${policy.number} - ${getAlertCategoryName(policy.number)}`;
+            //     policy.status = policy.deleted ? 'Disabled' : 'Enabled';
+            // });
+            const alertPolicies = await getAlertPoliciesData(activePage, pageSize, sort);
+            const keywords = await getKeywordSearch();
 
-            data.map((policy, i) => {
-                policy.keyword = policy.word;
-                policy.alertId = `Alert ${policy.number} - ${getAlertCategoryName(policy.number)}`;
-                policy.status = policy.deleted ? 'Disabled' : 'Enabled';
-            });
+            const { data, totalNoOfRecords, totalPages } = alertPolicies.data;
 
             dispatch(setPoliciesData(data, totalNoOfRecords, totalPages));
+            dispatch(setKeywords(keywords));
         } catch (e) {
             console.error(e);
         }
@@ -69,15 +73,35 @@ export default function CommunicationPoliciesContainer({
         history.push(`/policies/${row.original.id}`);
     };
 
+    // Handlers
+    const handleSelectedKeywordsChange = (updatedList) => {
+        var list = [];
+
+        updatedList.map(op => {
+            console.log(op);
+            list.push(op);
+        });
+
+        setSelectedKeywords(list);
+
+        console.log(updatedList, selectedKeywords);
+        // setRecipients(list);
+    };
+
     // Modals
     const showPolicyCreateModal = () => {
+        // TODO: Refresh the Keywords
         dispatch(setModalContent({
-            modalContent: <CreateModal handleCloseModal={handleCloseModal}/>,
+            modalContent: <CreateModal onChange={handleSelectedKeywordsChange} handleCloseModal={handleCloseModal}/>,
             size: 'lg'
         }));
     };
 
-    const showPolicyEditModal = () => {
+    const showPolicyEditModal = (id, name, type) => {
+        // TODO: Filter by id to get specific keywords
+        console.log(id, name, type);
+        console.log('edit!');
+
         dispatch(setModalContent({
             modalContent: <EditModal handleCloseModal={handleCloseModal}/>,
             size: 'lg'
@@ -85,6 +109,7 @@ export default function CommunicationPoliciesContainer({
     };
 
     const showPolicyDeleteModal = () => {
+        // TODO: Passing of the ID of the Category
         dispatch(setModalContent({
             modalContent: <DeleteModal handleCloseModal={handleCloseModal}/>,
             size: 'md'
@@ -92,10 +117,10 @@ export default function CommunicationPoliciesContainer({
     };
 
     // Redirect
-    const viewCommunicationPolicyDetails = async (id) => {
+    const viewCommunicationPolicyDetails = async (id, name, type) => {
         history.push({
             pathname: `/communication-policies-detail/${id}`,
-            state: { id: id }
+            state: { id: id, name: name, type: type }
         });
     };
 
