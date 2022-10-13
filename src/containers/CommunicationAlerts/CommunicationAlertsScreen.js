@@ -71,6 +71,7 @@ type Props = {
     handleSource: Function,
     handleAlert: Function,
     handleCloseBulkUpdate: Function,
+    isCheckedAll: Boolean,
     handleStatus: Function,
     defaultSource: Array<any>,
     defaultStatus: Array<any>,
@@ -103,6 +104,7 @@ function CommunicationAlertsScreen({
     setFilterDate,
     handleRecipientChange,
     handleSenderChange,
+    isCheckedAll,
     handleCloseBulkUpdate,
     loadOptions,
     onSearchClick,
@@ -450,12 +452,13 @@ function CommunicationAlertsScreen({
                                                         <FormGroup className='mb-3'>
                                                             <Label for='alert'>Alert Type</Label>
                                                             <Select
+                                                                closeMenuOnSelect={false}
                                                                 isMulti={true}
                                                                 placeholder={'Search Alert Type'}
                                                                 isSearchable={false}
                                                                 className='status-select'
                                                                 name='alert'
-                                                                onChange={selected => {
+                                                                onChange= {selected => {
                                                                     selected.find(option => option.value === 'all')
                                                                         ? handleAlert(alertOptions.splice(1))
                                                                         : handleAlert(selected);
@@ -470,6 +473,7 @@ function CommunicationAlertsScreen({
                                                         <FormGroup className='mb-3'>
                                                             <Label for='status'>Status</Label>
                                                             <Select
+                                                                closeMenuOnSelect={false}
                                                                 isMulti={true}
                                                                 placeholder={'Search Status'}
                                                                 isSearchable={false}
@@ -533,6 +537,7 @@ function CommunicationAlertsScreen({
                                                         <FormGroup className='mb-3'>
                                                             <Label for='source'>Source</Label>
                                                             <Select
+                                                                closeMenuOnSelect={false}
                                                                 isMulti={true}
                                                                 placeholder={'Search Source'}
                                                                 isSearchable={false}

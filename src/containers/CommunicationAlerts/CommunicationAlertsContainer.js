@@ -52,7 +52,7 @@ export default function CommunicationAlertsContainer({
     const [alert, setAlert] = useState([]);
     const [status, setStatus] = useState([]);
     const [submit, setSubmit] = useState(false);
-
+    const [isCheckAll, setIsCheckAll] = useState(false);
     const [senderStore, setSenderStore] = useState([]);
     const [recipientStore, setRecipientStore] = useState([]);
     const [tableResultStore, setTableResultStore] = useState([]);
@@ -505,6 +505,7 @@ export default function CommunicationAlertsContainer({
         defaultSource={source}
         defaultStatus={status}
         defaultAlert={alert}
+        isCheckAll = {isCheckAll}
         defaultRecipients={recipientStore}
         defaultSenders={senderStore}
         handleCloseBulkUpdate={handleCloseBulkUpdate}
