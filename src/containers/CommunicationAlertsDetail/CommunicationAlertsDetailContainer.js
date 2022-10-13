@@ -233,6 +233,32 @@ export default function CommunicationAlertsDetail({
         }
     };
 
+    const onSubmitEscalationChangeSingle = async (escalation, note, row) => {
+        try {
+            const data = {
+                id: row.id,
+                escalation: escalation,
+                executorId: profileData.userId
+            };
+
+            const request = await updateAlert(data);
+
+            loadAlerts(filters.state.id);
+
+            loadActivity(filters.state.id);
+
+            dispatch(setFlashNotification({
+                message: 'Alert Escalation Update Success.',
+                isError: false
+            }));
+
+            Storage.removeItem(storageKey.tempUpdatedInDetails);
+            Storage.setItem(storageKey.tempUpdatedInDetails, true);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     const onSubmitStatusChangeSingleWithReview = async (status, note, row) => {
         try {
             const data = {
@@ -270,7 +296,8 @@ export default function CommunicationAlertsDetail({
                 messageId: filters.state.id,
                 executorId: profileData.userId,
                 event: event.target.alertComment.value,
-                type: 'USER_EVENT'
+                type: 'USER_EVENT',
+                target: 'COMMUNICATION_MESSAGE'
             };
 
             const request = await postComment(requestBody);
@@ -373,7 +400,8 @@ export default function CommunicationAlertsDetail({
         activities={activities}
         activityLoading={activityLoading}
         onSubmitComment={onSubmitComment}
-        predefinedReasons={predefinedReasons}/>;
+        predefinedReasons={predefinedReasons}
+        onSubmitEscalationChangeSingle = {onSubmitEscalationChangeSingle}/>;
 }
 
 const SuccessModal = ({
