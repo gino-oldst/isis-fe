@@ -67,6 +67,8 @@ function CommunicationPoliciesScreen({
     showPolicyDeleteModal,
     viewCommunicationPolicyDetails
 }: Props): React$Element<any> {
+    const { form } = useSelector(({ policies }) => policies);
+
     return (
         <div className='policies'>
             <CollapsibleSidebar
@@ -79,12 +81,14 @@ function CommunicationPoliciesScreen({
                             <CardBody>
                                 <div className='alerts__header mb-4'>
                                     <Row className='w-100 mr-0'>
-                                        <Col lg={6}>
+                                        <Col lg={6} md={6} sm={6}
+                                            xs={6}>
                                             <Typography color='color-3' className='policies__title pl-0'>Policies</Typography>
                                         </Col>
                                     </Row>
                                     <Row className='w-100 mr-0'>
-                                        <Col lg={6}>
+                                        <Col lg={6} md={6} sm={6}
+                                            xs={6}>
                                             <Form>
                                                 <Label>Search Policies</Label>
                                                 <FormGroup className='mb-3'>
@@ -101,7 +105,8 @@ function CommunicationPoliciesScreen({
                                                 {/* <Button weight='light' className='alerts__bulk-review mr-2' label='Bulk Review'/> */}
                                             </Form>
                                         </Col>
-                                        <Col lg={6} className='d-flex align-items-end justify-content-end mb-3 pr-0'>
+                                        <Col lg={6} md={6} sm={6}
+                                            xs={6} className='d-flex align-items-end justify-content-end mb-3 pr-0'>
                                             <Button weight='light' className='alerts__bulk-review mr-2' label='Add Category'
                                                 onClick={showPolicyCreateModal}/>
                                         </Col>

@@ -63,7 +63,7 @@ export default function CommunicationPoliciesDetailContainer({
             setType(policyData.internalCode);
 
             // Map Keywords to Policy Map
-            const policyMapData = await getPolicymapById(activePage, pageSize, sort, { id: filters.state.id });
+            const policyMapData = await getPolicymapById(activePage, pageSize, sort, { policyId: filters.state.id });
             const keywords = await getKeywordSearchNumbered();
             const keywordsModal = await getKeywordSearch();
 

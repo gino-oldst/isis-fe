@@ -6,6 +6,7 @@ const REPLACE_PARAMETER_STATUS = 'REPLACE_PARAMETER_STATUS';
 const REPLACE_PARAMETERS_DATA = 'REPLACE_PARAMETERS_DATA';
 const SET_LOADING = 'SET_LOADING';
 const SET_KEYWORDS = 'SET_KEYWORDS';
+const SET_POLICY_FORM = 'SET_POLICY_FORM';
 
 export function setSelectedPolicies(data: Object) {
     return {
@@ -56,6 +57,13 @@ export function setKeywords(data: Object) {
     return {
         type: SET_KEYWORDS,
         data
+    };
+}
+
+export function setPolicyForm(form: Object) {
+    return {
+        type: SET_POLICY_FORM,
+        form
     };
 }
 
@@ -117,6 +125,11 @@ const initialState = {
         totalNoOfRecords: null,
         totalPages: null
     },
+    form: {
+        categoryName: '',
+        categoryType: '',
+        selectedKeywords: []
+    },
     keywords: []
 };
 
@@ -126,6 +139,18 @@ export default function policies(state: Object = initialState, action: Object):
     table: {}
   } {
     switch (action.type) {
+        case SET_POLICY_FORM:
+            console.log(action);
+
+            return {
+                ...state,
+                form: {
+                    ...state.form,
+                    categoryName: action.form.categoryName,
+                    categoryType: action.form.categoryType,
+                    selectedKeywords: action.form.selectedKeywords
+                }
+            };
         case SET_KEYWORDS:
             return {
                 ...state,

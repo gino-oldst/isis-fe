@@ -8,23 +8,35 @@ import { Col, FormGroup, Input, Label, Row } from 'reactstrap';
 import Select from '../../components/base/Select/Select';
 import './policies.scss';
 import MultiSelect from '@kenshooui/react-multi-select';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ImCross, ImPlus } from 'react-icons/im';
+import { setPolicyForm } from '../../redux/modules/policies';
 
 // Create Modal
 const CreateModal = ({
     loadPolicies,
-    handleCloseModal,
-    onChange
+    onSubmit,
+    onCreateKeyWord,
+    handleCloseModal
 }) => {
     const dispatch = useDispatch();
     const { keywords } = useSelector(({ policies }) => policies);
 
+    const [newKeyword, setNewKeyword] = useState('');
+
+    const [categoryName, setCategoryName] = useState('');
+    const [categoryType, setCategoryType] = useState({});
     const [selectedItems, setSelectedItems] = useState([]);
+
     const [showBox, setShowBox] = useState(false);
 
     const handleAddWords = () => {
         setShowBox(!showBox);
+    };
+
+    const handleAddKeywords = () => {
+        onCreateKeyWord(newKeyword);
+        setNewKeyword('');
     };
 
     return (
@@ -40,16 +52,17 @@ const CreateModal = ({
                     <Col>
                         <FormGroup className='mb-3'>
                             <Label for='categoryName'>Category Name</Label>
-                            <Input name='filterText' type='text' defaultValue=''
-                                className='shadow-none isis-control' placeholder='Enter Category Name'/>
+                            <Input name='categoryName' type='text' defaultValue=''
+                                onChange={(x) => setCategoryName(x.target.value)} className='shadow-none isis-control' placeholder='Enter Category Name'/>
                         </FormGroup>
                         <FormGroup className='mb-4'>
-                            <Label for='type'>Type</Label>
+                            <Label for='categoryType'>Type</Label>
                             <Select
-                                name='type'
+                                name='categoryType'
                                 className='w-100'
                                 isDisabled={false}
                                 isSearchable={false}
+                                onChange={(x) => setCategoryType(x)}
                                 placeholder={'Select Type...'}
                                 options={[{
                                     label: 'Inappropriate language',
@@ -69,18 +82,20 @@ const CreateModal = ({
                                     <Label for='policy-word'>Alert Word</Label>
                                     <Input name='policy-word'
                                         type='text'
-                                        // onChange={onChange}
+                                        onChange={(x) => setNewKeyword(x.target.value)}
                                         // defaultValue={filterSearchForm.filterId}
                                         className='shadow-none isis-control'
                                         placeholder='Enter Alert Word'/>
                                 </FormGroup>
-                                <Button weight='light' label='Add' className='w-100'/>
+                                <Button weight='light' label='Add' className='w-100'
+                                    disabled={newKeyword == ''} onClick={e => handleAddKeywords()}/>
                             </div>
                         </FormGroup>
                         <FormGroup className='mb-3'>
                             <MultiSelect
                                 items={keywords}
-                                onChange={onChange}/>
+                                name='selectedKeywords'
+                                onChange={setSelectedItems}/>
                         </FormGroup>
                     </Col>
                 </Row>
@@ -88,11 +103,9 @@ const CreateModal = ({
             <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
                 <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
                     onClick={handleCloseModal} /> {/* onClick={handleClose} disabled={submit} /> */}
-                <Button label='Apply' variant='primary' className='policies__save-button px-4 py-2'/>
-                {/* onClick={e => onSubmit(selectedStatus, resolvedNote, alertsData)}/> */}
-                {/* <Button label='Apply' isLoading={submit} variant='secondary'
-                    className='policies__save-button px-4 py-2'
-                    onClick={handleBulkUpdate} disabled={submit} /> */}
+                <Button label='Create' variant='primary' className='policies__save-button px-4 py-2'
+                    disabled={categoryName == '' && categoryType && selectedItems}
+                    onClick={e => onSubmit(categoryName, categoryType, selectedItems)}/>
             </div>
         </div>
     );
@@ -100,19 +113,37 @@ const CreateModal = ({
 
 // Edit Modal
 const EditModal = ({
-    userId,
-    activeModal,
-    loadAlerts,
+    onSubmit,
+    onCreateKeyWord,
+    defaultPolicy,
+    defaultKeywords,
     handleCloseModal
 }) => {
     const dispatch = useDispatch();
     const { keywords } = useSelector(({ policies }) => policies);
+
+    const [newKeyword, setNewKeyword] = useState('');
+
+    const [categoryName, setCategoryName] = useState('');
+    const [categoryType, setCategoryType] = useState({});
     const [selectedItems, setSelectedItems] = useState([]);
+
     const [showBox, setShowBox] = useState(false);
 
     const handleAddWords = () => {
         setShowBox(!showBox);
     };
+
+    const handleAddKeywords = () => {
+        onCreateKeyWord(newKeyword);
+        setNewKeyword('');
+    };
+
+    useEffect(() => {
+        setCategoryName(defaultPolicy.name);
+        setCategoryType({ label: 'Inappropriate language', value: 'INAPPROPRIATE_LANGUAGE' });
+        setSelectedItems(defaultKeywords);
+    }, []);
 
     return (
         <div className='action-modal p-4'>
@@ -125,10 +156,16 @@ const EditModal = ({
             <div className='policies__information mt-5 w-100 mb-4'>
                 <Row className='modal-body'>
                     <Col>
+                        {/* <p>{JSON.stringify(defaultPolicy)}</p>
+                        <p>{JSON.stringify(selectedItems)}</p>
+                        <p>{JSON.stringify(defaultKeywords)}</p> */}
+                        <p>{JSON.stringify(categoryName == '' && categoryType && selectedItems)}</p>
                         <FormGroup className='mb-3'>
                             <Label for='categoryName'>Category Name</Label>
                             <Input name='filterText' type='text' defaultValue=''
-                                className='shadow-none isis-control' placeholder='Search a Keyword'/>
+                                className='shadow-none isis-control' placeholder='Search a Keyword'
+                                onChange={(x) => setCategoryName(x.target.value)}
+                                defaultValue={defaultPolicy.name}/>
                         </FormGroup>
                         <FormGroup className='mb-4'>
                             <Label for='type'>Type</Label>
@@ -137,6 +174,8 @@ const EditModal = ({
                                 className='w-100'
                                 isDisabled={false}
                                 isSearchable={false}
+                                defaultValue={{ label: 'Inappropriate language', value: 'INAPPROPRIATE_LANGUAGE' }}
+                                onChange={(x) => setCategoryType(x)}
                                 options={[{
                                     label: 'Inappropriate language',
                                     value: 'INAPPROPRIATE_LANGUAGE'
@@ -152,21 +191,29 @@ const EditModal = ({
                             </div>
                             <div className={`policy-word-box ${showBox ? '' : 'hidden'}`}>
                                 <FormGroup className='mb-2'>
-                                    <Label for='policy-word'>Enter Alert Word</Label>
+                                    <Label for='policy-word'>Alert Word</Label>
                                     <Input name='policy-word'
                                         type='text'
-                                        // onChange={onChange}
-                                        // defaultValue={filterSearchForm.filterId}
-                                        className='shadow-none isis-cntrol'
+                                        onChange={(x) => setNewKeyword(x.target.value)}
+                                        defaultValue={defaultPolicy.name}
+                                        className='shadow-none isis-control'
                                         placeholder='Enter Alert Word'/>
                                 </FormGroup>
-                                <Button weight='light' label='Add' className='w-100'/>
+                                <Button weight='light' label='Add' className='w-100'
+                                    disabled={newKeyword == ''} onClick={e => handleAddKeywords()}/>
                             </div>
                         </FormGroup>
                         <FormGroup className='mb-3'>
                             <MultiSelect
                                 items={keywords}
-                                selectedItems={selectedItems}/>
+                                selectedItems={defaultKeywords}
+                                name='selectedKeywords'
+                                onChange={setSelectedItems}/>
+                            {/* selectedItems={[{ id: 3, label: "Item 3" }]}
+                            loading={boolean("Loading", false)}
+                            onChange={action("onChange")}
+                            showSearch={boolean("Show search", true)}
+                            showSelectAll={boolean("Show select all", true)} */}
                         </FormGroup>
                     </Col>
                 </Row>
@@ -174,11 +221,9 @@ const EditModal = ({
             <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
                 <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
                     onClick={handleCloseModal} /> {/* onClick={handleClose} disabled={submit} /> */}
-                <Button label='Apply' variant='primary' className='policies__save-button px-4 py-2'/>
-                {/* onClick={e => onSubmit(selectedStatus, resolvedNote, alertsData)}/> */}
-                {/* <Button label='Apply' isLoading={submit} variant='secondary'
-                    className='policies__save-button px-4 py-2'
-                    onClick={handleBulkUpdate} disabled={submit} /> */}
+                <Button label='Edit' variant='primary' className='policies__save-button px-4 py-2'
+                    disabled={categoryName == '' && categoryType && selectedItems}
+                    onClick={e => onSubmit(defaultPolicy.id, categoryName, categoryType, selectedItems, defaultKeywords)}/>
             </div>
         </div>
     );
@@ -186,9 +231,8 @@ const EditModal = ({
 
 // Delete Modal
 const DeleteModal = ({
-    userId,
-    activeModal,
-    loadAlerts,
+    policyData,
+    onDelete,
     handleCloseModal
 }) => {
     const dispatch = useDispatch();
@@ -208,6 +252,8 @@ const DeleteModal = ({
             <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
                 <Button label='Close' variant='primary' className='cancel-button px-4 mr-2 py-2'
                     onClick={handleCloseModal}/> {/* onClick={handleClose} disabled={submit} /> */}
+                <Button label='Delete' variant='primary' className='policies__save-button px-4 py-2'
+                    onClick={e => onDelete(policyData)}/>
             </div>
         </div>
     );
@@ -228,7 +274,7 @@ const SuccessModal = ({
         <div className='action-modal p-4'>
             <div className='row action-modal__content mt-5 mb-4 d-flex justify-content-center align-items-center'>
                 <Typography variant='size-35' color='color-3'
-                    className='playfair-font mb-4'>
+                    className='playfair-font text-center mb-4 w-100'>
                     {title}
                 </Typography>
                 <Typography variant='size-16' color='color-3'
