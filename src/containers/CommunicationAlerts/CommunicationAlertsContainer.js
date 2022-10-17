@@ -492,9 +492,7 @@ export default function CommunicationAlertsContainer({
         onSearchClick={onSearchClick}
         userId={userId}
         table={table}
-
         activePage={activePage}
-
         useMediaQuery={useMediaQuery}
         breadcrumb={breadcrumb}
         sidebarMenu={sidebarMenu}

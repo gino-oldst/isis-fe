@@ -5,6 +5,8 @@ const SET_PARAMETERS_DATA = 'SET_PARAMETERS_DATA';
 const REPLACE_PARAMETER_STATUS = 'REPLACE_PARAMETER_STATUS';
 const REPLACE_PARAMETERS_DATA = 'REPLACE_PARAMETERS_DATA';
 const SET_LOADING = 'SET_LOADING';
+const SET_KEYWORDS = 'SET_KEYWORDS';
+const SET_POLICY_FORM = 'SET_POLICY_FORM';
 
 export function setSelectedPolicies(data: Object) {
     return {
@@ -51,25 +53,39 @@ export function setLoading() {
     };
 }
 
+export function setKeywords(data: Object) {
+    return {
+        type: SET_KEYWORDS,
+        data
+    };
+}
+
+export function setPolicyForm(form: Object) {
+    return {
+        type: SET_POLICY_FORM,
+        form
+    };
+}
+
 const initialState = {
     table: {
         loading: false,
         columns: [
             {
-                header: 'Alert Name',
-                accessor: 'alertId',
+                header: 'Category',
+                accessor: 'alertPolicyName',
                 disableFilters: true,
                 clickable: false
             },
             {
-                header: 'Keyword',
-                accessor: 'keyword',
+                header: 'Type',
+                accessor: 'alertPolicyInternalCode',
                 disableFilters: true,
                 clickable: false
             },
             {
-                header: 'Status',
-                accessor: 'policiesStatus',
+                header: ' ',
+                accessor: 'policiesAction',
                 disableFilters: true,
                 clickable: false
             }
@@ -108,7 +124,13 @@ const initialState = {
         data: [],
         totalNoOfRecords: null,
         totalPages: null
-    }
+    },
+    form: {
+        categoryName: '',
+        categoryType: '',
+        selectedKeywords: []
+    },
+    keywords: []
 };
 
 export default function policies(state: Object = initialState, action: Object):
@@ -117,6 +139,23 @@ export default function policies(state: Object = initialState, action: Object):
     table: {}
   } {
     switch (action.type) {
+        case SET_POLICY_FORM:
+            console.log(action);
+
+            return {
+                ...state,
+                form: {
+                    ...state.form,
+                    categoryName: action.form.categoryName,
+                    categoryType: action.form.categoryType,
+                    selectedKeywords: action.form.selectedKeywords
+                }
+            };
+        case SET_KEYWORDS:
+            return {
+                ...state,
+                keywords: action.data
+            };
         case SET_LOADING:
             return {
                 ...state,
