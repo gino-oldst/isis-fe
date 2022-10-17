@@ -39,8 +39,8 @@ export async function getPolicySearchData(page, size, sort, filters) {
     return await makeApiCall(`${GET_KEYWORD_SEARCH_DATA_NUMBERED}?page=${page}&size=${size}${withSorting()}`, 'POST', filterBody);
 }
 
-export async function getAlertPoliciesData(page, size, sort, filters) {
-    const filterBody = {};
+export async function getAlertPoliciesData(page, size, sort, name) {
+    const filterBody = { name: name };
     const sortColumn = sort.column;
     const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sortColumn},${sort.type}` : '&sort=dateCreated,ASC';
 

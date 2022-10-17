@@ -30,6 +30,7 @@ export default function CommunicationPoliciesContainer({
     const [categoryName, setCategoryName] = useState('');
     const [categoryType, setCategoryType] = useState({});
     const [selectedKeywords, setSelectedKeywords] = useState([]);
+    const [searchData, setSearchData] = useState('');
     const breadcrumb = [
         {
             label: 'Home',
@@ -45,10 +46,10 @@ export default function CommunicationPoliciesContainer({
     const { table, form, keywords } = useSelector(({ policies }) => policies);
 
     useEffect(() => {
-        loadPolicyData(activePage, pageSize, sort);
+        loadPolicyData(activePage, pageSize, sort, searchData);
     }, [pageSize, activePage, sort]);
 
-    const loadPolicyData = async (activePage, pageSize, sort) => {
+    const loadPolicyData = async (activePage, pageSize, sort, searchName) => {
         setLoading(true);
 
         try {
@@ -58,7 +59,7 @@ export default function CommunicationPoliciesContainer({
             //     policy.alertId = `Alert ${policy.number} - ${getAlertCategoryName(policy.number)}`;
             //     policy.status = policy.deleted ? 'Disabled' : 'Enabled';
             // });
-            const alertPolicies = await getAlertPoliciesData(activePage, pageSize, sort);
+            const alertPolicies = await getAlertPoliciesData(activePage, pageSize, sort, searchName);
             const keywords = await getKeywordSearch();
 
             const { data, totalNoOfRecords, totalPages } = alertPolicies.data;
@@ -77,7 +78,13 @@ export default function CommunicationPoliciesContainer({
     };
 
     const reload = () => {
-        loadPolicyData(activePage, pageSize, sort);
+        loadPolicyData(activePage, pageSize, sort, searchData);
+    };
+
+    const onChange = e => {
+        const { value } = e.target;
+
+        setSearchData(value);
     };
 
     // Handlers
@@ -112,6 +119,10 @@ export default function CommunicationPoliciesContainer({
             showSuccessModal('Succes!', 'You have successfully added a Policy');
         } catch (e) {
             console.error(e);
+            dispatch(setFlashNotification({
+                message: e.message,
+                isError: false
+            }));
         }
     };
 
@@ -265,6 +276,10 @@ export default function CommunicationPoliciesContainer({
         }
     };
 
+    // const onSearchClick = () => {
+    //     re
+    // };
+
     // Modals
     const showPolicyCreateModal = () => {
         dispatch(setModalContent({
@@ -333,6 +348,8 @@ export default function CommunicationPoliciesContainer({
     return <CommunicationPoliciesScreen
         loading={loading}
         breadcrumb={breadcrumb}
+        onChange={onChange}
+        onSubmit={reload}
         table={table}
         activePage={activePage}
         sidebarMenu={sidebarMenu}

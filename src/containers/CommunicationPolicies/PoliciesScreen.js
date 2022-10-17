@@ -52,7 +52,9 @@ type Props = {
     showPolicyCreateModal: Function,
     showPolicyEditModal: Function,
     showPolicyDeleteModal: Function,
-    viewCommunicationPolicyDetails: Function
+    viewCommunicationPolicyDetails: Function,
+    onChange: Function,
+    onSubmit: Function
 }
 
 function CommunicationPoliciesScreen({
@@ -65,7 +67,9 @@ function CommunicationPoliciesScreen({
     showPolicyCreateModal,
     showPolicyEditModal,
     showPolicyDeleteModal,
-    viewCommunicationPolicyDetails
+    viewCommunicationPolicyDetails,
+    onChange,
+    onSubmit
 }: Props): React$Element<any> {
     const { form } = useSelector(({ policies }) => policies);
 
@@ -95,14 +99,14 @@ function CommunicationPoliciesScreen({
                                                     <div className='d-flex'>
                                                         <Input name='filterId'
                                                             type='text'
-                                                            // onChange={onChange}
+                                                            onChange={onChange}
                                                             // defaultValue={filterSearchForm.filterId}
                                                             className='shadow-none isis-control'
                                                             placeholder='Search...'/>
-                                                        <Button weight='light' className='alerts__bulk-review ml-2' label='Search'/>
+                                                        <Button weight='light' type='button' className='alerts__bulk-review ml-2'
+                                                            label='Search' onClick={onSubmit}/>
                                                     </div>
                                                 </FormGroup>
-                                                {/* <Button weight='light' className='alerts__bulk-review mr-2' label='Bulk Review'/> */}
                                             </Form>
                                         </Col>
                                         <Col lg={6} md={6} sm={6}
