@@ -159,7 +159,7 @@ const EditModal = ({
                         {/* <p>{JSON.stringify(defaultPolicy)}</p>
                         <p>{JSON.stringify(selectedItems)}</p>
                         <p>{JSON.stringify(defaultKeywords)}</p> */}
-                        <p>{JSON.stringify(categoryName == '' && categoryType && selectedItems)}</p>
+                        {/* <p>{JSON.stringify(categoryName == '' && categoryType && selectedItems)}</p> */}
                         <FormGroup className='mb-3'>
                             <Label for='categoryName'>Category Name</Label>
                             <Input name='filterText' type='text' defaultValue=''

@@ -48,12 +48,10 @@ type Props = {
     sidebarMenu: Array<Menu>,
     table: Any,
     activePage: Int,
-    viewPoliciesDetails: Function,
-    showPolicyCreateModal: Function,
     showPolicyEditModal: Function,
-    showPolicyDeleteModal: Function,
     categoryName: String,
-    type: String
+    type: String,
+    policyData: Object
 }
 
 function CommunicationPoliciesDetailScreen({
@@ -62,12 +60,10 @@ function CommunicationPoliciesDetailScreen({
     sidebarMenu,
     table,
     activePage,
-    viewPoliciesDetails,
-    showPolicyCreateModal,
     showPolicyEditModal,
-    showPolicyDeleteModal,
     categoryName,
-    type
+    type,
+    policyData
 }: Props): React$Element<any> {
     return (
         <div className='policies'>
@@ -89,11 +85,11 @@ function CommunicationPoliciesDetailScreen({
                                         <Col lg={6}>
                                             <div className='mb-3'>
                                                 <Typography color='color-2' variant='size-16' className='pl-0'>Category Name</Typography>
-                                                <Typography color='color-3' variant='size-26' className='pl-0'>{categoryName}</Typography>
+                                                <Typography color='color-3' variant='size-26' className='pl-0'>{policyData.name}</Typography>
                                             </div>
                                             <div>
                                                 <Typography color='color-2' variant='size-16' className='pl-0'>Type</Typography>
-                                                <Typography color='color-3' variant='size-26' className='pl-0'>{type}</Typography>
+                                                <Typography color='color-3' variant='size-26' className='pl-0'>{policyData.internalCode}</Typography>
                                             </div>
                                         </Col>
                                         <Col lg={6} className='d-flex align-items-start justify-content-end mb-3 pr-0'>
@@ -111,9 +107,7 @@ function CommunicationPoliciesDetailScreen({
                                     activePage={activePage}
                                     pagination={true}
                                     sortable={false}
-                                    fetching={table.loading}
-                                    viewDeleteModal={showPolicyDeleteModal}
-                                    viewEditModal={showPolicyEditModal}/>
+                                    fetching={table.loading}/>
                             </CardBody>
                         </Card>
                     </div>
