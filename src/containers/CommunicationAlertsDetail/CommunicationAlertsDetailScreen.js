@@ -131,9 +131,9 @@ function CommunicationAlertsDetailScreen({
         </Popover>
     );
 
-    const userEvents = activities.filter(row => row.type === 'USER_EVENT');
+    const messageActivities = activities.filter(row => row.target === 'COMMUNICATION_MESSAGE');
 
-    const systemEvents = activities.filter(row => row.type === 'SYSTEM_EVENT');
+    const alertActivities = activities.filter(row => row.target === 'ALERT');
 
     const showActionsUpdateModal = () => {
         dispatch(setModalContent({
@@ -948,7 +948,7 @@ function CommunicationAlertsDetailScreen({
                                                                     <Tab.Pane eventKey='link-1'>
                                                                         <div id='containerElement' className='alerts-detail__message-activity pr-5 pt-1 pb-5 mb-4 mt-4'>
                                                                             <div>
-                                                                                { userEvents.map(activity => {
+                                                                                { messageActivities.map(activity => {
                                                                                     return (<>
                                                                                         <div key={2} className='alert-detail__activity-info d-flex align-items-center mb-4'>
                                                                                             <span className='activity-icon'><span className='text-light'>{activity.executorId.charAt(0)}</span></span>
@@ -959,7 +959,7 @@ function CommunicationAlertsDetailScreen({
                                                                                         </div>
                                                                                     </>);
                                                                                 })}
-                                                                                { userEvents.length === 0 &&
+                                                                                { messageActivities.length === 0 &&
                                                                                     <div key={2} className='alert-detail__activity-info d-flex align-items-center'>
                                                                                         <div className='d-block text-muted text-center'>
                                                                                             <Typography color='color-3' variant='size-16'>No Activities</Typography>
@@ -972,7 +972,7 @@ function CommunicationAlertsDetailScreen({
                                                                     <Tab.Pane eventKey='link-2'>
                                                                         <div id='containerElement' className='alerts-detail__message-activity pr-5 pt-1 pb-5 mb-4 mt-4'>
                                                                             <div>
-                                                                                { systemEvents.map(activity => {
+                                                                                { alertActivities.map(activity => {
                                                                                     return (<>
                                                                                         <div key={1} className='alert-detail__activity-info d-flex align-items-start mb-4'>
                                                                                             {/* <span className='activity-icon'><span className='text-light'>J</span></span> */}
@@ -984,7 +984,7 @@ function CommunicationAlertsDetailScreen({
                                                                                         </div>
                                                                                     </>);
                                                                                 })}
-                                                                                { systemEvents.length === 0 &&
+                                                                                { alertActivities.length === 0 &&
                                                                                     <div key={2} className='alert-detail__activity-info d-flex align-items-center'>
                                                                                         <div className='d-block text-muted text-center'>
                                                                                             <Typography color='color-3' variant='size-16'>No Activities</Typography>
