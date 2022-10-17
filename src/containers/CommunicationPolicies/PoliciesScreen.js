@@ -29,7 +29,8 @@ import {
     FormGroup,
     Input,
     Label,
-    Alert
+    Alert,
+    Form
 } from 'reactstrap';
 import { useIsMount } from '../../hooks/useIsMount';
 
@@ -47,7 +48,13 @@ type Props = {
     sidebarMenu: Array<Menu>,
     table: Any,
     activePage: Int,
-    viewPoliciesDetails: Function
+    viewPoliciesDetails: Function,
+    showPolicyCreateModal: Function,
+    showPolicyEditModal: Function,
+    showPolicyDeleteModal: Function,
+    viewCommunicationPolicyDetails: Function,
+    onChange: Function,
+    onSubmit: Function
 }
 
 function CommunicationPoliciesScreen({
@@ -56,8 +63,16 @@ function CommunicationPoliciesScreen({
     sidebarMenu,
     table,
     activePage,
-    viewPoliciesDetails
+    viewPoliciesDetails,
+    showPolicyCreateModal,
+    showPolicyEditModal,
+    showPolicyDeleteModal,
+    viewCommunicationPolicyDetails,
+    onChange,
+    onSubmit
 }: Props): React$Element<any> {
+    const { form } = useSelector(({ policies }) => policies);
+
     return (
         <div className='policies'>
             <CollapsibleSidebar
@@ -68,7 +83,39 @@ function CommunicationPoliciesScreen({
                     <div className='policies__content'>
                         <Card className='px-4 py-2'>
                             <CardBody>
-                                <Typography color='color-3' className='policies__title'>Policies</Typography>
+                                <div className='alerts__header mb-4'>
+                                    <Row className='w-100 mr-0'>
+                                        <Col lg={6} md={6} sm={6}
+                                            xs={6}>
+                                            <Typography color='color-3' className='policies__title pl-0'>Policies</Typography>
+                                        </Col>
+                                    </Row>
+                                    <Row className='w-100 mr-0'>
+                                        <Col lg={6} md={6} sm={6}
+                                            xs={6}>
+                                            <Form>
+                                                <Label>Search Policies</Label>
+                                                <FormGroup className='mb-3'>
+                                                    <div className='d-flex'>
+                                                        <Input name='filterId'
+                                                            type='text'
+                                                            onChange={onChange}
+                                                            // defaultValue={filterSearchForm.filterId}
+                                                            className='shadow-none isis-control'
+                                                            placeholder='Search...'/>
+                                                        <Button weight='light' type='button' className='alerts__bulk-review ml-2'
+                                                            label='Search' onClick={onSubmit}/>
+                                                    </div>
+                                                </FormGroup>
+                                            </Form>
+                                        </Col>
+                                        <Col lg={6} md={6} sm={6}
+                                            xs={6} className='d-flex align-items-end justify-content-end mb-3 pr-0'>
+                                            <Button weight='light' className='alerts__bulk-review mr-2' label='Add Category'
+                                                onClick={showPolicyCreateModal}/>
+                                        </Col>
+                                    </Row>
+                                </div>
                                 <Table className='policies__table'
                                     loading={loading}
                                     tableColumns={table.columns}
@@ -78,7 +125,10 @@ function CommunicationPoliciesScreen({
                                     activePage={activePage}
                                     pagination={true}
                                     sortable={false}
-                                    fetching={table.loading}/>
+                                    fetching={table.loading}
+                                    viewDeleteModal={showPolicyDeleteModal}
+                                    viewEditModal={showPolicyEditModal}
+                                    viewDetails={viewCommunicationPolicyDetails}/>
                             </CardBody>
                         </Card>
                     </div>
