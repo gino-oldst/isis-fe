@@ -5,7 +5,7 @@ import makeApiCall from '../api/makeApiCall';
 // const GET_ALERT_DATA = `${config.apiStorage}/storage-service/quick-communication/search/paged`;
 const GET_ALERT_DATA = `${config.apiStorage}/storage-service/quick-communication/thread-search/paged`;
 
-export async function getCommunicationAlertData(page, size, sort, alert, status, dFrom, dTo, sources, senders, recipients) {
+export async function getCommunicationAlertData(page, size, sort, alert, status, dFrom, dTo, sources, senders, recipients, escalations) {
     const filterBody = {
         keywordIds: alert.length > 0 ? [...alert.map(row => { return row.value; })] : [],
         sources: sources.length > 0 ? [...sources.map(row => { return row.value; })] : [],
@@ -13,7 +13,8 @@ export async function getCommunicationAlertData(page, size, sort, alert, status,
         dateFrom: dFrom,
         dateTo: dTo,
         senders: senders.length > 0 ? [...senders.map(row => { return row.value; })] : [],
-        recipients: recipients.length > 0 ? [...recipients.map(row => { return row.value; })] : []
+        recipients: recipients.length > 0 ? [...recipients.map(row => { return row.value; })] : [],
+        escalations: escalations.length > 0 ? [...escalations.map(row => { return row.value; })] : []
     };
 
     const sortColumn = sort.column;

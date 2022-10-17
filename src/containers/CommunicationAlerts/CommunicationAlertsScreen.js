@@ -20,7 +20,8 @@ import {
     setDateRangeLocal,
     getDateRangeLocal,
     sourceMaker,
-    statusMaker
+    statusMaker,
+    escalationMaker
 } from '../../utils/helpers';
 import {
     Row,
@@ -40,7 +41,7 @@ import { setModalContent } from '../../redux/modules/modalEvent';
 import { resetTableState } from '../../redux/modules/table';
 import { setLoading, setAlertsDateRange } from '../../redux/modules/alerts';
 import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
-import { COMMUNICATION_ALERT_SOURCE_OPTIONS, COMMUNICATION_ALERT_STATUS_OPTIONS } from '../../config/constants';
+import { COMMUNICATION_ALERT_SOURCE_OPTIONS, COMMUNICATION_ALERT_STATUS_OPTIONS, COMMUNICATION_ALERT_ESCALATIONS_OPTIONS } from '../../config/constants';
 import { DropdownButton, OverlayTrigger, Popover } from 'react-bootstrap';
 import AsyncSelect from 'react-select/async';
 import 'react-date-range/dist/styles.css'; // main style file
@@ -84,6 +85,8 @@ type Props = {
     handleDownloadAlertData: Function,
     handleCloseSuccessModal: Function,
     predefinedReasons: Array<any>,
+    defaultEscalation: Array<any>,
+    handleEscalation: Function,
 }
 
 function CommunicationAlertsScreen({
@@ -121,7 +124,9 @@ function CommunicationAlertsScreen({
     errorForm,
     handleDownloadAlertData,
     handleCloseSuccessModal,
-    predefinedReasons
+    predefinedReasons,
+    defaultEscalation,
+    handleEscalation
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -337,6 +342,11 @@ function CommunicationAlertsScreen({
     }))];
 
     const statusOptions = [{ label: 'Select All', value: 'all' }, ...Object.keys(COMMUNICATION_ALERT_STATUS_OPTIONS).map(row => ({
+        label: row,
+        value: row
+    }))];
+
+    const escalationOptions = [{ label: 'Select All', value: 'all' }, ...Object.keys(COMMUNICATION_ALERT_ESCALATIONS_OPTIONS).map(row => ({
         label: row,
         value: row
     }))];
@@ -588,6 +598,28 @@ function CommunicationAlertsScreen({
                                                                 className='filter-select'
                                                                 onChange={(newTags) => handleRecipientChange(newTags)}
                                                                 placeholder={'Select Recipient...'}/>
+                                                        </FormGroup>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <Col>
+                                                        <FormGroup className='mb-3'>
+                                                            <Label for='source'>Escalation</Label>
+                                                            <Select
+                                                                isMulti={true}
+                                                                placeholder={'Search Escalation'}
+                                                                isSearchable={false}
+                                                                className='status-select'
+                                                                name='escalation'
+                                                                onChange={selected => {
+                                                                    selected.find(option => option.value === 'all')
+                                                                        ? handleEscalation(escalationOptions.splice(1))
+                                                                        : handleEscalation(selected);
+                                                                }}
+                                                                value={defaultEscalation.length > 0
+                                                                    ? defaultEscalation.map(row => ({ label: escalationMaker(row.label), value: row.value }))
+                                                                    : []}
+                                                                options={escalationOptions.map(row => ({ label: escalationMaker(row.label), value: row.value }))}/>
                                                         </FormGroup>
                                                     </Col>
                                                 </Row>
