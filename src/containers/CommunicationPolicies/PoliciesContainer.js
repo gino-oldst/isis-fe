@@ -276,10 +276,6 @@ export default function CommunicationPoliciesContainer({
         }
     };
 
-    // const onSearchClick = () => {
-    //     re
-    // };
-
     // Modals
     const showPolicyCreateModal = () => {
         dispatch(setModalContent({
