@@ -47,6 +47,15 @@ export default function Badge({
         case 'title':
             color = 'bg-download-button';
             break;
+        case 'base':
+            color = 'bg-badge-green';
+            break;
+        case 'manager':
+            color = 'bg-badge-violet';
+            break;
+        case 'co':
+            color = 'bg-badge-orange';
+            break;
         default:
             color = 'bg-badge-gray';
             break;

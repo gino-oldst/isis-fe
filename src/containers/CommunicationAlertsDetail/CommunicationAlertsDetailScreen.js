@@ -68,6 +68,7 @@ type Props = {
     onSubmit: Function,
     onSubmitSingle: Function,
     submit: Boolean,
+    isChecked:Boolean,
     filterText: Array,
     messages: Array,
     handleGenerate: Function,
@@ -81,6 +82,7 @@ type Props = {
     activityLoading: Boolean,
     onSubmitComment: Function,
     predefinedReasons: Array,
+    onSubmitEscalationChangeSingle: Function
 }
 
 function CommunicationAlertsDetailScreen({
@@ -98,6 +100,7 @@ function CommunicationAlertsDetailScreen({
     onSubmitSingle,
     submit,
     filterText,
+    isChecked,
     messages,
     handleGenerate,
     handleSelectAll,
@@ -109,7 +112,8 @@ function CommunicationAlertsDetailScreen({
     activities,
     activityLoading,
     onSubmitComment,
-    predefinedReasons
+    predefinedReasons,
+    onSubmitEscalationChangeSingle
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -162,6 +166,10 @@ function CommunicationAlertsDetailScreen({
         }
     };
 
+    const handleDetailEscalationChange = (e, selectedAlert) => {
+        onSubmitEscalationChangeSingle(e.value, '', selectedAlert);
+    };
+
     const showActionsModal = () => {
         dispatch(setModalContent({
             modalContent: <ActionModal handleCloseModal={handleCloseModal} />,
@@ -209,7 +217,7 @@ function CommunicationAlertsDetailScreen({
                             </Label>
                         </FormGroup> */}
                     <CheckboxGroup
-                        onChange = {handleSelectAll}>
+                        onChange = {handleSelectAll} defaultChecked={isChecked}>
                         <FormGroup check={true} className='mb-1'>
                             <Label check={true} className='d-flex align-items-center'>
                                 <AllCheckerCheckbox/>
@@ -611,6 +619,9 @@ function CommunicationAlertsDetailScreen({
                                                                         <th className='pb-2'>
                                                                             <Typography color='color-3' className='mr-3' weight='semi-bold'>Status</Typography>
                                                                         </th>
+                                                                        <th className='pb-2'>
+                                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Escalation</Typography>
+                                                                        </th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
@@ -659,6 +670,33 @@ function CommunicationAlertsDetailScreen({
                                                                                                 </OverlayTrigger>
                                                                                             </div>
                                                                                         }
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td style={{ width: '250px' }}>
+                                                                                    <div className='d-flex align-items-center'>
+                                                                                        <Select
+                                                                                            name='escalation'
+                                                                                            className='w-100 pr-2'
+                                                                                            isDisabled={false}
+                                                                                            isSearchable={false}
+                                                                                            onChange={e => handleDetailEscalationChange(e, alert)}
+                                                                                            defaultValue={{
+                                                                                                label: <Badge status={alert.escalation} />,
+                                                                                                value: alert.escalation
+                                                                                            }}
+                                                                                            options={[{
+                                                                                                name: 'BASE',
+                                                                                                label: <Badge status='Base' />,
+                                                                                                value: 'BASE'
+                                                                                            }, {
+                                                                                                name: 'MANAGER',
+                                                                                                label: <Badge status='Manager' />,
+                                                                                                value: 'MANAGER'
+                                                                                            }, {
+                                                                                                name: 'CO',
+                                                                                                label: <Badge status='CO' />,
+                                                                                                value: 'CO'
+                                                                                            }]} />
                                                                                     </div>
                                                                                 </td>
                                                                             </tr>
@@ -891,9 +929,8 @@ function CommunicationAlertsDetailScreen({
                                                                                             <div key={2} className='alert-detail__activity-info d-flex align-items-center mb-4'>
                                                                                                 <span className='activity-icon'><span className='text-light'>{activity.executorId.charAt(0)}</span></span>
                                                                                                 <div className='d-block'>
-                                                                                                    <Typography color='color-3' variant='size-16'>User {truncateText(activity.executorId, 8)} added a comment.</Typography>
+                                                                                                    <Typography color='color-3' variant='size-16'>User {truncateText(activity.executorId, 8)}: {activity.event}</Typography>
                                                                                                     <Typography color='color-3' variant='size-14' className='text-muted'>{moment(activity.dateCreated).utc().local().format('DD/MM/YYYY h:mm A')}</Typography>
-                                                                                                    <Typography color='color-3 mt-2' variant='size-14' >{activity.event}</Typography>
                                                                                                 </div>
                                                                                             </div>
                                                                                         </>);
@@ -916,9 +953,8 @@ function CommunicationAlertsDetailScreen({
                                                                                         <div key={2} className='alert-detail__activity-info d-flex align-items-center mb-4'>
                                                                                             <span className='activity-icon'><span className='text-light'>{activity.executorId.charAt(0)}</span></span>
                                                                                             <div className='d-block'>
-                                                                                                <Typography color='color-3' variant='size-16'>User {truncateText(activity.executorId, 8)} added a comment.</Typography>
+                                                                                                <Typography color='color-3' variant='size-16'>User {truncateText(activity.executorId, 8)}: {activity.event}</Typography>
                                                                                                 <Typography color='color-3' variant='size-14' className='text-muted'>{moment(activity.dateCreated).utc().local().format('DD/MM/YYYY h:mm A')}</Typography>
-                                                                                                <Typography color='color-3 mt-2' variant='size-14' >{activity.event}</Typography>
                                                                                             </div>
                                                                                         </div>
                                                                                     </>);

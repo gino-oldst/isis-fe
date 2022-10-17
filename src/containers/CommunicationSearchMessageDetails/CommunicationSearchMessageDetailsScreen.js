@@ -152,6 +152,7 @@ function CommunicationSearchMessageDetailsScreen({
         userId,
         activeModal,
         loadAlerts,
+
         handleCloseModal
     }) => {
         const dispatch = useDispatch();
@@ -169,12 +170,11 @@ function CommunicationSearchMessageDetailsScreen({
                                 <span className='box-label'>(Select All)</span>
                             </Label>
                         </FormGroup> */}
-                    <CheckboxGroup
-                        onChange = {handleSelectAll}>
-                        <FormGroup check={true} className='mb-1'>
-                            <Label check={true} className='d-flex align-items-center'>
-                                <AllCheckerCheckbox/>
-                                <h4 className='box-label'>(Select All)</h4>
+                    <CheckboxGroup onChange={handleSelectAll} defaultChecked={isChecked}>
+                        <FormGroup className='mb-1'>
+                            <Label>
+                                <AllCheckerCheckbox />
+                                <span>Select All</span>
                             </Label>
                         </FormGroup>
                         <div id='containerElement' className='communication-search-message-details__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
@@ -189,7 +189,7 @@ function CommunicationSearchMessageDetailsScreen({
                                                 {/* <Typography color='color-3' className='mr-3 mb-2' weight='regular'
                                                     style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '10pt' }}><b>{message.sender}</b>{message.showSender} {isoToUTCLocal(message.timeSent)}</Typography> */}
                                                 <div>
-                                                    <Checkbox class='select-option' value = {message.id} style={{ position: 'relative', bottom: '-40px' }}/>
+                                                    <Checkbox Name='select-option' value = {message.id} style={{ position: 'relative', bottom: '-40px' }}/>
                                                     <div className='message-box' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
                                                         <Highlighter highlightClassName='alertKeyword'
                                                             style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}

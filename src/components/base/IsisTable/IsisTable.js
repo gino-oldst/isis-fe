@@ -727,11 +727,11 @@ function IsisTable({
                             {Array.from(Array(tablePagination), (_, i) => {
                                 const dynamicPageIndex = activePage > maxPage ? activePage - 2 + i : i + 1;
 
-                                return i <= maxPage && <span key={i}
+                                return i <= maxPage + 3 && dynamicPageIndex <= tablePagination && <span key={i}
                                     className={`cursor-pointer ${activePage + 1 === dynamicPageIndex ? 'active' : ''} ${fetching ? 'text-muted' : ''}`}
                                     onClick={() => {
-                                        gotoPage(dynamicPageIndex - 1);
                                         if (!fetching) setTableActivePage(dynamicPageIndex - 1);
+                                        gotoPage(dynamicPageIndex - 1);
                                     }}>
                                     {dynamicPageIndex}
                                 </span>;

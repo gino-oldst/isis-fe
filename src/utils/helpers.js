@@ -33,6 +33,22 @@ export function sourceMaker(str: string): string {
     return ret;
 }
 
+export function escalationMaker(str: string): string {
+    let ret = '';
+
+    if (str === 'BASE') {
+        ret = 'BASE';
+    } else if (str === 'MANAGER') {
+        ret = 'MANAGER';
+    } else if (str === 'CO') {
+        ret = 'CO';
+    } else {
+        ret = str;
+    }
+
+    return ret;
+}
+
 export function statusMaker(str: string): string {
     let ret = '';
 

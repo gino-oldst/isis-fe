@@ -29,7 +29,7 @@ export default function ReactPagination({
             circle={true}
             totalPages={totalPages}
             currentPage={currentPage}
-            showMax={4}
+            showMax={2}
             activeColor='#004a93'
             activeBgColor='#ffffff'
             activeBorderColor='#004a93'
