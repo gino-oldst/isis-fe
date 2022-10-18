@@ -1221,15 +1221,13 @@ export default function ReactTable({
                         ? cell.cell.row.original.alerts.data[0].recipients.map(item => item)
                         : '')];
                     const strRecipients = recipients.join(', ');
-
-                    console.log(cell.cell.row.getToggleRowExpandedProps());
                     // ' 🔼' : ' 🔽'
 
                     return (
                         <div className='d-flex justify-content-center align-items-center' style={{ maxWidth: '400px' }}>
                             <Typography weight={'bold'} variant={'size-16'} color='color-3'
                                 {...cell.cell.row.getToggleRowExpandedProps()} className='table__arrow-square d-flex justify-content-center align-items-center'>
-
+                                {cell.cell.row.isExpanded ? ' 🔼' : ' 🔽'}
                                 <FontAwesomeIcon icon='sort' size='sm' className='table__sort-icon' />
                             </Typography>
                             <div className='table__number-square d-flex justify-content-center align-items-center'>
