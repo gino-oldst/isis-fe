@@ -49,6 +49,7 @@ export default function CommunicationAlertsContainer({
     const [dateFrom, setDateFrom] = useState('');
     const [dateTo, setDateTo] = useState('');
     const [source, setSource] = useState([]);
+    const [escalation, setEscalation] = useState([]);
     const [alert, setAlert] = useState([]);
     const [status, setStatus] = useState([]);
     const [submit, setSubmit] = useState(false);
@@ -124,16 +125,18 @@ export default function CommunicationAlertsContainer({
                 source,
                 senders,
                 recipients,
-                false
+                false,
+                escalation
             );
         }, 100);
-    }, [pageSize, activePage, sort, submit]);
+    }, [pageSize, activePage, sort, escalation, submit]);
 
-    const loadCommAlertsData = async (page, size, sort, alert, status, dFrom, dTo, sources, senders, recipients, isRequery) => {
+    const loadCommAlertsData = async (page, size, sort, alert, status, dFrom, dTo, sources, senders, recipients, isRequery, escalations) => {
         setLoading(true);
 
         const alertSearchParams = JSON.parse(await StorageIDB.getItem(storageKey.alertSearchParams));
         const tempUpdatedInDetails = JSON.parse(await Storage.getItem(storageKey.tempUpdatedInDetails));
+        const tempSorted = JSON.parse(await Storage.getItem(storageKey.tempSorted));
 
         var filterAlert = [];
         var filterStatus = [];
@@ -145,9 +148,15 @@ export default function CommunicationAlertsContainer({
         var isPageChange = 0;
         var insidePage = 0;
         var updateInMsg = false;
+        var updateInSort = false;
+        var filterEscalations = [];
 
         if (tempUpdatedInDetails) {
             updateInMsg = tempUpdatedInDetails;
+        }
+
+        if (tempSorted) {
+            updateInSort = tempSorted;
         }
 
         if (alertSearchParams) {
@@ -163,6 +172,7 @@ export default function CommunicationAlertsContainer({
             filterSources = sources.length === 0 && !isRequery ? alertSearchParams.source : sources;
             filterDateFrom = dFrom === '' && !isRequery ? alertSearchParams.dateFrom : dFrom;
             filterDateTo = dTo === '' && !isRequery ? alertSearchParams.dateTo : dTo;
+            filterEscalations = escalations.length === 0 && !isRequery ? alertSearchParams.escalations : escalations;
 
             const slist = alertSearchParams.senders.length > 0 ? [...alertSearchParams.senders.map(row => { return row; })] : [];
             const rlist = alertSearchParams.recipients.length > 0 ? [...alertSearchParams.recipients.map(row => { return row; })] : [];
@@ -175,16 +185,21 @@ export default function CommunicationAlertsContainer({
             let alerts = [];
 
             if (updateInMsg) {
-                alerts = await getCommunicationAlertData(insidePage, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient);
+                alerts = await getCommunicationAlertData(insidePage, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient, filterEscalations);
 
                 Storage.removeItem(storageKey.tempUpdatedInDetails);
                 Storage.setItem(storageKey.tempUpdatedInDetails, false);
+            } else if (updateInSort) {
+                alerts = await getCommunicationAlertData(insidePage, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient, filterEscalations);
+
+                Storage.removeItem(storageKey.tempSorted);
+                Storage.setItem(storageKey.tempSorted, false);
             } else {
                 alerts = alertSearchParams != null && !isRequery
                     ? !isPageChange
                         ? alertSearchParams
-                        : await getCommunicationAlertData(insidePage, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient)
-                    : await getCommunicationAlertData(page, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient);
+                        : await getCommunicationAlertData(insidePage, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient, filterEscalations)
+                    : await getCommunicationAlertData(page, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient, filterEscalations);
             }
 
             const { data, totalNoOfRecords, totalPages } = alerts.data;
@@ -203,7 +218,8 @@ export default function CommunicationAlertsContainer({
                 senders: filterSender,
                 recipients: filterRecipient,
                 data: alerts.data,
-                activePage: insidePage
+                activePage: insidePage,
+                escalation: escalations
             }));
 
             Storage.removeItem(storageKey.tempUpdatedInDetails);
@@ -338,6 +354,10 @@ export default function CommunicationAlertsContainer({
         setSource(event);
     };
 
+    const handleEscalation = (event) => {
+        setEscalation(event);
+    };
+
     const handleAlert = (event) => {
         setAlert(event);
     };
@@ -425,7 +445,8 @@ export default function CommunicationAlertsContainer({
                 source,
                 senders,
                 recipients,
-                true
+                true,
+                escalation
             );
             StorageIDB.setItem(storageKey.alertSearchParams, JSON.stringify({
                 alert: alert,
@@ -435,7 +456,8 @@ export default function CommunicationAlertsContainer({
                 source: source,
                 senders: senderStore,
                 recipients: recipientStore,
-                data: tableResultStore
+                data: tableResultStore,
+                escalation: escalation
             }));
 
             Storage.removeItem(storageKey.tempUpdatedInDetails);
@@ -470,9 +492,7 @@ export default function CommunicationAlertsContainer({
         onSearchClick={onSearchClick}
         userId={userId}
         table={table}
-
         activePage={activePage}
-
         useMediaQuery={useMediaQuery}
         breadcrumb={breadcrumb}
         sidebarMenu={sidebarMenu}
@@ -501,7 +521,9 @@ export default function CommunicationAlertsContainer({
         toggleCheck={toggleCheck}
         errorForm={errorForm}
         handleCloseSuccessModal={handleCloseSuccessModal}
-        predefinedReasons={predefinedReasons}/>;
+        predefinedReasons={predefinedReasons}
+        defaultEscalation={escalation}
+        handleEscalation={handleEscalation}/>;
 }
 
 const SuccessModal = ({

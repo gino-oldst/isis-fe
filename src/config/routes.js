@@ -6,6 +6,7 @@ const CommunicationAlerts = React.lazy(() => import('../containers/Communication
 const CommunicationAlertsDetail = React.lazy(() => import('../containers/CommunicationAlertsDetail/CommunicationAlertsDetailContainer'));
 const CommunicationSearch = React.lazy(() => import('../containers/CommunicationSearch/CommunicationSearchContainer'));
 const CommunicationPolicies = React.lazy(() => import('../containers/CommunicationPolicies/PoliciesContainer'));
+const CommunicationPoliciesDetail = React.lazy(() => import('../containers/CommunicationPoliciesDetail/PoliciesDetailContainer'));
 
 const Dashboard = React.lazy(() => import('../containers/Dashboard/DashboardContainer'));
 // const Alerts = React.lazy(() => import('../containers/Alerts/AlertsContainer'));
@@ -46,6 +47,11 @@ const routes = [{
     path: '/communication_policies',
     name: 'Policies',
     component: CommunicationPolicies,
+    authedRoute: true
+}, {
+    path: '/communication-policies-detail',
+    name: 'PoliciesDetail',
+    component: CommunicationPoliciesDetail,
     authedRoute: true
 }, {
     path: '/communication_search_results',

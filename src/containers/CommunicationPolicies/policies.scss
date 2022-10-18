@@ -1,6 +1,19 @@
 @import "../../styles/utils/_variables";
 @import "../../styles/utils/_mixins";
 
+.policy-word-box{
+    padding: 0.8rem;
+    background-color: rgba(173, 216, 230, 0.39);
+}
+
+.hidden{
+    display: none !important;
+}
+
+.table-responsive{
+    height: 400px !important;
+}
+
 .policies {
     height: 100%;
     display: flex;
@@ -47,5 +60,13 @@
 
     .pb-40 {
         padding-bottom: 100px;
+    }
+
+    .policies__title{
+        padding-left: 0 !important;
+    }
+
+    .mb-0{
+        margin-bottom: 0 !important;
     }
 }

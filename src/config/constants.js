@@ -22,7 +22,8 @@ const storageKey = {
     sidebarState: 'sidebarState',
     alertSearchParams: 'alertSearchParams',
     searchParams: 'searchParams',
-    tempUpdatedInDetails: 'tempUpdatedInDetails'
+    tempUpdatedInDetails: 'tempUpdatedInDetails',
+    tempSorted: 'sorted'
 };
 
 const alertsStorageKey = {
@@ -67,6 +68,12 @@ const COMMUNICATION_ALERT_STATUS_OPTIONS = {
     IN_REVIEW: 'IN_REVIEW'
 };
 
+const COMMUNICATION_ALERT_ESCALATIONS_OPTIONS = {
+    BASE: 'BASE',
+    MANAGER: 'MANAGER',
+    CO: 'CO'
+};
+
 const ALERT_CATEGORIES = {
     MARKET_ABUSE: [8, 34, 26, 24, 31, 7, 38, 1, 12, 21, 19, 22, 10, 29, 40, 5, 3, 36, 37, 15, 2, 35, 20, 28, 6, 41, 32, 42, 17, 16, 44, 43, 14, 13, 25, 33, 9, 18, 23, 30, 11, 4, 39, 27],
     CONDUCT: [74, 69, 77, 46, 64, 56, 63, 47, 70, 54, 67, 75, 52, 60, 65, 49, 72, 66, 73, 51, 53, 50, 68, 71, 58, 45, 59, 61, 62, 76, 57, 55, 48],
@@ -85,6 +92,7 @@ export {
     //  ISIS
     COMMUNICATION_ALERT_SOURCE_OPTIONS,
     COMMUNICATION_ALERT_STATUS_OPTIONS,
+    COMMUNICATION_ALERT_ESCALATIONS_OPTIONS,
     ALERT_CATEGORIES,
     MESSAGE_TYPE
 };
