@@ -411,6 +411,7 @@ function IsisTable({
     globalFilter,
     pagination,
     sortable,
+    viewDetails,
     hideHeader,
     renderRowSubComponent,
     isDisabled,
@@ -945,10 +946,11 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                                         {JSON.stringify(row.isSelected)} */}
                                         {JSON.stringify(x)}
                                         <input checked={row.isSelected ? row.isSelected : checked.includes(x.id)} id='row-checkbox' type='checkbox'
-                                            onChange={e => handleCheck(e, x, row)}/>
+                                            onChange={e => handleCheck(e, x, row)} />
                                     </td>
                                 );
                             } else if (cell.column.id == 'expander') {
+                                // console.log(cell.column)
                                 return (
                                     <td>
                                         <div className='d-flex flex-column'>
@@ -970,8 +972,20 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                                 );
                             } else if (cell.column.id == 'status') {
                                 return (
+                                    <td>
+                                        <Badge status={x.status} />
+                                    </td>
+                                );
+                            } else if (cell.column.id == 'alertMessageSummary') {
+                                const alertLevelMessage = (cell.row.original.alerts.data[0].message);
+                                var beforeAlertLevelMessage = alertLevelMessage.substring(0, alertLevelMessage.indexOf(cell.row.original.alerts.data[0].keyword));
+                                var afterAlertLevelMessage = alertLevelMessage.substring(alertLevelMessage.indexOf(cell.row.original.alerts.data[0].keyword), 75);
+
+                                return (
                                     <td colSpan={visibleColumns.length - 1} >
-                                        <Badge status={x.status}/>
+                                        <div className='alert-summary-message-column d-flex align-items-center mb-3 highlighted-text' style={{ minWidth: '200px !important' }}>
+                                            <p>{beforeAlertLevelMessage} {afterAlertLevelMessage}</p>
+                                        </div>
                                     </td>
                                 );
                             }
@@ -1023,6 +1037,7 @@ type Props = {
     totalNoOfRecords: number,
     activePage: number,
     selectableRows: boolean,
+    isAsc: Boolean,
     globalFilter: boolean,
     pagination: boolean,
     sortable: boolean,
@@ -1044,6 +1059,7 @@ export default function ReactTable({
     tableColumns,
     tablePagination,
     totalNoOfRecords,
+    isAsc,
     activePage,
     selectableRows = false,
     globalFilter = false,
@@ -1085,8 +1101,16 @@ export default function ReactTable({
                 } else if (accessor == 'date') {
                     const readableDate = moment(cell.cell.row.original.alerts.data[0].timeSent).utc().local().format('DD/MM/YYYY hh:mm A');
 
+                    const keywords = [...new Set(cell.cell.row.original.alerts.data.map(item => item.keyword))];
+
+                    const recipients = [...new Set(cell.cell.row.original.alerts.data[0].recipients
+                        ? cell.cell.row.original.alerts.data[0].recipients.map(item => item)
+                        : '')];
+                    const strRecipients = recipients.join(', ');
+
                     return (
-                        <div>
+                        <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients)}
+                            className='cursor-pointer'>
                             <div>{readableDate}</div>
                         </div>
                     );
@@ -1119,8 +1143,16 @@ export default function ReactTable({
                         </div>
                     );
                 } else if (accessor == 'sender') {
+                    const keywords = [...new Set(cell.cell.row.original.alerts.data.map(item => item.keyword))];
+
+                    const recipients = [...new Set(cell.cell.row.original.alerts.data[0].recipients
+                        ? cell.cell.row.original.alerts.data[0].recipients.map(item => item)
+                        : '')];
+                    const strRecipients = recipients.join(', ');
+
                     return (
-                        <div className='d-flex flex-column text-wrap'>
+                        <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients)}
+                            className='d-flex flex-column text-wrap cursor-pointer'>
                             {cell.cell.row.original.alerts.data[0].sender != null
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
                                     {cell.cell.row.original.alerts.data[0].sender}
@@ -1145,11 +1177,16 @@ export default function ReactTable({
                         ? cell.cell.row.original.alerts.data[0].recipients.map(item => item)
                         : '')];
 
+                    const keywords = [...new Set(cell.cell.row.original.alerts.data.map(item => item.keyword))];
+
+                    const strRecipients = recipients.join(', ');
+
                     return (
-                        <div className='d-flex flex-column'>
+                        <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients)}
+                            className='d-flex flex-column cursor-pointer'>
                             {recipients
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
-                                    {recipients.join(', ')}
+                                    {truncateText(recipients.join(', '), 200)}
                                 </Typography>
                                 : 'N/A'
                             }
@@ -1169,8 +1206,16 @@ export default function ReactTable({
                         </div>
                     );
                 } else if (accessor == 'alertSource') {
+                    const keywords = [...new Set(cell.cell.row.original.alerts.data.map(item => item.keyword))];
+
+                    const recipients = [...new Set(cell.cell.row.original.alerts.data[0].recipients
+                        ? cell.cell.row.original.alerts.data[0].recipients.map(item => item)
+                        : '')];
+                    const strRecipients = recipients.join(', ');
+
                     return (
-                        <div className='d-flex flex-column'>
+                        <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients)}
+                            className='d-flex flex-column cursor-pointer'>
                             {cell.cell.row.original.alerts.data[0].source != null
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
                                     {sourceMaker(cell.cell.row.original.alerts.data[0].source)}
@@ -1188,19 +1233,25 @@ export default function ReactTable({
                         ? cell.cell.row.original.alerts.data[0].recipients.map(item => item)
                         : '')];
                     const strRecipients = recipients.join(', ');
+                    // ' 🔼' : ' 🔽'
 
                     return (
                         <div className='d-flex justify-content-center align-items-center' style={{ maxWidth: '400px' }}>
-                            <div {...cell.cell.row.getToggleRowExpandedProps()} className='table__number-square d-flex justify-content-center align-items-center'>
+                            <Typography weight={'bold'} variant={'size-16'} color='color-3'
+                                {...cell.cell.row.getToggleRowExpandedProps()} className='table__arrow-square d-flex justify-content-center align-items-center'>
+                                {cell.cell.row.isExpanded ? ' 🔼' : ' 🔽'}
+                                <FontAwesomeIcon icon='sort' size='sm' className='table__sort-icon' />
+                            </Typography>
+                            <div className='table__number-square d-flex justify-content-center align-items-center'>
                                 <Typography weight={'bold'} variant={'size-16'} color='color-3'>
                                     {cell.cell.row.original.alerts.data.length}
                                 </Typography>
                             </div>
-                            <Typography weight={'bold'} variant={'size-16'} color='color-3'
+                            {/* <Typography weight={'bold'} variant={'size-16'} color='color-3'
                                 className='color-link-text cursor-pointer pl-3 table__box-label'
                                 onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients)}>
                                 {cell.cell.row.original.alerts.data[0].commMessageId}
-                            </Typography>
+                            </Typography> */}
                         </div>
                     );
                 } else if (accessor == 'policiesStatus') {
@@ -1247,6 +1298,21 @@ export default function ReactTable({
                                 </DropdownMenu>
                             </UncontrolledDropdown>
                         </>
+                    );
+                } else if (accessor == 'alertMessageSummary') {
+                    const summaryMessage = (cell.cell.row.original.alerts.data[0].message);
+                    const keywords = [...new Set(cell.cell.row.original.alerts.data.map(item => item.keyword))];
+
+                    const recipients = [...new Set(cell.cell.row.original.alerts.data[0].recipients
+                        ? cell.cell.row.original.alerts.data[0].recipients.map(item => item)
+                        : '')];
+                    const strRecipients = recipients.join(', ');
+
+                    return (
+                        <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients)}
+                            className='alert-summary-message-column d-flex align-items-center mb-3 cursor-pointer' style={{ minWidth: '200px !important' }}>
+                            <p >{truncateText(summaryMessage, 150)}</p>
+                        </div>
                     );
                 } else if (accessor == 'status') {
                     const alertsList = cell.cell.row.original.alerts.data;
@@ -1487,6 +1553,7 @@ export default function ReactTable({
                 pagination={pagination}
                 sortable={sortable}
                 fetching={fetching}
+                viewDetails={viewDetails}
                 hideHeader={hideHeader}
                 isDisabled={isDisabled}
                 renderRowSubComponent={renderSubRowComponent}
