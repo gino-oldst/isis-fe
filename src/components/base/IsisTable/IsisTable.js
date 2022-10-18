@@ -944,7 +944,7 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                                         {JSON.stringify(checked)}
                                         {JSON.stringify(x.id)}
                                         {JSON.stringify(row.isSelected)} */}
-                                        {JSON.stringify(x)}
+                                        {/* {JSON.stringify(x)} */}
                                         <input checked={row.isSelected ? row.isSelected : checked.includes(x.id)} id='row-checkbox' type='checkbox'
                                             onChange={e => handleCheck(e, x, row)} />
                                     </td>
