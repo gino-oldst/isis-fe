@@ -944,17 +944,16 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                         {row.cells.map((cell) => {
                             // This is the row for the collapsable...
                             if (cell.column.id == 'selection') {
+                                const _checked = row.isSelected ? checked : [];
+
                                 return (
                                     <td {...cell.getCellProps()}>
-                                        {JSON.stringify(checked)}
-                                        <input checked={row.isSelected ? row.isSelected : checked.includes(x.id)} id='row-checkbox' type='checkbox'
+                                        <input checked={row.isSelected ? row.isSelected : _checked.includes(x.id)} id='row-checkbox' type='checkbox'
                                             onChange={e => handleCheck(e, x, row)} />
                                     </td>
                                 );
                             } else if (cell.column.id == 'expander') {
                                 const policyName = alertsList.filter(alert => alert.value === x.policyId)[0];
-
-                                console.log(alertsList, policyName);
 
                                 return (
                                     <td>
