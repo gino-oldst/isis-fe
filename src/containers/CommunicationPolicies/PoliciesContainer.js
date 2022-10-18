@@ -66,7 +66,6 @@ export default function CommunicationPoliciesContainer({
 
             dispatch(setPoliciesData(data, totalNoOfRecords, totalPages));
             dispatch(setKeywords(keywords));
-            dispatch(setKeywords(keywords));
         } catch (e) {
             console.error(e);
         }

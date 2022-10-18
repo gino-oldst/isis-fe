@@ -946,17 +946,23 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                             if (cell.column.id == 'selection') {
                                 return (
                                     <td {...cell.getCellProps()}>
+                                        {JSON.stringify(checked)}
                                         <input checked={row.isSelected ? row.isSelected : checked.includes(x.id)} id='row-checkbox' type='checkbox'
                                             onChange={e => handleCheck(e, x, row)} />
                                     </td>
                                 );
                             } else if (cell.column.id == 'expander') {
+                                const policyName = alertsList.filter(alert => alert.value === x.policyId)[0];
+
+                                console.log(alertsList, policyName);
+
                                 return (
                                     <td>
                                         <div className='d-flex flex-column'>
-                                            {alertsList
+                                            {policyName
                                                 ? <Typography variant='size-16' color='color-3' className=' search-results__box-label' >
-                                                    {alertsList.filter(alert => alert.value === x.keywordId)[0].label}
+                                                    {/* {alertsList.filter(alert => alert.value === x.policyId)[0].label} */}
+                                                    {policyName.label}
                                                 </Typography>
                                                 : <Typography variant='size-16' color='color-3' className=' search-results__box-label' >
                                                     No Alerts.
