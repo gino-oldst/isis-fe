@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { setKeywords, setKeywords, setPoliciesData, setPolicyForm, setPolicyForm } from '../../redux/modules/policies';
+import { setKeywords, setPoliciesData, setPolicyForm } from '../../redux/modules/policies';
 import CommunicationPoliciesScreen from './PoliciesScreen';
 import type { Menu } from '../../types';
 
 import dataSample from './data_sample.json';
-import { deletePolicy, deletePolicyMap, getAlertPoliciesData, deletePolicy, deletePolicyMap, getAlertPoliciesData, getKeywordSearch, getPolicymapById, getPolicymapByIdRaw, getPolicyMapByIdRaw, getPolicymapById, getPolicymapByIdRaw, getPolicyMapByIdRaw, getPolicySearchData, postNewKeyword, postNewPolicy, postNewPolicyMap, updatePolicy, updatePolicyMap, postNewKeyword, postNewPolicy, postNewPolicyMap, updatePolicy, updatePolicyMap } from '../../api/policies';
+import { deletePolicyMap, getAlertPoliciesData, deletePolicy, getKeywordSearch, getPolicymapById, getPolicymapByIdRaw, getPolicyMapByIdRaw, getPolicySearchData, postNewKeyword, postNewPolicy, postNewPolicyMap, updatePolicy, updatePolicyMap } from '../../api/policies';
 import { getAlertCategoryName } from '../../utils/helpers';
-import { CreateModal, DeleteModal, EditModal, SuccessModal } from './modals';
-import { setModalContent } from '../../redux/modules/modalEvent';
-import { setFlashNotification } from '../../redux/modules/flashNotification';
 import { CreateModal, DeleteModal, EditModal, SuccessModal } from './modals';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
@@ -47,13 +44,12 @@ export default function CommunicationPoliciesContainer({
 
     const { pageSize, activePage, sort } = useSelector(({ table }) => table);
     const { table, form, keywords } = useSelector(({ policies }) => policies);
-    const { table, form, keywords } = useSelector(({ policies }) => policies);
 
     useEffect(() => {
         loadPolicyData(activePage, pageSize, sort, searchData, searchData);
     }, [pageSize, activePage, sort]);
 
-    const loadPolicyData = async (activePage, pageSize, sort, searchName, searchName) => {
+    const loadPolicyData = async (activePage, pageSize, sort, searchName) => {
         setLoading(true);
 
         try {
