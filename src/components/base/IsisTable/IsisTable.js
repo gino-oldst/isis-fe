@@ -1230,7 +1230,6 @@ export default function ReactTable({
                         ? cell.cell.row.original.alerts.data[0].recipients.map(item => item)
                         : '')];
                     const strRecipients = recipients.join(', ');
-                    // ' 🔼' : ' 🔽'
 
                     console.log(cell.cell.row.getToggleRowExpandedProps());
                     // ' 🔼' : ' 🔽'
