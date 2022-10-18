@@ -37,6 +37,7 @@ import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-c
 import DatePicker from 'react-datepicker';
 import Storage from '../../../utils/Storage';
 import { Spinner } from 'react-bootstrap';
+import { after } from 'underscore';
 
 // Define a default UI for filtering
 function GlobalFilter({
@@ -951,6 +952,7 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                                     </td>
                                 );
                             } else if (cell.column.id == 'expander') {
+                                // console.log(cell.column)
                                 return (
                                     <td>
                                         <div className='d-flex flex-column'>
@@ -1228,6 +1230,9 @@ export default function ReactTable({
                         ? cell.cell.row.original.alerts.data[0].recipients.map(item => item)
                         : '')];
                     const strRecipients = recipients.join(', ');
+                    // ' 🔼' : ' 🔽'
+
+                    console.log(cell.cell.row.getToggleRowExpandedProps());
                     // ' 🔼' : ' 🔽'
 
                     return (
