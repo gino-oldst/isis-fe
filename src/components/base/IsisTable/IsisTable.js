@@ -36,6 +36,7 @@ import makeData from './makeData';
 import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
 import DatePicker from 'react-datepicker';
 import Storage from '../../../utils/Storage';
+import { Spinner } from 'react-bootstrap';
 
 // Define a default UI for filtering
 function GlobalFilter({
@@ -664,7 +665,14 @@ function IsisTable({
                     {!page.length || loading
                         ? <tr>
                             <td className='text-muted text-center' colSpan={12}>
-                                {loading ? 'Fetching data...' : isTimeout ? 'Server Timed Out' : 'No data Found'}
+                                {loading
+                                    ? <>
+                                        <Spinner animation='border' role='status' size='sm'>
+                                            <span className='sr-only'>Loading...</span>
+                                        </Spinner>
+                                        <span className='ml-2'>Fetching Data...</span>
+                                    </>
+                                    : isTimeout ? 'Server Timed Out' : 'No data Found'}
                             </td>
                         </tr>
                         : page.map((row, i) => {
@@ -935,33 +943,20 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                         key={`${rowProps.key}-expanded-${i}`}>
                         {row.cells.map((cell) => {
                             // This is the row for the collapsable...
-                            // the selection part deserves a look into
-                            // maybe customize it's checkbox to cater individually selected alerts
                             if (cell.column.id == 'selection') {
                                 return (
                                     <td {...cell.getCellProps()}>
-                                        {/* {JSON.stringify(checked.includes(x.id))}
-                                        {JSON.stringify(checked)}
-                                        {JSON.stringify(x.id)}
-                                        {JSON.stringify(row.isSelected)} */}
-                                        {JSON.stringify(x)}
                                         <input checked={row.isSelected ? row.isSelected : checked.includes(x.id)} id='row-checkbox' type='checkbox'
                                             onChange={e => handleCheck(e, x, row)} />
                                     </td>
                                 );
                             } else if (cell.column.id == 'expander') {
-                                // console.log(cell.column)
                                 return (
                                     <td>
                                         <div className='d-flex flex-column'>
-                                            {/* <Typography color='color-3' className='search-results__box-label' >
-                                                {capitalize(x.keyword)}
-                                            </Typography> */}
                                             {alertsList
                                                 ? <Typography variant='size-16' color='color-3' className=' search-results__box-label' >
                                                     {alertsList.filter(alert => alert.value === x.keywordId)[0].label}
-                                                    {/* {JSON.stringify(alertsList.filter(alert => alert.value === x.keywordId))}
-                                                    {x.keywordId} */}
                                                 </Typography>
                                                 : <Typography variant='size-16' color='color-3' className=' search-results__box-label' >
                                                     No Alerts.
@@ -1321,7 +1316,6 @@ export default function ReactTable({
 
                     return (
                         <>
-                            {/* {JSON.stringify(stats.marketAbuse.open != 0 || stats.marketAbuse.resolved != 0 || stats.marketAbuse.archived != 0 || stats.marketAbuse.inReview != 0)} */}
                             { (stats.marketAbuse.open != 0 || stats.marketAbuse.resolved != 0 ||
                                 stats.marketAbuse.archived != 0 || stats.marketAbuse.inReview != 0) &&
                                 <div className='alert-status-column d-flex align-items-center mb-3' style={{ minWidth: '200px !important' }}>
