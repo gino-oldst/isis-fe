@@ -127,6 +127,12 @@ const initialState = {
                 clickable: false
             },
             {
+                header: 'Message',
+                accessor: 'alertMessageSummary',
+                disableFilters: true,
+                clickable: false
+            },
+            {
                 header: 'Date & Time',
                 accessor: 'date',
                 disableFilters: true,
