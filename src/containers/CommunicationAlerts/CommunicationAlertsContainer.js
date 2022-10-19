@@ -172,7 +172,7 @@ export default function CommunicationAlertsContainer({
             filterSources = sources.length === 0 && !isRequery ? alertSearchParams.source : sources;
             filterDateFrom = dFrom === '' && !isRequery ? alertSearchParams.dateFrom : dFrom;
             filterDateTo = dTo === '' && !isRequery ? alertSearchParams.dateTo : dTo;
-            filterEscalations = escalations.length === 0 && !isRequery ? alertSearchParams.escalations : escalations;
+            filterEscalations = escalations.length === 0 && !isRequery ? alertSearchParams.escalation : escalations;
 
             const slist = alertSearchParams.senders.length > 0 ? [...alertSearchParams.senders.map(row => { return row; })] : [];
             const rlist = alertSearchParams.recipients.length > 0 ? [...alertSearchParams.recipients.map(row => { return row; })] : [];
