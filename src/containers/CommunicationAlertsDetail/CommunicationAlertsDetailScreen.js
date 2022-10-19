@@ -629,7 +629,7 @@ function CommunicationAlertsDetailScreen({
                                                                         return (<>
                                                                             <tr>
                                                                                 <td className='pb-2'>
-                                                                                    <Typography color='color-3'>{alertsList.filter(x => x.value === alert.keywordId)[0].label}</Typography>
+                                                                                    <Typography color='color-3'>{alert.policyName}</Typography>
                                                                                 </td>
                                                                                 <td className='pb-2'>
                                                                                     <Typography color='color-3'>{alert.keyword}</Typography>
@@ -798,7 +798,7 @@ function CommunicationAlertsDetailScreen({
                                                                                             style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography> */}
                                                                                         {message.showSender &&
                                                                                             <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                                style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>}
+                                                                                                style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> <span> {isoToUTCLocal(message.timeSent)}</span></Typography>}
                                                                                         <div className='message-box'>
                                                                                             <Highlighter highlightClassName='alertKeyword'
                                                                                                 style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
@@ -951,9 +951,9 @@ function CommunicationAlertsDetailScreen({
                                                                                 { messageActivities.map(activity => {
                                                                                     return (<>
                                                                                         <div key={2} className='alert-detail__activity-info d-flex align-items-center mb-4'>
-                                                                                            <span className='activity-icon'><span className='text-light'>{activity.executorId.charAt(0)}</span></span>
+                                                                                            <span className='activity-icon'><span className='text-light'>{activity.id.charAt(0)}</span></span>
                                                                                             <div className='d-block'>
-                                                                                                <Typography color='color-3' variant='size-16'>User {truncateText(activity.executorId, 8)}: {activity.event}</Typography>
+                                                                                                <Typography color='color-3' variant='size-16'>User {truncateText(activity.id, 8)}: {activity.event}</Typography>
                                                                                                 <Typography color='color-3' variant='size-14' className='text-muted'>{moment(activity.dateCreated).utc().local().format('DD/MM/YYYY h:mm A')}</Typography>
                                                                                             </div>
                                                                                         </div>
