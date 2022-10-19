@@ -999,9 +999,11 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                                 var newBeforeResult = newBefore.substring(newBefore.length - 75);
                                 var newAfterResult = alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length);
 
-                                var result = newBefore.substring(newBefore.length - 75) + ' ' + alertKeyword + ' ' + alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length);
+                                var result = newBefore.substring(newBefore.length - 75) + ' ' + alertKeyword + ' ' + alertLevelMessage.slice((newAfter - 75) + cell.row.original.alerts.data[0].keyword.length);
 
-                                // console.log(newBefore.substring(newBefore.length - 75) + ' ' + cell.row.original.alerts.data[0].keyword + ' ' + alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length));
+                                // console.log(newBefore.substring(newBefore.length - 75) + ' ' + cell.row.original.alerts.data[0].keyword + ' ' + alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length - 75));
+                                console.log(result);
+
                                 return (
                                     <td colSpan={visibleColumns.length - 1} >
                                         <div className='alert-summary-message-column d-flex' style={{ minWidth: '200px !important' }}>
