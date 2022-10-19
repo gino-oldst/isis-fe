@@ -37,8 +37,9 @@ import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-c
 import DatePicker from 'react-datepicker';
 import Storage from '../../../utils/Storage';
 import { Spinner } from 'react-bootstrap';
-
+import { after, before } from 'underscore';
 // Define a default UI for filtering
+
 function GlobalFilter({
     preGlobalFilteredRows,
     globalFilter,
@@ -943,6 +944,8 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                         key={`${rowProps.key}-expanded-${i}`}>
                         {row.cells.map((cell) => {
                             // This is the row for the collapsable...
+                            // the selection part deserves a look into
+                            // maybe customize it's checkbox to cater individually selected alerts
                             if (cell.column.id == 'selection') {
                                 const _checked = row.isSelected ? checked : [];
 
@@ -975,13 +978,32 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                                 );
                             } else if (cell.column.id == 'alertMessageSummary') {
                                 const alertLevelMessage = (cell.row.original.alerts.data[0].message);
-                                var beforeAlertLevelMessage = alertLevelMessage.substring(0, alertLevelMessage.indexOf(cell.row.original.alerts.data[0].keyword));
-                                var afterAlertLevelMessage = alertLevelMessage.substring(alertLevelMessage.indexOf(cell.row.original.alerts.data[0].keyword), 75);
+                                const alertKeywordIndex = (alertLevelMessage.toUpperCase().indexOf(cell.row.original.alerts.data[0].keyword.toUpperCase()));
+                                const alertKeyword = cell.row.original.alerts.data[0].keyword;
 
+                                const highlight = ({ children, highlightIndex }) => (
+                                    <strong className='highlighted-text'>{children}</strong>
+                                );
+
+                                var newAfter = alertLevelMessage.toUpperCase().indexOf(cell.row.original.alerts.data[0].keyword.toUpperCase(), 0);
+                                var newBefore = alertLevelMessage.slice(0, newAfter);
+                                var newBeforeResult = newBefore.substring(newBefore.length - 75);
+                                var newAfterResult = alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length);
+
+                                var result = newBefore.substring(newBefore.length - 75) + ' ' + alertKeyword + ' ' + alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length);
+
+                                // console.log(newBefore.substring(newBefore.length - 75) + ' ' + cell.row.original.alerts.data[0].keyword + ' ' + alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length));
                                 return (
                                     <td colSpan={visibleColumns.length - 1} >
-                                        <div className='alert-summary-message-column d-flex align-items-center mb-3 highlighted-text' style={{ minWidth: '200px !important' }}>
-                                            <p>{beforeAlertLevelMessage} {afterAlertLevelMessage}</p>
+                                        <div className='alert-summary-message-column d-flex' style={{ minWidth: '200px !important' }}>
+                                            <p>{newBeforeResult}
+                                                <Highlighter className='table__box-label' highlightClassName='alertKeyword'
+                                                    style={{ fontSize: '15px', lineHeight: '20pt', fontWeight: '400' }}
+                                                    searchWords={[alertKeyword]}
+                                                    autoEscape={true}
+                                                    textToHighlight={alertKeyword} />
+                                                {newAfterResult}
+                                            </p>
                                         </div>
                                     </td>
                                 );
@@ -1236,7 +1258,7 @@ export default function ReactTable({
                         <div className='d-flex justify-content-center align-items-center' style={{ maxWidth: '400px' }}>
                             <Typography weight={'bold'} variant={'size-16'} color='color-3'
                                 {...cell.cell.row.getToggleRowExpandedProps()} className='table__arrow-square d-flex justify-content-center align-items-center'>
-                                {cell.cell.row.isExpanded ? ' 🔼' : ' 🔽'}
+                                {cell.cell.row.isExpanded ? '🔼' : '🔽'}
                                 <FontAwesomeIcon icon='sort' size='sm' className='table__sort-icon' />
                             </Typography>
                             <div className='table__number-square d-flex justify-content-center align-items-center'>
@@ -1318,6 +1340,7 @@ export default function ReactTable({
 
                     return (
                         <>
+                            {/* {JSON.stringify(stats.marketAbuse.open != 0 || stats.marketAbuse.resolved != 0 || stats.marketAbuse.archived != 0 || stats.marketAbuse.inReview != 0)} */}
                             { (stats.marketAbuse.open != 0 || stats.marketAbuse.resolved != 0 ||
                                 stats.marketAbuse.archived != 0 || stats.marketAbuse.inReview != 0) &&
                                 <div className='alert-status-column d-flex align-items-center mb-3' style={{ minWidth: '200px !important' }}>
