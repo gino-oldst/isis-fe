@@ -953,15 +953,12 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                                     </td>
                                 );
                             } else if (cell.column.id == 'expander') {
-                                const policyName = alertsList.filter(alert => alert.value === x.policyId)[0];
-
                                 return (
                                     <td>
                                         <div className='d-flex flex-column'>
-                                            {policyName
+                                            {x.policyName
                                                 ? <Typography variant='size-16' color='color-3' className=' search-results__box-label' >
-                                                    {/* {alertsList.filter(alert => alert.value === x.policyId)[0].label} */}
-                                                    {policyName.label}
+                                                    {x.policyName}
                                                 </Typography>
                                                 : <Typography variant='size-16' color='color-3' className=' search-results__box-label' >
                                                     No Alerts.
