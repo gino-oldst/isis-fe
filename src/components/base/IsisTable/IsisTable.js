@@ -979,18 +979,23 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                             } else if (cell.column.id == 'alertMessageSummary') {
                                 const alertLevelMessage = (cell.row.original.alerts.data[0].message);
                                 const alertKeywordIndex = (alertLevelMessage.toUpperCase().indexOf(cell.row.original.alerts.data[0].keyword.toUpperCase()));
-                                const alertKeyword = cell.row.original.alerts.data[0].keyword;
+                                const alertKeyword = cell.row.original.alerts.data[0].keyword.toUpperCase();
 
                                 const highlight = ({ children, highlightIndex }) => (
                                     <strong className='highlighted-text'>{children}</strong>
                                 );
 
                                 var newAfter = alertLevelMessage.toUpperCase().indexOf(cell.row.original.alerts.data[0].keyword.toUpperCase(), 0);
-                                var newBefore = alertLevelMessage.slice(0, newAfter);
-                                var newBeforeResult = newBefore.substring(newBefore.length - 75);
-                                var newAfterResult = alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length);
 
-                                var result = newBefore.substring(newBefore.length - 75) + ' ' + alertKeyword + ' ' + alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length);
+                                var newBefore = alertLevelMessage.slice(0, newAfter);
+                                var getValueAfter = alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length);
+
+                                var newBeforeResult = newBefore.substring(newBefore.length - 75);
+                                var newAfterResult = getValueAfter.substring(getValueAfter, 75);
+                                // var result = newBefore.substring(newBefore.length - 75) + ' ' + alertKeyword + ' ' + alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length);
+
+                                console.log('after', newAfterResult);
+                                console.log('before', newBeforeResult);
 
                                 // console.log(newBefore.substring(newBefore.length - 75) + ' ' + cell.row.original.alerts.data[0].keyword + ' ' + alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length));
                                 return (
