@@ -369,7 +369,7 @@ function CommunicationAlertsDetailScreen({
                                                 return (<>
                                                     <tr>
                                                         <td className='pb-2'>
-                                                            <Typography color='color-3'>{alertsList.filter(x => x.value === alert.keywordId)[0].label}</Typography>
+                                                            <Typography color='color-3'>{alert.policyName}</Typography>
                                                         </td>
                                                         <td className='pb-2'>
                                                             <Typography color='color-3'>{alert.keyword}</Typography>
