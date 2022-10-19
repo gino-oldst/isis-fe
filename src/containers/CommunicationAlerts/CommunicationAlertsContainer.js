@@ -15,7 +15,7 @@ import { setCommunicationAlertsData, setColumnFilterValues } from '../../redux/m
 import debounce from 'debounce-async';
 
 // To be removed once we move to with backend
-import { downloadCommAlertsList, getCommunicationAlertData, getKeywords, updateAlert, retrievePredefinedReasons } from '../../api/communicationAlerts';
+import { downloadCommAlertsList, getCommunicationAlertData, getKeywords, updateAlert, retrievePredefinedReasons, getPolicies } from '../../api/communicationAlerts';
 import { getEmails, getEmailsAll } from '../../api/communicationSearch';
 import { set } from 'date-fns';
 import Typography from '../../components/base/Typography/Typography';
@@ -236,12 +236,13 @@ export default function CommunicationAlertsContainer({
     };
 
     const loadColumnFilterValues = async () => {
-        const keywords = await getKeywords();
+        // const keywords = await getKeywords();
+        const policies = await getPolicies();
 
-        var sortedKeywords = keywords.sort((a, b) => a.label.match(/\d+/) - b.label.match(/\d+/));
+        var sortedKeywords = policies.sort((a, b) => a.label.match(/\d+/) - b.label.match(/\d+/));
 
-        dispatch(setAlertsList(keywords));
-        setKeywords(keywords);
+        dispatch(setAlertsList(policies));
+        setKeywords(policies);
     };
 
     const loadSearchValuesFromStorage = async () => {
@@ -423,17 +424,6 @@ export default function CommunicationAlertsContainer({
         }
 
         if (formValid) {
-            // Storage.removeItem(storageKey.alertSearchParams);
-            // Storage.setItem(storageKey.alertSearchParams, JSON.stringify({
-            //     alert: alert,
-            //     status: status,
-            //     dateFrom: dateFrom,
-            //     dateTo: dateTo,
-            //     source: source,
-            //     senders: senderStore,
-            //     recipients: recipientStore,
-            //     data: tableResultStore
-            // }));
             loadCommAlertsData(
                 activePage,
                 pageSize,

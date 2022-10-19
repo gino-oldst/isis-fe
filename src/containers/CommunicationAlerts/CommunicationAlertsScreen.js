@@ -460,11 +460,11 @@ function CommunicationAlertsScreen({
                                                 <Row>
                                                     <Col>
                                                         <FormGroup className='mb-3'>
-                                                            <Label for='alert'>Alert Type</Label>
+                                                            <Label for='alert'>Policy Type</Label>
                                                             <Select
                                                                 closeMenuOnSelect={false}
                                                                 isMulti={true}
-                                                                placeholder={'Search Alert Type'}
+                                                                placeholder={'Search Policy Type'}
                                                                 isSearchable={false}
                                                                 className='status-select'
                                                                 name='alert'

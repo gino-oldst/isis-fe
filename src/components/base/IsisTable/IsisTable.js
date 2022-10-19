@@ -947,30 +947,24 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                             // the selection part deserves a look into
                             // maybe customize it's checkbox to cater individually selected alerts
                             if (cell.column.id == 'selection') {
+                                const _checked = row.isSelected ? checked : [];
+
                                 return (
                                     <td {...cell.getCellProps()}>
-                                        {/* {JSON.stringify(checked.includes(x.id))}
-                                        {JSON.stringify(checked)}
-                                        {JSON.stringify(x.id)}
-                                        {JSON.stringify(row.isSelected)} */}
-                                        {/* {JSON.stringify(x)} */}
-                                        <input checked={row.isSelected ? row.isSelected : checked.includes(x.id)} id='row-checkbox' type='checkbox'
+                                        <input checked={row.isSelected ? row.isSelected : _checked.includes(x.id)} id='row-checkbox' type='checkbox'
                                             onChange={e => handleCheck(e, x, row)} />
                                     </td>
                                 );
                             } else if (cell.column.id == 'expander') {
-                                // console.log(cell.column)
+                                const policyName = alertsList.filter(alert => alert.value === x.policyId)[0];
+
                                 return (
                                     <td>
                                         <div className='d-flex flex-column'>
-                                            {/* <Typography color='color-3' className='search-results__box-label' >
-                                                {capitalize(x.keyword)}
-                                            </Typography> */}
-                                            {alertsList
+                                            {policyName
                                                 ? <Typography variant='size-16' color='color-3' className=' search-results__box-label' >
-                                                    {alertsList.filter(alert => alert.value === x.keywordId)[0].label}
-                                                    {/* {JSON.stringify(alertsList.filter(alert => alert.value === x.keywordId))}
-                                                    {x.keywordId} */}
+                                                    {/* {alertsList.filter(alert => alert.value === x.policyId)[0].label} */}
+                                                    {policyName.label}
                                                 </Typography>
                                                 : <Typography variant='size-16' color='color-3' className=' search-results__box-label' >
                                                     No Alerts.
