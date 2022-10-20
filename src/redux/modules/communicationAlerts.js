@@ -108,7 +108,7 @@ const initialState = {
         isFiltered: false,
         columns: [
             {
-                header: 'Alert',
+                header: 'Policy',
                 accessor: 'expander',
                 disableFilters: true,
                 clickable: true
