@@ -994,9 +994,6 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                                 var newAfterResult = getValueAfter.substring(getValueAfter, 75);
                                 // var result = newBefore.substring(newBefore.length - 75) + ' ' + alertKeyword + ' ' + alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length);
 
-                                console.log('after', newAfterResult);
-                                console.log('before', newBeforeResult);
-
                                 // console.log(newBefore.substring(newBefore.length - 75) + ' ' + cell.row.original.alerts.data[0].keyword + ' ' + alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length));
                                 return (
                                     <td colSpan={visibleColumns.length - 1} >
@@ -1134,7 +1131,7 @@ export default function ReactTable({
 
                     return (
                         <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients)}
-                            className='cursor-pointer'>
+                            className='date-column cursor-pointer'>
                             <div>{readableDate}</div>
                         </div>
                     );
