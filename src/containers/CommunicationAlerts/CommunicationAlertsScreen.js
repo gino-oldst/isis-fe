@@ -87,6 +87,7 @@ type Props = {
     predefinedReasons: Array<any>,
     defaultEscalation: Array<any>,
     handleEscalation: Function,
+    downloading: Boolean
 }
 
 function CommunicationAlertsScreen({
@@ -126,7 +127,8 @@ function CommunicationAlertsScreen({
     handleCloseSuccessModal,
     predefinedReasons,
     defaultEscalation,
-    handleEscalation
+    handleEscalation,
+    downloading
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -448,8 +450,8 @@ function CommunicationAlertsScreen({
                                         <Col lg={6} className='text-right pr-0'>
                                             <Button weight='light' className='alerts__bulk-review mr-2' label='Bulk Review'
                                                 disabled={selectedRows.length === 0} onClick={showActionsModal}/>
-                                            <Button weight='light' className='alerts__bulk-review' label='Download Data'
-                                                disabled={loading} onClick={handleDownloadAlertData}/>
+                                            <Button weight='light' className='alerts__bulk-review' isLoading={downloading}
+                                                label='Download Data' disabled={loading} onClick={handleDownloadAlertData}/>
                                         </Col>
                                     </Row>
                                 </div>

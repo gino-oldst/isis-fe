@@ -110,7 +110,7 @@ export async function getKeywords() {
 
 const DOWNLOAD_ALERTS_LIST = '/storage-service/download/alerts';
 
-export async function downloadCommAlertsList(alert, status, dFrom, dTo, sources, senders, recipients) {
+export function downloadCommAlertsList(alert, status, dFrom, dTo, sources, senders, recipients) {
     const filterBody = {
         // keywordIds: alert.length > 0 ? [...alert.map(row => { return row.value; })] : [],
         policyIds: alert.length > 0 ? [...alert.map(row => { return row.value; })] : [],
@@ -122,7 +122,7 @@ export async function downloadCommAlertsList(alert, status, dFrom, dTo, sources,
         recipients: recipients
     };
 
-    return await makeApiCall(DOWNLOAD_ALERTS_LIST, 'POST', filterBody);
+    return Promise.all([makeApiCall(DOWNLOAD_ALERTS_LIST, 'POST', filterBody)]);
 }
 
 const GET_ACTIVITY_LIST = `${config.apiStorage}/storage-service/message-activity/search`;

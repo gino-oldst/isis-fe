@@ -25,6 +25,7 @@ import { setAlertsList, setIsRowSelected, setToggle, setActivePage } from '../..
 import Storage from '../../utils/Storage';
 import StorageIDB from '../../utils/StorageIDB';
 import { storageKey } from '../../config/constants';
+import { setFlashNotification } from '../../redux/modules/flashNotification';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -53,6 +54,7 @@ export default function CommunicationAlertsContainer({
     const [alert, setAlert] = useState([]);
     const [status, setStatus] = useState([]);
     const [submit, setSubmit] = useState(false);
+    const [downloading, setDownloading] = useState(false);
     const [isCheckAll, setIsCheckAll] = useState(false);
     const [senderStore, setSenderStore] = useState([]);
     const [recipientStore, setRecipientStore] = useState([]);
@@ -460,9 +462,10 @@ export default function CommunicationAlertsContainer({
         }
     };
 
-    const handleDownloadAlertData = async () => {
+    const handleDownloadAlertData = () => {
         try {
-            await downloadCommAlertsList(
+            setDownloading(true);
+            downloadCommAlertsList(
                 alert,
                 status,
                 dateFrom,
@@ -470,7 +473,16 @@ export default function CommunicationAlertsContainer({
                 source,
                 senders,
                 recipients
-            );
+            ).then(([response]) => {
+                setDownloading(false);
+
+                if (response.status !== 200) {
+                    dispatch(setFlashNotification({
+                        message: 'Error occured while downloading',
+                        isError: true
+                    }));
+                }
+            });
         } catch (error) {
             console.log(error);
         }
@@ -478,6 +490,7 @@ export default function CommunicationAlertsContainer({
 
     return <CommunicationAlertsScreen
         loading={loading}
+        downloading={downloading}
         isTimeout={isTimeout}
         onSearchClick={onSearchClick}
         userId={userId}
