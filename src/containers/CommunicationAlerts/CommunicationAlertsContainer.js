@@ -484,7 +484,7 @@ export default function CommunicationAlertsContainer({
                 }
             });
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 

@@ -14,6 +14,7 @@ import { filter } from 'underscore';
 import debounce from 'debounce-async';
 import { storageKey } from '../../config/constants';
 import Storage from '../../utils/Storage';
+import { setFlashNotification } from '../../redux/modules/flashNotification';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -39,6 +40,7 @@ export default function CommunicationSearchResultsContainer({
     const [keyword, setKeyword] = useState('');
     const [lastOptions, setLastOptions] = useState([]);
     const [tableResultStore, setTableResultStore] = useState([]);
+    const [downloading, setDownloading] = useState(false);
     const breadcrumb = [
         {
             label: 'Home',
@@ -412,12 +414,28 @@ export default function CommunicationSearchResultsContainer({
         dispatch(setColumnFilterValues(dataCopy));
     };
 
-    const handleDownloadSearchData = async () => {
-        await downloadCommSearchList(filterSearchForm);
+    const handleDownloadSearchData = () => {
+        try {
+            setDownloading(true);
+            downloadCommSearchList(filterSearchForm).then(([response]) => {
+                setDownloading(false);
+
+                if (response.status !== 200) {
+                    dispatch(setFlashNotification({
+                        message: 'Error occured while downloading',
+                        isError: true
+                    }));
+                }
+            });
+        } catch (error) {
+            console.error(error);
+        }
+        // await downloadCommSearchList(filterSearchForm);
     };
 
     return <CommunicationSearchResultsScreen
         loading={loading}
+        downloading={downloading}
         sidebarMenu={sidebarMenu}
         handleUniqueID={handleUniqueID}
         handleDownloadSearchData={handleDownloadSearchData}
