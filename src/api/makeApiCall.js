@@ -46,8 +46,6 @@ export default async function makeApiCall(
         data
     };
 
-    console.log(request);
-
     if (endpoint.includes('oauth')) {
         request.headers = {
             'Content-Type': 'multipart/form-data;',

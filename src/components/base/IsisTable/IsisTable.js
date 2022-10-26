@@ -38,6 +38,7 @@ import DatePicker from 'react-datepicker';
 import Storage from '../../../utils/Storage';
 import { Spinner } from 'react-bootstrap';
 import { after, before } from 'underscore';
+import { customWordHighlightLogic } from '../../../utils/highlightHelper';
 // Define a default UI for filtering
 
 function GlobalFilter({
@@ -1146,10 +1147,8 @@ export default function ReactTable({
                                 searchWords={[cell.cell.row.original.keyword]}
                                 highlightTag={highlight}
                                 autoEscape={true}
+                                findChunks={customWordHighlightLogic}
                                 textToHighlight={truncateText(cell.value, 40)}/>
-                            {/* <Typography size={14} color='color-3' className='table__box-label' >
-                                {truncateText(cell.value, 40)}
-                            </Typography> */}
                         </div>
                     );
                 } else if (accessor == 'source') {
