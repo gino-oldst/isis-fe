@@ -1231,7 +1231,9 @@ export default function ReactTable({
                         </div>
                     );
                 } else if (accessor == 'alertSource') {
-                    const keywords = [...new Set(cell.cell.row.original.alerts.data.map(item => item.keyword))];
+                    const keywords = [...new Set(cell.cell.row.original.alerts.data
+                        ? cell.cell.row.original.alerts.data.map(item => item.keyword)
+                        : '')];
 
                     const recipients = [...new Set(cell.cell.row.original.alerts.data[0].recipients
                         ? cell.cell.row.original.alerts.data[0].recipients.map(item => item)
@@ -1251,9 +1253,9 @@ export default function ReactTable({
                     );
                 } else if (accessor == 'expander') {
                     // Make an expander cell
-                    // row.original.alerts.data
-                    const keywords = [...new Set(cell.cell.row.original.alerts.data.map(item => item.keyword))];
-
+                    const keywords = [...new Set(cell.cell.row.original.alerts.data
+                        ? cell.cell.row.original.alerts.data.map(item => item.keyword)
+                        : '')];
                     const recipients = [...new Set(cell.cell.row.original.alerts.data[0].recipients
                         ? cell.cell.row.original.alerts.data[0].recipients.map(item => item)
                         : '')];
@@ -1326,7 +1328,9 @@ export default function ReactTable({
                     );
                 } else if (accessor == 'alertMessageSummary') {
                     const summaryMessage = (cell.cell.row.original.alerts.data[0].message);
-                    const keywords = [...new Set(cell.cell.row.original.alerts.data.map(item => item.keyword))];
+                    const keywords = [...new Set(cell.cell.row.original.alerts.data
+                        ? cell.cell.row.original.alerts.data.map(item => item.keyword)
+                        : '')];
 
                     const recipients = [...new Set(cell.cell.row.original.alerts.data[0].recipients
                         ? cell.cell.row.original.alerts.data[0].recipients.map(item => item)
