@@ -1187,7 +1187,9 @@ export default function ReactTable({
                         <div className='d-flex flex-column'>
                             {cell.cell.row.original.sender != null
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
-                                    {cell.cell.row.original.sender}
+                                    {cell.cell.row.original.sender
+                                        ? cell.cell.row.original.sender
+                                        : ''}
                                 </Typography>
                                 : 'N/A'
                             }
@@ -1214,7 +1216,9 @@ export default function ReactTable({
                         </div>
                     );
                 } else if (accessor == 'recipients') {
-                    const recipients = [...new Set(cell.cell.row.original.recipients.map(item => item))];
+                    const recipients = [...new Set(cell.cell.row.original.recipients
+                        ? cell.cell.row.original.recipients.map(item => item)
+                        : '')];
 
                     return (
                         <div className='d-flex flex-column' style={{ maxWidth: '200px' }}>
