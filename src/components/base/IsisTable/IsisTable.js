@@ -1149,9 +1149,6 @@ export default function ReactTable({
                                 autoEscape={true}
                                 findChunks={customWordHighlightLogic}
                                 textToHighlight={truncateText(cell.value, 40)}/>
-                            {/* <Typography size={14} color='color-3' className='table__box-label' >
-                                {truncateText(cell.value, 40)}
-                            </Typography> */}
                         </div>
                     );
                 } else if (accessor == 'source') {
