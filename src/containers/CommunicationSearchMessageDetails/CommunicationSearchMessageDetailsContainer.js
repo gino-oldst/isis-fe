@@ -38,6 +38,7 @@ export default function CommunicationSearchMessageDetailsContainer({
     const [isChecked, setIsChecked] = useState(true);
     const [messageButtonDisable, setMessageButtonDisable] = useState(false);
     const [loadMessageStatus, setLoadMessageStatus] = useState('message');
+    const [alerts, setAlerts] = useState([]);
     const filters = useLocation();
     const breadcrumb = [
         {
@@ -61,11 +62,9 @@ export default function CommunicationSearchMessageDetailsContainer({
 
     useEffect(() => {
         loadSearchData(filters.state);
-        loadAlerts(filters.state.chainLinkId);
+        loadAlerts(filters.state.id);
         console.log(filters);
     }, [filters]);
-
-    const [alerts, setAlerts] = useState([]);
 
     const loadAlerts = async (id) => {
         setAlertLoading(true);

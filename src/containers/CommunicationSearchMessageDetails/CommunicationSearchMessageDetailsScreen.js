@@ -278,8 +278,7 @@ function CommunicationSearchMessageDetailsScreen({
                                                 </div>
                                                 <table className='table' style={{ minWidth: '300px !important' }}>
                                                     <table className='table'>
-                                                        {JSON.stringify(alertsData)}
-                                                        {alertsData
+                                                        {alertsData.length > 0
                                                             ? <>
                                                                 <thead>
                                                                     <tr>
