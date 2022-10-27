@@ -1153,7 +1153,7 @@ export default function ReactTable({
                     );
                 } else if (accessor == 'source') {
                     return (
-                        <div className='table__text-cell d-flex flex-column'>
+                        <div className='recipient-column table__text-cell d-flex flex-column'>
                             {cell.value != null
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
                                     {sourceMaker(cell.value)}
@@ -1266,7 +1266,6 @@ export default function ReactTable({
                             <Typography weight={'bold'} variant={'size-16'} color='color-3'
                                 {...cell.cell.row.getToggleRowExpandedProps()} className='table__arrow-square d-flex justify-content-center align-items-center'>
                                 {cell.cell.row.isExpanded ? '🔼' : '🔽'}
-                                <FontAwesomeIcon icon='sort' size='sm' className='table__sort-icon' />
                             </Typography>
                             <div className='table__number-square d-flex justify-content-center align-items-center'>
                                 <Typography weight={'bold'} variant={'size-16'} color='color-3'>
