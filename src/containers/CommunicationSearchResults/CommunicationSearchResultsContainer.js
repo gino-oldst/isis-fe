@@ -321,10 +321,10 @@ export default function CommunicationSearchResultsContainer({
             formValid = false;
         }
 
-        if (filterSearchForm.filterRecipients.length == 0) {
-            initialError.errorRecipients = 'Please add Recipients';
-            formValid = false;
-        }
+        // if (filterSearchForm.filterRecipients.length == 0) {
+        //     initialError.errorRecipients = 'Please add Recipients';
+        //     formValid = false;
+        // }
 
         if (filterSearchForm.filterDateFrom == '' && filterSearchForm.filterDateTo == '') {
             initialError.errorDate = 'Please add Date/Time Range';
