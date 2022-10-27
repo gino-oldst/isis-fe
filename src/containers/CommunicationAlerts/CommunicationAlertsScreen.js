@@ -355,6 +355,12 @@ function CommunicationAlertsScreen({
 
     const [alertOptions, setAlertOptions] = useState([]);
 
+    const alerts = [{ label: 'Select All', value: 'all' }, ...keywords.map(row => ({
+        label: row.label,
+        value: row.value
+
+    }))];
+
     useEffect(() => {
         const updatedList = [{ label: 'Select All', value: 'all' }, ...keywords.map(row => ({
             label: row.label,
@@ -471,14 +477,14 @@ function CommunicationAlertsScreen({
                                                                 className='status-select'
                                                                 name='alert'
                                                                 onChange= {selected => {
-                                                                    selected.find(option => option.value === 'all')
-                                                                        ? handleAlert(alertOptions.splice(1))
+                                                                    selected.find(option => option.value == 'all')
+                                                                        ? handleAlert(alerts.splice(1))
                                                                         : handleAlert(selected);
                                                                 }}
                                                                 value={defaultAlert.length > 0
                                                                     ? defaultAlert.map(row => ({ label: row.label, value: row.value }))
                                                                     : []}
-                                                                options={alertOptions}/>
+                                                                options={alerts}/>
                                                         </FormGroup>
                                                     </Col>
                                                     <Col>
