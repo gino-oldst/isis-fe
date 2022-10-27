@@ -334,11 +334,11 @@ function CommunicationSearchResultsScreen({
                                                                 onChange={(newTags) => handleRecipientChange(newTags)}
                                                                 placeholder={'Select Recipient...'}
                                                                 noOptionsMessage={() => 'Enter a Recipient'}/>
-                                                            {errorForm.errorRecipients !== '' &&
+                                                            {/* {errorForm.errorRecipients !== '' &&
                                                                 <Typography variant='size-14' className='form-text text-danger'>
                                                                     {errorForm.errorRecipients}
                                                                 </Typography>
-                                                            }
+                                                            } */}
                                                         </FormGroup>
                                                     </Col>
                                                     <Col>

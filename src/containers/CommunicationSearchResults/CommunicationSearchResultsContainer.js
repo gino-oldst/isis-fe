@@ -196,7 +196,7 @@ export default function CommunicationSearchResultsContainer({
 
             // Map data and add the keyword to object as filterKeyword
             data.map(item => {
-                item.keyword = appliedFilters.filterText;
+                item.keyword = newFilters.filterText;
             });
 
             // history.push('/communication_search_results', filterSearchForm);
@@ -321,10 +321,10 @@ export default function CommunicationSearchResultsContainer({
             formValid = false;
         }
 
-        if (filterSearchForm.filterRecipients.length == 0) {
-            initialError.errorRecipients = 'Please add Recipients';
-            formValid = false;
-        }
+        // if (filterSearchForm.filterRecipients.length == 0) {
+        //     initialError.errorRecipients = 'Please add Recipients';
+        //     formValid = false;
+        // }
 
         if (filterSearchForm.filterDateFrom == '' && filterSearchForm.filterDateTo == '') {
             initialError.errorDate = 'Please add Date/Time Range';
