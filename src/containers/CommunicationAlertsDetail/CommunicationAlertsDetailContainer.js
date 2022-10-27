@@ -37,7 +37,6 @@ export default function CommunicationAlertsDetail({
     const history = useHistory();
     const dispatch = useDispatch();
     const filters = useLocation();
-
     const [loading, setLoading] = useState(true);
     const [alertLoading, setAlertLoading] = useState(false);
     const { isRowsSelected, selectedRows, appliedFilters } = useSelector(({ table }) => table);
@@ -66,6 +65,7 @@ export default function CommunicationAlertsDetail({
         loadAlerts(filters.state.id);
         loadActivity(filters.state.id);
         loadPredefinedReasons();
+        console.log(filters);
     }, [filters]);
 
     const [messages, setMessages] = useState([]);
@@ -133,6 +133,8 @@ export default function CommunicationAlertsDetail({
 
             const messages = await getMessageThread(commMessageId.chainLinkId, search.data.timeSent);
             const { data, totalNoOfRecords, totalPages } = messages.data;
+
+            console.log(messages);
 
             for (let i = 0; i < data.length; i++) {
                 var tempData = data[i];

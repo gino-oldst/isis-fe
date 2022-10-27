@@ -5,6 +5,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import CommunicationSearchMessageDetailsScreen from './CommunicationSearchMessageDetailsScreen';
 import type { Menu } from '../../types';
 import { getCommunicationMessageDetail, getRecentMessages, addMessageActivity, getRecipients, getMessageThread } from '../../api/communicationSearch';
+import { getActivityList, getKeywords, getMessageAlerts, postComment, updateAlert, retrievePredefinedReasons } from '../../api/communicationAlerts';
 import messageSample from './messageData.json';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
 import { uniq } from 'underscore';
@@ -31,6 +32,7 @@ export default function CommunicationSearchMessageDetailsContainer({
     const [recipients, setRecipients] = useState([]);
     const [messages, setMessages] = useState([]);
     const [messageStorage, setMessageStorage] = useState([]);
+    const [alertLoading, setAlertLoading] = useState(false);
     const [count, setCount] = useState(0);
     const [isCheckAll, setIsCheckAll] = useState(false);
     const [isChecked, setIsChecked] = useState(true);
@@ -59,7 +61,34 @@ export default function CommunicationSearchMessageDetailsContainer({
 
     useEffect(() => {
         loadSearchData(filters.state);
-    }, []);
+        loadAlerts(filters.state.chainLinkId);
+        console.log(filters);
+    }, [filters]);
+
+    const [alerts, setAlerts] = useState([]);
+
+    const loadAlerts = async (id) => {
+        setAlertLoading(true);
+
+        try {
+            const alertsData = await getMessageAlerts(id);
+
+            console.log('id:', id);
+
+            console.log('alerts data', alertsData);
+
+            // dispatch(setMessageAlerts(alertsData.data));
+            const sortedData = JSON.parse(JSON.stringify(alertsData.data.data)).sort((a, b) => a.id > b.id ? 1 : -1);
+
+            console.log('sorted', sortedData);
+
+            setAlerts(sortedData);
+        } catch (e) {
+            console.error(e);
+        }
+
+        setAlertLoading(false);
+    };
 
     const handleAddComment = async (comment) => {
         const formData = {
@@ -221,6 +250,7 @@ export default function CommunicationSearchMessageDetailsContainer({
         filterText={filters.state.filterText}
         detailData={detailData}
         useMediaQuery={useMediaQuery}
+        alertsData={alerts}
         breadcrumb={breadcrumb}
         handleCloseModal={handleCloseModal}
         sidebarMenu={sidebarMenu}
