@@ -959,9 +959,9 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                             } else if (cell.column.id == 'expander') {
                                 return (
                                     <td>
-                                        <div className='d-flex flex-column'>
+                                        <div className='keyword-column d-flex flex-column'>
                                             {x.policyName
-                                                ? <Typography variant='size-16' color='color-3' className=' search-results__box-label' >
+                                                ? <Typography variant='size-12' color='color-3' className=' search-results__box-label' >
                                                     {x.policyName}
                                                 </Typography>
                                                 : <Typography variant='size-16' color='color-3' className=' search-results__box-label' >
@@ -998,7 +998,7 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                                 // console.log(newBefore.substring(newBefore.length - 75) + ' ' + cell.row.original.alerts.data[0].keyword + ' ' + alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length));
                                 return (
                                     <td colSpan={visibleColumns.length - 1} >
-                                        <div className='alert-summary-message-column d-flex' style={{ minWidth: '200px !important' }}>
+                                        <div className='alert-accordion-message-column d-flex' style={{ minWidth: '200px !important' }}>
                                             <p>{newBeforeResult}
                                                 <Highlighter className='table__box-label' highlightClassName='alertKeyword'
                                                     style={{ fontSize: '15px', lineHeight: '20pt', fontWeight: '400' }}
@@ -1172,7 +1172,7 @@ export default function ReactTable({
 
                     return (
                         <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients)}
-                            className='d-flex flex-column text-wrap cursor-pointer'>
+                            className='recipient-column d-flex flex-column text-wrap cursor-pointer'>
                             {cell.cell.row.original.alerts.data[0].sender != null
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
                                     {cell.cell.row.original.alerts.data[0].sender}
@@ -1205,7 +1205,7 @@ export default function ReactTable({
 
                     return (
                         <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients)}
-                            className='d-flex flex-column cursor-pointer'>
+                            className='recipient-column d-flex flex-column cursor-pointer'>
                             {recipients
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
                                     {truncateText(recipients.join(', '), 200)}
