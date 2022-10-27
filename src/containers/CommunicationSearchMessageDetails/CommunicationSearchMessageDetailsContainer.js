@@ -63,7 +63,6 @@ export default function CommunicationSearchMessageDetailsContainer({
     useEffect(() => {
         loadSearchData(filters.state);
         loadAlerts(filters.state.id);
-        console.log(filters);
     }, [filters]);
 
     const loadAlerts = async (id) => {
@@ -72,14 +71,8 @@ export default function CommunicationSearchMessageDetailsContainer({
         try {
             const alertsData = await getMessageAlerts(id);
 
-            console.log('id:', id);
-
-            console.log('alerts data', alertsData);
-
             // dispatch(setMessageAlerts(alertsData.data));
             const sortedData = JSON.parse(JSON.stringify(alertsData.data.data)).sort((a, b) => a.id > b.id ? 1 : -1);
-
-            console.log('sorted', sortedData);
 
             setAlerts(sortedData);
         } catch (e) {
