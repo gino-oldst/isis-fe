@@ -196,7 +196,7 @@ export default function CommunicationSearchResultsContainer({
 
             // Map data and add the keyword to object as filterKeyword
             data.map(item => {
-                item.keyword = appliedFilters.filterText;
+                item.keyword = newFilters.filterText;
             });
 
             // history.push('/communication_search_results', filterSearchForm);
