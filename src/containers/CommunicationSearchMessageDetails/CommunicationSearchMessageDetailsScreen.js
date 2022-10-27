@@ -54,6 +54,7 @@ import Highlighter from 'react-highlight-words';
 import { Nav, OverlayTrigger, Popover, PopoverContent, Tab } from 'react-bootstrap';
 import { Element, Link, scroller, Button as ScrollButton } from 'react-scroll';
 import { load } from 'dotenv';
+import { customWordHighlightLogic } from '../../utils/highlightHelper';
 
 type Props = {
     loading: Boolean,
@@ -194,6 +195,7 @@ function CommunicationSearchMessageDetailsScreen({
                                                         <Highlighter highlightClassName='alertKeyword'
                                                             style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
                                                             searchWords={[filterText]}
+                                                            findChunks={customWordHighlightLogic}
                                                             autoEscape={true}
                                                             textToHighlight={message.message} />
                                                     </div>
