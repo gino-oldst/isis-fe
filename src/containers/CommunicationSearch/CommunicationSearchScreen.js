@@ -222,7 +222,7 @@ function CommunicationSearchScreen({
                                                         }
                                                     </FormGroup>
                                                     <FormGroup>
-                                                        <Label>Recipient*</Label>
+                                                        <Label>Recipient</Label>
                                                         <AsyncSelect
                                                             isMulti={true}
                                                             value={filterSearchForm.filterRecipients.length > 0
