@@ -27,6 +27,7 @@
     &__text-cell {
         .typography{
             padding-left: 0 !important;
+            
         }
     }
 
@@ -232,16 +233,27 @@ input[type="radio"], input[type="checkbox"] {
     padding-left: 0 !important;
 }
 
-.typography{
-    padding-left: 0.7rem !important;
-}
 
 .alert-status-column{
     width: 150px !important;
 }
+.keyword-column{
+    text-align: left;
+    width: 80px !important;
+}
 .alert-summary-message-column{
-    width: 245px !important;
+    width: 300px !important;
+}
+.alert-accordion-message-column{
+    width: 300px !important;
+    height: 130px !important;
 }
 .date-column{
-    width: 150px !important;
+    width: 140px !important;
+}
+.recipient-column{
+    width: 230px !important;
+    height: 130px !important;
+    overflow: hidden !important;
+    
 }
