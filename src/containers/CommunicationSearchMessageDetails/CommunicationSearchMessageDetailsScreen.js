@@ -266,7 +266,7 @@ function CommunicationSearchMessageDetailsScreen({
                                     <Row>
                                         <Col>
                                             <Typography color='color-3' className='alerts__title mr-auto' weight='regular'
-                                                style={{ fontSize: '32px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : 'No Subject'} {/* RE: Trading Message */}</Typography>
+                                                style={{ fontSize: '32px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : detailData.subject} {/* RE: Trading Message */}</Typography>
                                             <Typography color='color-3' className='mr-auto' weight='regular'
                                                 style={{ fontSize: '16px', lineHeight: '24pt' }}>{detailData.source != null ? sourceMaker(detailData.source) : 'No Source'} {/* Email */}</Typography>
                                         </Col>
@@ -331,11 +331,11 @@ function CommunicationSearchMessageDetailsScreen({
                                                     </Col>
                                                     <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' to={dataId} smooth={true}
                                                         containerId='containerElement' duration={500}>
-                                                        Show reported message
+                                                        Show Message
                                                     </Link>
                                                     <Link className='btn btn-outline-primary download-button px-2 mr-2 py-2' onClick={showActionsModal} smooth={true}
                                                         containerId='containerElement' duration={500}>
-                                                        Show Download Page
+                                                        Download Page
                                                     </Link>
                                                 </Row>
                                                 {/* || recipients === undefined */}

@@ -587,7 +587,7 @@ function CommunicationAlertsDetailScreen({
                                     <Row>
                                         <Col>
                                             <Typography color='color-3' className='alerts-detail__title mb-0 mr-auto' weight='regular'
-                                                style={{ fontSize: '32px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : 'No Subject'} {/* RE: Trading Message */}</Typography>
+                                                style={{ fontSize: '32px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : detailData.subject} {/* RE: Trading Message */}</Typography>
                                             <Typography color='color-3' className='mr-auto' weight='bold'
                                                 style={{ fontSize: '16px', lineHeight: '24pt' }}>{detailData.source != null ? sourceMaker(detailData.source) : 'No Source'} {/* Email */}</Typography>
                                         </Col>
@@ -749,14 +749,14 @@ function CommunicationAlertsDetailScreen({
                                                     <Typography color='color-3' className='mr-3 mb-4' weight='regular'
                                                         style={{ fontSize: '16px', lineHeight: '24pt' }}>Reported message is highlighted.</Typography>
                                                 </Col>
-                                                <Col className='text-right'>
+                                                <Col className='text-left'>
                                                     <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' to={dataId} smooth={true}
                                                         disabled={loading} containerId='containerElement' duration={500}>
-                                                        Show reported message
+                                                        Show Message
                                                     </Link>
                                                     <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' onClick={showActionsModal} smooth={true}
                                                         disabled={loading} containerId='containerElement' duration={500}>
-                                                        Show Download Message
+                                                        Download Page
                                                     </Link>
                                                 </Col>
                                             </Row>

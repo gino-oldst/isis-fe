@@ -1140,7 +1140,7 @@ export default function ReactTable({
                     return (
                         <div className='table__text-cell d-flex flex-column'>
                             <Typography size={14} color='color-3' className='table__box-label pl-0' >
-                                {cell.cell.row.original.subject == null ? 'No Subject' : cell.cell.row.original.subject}
+                                {cell.cell.row.original.subject == null ? cell.cell.row.original.subject : cell.cell.row.original.subject}
                             </Typography>
                             <Highlighter className='table__box-label' highlightClassName='alertKeyword'
                                 style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
