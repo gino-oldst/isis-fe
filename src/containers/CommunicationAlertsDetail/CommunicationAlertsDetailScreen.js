@@ -352,7 +352,7 @@ function CommunicationAlertsDetailScreen({
                     <Row className='modal-body'>
                         <Col lg={6}>
                             <table className='table'>
-                                {alertsData
+                                {alertsData.length > 0
                                     ? <>
                                         <thead>
                                             <tr>
@@ -606,7 +606,7 @@ function CommunicationAlertsDetailScreen({
                                                 </Spinner>
                                                 : <>
                                                     <table className='table'>
-                                                        {alertsData
+                                                        {alertsData.length > 0
                                                             ? <>
                                                                 <thead>
                                                                     <tr>
@@ -643,7 +643,7 @@ function CommunicationAlertsDetailScreen({
                                                                                             isSearchable={false}
                                                                                             onChange={e => handleDetailStatusChange(e, alert)}
                                                                                             defaultValue={{
-                                                                                                label: <Badge status={alert.status} />,
+                                                                                                label: <Badge status={alert.status ? 'OPEN' : alert.status} />,
                                                                                                 value: alert.status
                                                                                             }}
                                                                                             options={[{
@@ -681,7 +681,7 @@ function CommunicationAlertsDetailScreen({
                                                                                             isSearchable={false}
                                                                                             onChange={e => handleDetailEscalationChange(e, alert)}
                                                                                             defaultValue={{
-                                                                                                label: <Badge status={alert.escalation} />,
+                                                                                                label: <Badge status={alert.escalation ? 'Base' : alert.escalation} />,
                                                                                                 value: alert.escalation
                                                                                             }}
                                                                                             options={[{

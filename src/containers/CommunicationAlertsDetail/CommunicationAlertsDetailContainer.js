@@ -12,7 +12,7 @@ import {
     DATE_TO_UTC
 } from '../../utils/helpers';
 import { getCommunicationSearchData, getCommunicationMessageDetail, getMessageThread, getRecipients } from '../../api/communicationSearch';
-import { getActivityList, getKeywords, getMessageAlerts, postComment, updateAlert, retrievePredefinedReasons } from '../../api/communicationAlerts';
+import { getActivityList, getKeywords, getMessageAlerts, postComment, updateAlert, retrievePredefinedReasons, getAppUser } from '../../api/communicationAlerts';
 import Typography from '../../components/base/Typography/Typography';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import Button from '../../components/base/Button/Button';
@@ -71,6 +71,7 @@ export default function CommunicationAlertsDetail({
     const [messages, setMessages] = useState([]);
     const [recipients, setRecipients] = useState('');
     const [alerts, setAlerts] = useState([]);
+    const [appUser, setAppUser] = useState([]);
     const [predefinedReasons, setPredefinedReasons] = useState([]);
 
     const loadAlerts = async (id) => {
@@ -79,10 +80,16 @@ export default function CommunicationAlertsDetail({
         try {
             const alertsData = await getMessageAlerts(id);
 
+            const appUserData = await getAppUser();
+
             // dispatch(setMessageAlerts(alertsData.data));
             const sortedData = JSON.parse(JSON.stringify(alertsData.data.data)).sort((a, b) => a.id > b.id ? 1 : -1);
 
+            console.log(appUser);
+
             setAlerts(sortedData);
+
+            setAppUser(appUserData);
         } catch (e) {
             console.error(e);
         }
