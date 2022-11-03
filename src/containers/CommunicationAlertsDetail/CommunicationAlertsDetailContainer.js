@@ -64,9 +64,12 @@ export default function CommunicationAlertsDetail({
         loadSearchData(filters.state);
         loadAlerts(filters.state.id);
         loadActivity(filters.state.id);
-        loadPredefinedReasons();
-        console.log(filters);
     }, [filters]);
+
+    useEffect(() => {
+        loadPredefinedReasons();
+        loadAppUsers();
+    }, []);
 
     const [messages, setMessages] = useState([]);
     const [recipients, setRecipients] = useState('');
@@ -80,21 +83,25 @@ export default function CommunicationAlertsDetail({
         try {
             const alertsData = await getMessageAlerts(id);
 
-            const appUserData = await getAppUser();
-
             // dispatch(setMessageAlerts(alertsData.data));
             const sortedData = JSON.parse(JSON.stringify(alertsData.data.data)).sort((a, b) => a.id > b.id ? 1 : -1);
 
-            console.log(appUser);
-
             setAlerts(sortedData);
-
-            setAppUser(appUserData);
         } catch (e) {
             console.error(e);
         }
 
         setAlertLoading(false);
+    };
+
+    const loadAppUsers = async () => {
+        try {
+            const appUserData = await getAppUser();
+
+            setAppUser(appUserData);
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     const loadPredefinedReasons = async () => {
@@ -269,6 +276,32 @@ export default function CommunicationAlertsDetail({
         }
     };
 
+    const onSubmitAssignUserSingle = async (user, row) => {
+        try {
+            const data = {
+                id: row.id,
+                assignedUserId: user,
+                executorId: profileData.userId
+            };
+
+            const request = await updateAlert(data);
+
+            loadAlerts(filters.state.id);
+
+            loadActivity(filters.state.id);
+
+            dispatch(setFlashNotification({
+                message: 'Assinging for a user to review the alert Update Success.',
+                isError: false
+            }));
+
+            Storage.removeItem(storageKey.tempUpdatedInDetails);
+            Storage.setItem(storageKey.tempUpdatedInDetails, true);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     const onSubmitStatusChangeSingleWithReview = async (status, note, row) => {
         try {
             const data = {
@@ -389,6 +422,7 @@ export default function CommunicationAlertsDetail({
     return <CommunicationAlertsDetailScreen
         loading={loading}
         userId={userId}
+        appUser={appUser}
         dataId={filters.state.id}
         filterText={filters.state.filterText}
         detailData={detailData}
@@ -412,7 +446,8 @@ export default function CommunicationAlertsDetail({
         activityLoading={activityLoading}
         onSubmitComment={onSubmitComment}
         predefinedReasons={predefinedReasons}
-        onSubmitEscalationChangeSingle = {onSubmitEscalationChangeSingle}/>;
+        onSubmitEscalationChangeSingle = {onSubmitEscalationChangeSingle}
+        onSubmitAssignUserSingle={onSubmitAssignUserSingle}/>;
 }
 
 const SuccessModal = ({
