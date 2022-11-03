@@ -151,3 +151,18 @@ export async function retrievePredefinedReasons(filters: Object) {
 
     return await makeApiCall(RETRIEVE_PREDEFINED_REASONS, 'POST', filterBody);
 }
+
+const GET_APP_USER_DATA = `${config.apiStorage}/storage-service/app-user`;
+
+export async function getAppUser() {
+    const appUser = await makeApiCall(`${GET_APP_USER_DATA}`, 'POST', {});
+
+    const { data } = appUser.data;
+
+    const appUserList = data.map((user) => ({
+        value: user.id,
+        label: user.username
+    }));
+
+    return appUserList;
+}
