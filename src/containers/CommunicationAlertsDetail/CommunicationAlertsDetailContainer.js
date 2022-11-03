@@ -12,7 +12,7 @@ import {
     DATE_TO_UTC
 } from '../../utils/helpers';
 import { getCommunicationSearchData, getCommunicationMessageDetail, getMessageThread, getRecipients } from '../../api/communicationSearch';
-import { getActivityList, getKeywords, getMessageAlerts, postComment, updateAlert, retrievePredefinedReasons } from '../../api/communicationAlerts';
+import { getActivityList, getKeywords, getMessageAlerts, postComment, updateAlert, retrievePredefinedReasons, getAppUser } from '../../api/communicationAlerts';
 import Typography from '../../components/base/Typography/Typography';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import Button from '../../components/base/Button/Button';
@@ -64,13 +64,17 @@ export default function CommunicationAlertsDetail({
         loadSearchData(filters.state);
         loadAlerts(filters.state.id);
         loadActivity(filters.state.id);
-        loadPredefinedReasons();
-        console.log(filters);
     }, [filters]);
+
+    useEffect(() => {
+        loadPredefinedReasons();
+        loadAppUsers();
+    }, []);
 
     const [messages, setMessages] = useState([]);
     const [recipients, setRecipients] = useState('');
     const [alerts, setAlerts] = useState([]);
+    const [appUser, setAppUser] = useState([]);
     const [predefinedReasons, setPredefinedReasons] = useState([]);
 
     const loadAlerts = async (id) => {
@@ -88,6 +92,16 @@ export default function CommunicationAlertsDetail({
         }
 
         setAlertLoading(false);
+    };
+
+    const loadAppUsers = async () => {
+        try {
+            const appUserData = await getAppUser();
+
+            setAppUser(appUserData);
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     const loadPredefinedReasons = async () => {
@@ -262,6 +276,32 @@ export default function CommunicationAlertsDetail({
         }
     };
 
+    const onSubmitAssignUserSingle = async (user, row) => {
+        try {
+            const data = {
+                id: row.id,
+                assignedUserId: user,
+                executorId: profileData.userId
+            };
+
+            const request = await updateAlert(data);
+
+            loadAlerts(filters.state.id);
+
+            loadActivity(filters.state.id);
+
+            dispatch(setFlashNotification({
+                message: 'Assinging for a user to review the alert Update Success.',
+                isError: false
+            }));
+
+            Storage.removeItem(storageKey.tempUpdatedInDetails);
+            Storage.setItem(storageKey.tempUpdatedInDetails, true);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     const onSubmitStatusChangeSingleWithReview = async (status, note, row) => {
         try {
             const data = {
@@ -382,6 +422,7 @@ export default function CommunicationAlertsDetail({
     return <CommunicationAlertsDetailScreen
         loading={loading}
         userId={userId}
+        appUser={appUser}
         dataId={filters.state.id}
         filterText={filters.state.filterText}
         detailData={detailData}
@@ -405,7 +446,8 @@ export default function CommunicationAlertsDetail({
         activityLoading={activityLoading}
         onSubmitComment={onSubmitComment}
         predefinedReasons={predefinedReasons}
-        onSubmitEscalationChangeSingle = {onSubmitEscalationChangeSingle}/>;
+        onSubmitEscalationChangeSingle = {onSubmitEscalationChangeSingle}
+        onSubmitAssignUserSingle={onSubmitAssignUserSingle}/>;
 }
 
 const SuccessModal = ({

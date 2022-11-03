@@ -57,6 +57,7 @@ import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-c
 type Props = {
     loading: Boolean,
     userId: String,
+    appUser: Any,
     breadcrumb: Array,
     table: Any,
     activePage: Int,
@@ -82,12 +83,14 @@ type Props = {
     activityLoading: Boolean,
     onSubmitComment: Function,
     predefinedReasons: Array,
-    onSubmitEscalationChangeSingle: Function
+    onSubmitEscalationChangeSingle: Function,
+    onSubmitAssignUserSingle: Function
 }
 
 function CommunicationAlertsDetailScreen({
     loading,
     userId,
+    appUser,
     table,
     activePage,
     breadcrumb,
@@ -113,7 +116,8 @@ function CommunicationAlertsDetailScreen({
     activityLoading,
     onSubmitComment,
     predefinedReasons,
-    onSubmitEscalationChangeSingle
+    onSubmitEscalationChangeSingle,
+    onSubmitAssignUserSingle
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -168,6 +172,10 @@ function CommunicationAlertsDetailScreen({
 
     const handleDetailEscalationChange = (e, selectedAlert) => {
         onSubmitEscalationChangeSingle(e.value, '', selectedAlert);
+    };
+
+    const handleAppUserChange = (e, selectedAlert) => {
+        onSubmitAssignUserSingle(e.value, selectedAlert);
     };
 
     const showActionsModal = () => {
@@ -606,7 +614,7 @@ function CommunicationAlertsDetailScreen({
                                                 </Spinner>
                                                 : <>
                                                     <table className='table'>
-                                                        {alertsData
+                                                        {alertsData.length > 0
                                                             ? <>
                                                                 <thead>
                                                                     <tr>
@@ -621,6 +629,9 @@ function CommunicationAlertsDetailScreen({
                                                                         </th>
                                                                         <th className='pb-2'>
                                                                             <Typography color='color-3' className='mr-3' weight='semi-bold'>Escalation</Typography>
+                                                                        </th>
+                                                                        <th className='pb-2'>
+                                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Assign To</Typography>
                                                                         </th>
                                                                     </tr>
                                                                 </thead>
@@ -681,8 +692,8 @@ function CommunicationAlertsDetailScreen({
                                                                                             isSearchable={false}
                                                                                             onChange={e => handleDetailEscalationChange(e, alert)}
                                                                                             defaultValue={{
-                                                                                                label: <Badge status={alert.escalation} />,
-                                                                                                value: alert.escalation
+                                                                                                label: <Badge status={alert.escalation ? alert.escalation : 'Base'} />,
+                                                                                                value: alert.escalation ? alert.escalation : 'BASE'
                                                                                             }}
                                                                                             options={[{
                                                                                                 name: 'BASE',
@@ -697,6 +708,21 @@ function CommunicationAlertsDetailScreen({
                                                                                                 label: <Badge status='CO' />,
                                                                                                 value: 'CO'
                                                                                             }]} />
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td style={{ width: '250px' }}>
+                                                                                    <div className='d-flex align-items-center'>
+                                                                                        <Select
+                                                                                            name='assign-user'
+                                                                                            className='w-100 pr-2'
+                                                                                            onChange={e => handleAppUserChange(e, alert)}
+                                                                                            defaultValue={{
+                                                                                                label: alert.assignedUserId
+                                                                                                    ? Object.values(appUser).find(e => e.value === alert.assignedUserId).label
+                                                                                                    : 'Select...',
+                                                                                                value: alert.assignedUserId ? alert.assignedUserId : ''
+                                                                                            }}
+                                                                                            options={appUser} />
                                                                                     </div>
                                                                                 </td>
                                                                             </tr>
