@@ -12,7 +12,7 @@ import {
     DATE_TO_UTC
 } from '../../utils/helpers';
 import { getCommunicationSearchData, getCommunicationMessageDetail, getMessageThread, getRecipients } from '../../api/communicationSearch';
-import { getActivityList, getKeywords, getMessageAlerts, postComment, updateAlert, retrievePredefinedReasons, getAppUser } from '../../api/communicationAlerts';
+import { getActivityList, getKeywords, getMessageAlerts, postComment, updateAlert, retrievePredefinedReasons, getAppUser, getCommunicationAlertData } from '../../api/communicationAlerts';
 import Typography from '../../components/base/Typography/Typography';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import Button from '../../components/base/Button/Button';
@@ -21,6 +21,7 @@ import { setMessageAlerts, setAlertsListDetail } from '../../redux/modules/commu
 import HtmlToRtfBrowser from 'html-to-rtf-browser';
 import { storageKey } from '../../config/constants';
 import Storage from '../../utils/Storage';
+import StorageIDB from '../../utils/StorageIDB';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -39,11 +40,14 @@ export default function CommunicationAlertsDetail({
     const filters = useLocation();
     const [loading, setLoading] = useState(true);
     const [alertLoading, setAlertLoading] = useState(false);
-    const { isRowsSelected, selectedRows, appliedFilters } = useSelector(({ table }) => table);
-    const { messageAlerts, alertsList } = useSelector(({ communicationAlerts }) => communicationAlerts);
+    const { isRowsSelected, selectedRows, appliedFilters, isTablePageSelect } = useSelector(({ table }) => table);
+    const { messageAlerts, alertsList, data } = useSelector(({ communicationAlerts }) => communicationAlerts);
     const [isChecked, setIsChecked] = useState(true);
     const { profileData } = useSelector(({ authentication }) => authentication);
+    const [isTimeout, setIsTimeout] = useState(false);
     const [detailData, setDetailData] = useState([]);
+    // Para sa current record selected
+    const [currData, setCurrData] = useState([]);
     const breadcrumb = [
         {
             label: 'Home',
@@ -67,8 +71,15 @@ export default function CommunicationAlertsDetail({
     }, [filters]);
 
     useEffect(() => {
+        loadAlerts(currData.id);
+        loadActivity(currData.id);
+        loadSearchData(currData.state);
+    }, [currData]);
+
+    useEffect(() => {
         loadPredefinedReasons();
         loadAppUsers();
+        loadCommAlertsData();
     }, []);
 
     const [messages, setMessages] = useState([]);
@@ -76,6 +87,10 @@ export default function CommunicationAlertsDetail({
     const [alerts, setAlerts] = useState([]);
     const [appUser, setAppUser] = useState([]);
     const [predefinedReasons, setPredefinedReasons] = useState([]);
+
+    const [constAlertData, setConstAlertData] = useState([]);
+    const [totalNoOfRecords, setTotalNoOfRecords] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
 
     const loadAlerts = async (id) => {
         setAlertLoading(true);
@@ -92,6 +107,88 @@ export default function CommunicationAlertsDetail({
         }
 
         setAlertLoading(false);
+    };
+
+    const onPrevAndNext = (page, size) => {
+        // Logic for next and Prev
+        // let size = 100;
+
+        //  scroll through yung current data.
+
+        //  if you have the data
+
+        // selectedData = constAlertData[index]
+        // setCurrData(selectedData);
+
+        // if (index > size && totalPages){
+        //     loadCommAlertsData(page, size);
+        //     index = 0
+        // }
+    };
+
+    const loadCommAlertsData = async (page, size) => {
+        setLoading(true);
+
+        const alertSearchParams = JSON.parse(await StorageIDB.getItem(storageKey.alertSearchParams));
+        const sort = {
+            column: ''
+        };
+
+        var filterAlert = alertSearchParams.alert;
+        var filterStatus = alertSearchParams.status;
+        var filterSources = alertSearchParams.source;
+        var filterSender = alertSearchParams.senders.map(row => { return row; });
+        var filterRecipient = alertSearchParams.recipients.map(row => { return row; });
+        var filterDateFrom = alertSearchParams.dateFrom;
+        var filterDateTo = alertSearchParams.dateTo;
+        var isPageChange = alertSearchParams.activePage;
+        var insidePage = alertSearchParams.activePage;
+        var updateInMsg = false;
+        var updateInSort = false;
+        var filterEscalations = alertSearchParams.escalation ? alertSearchParams.escalation : [];
+
+        // if (alertSearchParams) {
+        //     isPageChange = alertSearchParams.activePage !== page;
+        //     insidePage = isTablePageSelect ? page : alertSearchParams.activePage || 0;
+
+        //     if (isRequery) {
+        //         insidePage = 0;
+        //     }
+
+        //     filterAlert = alert.length === 0 && !isRequery ? alertSearchParams.alert : alert;
+        //     filterStatus = status.length === 0 && !isRequery ? alertSearchParams.status : status;
+        //     filterSources = sources.length === 0 && !isRequery ? alertSearchParams.source : sources;
+        //     filterDateFrom = dFrom === '' && !isRequery ? alertSearchParams.dateFrom : dFrom;
+        //     filterDateTo = dTo === '' && !isRequery ? alertSearchParams.dateTo : dTo;
+        //     filterEscalations = escalations.length === 0 && !isRequery ? alertSearchParams.escalation : escalations;
+
+        //     const slist = alertSearchParams.senders.length > 0 ? [...alertSearchParams.senders.map(row => { return row; })] : [];
+        //     const rlist = alertSearchParams.recipients.length > 0 ? [...alertSearchParams.recipients.map(row => { return row; })] : [];
+
+        //     filterSender = senders.length === 0 && !isRequery ? slist : senders;
+        //     filterRecipient = recipients.length === 0 && !isRequery ? rlist : recipients;
+        // }
+
+        try {
+            let alerts = [];
+
+            alerts = await getCommunicationAlertData(insidePage, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient, filterEscalations);
+
+            const { data, totalNoOfRecords, totalPages } = alerts.data;
+
+            console.log(data);
+
+            // Keep the recent requested data
+            setConstAlertData(data);
+            setTotalNoOfRecords(totalNoOfRecords);
+            setTotalPages(totalPages);
+        } catch (e) {
+            console.log(e);
+
+            if (e.status == 500 || e.status == 502 || e.status == 503 || e.status == 504 || e.status == 408 || e.status == 404 || e.status == 400) {
+                setIsTimeout(true);
+            }
+        }
     };
 
     const loadAppUsers = async () => {
@@ -143,12 +240,10 @@ export default function CommunicationAlertsDetail({
         try {
             const search = await getCommunicationMessageDetail(commMessageId.id);
 
-            setDetailData(search.data);
+            setDetailData(filters);
 
             const messages = await getMessageThread(commMessageId.chainLinkId, search.data.timeSent);
             const { data, totalNoOfRecords, totalPages } = messages.data;
-
-            console.log(messages);
 
             for (let i = 0; i < data.length; i++) {
                 var tempData = data[i];
@@ -434,6 +529,7 @@ export default function CommunicationAlertsDetail({
         handleGenerate={handleGenerate}
         recipients={recipients}
         useMediaQuery={useMediaQuery}
+        onPrevAndNext={onPrevAndNext}
         breadcrumb={breadcrumb}
         sidebarMenu={sidebarMenu}
         handleCloseModal={handleCloseModal}
