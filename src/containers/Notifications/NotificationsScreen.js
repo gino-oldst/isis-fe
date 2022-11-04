@@ -21,7 +21,8 @@ type Props = {
     yesterday: Array,
     isNotifMenuOpen: Boolean,
     toggleDropdown: Function,
-    loadNotifications: Function
+    loadNotifications: Function,
+    handleReadNotif: Function
 }
 
 export default function NotificationsScreen({
@@ -29,27 +30,10 @@ export default function NotificationsScreen({
     yesterday,
     toggleDropdown,
     isNotifMenuOpen,
-    loadNotifications
+    loadNotifications,
+    handleReadNotif
 }: Props): React$Element<any> {
     const { profileData: { userId } } = useSelector(({ authentication }) => authentication);
-
-    const handleReadNotif = async (notif, status) => {
-        const payload = {
-            id: notif.id,
-            userId: userId,
-            alertId: notif.alertId,
-            alertStatus: notif.alertStatus,
-            behaviorId: notif.behaviorId,
-            behaviorCode: notif.behaviorCode,
-            behaviorDescription: notif.behaviorDescription,
-            message: notif.message,
-            status: status.toUpperCase() === 'READ' ? 'UNREAD' : 'READ'
-        };
-
-        const result = await updateNotification(payload);
-
-        if (result.data.responseStatus === 'success') loadNotifications();
-    };
 
     return (
         <UncontrolledDropdown isOpen={isNotifMenuOpen} toggle={e => {
@@ -87,18 +71,23 @@ export default function NotificationsScreen({
                                                 <Typography color='color-3' variant='size-12' weight='semi-bold'
                                                     className='mb-2'>{tod.message}</Typography>
                                                 <Typography color='color-3' variant='size-14' className='mb-2'>
-                                                    <span className='mr-3'>{tod.behaviorCode} | {tod.behaviorDescription}</span>
+                                                    {/* <span className='mr-3'>{tod.behaviorCode} | {tod.behaviorDescription}</span> */}
                                                     <Badge status={tod.alertStatus} />
                                                 </Typography>
                                                 <Typography color='color-3' variant='size-12' className='text-muted'>{moment(tod.dateCreated).format('DD MMM yyyy, hh:mm a')}</Typography>
                                             </div>
-                                            <div className={`mr-2 navbar__notifications__${tod.status.toLowerCase() === 'unread' ? 'unread' : 'read'}-icon`}>
+                                            {/* <div className={`mr-2 navbar__notifications__${tod.status.toLowerCase() === 'unread' ? 'unread' : 'read'}-icon`}>
                                                 <FontAwesomeIcon className={`navbar__notification-${tod.status.toLowerCase() === 'unread' ? 'unread' : 'read'}`} icon='circle'
                                                     size='xs'
                                                     data-tip={true} data-for={tod.id} onClick={() => handleReadNotif(tod, tod.status.toLowerCase())} />
+                                            </div> */}
+                                            <div className={`mr-2 navbar__notifications__${tod.seen ? 'unread' : 'read'}-icon`}>
+                                                <FontAwesomeIcon className={`navbar__notification-${tod.seen ? 'unread' : 'read'}`} icon='circle'
+                                                    size='xs'
+                                                    data-tip={true} data-for={tod.id} onClick={() => handleReadNotif(tod, tod.seen)} />
                                             </div>
                                             <Tooltip place='left' id={`today-${tod.id}`}>
-                                                <Typography variant='size-10' weight='light' color='color-3'>{tod.status.toLowerCase() === 'unread' ? 'Mark as read' : 'Mark as unread'}</Typography>
+                                                <Typography variant='size-10' weight='light' color='color-3'>{!tod.seen ? 'Mark as read' : 'Mark as unread'}</Typography>
                                             </Tooltip>
                                         </DropdownItem>
                                     );
@@ -122,18 +111,23 @@ export default function NotificationsScreen({
                                                     <Typography color='color-3' variant='size-12' weight='semi-bold'
                                                         className='mb-2'>{yes.message}</Typography>
                                                     <Typography color='color-3' variant='size-14' className='mb-2'>
-                                                        <span className='mr-3'>{yes.behaviorCode} | {yes.behaviorDescription}</span>
+                                                        {/* <span className='mr-3'>{yes.behaviorCode} | {yes.behaviorDescription}</span> */}
                                                         <Badge status={yes.alertStatus} />
                                                     </Typography>
                                                     <Typography color='color-3' variant='size-12' className='text-muted'>{moment(yes.dateCreated).format('DD MMM yyyy, hh:mm a')}</Typography>
                                                 </div>
-                                                <div className={`mr-2 navbar__notifications__${yes.status.toLowerCase() === 'unread' ? 'unread' : 'read'}-icon`}>
+                                                {/* <div className={`mr-2 navbar__notifications__${yes.status.toLowerCase() === 'unread' ? 'unread' : 'read'}-icon`}>
                                                     <FontAwesomeIcon className={`navbar__notification-${yes.status.toLowerCase() === 'unread' ? 'unread' : 'read'}`} icon='circle'
                                                         size='xs'
                                                         data-tip={true} data-for={yes.id} onClick={() => handleReadNotif(yes, yes.status.toLowerCase())} />
+                                                </div> */}
+                                                <div className={`mr-2 navbar__notifications__${yes.seen ? 'unread' : 'read'}-icon`}>
+                                                    <FontAwesomeIcon className={`navbar__notification-${yes.seen ? 'unread' : 'read'}`} icon='circle'
+                                                        size='xs'
+                                                        data-tip={true} data-for={yes.id} onClick={() => handleReadNotif(yes, yes.seen)} />
                                                 </div>
                                                 <Tooltip place='left' id={`yesterday-${yes.id}`}>
-                                                    <Typography variant='size-10' weight='light' color='color-3'>{yes.status.toLowerCase() === 'unread' ? 'Mark as read' : 'Mark as unread'}</Typography>
+                                                    <Typography variant='size-10' weight='light' color='color-3'>{!yes.seen ? 'Mark as read' : 'Mark as unread'}</Typography>
                                                 </Tooltip>
                                             </DropdownItem>
                                         );
