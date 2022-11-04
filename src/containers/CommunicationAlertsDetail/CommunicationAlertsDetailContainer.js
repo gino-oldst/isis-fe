@@ -86,6 +86,9 @@ export default function CommunicationAlertsDetail({
 
             // dispatch(setMessageAlerts(alertsData.data));
             const sortedData = JSON.parse(JSON.stringify(alertsData.data.data)).sort((a, b) => a.id > b.id ? 1 : -1);
+            const sort = {
+                column: ''
+            };
 
             setAlerts(sortedData);
             setSearchWords([...new Set(sortedData.map(item => item.keyword))]);

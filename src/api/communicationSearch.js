@@ -56,7 +56,8 @@ export async function getCommunicationSearchData(page, size, sort, filters) {
         recipients: filters.filterRecipients.length > 0 ? [...filters.filterRecipients.map(row => { return row.value; })] : [],
         sources: filters.filterSource.length > 0 ? [...filters.filterSource.map(row => { return row.value; })] : [],
         dateSentFrom: filters.filterDateFrom,
-        dateSentTo: filters.filterDateTo
+        dateSentTo: filters.filterDateTo,
+        bypassType: 'DEFAULT'
     };
 
     if (filters.filterId != '' || filters.filterId) {
