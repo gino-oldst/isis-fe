@@ -192,6 +192,12 @@ function CommunicationAlertsDetailScreen({
         }));
     };
 
+    const appUserAssign = [{ label: 'Unassigned', value: null }, ...appUser.map(row => ({
+        label: row.label,
+        value: row.value
+
+    }))];
+
     useEffect(() => {
         // scroll to active message
         scroller.scrollTo(`${dataId}`, {
@@ -714,15 +720,18 @@ function CommunicationAlertsDetailScreen({
                                                                                     <div className='d-flex align-items-center'>
                                                                                         <Select
                                                                                             name='assign-user'
+                                                                                            closeMenuOnSelect={false}
+                                                                                            placeholder={'Unassigned'}
+                                                                                            isSearchable={false}
                                                                                             className='w-100 pr-2'
                                                                                             onChange={e => handleAppUserChange(e, alert)}
                                                                                             defaultValue={{
                                                                                                 label: alert.assignedUserId
                                                                                                     ? Object.values(appUser).find(e => e.value === alert.assignedUserId).label
-                                                                                                    : 'Select...',
-                                                                                                value: alert.assignedUserId ? alert.assignedUserId : ''
+                                                                                                    : appUserAssign[0].label,
+                                                                                                value: alert.assignedUserId ? alert.assignedUserId : appUserAssign[0].value
                                                                                             }}
-                                                                                            options={appUser} />
+                                                                                            options={appUserAssign} />
                                                                                     </div>
                                                                                 </td>
                                                                             </tr>

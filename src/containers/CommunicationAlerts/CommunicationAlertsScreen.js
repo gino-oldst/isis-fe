@@ -467,6 +467,7 @@ function CommunicationAlertsScreen({
                                             <fieldset disabled={loading}>
                                                 <Row>
                                                     <Col>
+                                                        {JSON.stringify(alerts)}
                                                         <FormGroup className='mb-3'>
                                                             <Label for='alert'>Policy Type</Label>
                                                             <Select
