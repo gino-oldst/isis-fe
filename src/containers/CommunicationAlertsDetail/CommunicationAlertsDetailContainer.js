@@ -61,9 +61,9 @@ export default function CommunicationAlertsDetail({
     ];
 
     useEffect(() => {
-        loadSearchData(filters.state);
         loadAlerts(filters.state.id);
         loadActivity(filters.state.id);
+        loadSearchData(filters.state);
     }, [filters]);
 
     useEffect(() => {
@@ -74,6 +74,7 @@ export default function CommunicationAlertsDetail({
     const [messages, setMessages] = useState([]);
     const [recipients, setRecipients] = useState('');
     const [alerts, setAlerts] = useState([]);
+    const [searchWords, setSearchWords] = useState([]);
     const [appUser, setAppUser] = useState([]);
     const [predefinedReasons, setPredefinedReasons] = useState([]);
 
@@ -87,6 +88,7 @@ export default function CommunicationAlertsDetail({
             const sortedData = JSON.parse(JSON.stringify(alertsData.data.data)).sort((a, b) => a.id > b.id ? 1 : -1);
 
             setAlerts(sortedData);
+            setSearchWords([...new Set(sortedData.map(item => item.keyword))]);
         } catch (e) {
             console.error(e);
         }
@@ -145,10 +147,8 @@ export default function CommunicationAlertsDetail({
 
             setDetailData(search.data);
 
-            const messages = await getMessageThread(commMessageId.chainLinkId, search.data.timeSent);
+            const messages = await getMessageThread(search.data.chainLinkId, search.data.timeSent);
             const { data, totalNoOfRecords, totalPages } = messages.data;
-
-            console.log(messages);
 
             for (let i = 0; i < data.length; i++) {
                 var tempData = data[i];
@@ -178,8 +178,15 @@ export default function CommunicationAlertsDetail({
 
             // const recipients = await getRecipients(search.data.chainLinkId);
             // const extractedRecipients = extractRecipients(recipients.data);
+            if (commMessageId.recipients) {
+                setRecipients(commMessageId.recipients);
+            } else {
+                const recipients = [...new Set(alerts[0].recipients
+                    ? alerts[0].recipients.map(item => item)
+                    : '')];
 
-            setRecipients(commMessageId.recipients);
+                setRecipients(recipients);
+            }
         } catch (e) {
             console.error(e);
         }
@@ -424,7 +431,7 @@ export default function CommunicationAlertsDetail({
         userId={userId}
         appUser={appUser}
         dataId={filters.state.id}
-        filterText={filters.state.filterText}
+        filterText={searchWords}
         detailData={detailData}
         alertsData={alerts}
         alertsList={alertsList}
