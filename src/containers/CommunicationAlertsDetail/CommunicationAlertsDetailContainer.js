@@ -79,7 +79,7 @@ export default function CommunicationAlertsDetail({
     useEffect(() => {
         loadPredefinedReasons();
         loadAppUsers();
-        loadCommAlertsData();
+        loadCommAlertsData(0, 10);
     }, []);
 
     const [messages, setMessages] = useState([]);
@@ -169,13 +169,9 @@ export default function CommunicationAlertsDetail({
         try {
             let alerts = [];
 
-            console.log('sss', sort);
-
             alerts = await getCommunicationAlertData(insidePage, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient, filterEscalations);
 
             const { data, totalNoOfRecords, totalPages } = alerts.data;
-
-            console.log('sss', sort, data);
 
             // Keep the recent requested data
             setConstAlertData(data);
