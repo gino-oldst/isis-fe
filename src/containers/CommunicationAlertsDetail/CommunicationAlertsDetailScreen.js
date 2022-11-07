@@ -952,9 +952,10 @@ function CommunicationAlertsDetailScreen({
                                                                                     return (activity.type == 'SYSTEM_EVENT'
                                                                                         ? <>
                                                                                             <div key={1} className='alert-detail__activity-info d-flex align-items-start mb-4'>
-                                                                                                {/* <span className='activity-icon'><span className='text-light'>J</span></span> */}
-                                                                                                <img src={logo} alt='Mariana_UFP_logo' className='login__logo' />
-                                                                                                <div className='d-block'>
+                                                                                                <div style={{ marginRight: '10px' }}>
+                                                                                                    <img src={logo} alt='Mariana_UFP_logo' className='login__logo' />
+                                                                                                </div>
+                                                                                                <div className='d-block activity-content'>
                                                                                                     <Typography color='color-3' variant='size-16'>{activity.event}</Typography>
                                                                                                     <Typography color='color-3' variant='size-14' className='text-muted'>{moment(activity.dateCreated).utc().local().format('DD/MM/YYYY h:mm A')}</Typography>
                                                                                                 </div>
@@ -963,7 +964,7 @@ function CommunicationAlertsDetailScreen({
                                                                                         : <>
                                                                                             <div key={2} className='alert-detail__activity-info d-flex align-items-center mb-4'>
                                                                                                 <span className='activity-icon'><span className='text-light'>{activity.executorId.charAt(0)}</span></span>
-                                                                                                <div className='d-block'>
+                                                                                                <div className='d-block activity-content'>
                                                                                                     <Typography color='color-3' variant='size-16'>{activity.event}</Typography>
                                                                                                     <Typography color='color-3' variant='size-14' className='text-muted'>{moment(activity.dateCreated).utc().local().format('DD/MM/YYYY h:mm A')}</Typography>
                                                                                                 </div>
@@ -987,7 +988,7 @@ function CommunicationAlertsDetailScreen({
                                                                                     return (<>
                                                                                         <div key={2} className='alert-detail__activity-info d-flex align-items-center mb-4'>
                                                                                             <span className='activity-icon'><span className='text-light'>{activity.id.charAt(0)}</span></span>
-                                                                                            <div className='d-block'>
+                                                                                            <div className='d-block activity-content'>
                                                                                                 <Typography color='color-3' variant='size-16'>User {truncateText(activity.id, 8)}: {activity.event}</Typography>
                                                                                                 <Typography color='color-3' variant='size-14' className='text-muted'>{moment(activity.dateCreated).utc().local().format('DD/MM/YYYY h:mm A')}</Typography>
                                                                                             </div>
@@ -1011,8 +1012,10 @@ function CommunicationAlertsDetailScreen({
                                                                                     return (<>
                                                                                         <div key={1} className='alert-detail__activity-info d-flex align-items-start mb-4'>
                                                                                             {/* <span className='activity-icon'><span className='text-light'>J</span></span> */}
-                                                                                            <img src={logo} alt='Mariana_UFP_logo' className='login__logo' />
-                                                                                            <div className='d-block'>
+                                                                                            <div style={{ marginRight: '10px' }}>
+                                                                                                <img src={logo} alt='Mariana_UFP_logo' className='login__logo' />
+                                                                                            </div>
+                                                                                            <div className='d-block activity-content'>
                                                                                                 <Typography color='color-3' variant='size-16'>{activity.event}</Typography>
                                                                                                 <Typography color='color-3' variant='size-14' className='text-muted'>{moment(activity.dateCreated).utc().local().format('DD/MM/YYYY h:mm A')}</Typography>
                                                                                             </div>
