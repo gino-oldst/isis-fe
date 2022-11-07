@@ -126,13 +126,10 @@ export default function CommunicationAlertsDetail({
         // }
     };
 
-    const loadCommAlertsData = async (page, size) => {
+    const loadCommAlertsData = async (page, size, sort) => {
         setLoading(true);
 
         const alertSearchParams = JSON.parse(await StorageIDB.getItem(storageKey.alertSearchParams));
-        const sort = {
-            column: ''
-        };
 
         var filterAlert = alertSearchParams.alert;
         var filterStatus = alertSearchParams.status;
