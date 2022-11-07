@@ -964,7 +964,7 @@ function CommunicationAlertsDetailScreen({
                                                                                             <div key={2} className='alert-detail__activity-info d-flex align-items-center mb-4'>
                                                                                                 <span className='activity-icon'><span className='text-light'>{activity.executorId.charAt(0)}</span></span>
                                                                                                 <div className='d-block'>
-                                                                                                    <Typography color='color-3' variant='size-16'>User {truncateText(activity.executorId, 8)}: {activity.event}</Typography>
+                                                                                                    <Typography color='color-3' variant='size-16'>{activity.event}</Typography>
                                                                                                     <Typography color='color-3' variant='size-14' className='text-muted'>{moment(activity.dateCreated).utc().local().format('DD/MM/YYYY h:mm A')}</Typography>
                                                                                                 </div>
                                                                                             </div>
