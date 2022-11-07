@@ -242,6 +242,8 @@ export default function CommunicationAlertsDetail({
             const messages = await getMessageThread(commMessageId.chainLinkId, search.data.timeSent);
             const { data, totalNoOfRecords, totalPages } = messages.data;
 
+            console.log(messages);
+
             for (let i = 0; i < data.length; i++) {
                 var tempData = data[i];
 
