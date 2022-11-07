@@ -222,7 +222,7 @@ function CommunicationSearchScreen({
                                                         }
                                                     </FormGroup>
                                                     <FormGroup>
-                                                        <Label>Recipient*</Label>
+                                                        <Label>Recipient</Label>
                                                         <AsyncSelect
                                                             isMulti={true}
                                                             value={filterSearchForm.filterRecipients.length > 0
@@ -236,11 +236,11 @@ function CommunicationSearchScreen({
                                                             className='filter-select'
                                                             onChange={(newTags) => handleRecipientChange(newTags)}
                                                             placeholder={'Select Recipient...'}/>
-                                                        {errorForm.errorRecipients !== '' &&
+                                                        {/* {errorForm.errorRecipients !== '' &&
                                                             <Typography variant='size-14' className='form-text text-danger'>
                                                                 {errorForm.errorRecipients}
                                                             </Typography>
-                                                        }
+                                                        } */}
                                                     </FormGroup>
                                                     <FormGroup>
                                                         <Label>Date/Time Range*</Label>

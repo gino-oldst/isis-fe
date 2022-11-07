@@ -54,6 +54,7 @@ import Highlighter from 'react-highlight-words';
 import { Nav, OverlayTrigger, Popover, PopoverContent, Tab } from 'react-bootstrap';
 import { Element, Link, scroller, Button as ScrollButton } from 'react-scroll';
 import { load } from 'dotenv';
+import { customWordHighlightLogic } from '../../utils/highlightHelper';
 
 type Props = {
     loading: Boolean,
@@ -68,6 +69,7 @@ type Props = {
     isChecked:Boolean,
     onClickCloseModal: Function,
     detailData: Array,
+    alertsData: Array,
     dataId: Any,
     loadMessageStatus: String,
     messages: Array,
@@ -88,6 +90,7 @@ function CommunicationSearchMessageDetailsScreen({
     handleCloseModal,
     handleSelectAll,
     isCheckAll,
+    alertsData,
     handleGenerate,
     isChecked,
     loadMessageStatus,
@@ -194,6 +197,7 @@ function CommunicationSearchMessageDetailsScreen({
                                                         <Highlighter highlightClassName='alertKeyword'
                                                             style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
                                                             searchWords={[filterText]}
+                                                            findChunks={customWordHighlightLogic}
                                                             autoEscape={true}
                                                             textToHighlight={message.message} />
                                                     </div>
@@ -262,80 +266,61 @@ function CommunicationSearchMessageDetailsScreen({
                                     <Row>
                                         <Col>
                                             <Typography color='color-3' className='alerts__title mr-auto' weight='regular'
-                                                style={{ fontSize: '32px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : 'No Subject'} {/* RE: Trading Message */}</Typography>
+                                                style={{ fontSize: '32px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : detailData.subject} {/* RE: Trading Message */}</Typography>
                                             <Typography color='color-3' className='mr-auto' weight='regular'
                                                 style={{ fontSize: '16px', lineHeight: '24pt' }}>{detailData.source != null ? sourceMaker(detailData.source) : 'No Source'} {/* Email */}</Typography>
                                         </Col>
                                     </Row>
                                     <Row className='mt-5'>
                                         <Col lg={7}>
-                                            {/* <div className='mb-4'>
+                                            <div className='mb-4'>
                                                 <div className='d-flex align-items-center justify-content-between'>
                                                     <Typography color='color-3' className='mr-3 mb-2' weight='semi-bold'
                                                         style={{ fontSize: '24px', lineHeight: '24pt' }}>Alert</Typography>
                                                 </div>
                                                 <table className='table' style={{ minWidth: '300px !important' }}>
-                                                    {detailData.alerts != null
-                                                        ? <>
-                                                            <thead>
-                                                                <tr>
-                                                                    <th className='pb-2'>
-                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Alert</Typography>
-                                                                    </th>
-                                                                    <th className='pb-2'>
-                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Trigered Text</Typography>
-                                                                    </th>
-                                                                    <th className='pb-2'>
-                                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'>Status</Typography>
-                                                                    </th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3'>Alert 4</Typography>
-                                                                    </td>
-                                                                    <td className='pb-2'>
-                                                                        <Typography color='color-3'>Flame</Typography>
-                                                                    </td>
-                                                                    <td>
-                                                                        <div className='d-flex align-items-center w-100'>
-                                                                            <Select
-                                                                                className='status-select'
-                                                                                name='status'
-                                                                                options={[{
-                                                                                    name: 'OPEN',
-                                                                                    label: <Badge status='Open' />,
-                                                                                    value: <Badge status='Open'/>
-                                                                                }, {
-                                                                                    name: 'IN_REVIEW',
-                                                                                    label: <Badge status='In Review' />,
-                                                                                    value: <Badge status='In Review'/>
-                                                                                }, {
-                                                                                    name: 'RESOLVED',
-                                                                                    label: <Badge status='Resolved' />,
-                                                                                    value: <Badge status='Resolved'/>
-                                                                                }, {
-                                                                                    name: 'ARCHIVED',
-                                                                                    label: <Badge status='Archived' />,
-                                                                                    value: <Badge status='Archived'/>
-                                                                                }]} />
-
-                                                                            <OverlayTrigger placement='bottom-start' overlay={renderAlertInfo('Donec sollicitudin molestie malesuada. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Donec sollicitudin molestie malesuada. Cras ultricies ligula sed magna dictum porta. Donec sollicitudin molestie malesuada. Cras ultricies ligula sed magna dictum porta.')}>
-                                                                                <FaInfoCircle style={{ color: '#004C98', marginLeft: '10px' }} size={24}/>
-                                                                            </OverlayTrigger>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </>
-                                                        : <>
-                                                            <Typography size={18} color='color-3' className='mr-3'
-                                                                weight='regular'>No Alerts</Typography>
-                                                        </>
-                                                    }
+                                                    <table className='table'>
+                                                        {alertsData.length > 0
+                                                            ? <>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th className='pb-2' style={{ borderTop: '0px !important' }}>
+                                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Alert</Typography>
+                                                                        </th>
+                                                                        <th className='pb-2' style={{ borderTop: '0px !important' }}>
+                                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Trigered Text</Typography>
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {alertsData.map(alert => {
+                                                                        return (<>
+                                                                            <tr>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3'>{alert.policyName}</Typography>
+                                                                                </td>
+                                                                                <td className='pb-2'>
+                                                                                    <Typography color='color-3'>{alert.keyword}</Typography>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </>);
+                                                                    })}
+                                                                </tbody>
+                                                            </>
+                                                            : <>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th className='pb-2 text-center'>
+                                                                            <Typography size={18} color='color-1' className='mr-3'
+                                                                                weight='semi-bold'>No Alerts</Typography>
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                            </>
+                                                        }
+                                                    </table>
                                                 </table>
-                                            </div> */}
+                                            </div>
                                             <div className='pt-30 pb-30 communication-search-message-details__messages'>
                                                 <Row>
                                                     <Col>
@@ -346,11 +331,11 @@ function CommunicationSearchMessageDetailsScreen({
                                                     </Col>
                                                     <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' to={dataId} smooth={true}
                                                         containerId='containerElement' duration={500}>
-                                                        Show reported message
+                                                        Show Message
                                                     </Link>
                                                     <Link className='btn btn-outline-primary download-button px-2 mr-2 py-2' onClick={showActionsModal} smooth={true}
                                                         containerId='containerElement' duration={500}>
-                                                        Show Download Page
+                                                        Download Page
                                                     </Link>
                                                 </Row>
                                                 {/* || recipients === undefined */}

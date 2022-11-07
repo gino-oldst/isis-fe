@@ -87,6 +87,7 @@ type Props = {
     predefinedReasons: Array<any>,
     defaultEscalation: Array<any>,
     handleEscalation: Function,
+    downloading: Boolean
 }
 
 function CommunicationAlertsScreen({
@@ -126,7 +127,8 @@ function CommunicationAlertsScreen({
     handleCloseSuccessModal,
     predefinedReasons,
     defaultEscalation,
-    handleEscalation
+    handleEscalation,
+    downloading
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -353,6 +355,12 @@ function CommunicationAlertsScreen({
 
     const [alertOptions, setAlertOptions] = useState([]);
 
+    const alerts = [{ label: 'Select All', value: 'all' }, ...keywords.map(row => ({
+        label: row.label,
+        value: row.value
+
+    }))];
+
     useEffect(() => {
         const updatedList = [{ label: 'Select All', value: 'all' }, ...keywords.map(row => ({
             label: row.label,
@@ -448,8 +456,8 @@ function CommunicationAlertsScreen({
                                         <Col lg={6} className='text-right pr-0'>
                                             <Button weight='light' className='alerts__bulk-review mr-2' label='Bulk Review'
                                                 disabled={selectedRows.length === 0} onClick={showActionsModal}/>
-                                            <Button weight='light' className='alerts__bulk-review' label='Download Data'
-                                                disabled={loading} onClick={handleDownloadAlertData}/>
+                                            <Button weight='light' className='alerts__bulk-review' isLoading={downloading}
+                                                label='Download Data' disabled={loading} onClick={handleDownloadAlertData}/>
                                         </Col>
                                     </Row>
                                 </div>
@@ -460,23 +468,23 @@ function CommunicationAlertsScreen({
                                                 <Row>
                                                     <Col>
                                                         <FormGroup className='mb-3'>
-                                                            <Label for='alert'>Alert Type</Label>
+                                                            <Label for='alert'>Policy Type</Label>
                                                             <Select
                                                                 closeMenuOnSelect={false}
                                                                 isMulti={true}
-                                                                placeholder={'Search Alert Type'}
+                                                                placeholder={'Search Policy Type'}
                                                                 isSearchable={false}
                                                                 className='status-select'
                                                                 name='alert'
                                                                 onChange= {selected => {
-                                                                    selected.find(option => option.value === 'all')
-                                                                        ? handleAlert(alertOptions.splice(1))
+                                                                    selected.find(option => option.value == 'all')
+                                                                        ? handleAlert(alerts.splice(1))
                                                                         : handleAlert(selected);
                                                                 }}
                                                                 value={defaultAlert.length > 0
                                                                     ? defaultAlert.map(row => ({ label: row.label, value: row.value }))
                                                                     : []}
-                                                                options={alertOptions}/>
+                                                                options={alerts}/>
                                                         </FormGroup>
                                                     </Col>
                                                     <Col>
@@ -636,8 +644,8 @@ function CommunicationAlertsScreen({
                                 <div className='alerts__information mt-5'>
                                     <Row>
                                         {/* {JSON.stringify(selectedRows)} */}
-                                        <Col lg={12} className='overflow-auto'>
-                                            <Table className='alerts__table table-responsive table-striped'
+                                        <Col lg={12} className='pb-4'>
+                                            <Table className='alerts__table table-hover table-striped'
                                                 loading={loading}
                                                 isTimeout={isTimeout}
                                                 tableColumns={table.columns}

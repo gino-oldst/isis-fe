@@ -88,7 +88,8 @@ type Props = {
     defaultSources: Array<any>,
     errorForm: Array<Any>,
     isTimeout: Boolean,
-    handleDownloadSearchData: Function
+    handleDownloadSearchData: Function,
+    downloading: Boolean
 }
 
 function CommunicationSearchResultsScreen({
@@ -125,7 +126,8 @@ function CommunicationSearchResultsScreen({
     handleKeyword,
     errorForm,
     isTimeout,
-    handleDownloadSearchData
+    handleDownloadSearchData,
+    downloading
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -235,7 +237,7 @@ function CommunicationSearchResultsScreen({
                                 <div className='search-results__header d-flex align-items-center justify-content-between'>
                                     <Typography color='color-3' className='search-results__title'>Search Results</Typography>
                                     <Button weight='light' className='search-results__download' label='Download Data'
-                                        disabled={loading} onClick={handleDownloadSearchData}/>
+                                        isLoading={downloading} disabled={loading} onClick={handleDownloadSearchData}/>
                                 </div>
                                 <Row className='pl-2'>
                                     <Col lg={12}>
@@ -332,11 +334,11 @@ function CommunicationSearchResultsScreen({
                                                                 onChange={(newTags) => handleRecipientChange(newTags)}
                                                                 placeholder={'Select Recipient...'}
                                                                 noOptionsMessage={() => 'Enter a Recipient'}/>
-                                                            {errorForm.errorRecipients !== '' &&
+                                                            {/* {errorForm.errorRecipients !== '' &&
                                                                 <Typography variant='size-14' className='form-text text-danger'>
                                                                     {errorForm.errorRecipients}
                                                                 </Typography>
-                                                            }
+                                                            } */}
                                                         </FormGroup>
                                                     </Col>
                                                     <Col>

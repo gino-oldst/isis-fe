@@ -108,7 +108,7 @@ const initialState = {
         isFiltered: false,
         columns: [
             {
-                header: 'Alert',
+                header: 'Policy',
                 accessor: 'expander',
                 disableFilters: true,
                 clickable: true
@@ -123,6 +123,12 @@ const initialState = {
             {
                 header: 'Status',
                 accessor: 'status',
+                disableFilters: true,
+                clickable: false
+            },
+            {
+                header: 'Message',
+                accessor: 'alertMessageSummary',
                 disableFilters: true,
                 clickable: false
             },

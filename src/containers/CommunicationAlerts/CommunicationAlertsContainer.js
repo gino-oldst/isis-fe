@@ -15,7 +15,7 @@ import { setCommunicationAlertsData, setColumnFilterValues } from '../../redux/m
 import debounce from 'debounce-async';
 
 // To be removed once we move to with backend
-import { downloadCommAlertsList, getCommunicationAlertData, getKeywords, updateAlert, retrievePredefinedReasons } from '../../api/communicationAlerts';
+import { downloadCommAlertsList, getCommunicationAlertData, getKeywords, updateAlert, retrievePredefinedReasons, getPolicies } from '../../api/communicationAlerts';
 import { getEmails, getEmailsAll } from '../../api/communicationSearch';
 import { set } from 'date-fns';
 import Typography from '../../components/base/Typography/Typography';
@@ -25,6 +25,7 @@ import { setAlertsList, setIsRowSelected, setToggle, setActivePage } from '../..
 import Storage from '../../utils/Storage';
 import StorageIDB from '../../utils/StorageIDB';
 import { storageKey } from '../../config/constants';
+import { setFlashNotification } from '../../redux/modules/flashNotification';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -53,6 +54,7 @@ export default function CommunicationAlertsContainer({
     const [alert, setAlert] = useState([]);
     const [status, setStatus] = useState([]);
     const [submit, setSubmit] = useState(false);
+    const [downloading, setDownloading] = useState(false);
     const [isCheckAll, setIsCheckAll] = useState(false);
     const [senderStore, setSenderStore] = useState([]);
     const [recipientStore, setRecipientStore] = useState([]);
@@ -236,12 +238,13 @@ export default function CommunicationAlertsContainer({
     };
 
     const loadColumnFilterValues = async () => {
-        const keywords = await getKeywords();
+        // const keywords = await getKeywords();
+        const policies = await getPolicies();
 
-        var sortedKeywords = keywords.sort((a, b) => a.label.match(/\d+/) - b.label.match(/\d+/));
+        var sortedKeywords = policies.sort((a, b) => a.label.match(/\d+/) - b.label.match(/\d+/));
 
-        dispatch(setAlertsList(keywords));
-        setKeywords(keywords);
+        dispatch(setAlertsList(policies));
+        setKeywords(policies);
     };
 
     const loadSearchValuesFromStorage = async () => {
@@ -423,17 +426,6 @@ export default function CommunicationAlertsContainer({
         }
 
         if (formValid) {
-            // Storage.removeItem(storageKey.alertSearchParams);
-            // Storage.setItem(storageKey.alertSearchParams, JSON.stringify({
-            //     alert: alert,
-            //     status: status,
-            //     dateFrom: dateFrom,
-            //     dateTo: dateTo,
-            //     source: source,
-            //     senders: senderStore,
-            //     recipients: recipientStore,
-            //     data: tableResultStore
-            // }));
             loadCommAlertsData(
                 activePage,
                 pageSize,
@@ -470,9 +462,10 @@ export default function CommunicationAlertsContainer({
         }
     };
 
-    const handleDownloadAlertData = async () => {
+    const handleDownloadAlertData = () => {
         try {
-            await downloadCommAlertsList(
+            setDownloading(true);
+            downloadCommAlertsList(
                 alert,
                 status,
                 dateFrom,
@@ -480,21 +473,29 @@ export default function CommunicationAlertsContainer({
                 source,
                 senders,
                 recipients
-            );
+            ).then(([response]) => {
+                setDownloading(false);
+
+                if (response.status !== 200) {
+                    dispatch(setFlashNotification({
+                        message: 'Error occured while downloading',
+                        isError: true
+                    }));
+                }
+            });
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
 
     return <CommunicationAlertsScreen
         loading={loading}
+        downloading={downloading}
         isTimeout={isTimeout}
         onSearchClick={onSearchClick}
         userId={userId}
         table={table}
-
         activePage={activePage}
-
         useMediaQuery={useMediaQuery}
         breadcrumb={breadcrumb}
         sidebarMenu={sidebarMenu}

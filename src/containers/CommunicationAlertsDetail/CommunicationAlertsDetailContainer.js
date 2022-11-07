@@ -12,7 +12,7 @@ import {
     DATE_TO_UTC
 } from '../../utils/helpers';
 import { getCommunicationSearchData, getCommunicationMessageDetail, getMessageThread, getRecipients } from '../../api/communicationSearch';
-import { getActivityList, getKeywords, getMessageAlerts, postComment, updateAlert, retrievePredefinedReasons } from '../../api/communicationAlerts';
+import { getActivityList, getKeywords, getMessageAlerts, postComment, updateAlert, retrievePredefinedReasons, getAppUser } from '../../api/communicationAlerts';
 import Typography from '../../components/base/Typography/Typography';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import Button from '../../components/base/Button/Button';
@@ -37,7 +37,6 @@ export default function CommunicationAlertsDetail({
     const history = useHistory();
     const dispatch = useDispatch();
     const filters = useLocation();
-
     const [loading, setLoading] = useState(true);
     const [alertLoading, setAlertLoading] = useState(false);
     const { isRowsSelected, selectedRows, appliedFilters } = useSelector(({ table }) => table);
@@ -62,15 +61,21 @@ export default function CommunicationAlertsDetail({
     ];
 
     useEffect(() => {
-        loadSearchData(filters.state);
         loadAlerts(filters.state.id);
         loadActivity(filters.state.id);
-        loadPredefinedReasons();
+        loadSearchData(filters.state);
     }, [filters]);
+
+    useEffect(() => {
+        loadPredefinedReasons();
+        loadAppUsers();
+    }, []);
 
     const [messages, setMessages] = useState([]);
     const [recipients, setRecipients] = useState('');
     const [alerts, setAlerts] = useState([]);
+    const [searchWords, setSearchWords] = useState([]);
+    const [appUser, setAppUser] = useState([]);
     const [predefinedReasons, setPredefinedReasons] = useState([]);
 
     const loadAlerts = async (id) => {
@@ -83,11 +88,22 @@ export default function CommunicationAlertsDetail({
             const sortedData = JSON.parse(JSON.stringify(alertsData.data.data)).sort((a, b) => a.id > b.id ? 1 : -1);
 
             setAlerts(sortedData);
+            setSearchWords([...new Set(sortedData.map(item => item.keyword))]);
         } catch (e) {
             console.error(e);
         }
 
         setAlertLoading(false);
+    };
+
+    const loadAppUsers = async () => {
+        try {
+            const appUserData = await getAppUser();
+
+            setAppUser(appUserData);
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     const loadPredefinedReasons = async () => {
@@ -131,7 +147,7 @@ export default function CommunicationAlertsDetail({
 
             setDetailData(search.data);
 
-            const messages = await getMessageThread(commMessageId.chainLinkId, search.data.timeSent);
+            const messages = await getMessageThread(search.data.chainLinkId, search.data.timeSent);
             const { data, totalNoOfRecords, totalPages } = messages.data;
 
             for (let i = 0; i < data.length; i++) {
@@ -162,8 +178,15 @@ export default function CommunicationAlertsDetail({
 
             // const recipients = await getRecipients(search.data.chainLinkId);
             // const extractedRecipients = extractRecipients(recipients.data);
+            if (commMessageId.recipients) {
+                setRecipients(commMessageId.recipients);
+            } else {
+                const recipients = [...new Set(alerts[0].recipients
+                    ? alerts[0].recipients.map(item => item)
+                    : '')];
 
-            setRecipients(commMessageId.recipients);
+                setRecipients(recipients);
+            }
         } catch (e) {
             console.error(e);
         }
@@ -250,6 +273,32 @@ export default function CommunicationAlertsDetail({
 
             dispatch(setFlashNotification({
                 message: 'Alert Escalation Update Success.',
+                isError: false
+            }));
+
+            Storage.removeItem(storageKey.tempUpdatedInDetails);
+            Storage.setItem(storageKey.tempUpdatedInDetails, true);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const onSubmitAssignUserSingle = async (user, row) => {
+        try {
+            const data = {
+                id: row.id,
+                assignedUserId: user,
+                executorId: profileData.userId
+            };
+
+            const request = await updateAlert(data);
+
+            loadAlerts(filters.state.id);
+
+            loadActivity(filters.state.id);
+
+            dispatch(setFlashNotification({
+                message: 'Assinging for a user to review the alert Update Success.',
                 isError: false
             }));
 
@@ -380,8 +429,9 @@ export default function CommunicationAlertsDetail({
     return <CommunicationAlertsDetailScreen
         loading={loading}
         userId={userId}
+        appUser={appUser}
         dataId={filters.state.id}
-        filterText={filters.state.filterText}
+        filterText={searchWords}
         detailData={detailData}
         alertsData={alerts}
         alertsList={alertsList}
@@ -403,7 +453,8 @@ export default function CommunicationAlertsDetail({
         activityLoading={activityLoading}
         onSubmitComment={onSubmitComment}
         predefinedReasons={predefinedReasons}
-        onSubmitEscalationChangeSingle = {onSubmitEscalationChangeSingle}/>;
+        onSubmitEscalationChangeSingle = {onSubmitEscalationChangeSingle}
+        onSubmitAssignUserSingle={onSubmitAssignUserSingle}/>;
 }
 
 const SuccessModal = ({

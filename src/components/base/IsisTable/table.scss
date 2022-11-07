@@ -27,6 +27,7 @@
     &__text-cell {
         .typography{
             padding-left: 0 !important;
+            
         }
     }
 
@@ -39,6 +40,16 @@
         width: 50px;
         height: 35px;
       }
+    &__arrow-square {
+        display: inline-block;
+        line-height: 0px;
+        border-radius: 5%;
+        font-size: 16px;
+        width: 30px;
+        height: 35px;
+        right: 100px;
+
+      }  
       
     // &__number-square p {
     //     display: inline-block;
@@ -90,6 +101,26 @@
         .dropdown-divider {
             border-top: 1px solid #dee2e6;
         }
+    }
+
+    .policy-dropdown {
+        margin-left: 0 !important;
+        width: auto !important;
+
+        .dropdown-divider {
+            border-top: 1px solid #dee2e6;
+        }
+    }
+
+    .dropup .dropdown-toggle::after {
+        display: inline-block;
+        margin-left: .255em;
+        vertical-align: .255em;
+        content: "";
+        border-top: 0;
+        border-right: .3em solid transparent;
+        border-bottom: .3em solid;
+        border-left: .3em solid transparent;
     }
 
     // react-select dropdown field
@@ -202,10 +233,27 @@ input[type="radio"], input[type="checkbox"] {
     padding-left: 0 !important;
 }
 
-.typography{
-    padding-left: 0.7rem !important;
-}
 
 .alert-status-column{
+    width: 150px !important;
+}
+.keyword-column{
+    text-align: left;
+    width: 80px !important;
+}
+.alert-summary-message-column{
     width: 300px !important;
+}
+.alert-accordion-message-column{
+    width: 300px !important;
+    height: 130px !important;
+}
+.date-column{
+    width: 140px !important;
+}
+.recipient-column{
+    width: 230px !important;
+    height: 130px !important;
+    overflow: hidden !important;
+    
 }

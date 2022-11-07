@@ -168,11 +168,11 @@ export async function getRecipients(chainLinkId) {
 
 const DOWNLOAD_SEARCH_LIST = '/storage-service/download/messages';
 
-export async function downloadCommSearchList(filters: Object) {
+export function downloadCommSearchList(filters: Object) {
     const filterBody = {
         message: filters.filterText,
-        senders: filters.filterSenders,
-        recipients: filters.filterRecipients,
+        senders: filters.filterSenders.length > 0 ? [...filters.filterSenders.map(row => { return row.value; })] : [],
+        recipients: filters.filterRecipients.length > 0 ? [...filters.filterRecipients.map(row => { return row.value; })] : [],
         sources: filters.filterSource.length > 0 ? [...filters.filterSource.map(row => { return row.value; })] : [],
         dateSentFrom: filters.filterDateFrom,
         dateSentTo: filters.filterDateTo
@@ -182,5 +182,6 @@ export async function downloadCommSearchList(filters: Object) {
         filterBody.id = filters.filterId;
     }
 
-    return await makeApiCall(DOWNLOAD_SEARCH_LIST, 'POST', filterBody);
+    // return await makeApiCall(DOWNLOAD_SEARCH_LIST, 'POST', filterBody);
+    return Promise.all([makeApiCall(DOWNLOAD_SEARCH_LIST, 'POST', filterBody)]);
 }

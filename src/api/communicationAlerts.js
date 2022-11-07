@@ -7,7 +7,8 @@ const GET_ALERT_DATA = `${config.apiStorage}/storage-service/quick-communication
 
 export async function getCommunicationAlertData(page, size, sort, alert, status, dFrom, dTo, sources, senders, recipients, escalations) {
     const filterBody = {
-        keywordIds: alert.length > 0 ? [...alert.map(row => { return row.value; })] : [],
+        // keywordIds: alert.length > 0 ? [...alert.map(row => { return row.value; })] : [],
+        policyIds: alert.length > 0 ? [...alert.map(row => { return row.value; })] : [],
         sources: sources.length > 0 ? [...sources.map(row => { return row.value; })] : [],
         statusTypes: status.length > 0 ? [...status.map(row => { return row.value; })] : ['OPEN', 'RESOLVED', 'IN_REVIEW'],
         dateFrom: dFrom,
@@ -46,6 +47,21 @@ const UPDATE_ALERT = `${config.apiStorage}/storage-service/alert`;
 
 export async function updateAlert(data: Object) {
     return await makeApiCall(UPDATE_ALERT, 'PUT', data);
+}
+
+const GET_ALERT_POLICY_DATA = `${config.apiStorage}/storage-service/alert-policy/search`;
+
+export async function getPolicies() {
+    const polcies = await makeApiCall(`${GET_ALERT_POLICY_DATA}`, 'POST', {});
+
+    const { data } = polcies.data;
+
+    const policyList = data.map((policy) => ({
+        value: policy.id,
+        label: policy.name
+    }));
+
+    return policyList;
 }
 
 // const GET_KEYWORDS = `${config.apiStorage}/storage-service/policy-map/search`;
@@ -94,9 +110,10 @@ export async function getKeywords() {
 
 const DOWNLOAD_ALERTS_LIST = '/storage-service/download/alerts';
 
-export async function downloadCommAlertsList(alert, status, dFrom, dTo, sources, senders, recipients) {
+export function downloadCommAlertsList(alert, status, dFrom, dTo, sources, senders, recipients) {
     const filterBody = {
-        keywordIds: alert.length > 0 ? [...alert.map(row => { return row.value; })] : [],
+        // keywordIds: alert.length > 0 ? [...alert.map(row => { return row.value; })] : [],
+        policyIds: alert.length > 0 ? [...alert.map(row => { return row.value; })] : [],
         sources: sources.length > 0 ? [...sources.map(row => { return row.value; })] : [],
         statusTypes: status.length > 0 ? [...status.map(row => { return row.value; })] : ['OPEN', 'RESOLVED', 'IN_REVIEW'],
         dateFrom: dFrom,
@@ -105,7 +122,7 @@ export async function downloadCommAlertsList(alert, status, dFrom, dTo, sources,
         recipients: recipients
     };
 
-    return await makeApiCall(DOWNLOAD_ALERTS_LIST, 'POST', filterBody);
+    return Promise.all([makeApiCall(DOWNLOAD_ALERTS_LIST, 'POST', filterBody)]);
 }
 
 const GET_ACTIVITY_LIST = `${config.apiStorage}/storage-service/message-activity/search`;
@@ -133,4 +150,19 @@ export async function retrievePredefinedReasons(filters: Object) {
     };
 
     return await makeApiCall(RETRIEVE_PREDEFINED_REASONS, 'POST', filterBody);
+}
+
+const GET_APP_USER_DATA = `${config.apiStorage}/storage-service/app-user`;
+
+export async function getAppUser() {
+    const appUser = await makeApiCall(`${GET_APP_USER_DATA}`, 'POST', {});
+
+    const { data } = appUser.data;
+
+    const appUserList = data.map((user) => ({
+        value: user.id,
+        label: user.username
+    }));
+
+    return appUserList;
 }

@@ -57,6 +57,7 @@ import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-c
 type Props = {
     loading: Boolean,
     userId: String,
+    appUser: Any,
     breadcrumb: Array,
     table: Any,
     activePage: Int,
@@ -82,12 +83,14 @@ type Props = {
     activityLoading: Boolean,
     onSubmitComment: Function,
     predefinedReasons: Array,
-    onSubmitEscalationChangeSingle: Function
+    onSubmitEscalationChangeSingle: Function,
+    onSubmitAssignUserSingle: Function
 }
 
 function CommunicationAlertsDetailScreen({
     loading,
     userId,
+    appUser,
     table,
     activePage,
     breadcrumb,
@@ -113,7 +116,8 @@ function CommunicationAlertsDetailScreen({
     activityLoading,
     onSubmitComment,
     predefinedReasons,
-    onSubmitEscalationChangeSingle
+    onSubmitEscalationChangeSingle,
+    onSubmitAssignUserSingle
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -131,9 +135,9 @@ function CommunicationAlertsDetailScreen({
         </Popover>
     );
 
-    const userEvents = activities.filter(row => row.type === 'USER_EVENT');
+    const messageActivities = activities.filter(row => row.target === 'COMMUNICATION_MESSAGE');
 
-    const systemEvents = activities.filter(row => row.type === 'SYSTEM_EVENT');
+    const alertActivities = activities.filter(row => row.target === 'ALERT');
 
     const showActionsUpdateModal = () => {
         dispatch(setModalContent({
@@ -168,6 +172,10 @@ function CommunicationAlertsDetailScreen({
 
     const handleDetailEscalationChange = (e, selectedAlert) => {
         onSubmitEscalationChangeSingle(e.value, '', selectedAlert);
+    };
+
+    const handleAppUserChange = (e, selectedAlert) => {
+        onSubmitAssignUserSingle(e.value, selectedAlert);
     };
 
     const showActionsModal = () => {
@@ -369,7 +377,7 @@ function CommunicationAlertsDetailScreen({
                                                 return (<>
                                                     <tr>
                                                         <td className='pb-2'>
-                                                            <Typography color='color-3'>{alertsList.filter(x => x.value === alert.keywordId)[0].label}</Typography>
+                                                            <Typography color='color-3'>{alert.policyName}</Typography>
                                                         </td>
                                                         <td className='pb-2'>
                                                             <Typography color='color-3'>{alert.keyword}</Typography>
@@ -587,7 +595,7 @@ function CommunicationAlertsDetailScreen({
                                     <Row>
                                         <Col>
                                             <Typography color='color-3' className='alerts-detail__title mb-0 mr-auto' weight='regular'
-                                                style={{ fontSize: '32px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : 'No Subject'} {/* RE: Trading Message */}</Typography>
+                                                style={{ fontSize: '32px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : detailData.subject} {/* RE: Trading Message */}</Typography>
                                             <Typography color='color-3' className='mr-auto' weight='bold'
                                                 style={{ fontSize: '16px', lineHeight: '24pt' }}>{detailData.source != null ? sourceMaker(detailData.source) : 'No Source'} {/* Email */}</Typography>
                                         </Col>
@@ -606,7 +614,7 @@ function CommunicationAlertsDetailScreen({
                                                 </Spinner>
                                                 : <>
                                                     <table className='table'>
-                                                        {alertsData
+                                                        {alertsData.length > 0
                                                             ? <>
                                                                 <thead>
                                                                     <tr>
@@ -622,6 +630,9 @@ function CommunicationAlertsDetailScreen({
                                                                         <th className='pb-2'>
                                                                             <Typography color='color-3' className='mr-3' weight='semi-bold'>Escalation</Typography>
                                                                         </th>
+                                                                        <th className='pb-2'>
+                                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Assign To</Typography>
+                                                                        </th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
@@ -629,7 +640,7 @@ function CommunicationAlertsDetailScreen({
                                                                         return (<>
                                                                             <tr>
                                                                                 <td className='pb-2'>
-                                                                                    <Typography color='color-3'>{alertsList.filter(x => x.value === alert.keywordId)[0].label}</Typography>
+                                                                                    <Typography color='color-3'>{alert.policyName}</Typography>
                                                                                 </td>
                                                                                 <td className='pb-2'>
                                                                                     <Typography color='color-3'>{alert.keyword}</Typography>
@@ -681,8 +692,8 @@ function CommunicationAlertsDetailScreen({
                                                                                             isSearchable={false}
                                                                                             onChange={e => handleDetailEscalationChange(e, alert)}
                                                                                             defaultValue={{
-                                                                                                label: <Badge status={alert.escalation} />,
-                                                                                                value: alert.escalation
+                                                                                                label: <Badge status={alert.escalation ? alert.escalation : 'Base'} />,
+                                                                                                value: alert.escalation ? alert.escalation : 'BASE'
                                                                                             }}
                                                                                             options={[{
                                                                                                 name: 'BASE',
@@ -697,6 +708,21 @@ function CommunicationAlertsDetailScreen({
                                                                                                 label: <Badge status='CO' />,
                                                                                                 value: 'CO'
                                                                                             }]} />
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td style={{ width: '250px' }}>
+                                                                                    <div className='d-flex align-items-center'>
+                                                                                        <Select
+                                                                                            name='assign-user'
+                                                                                            className='w-100 pr-2'
+                                                                                            onChange={e => handleAppUserChange(e, alert)}
+                                                                                            defaultValue={{
+                                                                                                label: alert.assignedUserId
+                                                                                                    ? Object.values(appUser).find(e => e.value === alert.assignedUserId).label
+                                                                                                    : 'Select...',
+                                                                                                value: alert.assignedUserId ? alert.assignedUserId : ''
+                                                                                            }}
+                                                                                            options={appUser} />
                                                                                     </div>
                                                                                 </td>
                                                                             </tr>
@@ -749,14 +775,14 @@ function CommunicationAlertsDetailScreen({
                                                     <Typography color='color-3' className='mr-3 mb-4' weight='regular'
                                                         style={{ fontSize: '16px', lineHeight: '24pt' }}>Reported message is highlighted.</Typography>
                                                 </Col>
-                                                <Col className='text-right'>
+                                                <Col className='text-left'>
                                                     <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' to={dataId} smooth={true}
                                                         disabled={loading} containerId='containerElement' duration={500}>
-                                                        Show reported message
+                                                        Show Message
                                                     </Link>
                                                     <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' onClick={showActionsModal} smooth={true}
                                                         disabled={loading} containerId='containerElement' duration={500}>
-                                                        Show Download Message
+                                                        Download Page
                                                     </Link>
                                                 </Col>
                                             </Row>
@@ -798,7 +824,7 @@ function CommunicationAlertsDetailScreen({
                                                                                             style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography> */}
                                                                                         {message.showSender &&
                                                                                             <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                                style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>}
+                                                                                                style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> <span> {isoToUTCLocal(message.timeSent)}</span></Typography>}
                                                                                         <div className='message-box'>
                                                                                             <Highlighter highlightClassName='alertKeyword'
                                                                                                 style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
@@ -948,18 +974,18 @@ function CommunicationAlertsDetailScreen({
                                                                     <Tab.Pane eventKey='link-1'>
                                                                         <div id='containerElement' className='alerts-detail__message-activity pr-5 pt-1 pb-5 mb-4 mt-4'>
                                                                             <div>
-                                                                                { userEvents.map(activity => {
+                                                                                { messageActivities.map(activity => {
                                                                                     return (<>
                                                                                         <div key={2} className='alert-detail__activity-info d-flex align-items-center mb-4'>
-                                                                                            <span className='activity-icon'><span className='text-light'>{activity.executorId.charAt(0)}</span></span>
+                                                                                            <span className='activity-icon'><span className='text-light'>{activity.id.charAt(0)}</span></span>
                                                                                             <div className='d-block'>
-                                                                                                <Typography color='color-3' variant='size-16'>User {truncateText(activity.executorId, 8)}: {activity.event}</Typography>
+                                                                                                <Typography color='color-3' variant='size-16'>User {truncateText(activity.id, 8)}: {activity.event}</Typography>
                                                                                                 <Typography color='color-3' variant='size-14' className='text-muted'>{moment(activity.dateCreated).utc().local().format('DD/MM/YYYY h:mm A')}</Typography>
                                                                                             </div>
                                                                                         </div>
                                                                                     </>);
                                                                                 })}
-                                                                                { userEvents.length === 0 &&
+                                                                                { messageActivities.length === 0 &&
                                                                                     <div key={2} className='alert-detail__activity-info d-flex align-items-center'>
                                                                                         <div className='d-block text-muted text-center'>
                                                                                             <Typography color='color-3' variant='size-16'>No Activities</Typography>
@@ -972,7 +998,7 @@ function CommunicationAlertsDetailScreen({
                                                                     <Tab.Pane eventKey='link-2'>
                                                                         <div id='containerElement' className='alerts-detail__message-activity pr-5 pt-1 pb-5 mb-4 mt-4'>
                                                                             <div>
-                                                                                { systemEvents.map(activity => {
+                                                                                { alertActivities.map(activity => {
                                                                                     return (<>
                                                                                         <div key={1} className='alert-detail__activity-info d-flex align-items-start mb-4'>
                                                                                             {/* <span className='activity-icon'><span className='text-light'>J</span></span> */}
@@ -984,7 +1010,7 @@ function CommunicationAlertsDetailScreen({
                                                                                         </div>
                                                                                     </>);
                                                                                 })}
-                                                                                { systemEvents.length === 0 &&
+                                                                                { alertActivities.length === 0 &&
                                                                                     <div key={2} className='alert-detail__activity-info d-flex align-items-center'>
                                                                                         <div className='d-block text-muted text-center'>
                                                                                             <Typography color='color-3' variant='size-16'>No Activities</Typography>

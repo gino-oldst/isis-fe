@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
 import { Form } from 'reactstrap';
 import { config } from '../config/constants';
 import { getAuthToken } from '../utils/Auth';
@@ -6,8 +7,6 @@ import { getAuthToken } from '../utils/Auth';
 // export const cancelTokenSource = axios.CancelToken.source();
 
 export const api = axios.create({
-    // baseURL: config.apiUrl,
-    // cancelToken: cancelTokenSource.token,
     headers: {
         'Content-Type': 'application/json'
     },
@@ -55,7 +54,7 @@ export default async function makeApiCall(
     } else if (endpoint.includes('generate-token')) {
         request.headers = {};
     } else if (endpoint.includes('/download/messages') || endpoint.includes('/download/alerts')) {
-        fetch(`${config.apiStorage}${endpoint}`, {
+        return fetch(`${config.apiStorage}${endpoint}`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -74,28 +73,30 @@ export default async function makeApiCall(
                 a.download = `${endpoint.includes('/download/messages') ? 'search-messages' : 'alerts-list'}.csv`;
                 a.click();
             });
+
+            return response;
         }).catch(err => console.error(err));
     } else if (endpoint.includes('download')) {
-        fetch(`${config.apiUrl}${endpoint}`, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${accessToken}`
-            },
-            body: endpoint.includes('download-list') ? JSON.stringify(data) : {}
-        })
-            .then(response => {
-                response.blob().then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
+        // fetch(`${config.apiUrl}${endpoint}`, {
+        //     method: 'POST',
+        //     headers: {
+        //         Accept: 'application/json',
+        //         'Content-Type': 'application/json',
+        //         Authorization: `Bearer ${accessToken}`
+        //     },
+        //     body: endpoint.includes('download-list') ? JSON.stringify(data) : {}
+        // })
+        //     .then(response => {
+        //         response.blob().then(blob => {
+        //             const url = window.URL.createObjectURL(blob);
+        //             const a = document.createElement('a');
 
-                    a.href = url;
-                    a.download = `${endpoint.includes('alerts-record') ? 'alert-record' : endpoint.includes('download-list') ? 'alert-list' : 'dashboard'}.xlsx`;
-                    a.click();
-                });
-            })
-            .catch(err => console.error(err));
+        //             a.href = url;
+        //             a.download = `${endpoint.includes('alerts-record') ? 'alert-record' : endpoint.includes('download-list') ? 'alert-list' : 'dashboard'}.xlsx`;
+        //             a.click();
+        //         });
+        //     })
+        //     .catch(err => console.error(err));
     } else {
         request.headers = {
             Authorization: `Bearer ${accessToken}`
@@ -103,9 +104,11 @@ export default async function makeApiCall(
     }
 
     try {
-        const response = await api(request);
+        if (!endpoint.includes('/download/messages') && !endpoint.includes('/download/alerts')) {
+            const response = await api(request);
 
-        return response;
+            return response;
+        }
     } catch (err) {
         if (err.response) {
             const errData = {};

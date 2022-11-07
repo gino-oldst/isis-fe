@@ -13,5 +13,7 @@ export { default as baseTable } from './modules/baseTable';
 export { default as isisTable } from './modules/isisTable';
 
 export { default as policies } from './modules/policies';
+export { default as policiesDetail } from './modules/policyDetail';
+
 export { default as communicationAlerts } from './modules/communicationAlerts';
 export { default as communicationSearch } from './modules/communicationSearch';
