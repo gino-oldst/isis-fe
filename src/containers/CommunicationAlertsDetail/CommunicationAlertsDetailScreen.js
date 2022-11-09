@@ -135,6 +135,12 @@ function CommunicationAlertsDetailScreen({
         </Popover>
     );
 
+    const extractUserName = (executorId) => {
+        var user = appUser.find(item => item.value === executorId);
+
+        return user ? user.label : '';
+    };
+
     const messageActivities = activities.filter(row => row.target === 'COMMUNICATION_MESSAGE');
 
     const alertActivities = activities.filter(row => row.target === 'ALERT');
@@ -782,12 +788,12 @@ function CommunicationAlertsDetailScreen({
                                                     <Typography color='color-3' className='mr-3' weight='semi-bold'
                                                         style={{ fontSize: '24px', lineHeight: '24pt' }}>Message</Typography>
                                                     <Typography color='color-3' className='mr-3 mb-4' weight='regular'
-                                                        style={{ fontSize: '16px', lineHeight: '24pt' }}>Reported message is highlighted.</Typography>
+                                                        style={{ fontSize: '16px', lineHeight: '24pt' }}>Message is highlighted.</Typography>
                                                 </Col>
                                                 <Col className='text-left'>
                                                     <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' to={dataId} smooth={true}
                                                         disabled={loading} containerId='containerElement' duration={500}>
-                                                        Show Message
+                                                           Show Message
                                                     </Link>
                                                     <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' onClick={showActionsModal} smooth={true}
                                                         disabled={loading} containerId='containerElement' duration={500}>

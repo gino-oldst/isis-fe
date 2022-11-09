@@ -327,7 +327,7 @@ function CommunicationSearchMessageDetailsScreen({
                                                         <Typography color='color-3' className='mr-3' weight='semi-bold'
                                                             style={{ fontSize: '24px', lineHeight: '24pt' }}>Message</Typography>
                                                         <Typography color='color-3' className='mr-3 mb-4' weight='regular'
-                                                            style={{ fontSize: '16px', lineHeight: '24pt' }}>Reported message is highlighted.</Typography>
+                                                            style={{ fontSize: '16px', lineHeight: '24pt' }}>Message is highlighted.</Typography>
                                                     </Col>
                                                     <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' to={dataId} smooth={true}
                                                         containerId='containerElement' duration={500}>
