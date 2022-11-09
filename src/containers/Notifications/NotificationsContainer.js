@@ -20,7 +20,7 @@ function NotificationsContainer(): React$Element<any> {
     useEffect(() => {
         loadNotifications();
 
-        const intervalId = setInterval(() => loadNotifications(), 5000);
+        const intervalId = setInterval(() => loadNotifications(), 30000);
 
         return () => clearInterval(intervalId);
     }, []);

@@ -46,8 +46,6 @@ export default function CommunicationAlertsDetail({
     const { profileData } = useSelector(({ authentication }) => authentication);
     const [isTimeout, setIsTimeout] = useState(false);
     const [detailData, setDetailData] = useState([]);
-    // Para sa current record selected
-    const [currData, setCurrData] = useState([]);
     const breadcrumb = [
         {
             label: 'Home',
@@ -68,18 +66,12 @@ export default function CommunicationAlertsDetail({
         loadSearchData(filters.state);
         loadAlerts(filters.state.id);
         loadActivity(filters.state.id);
+        loadCommAlertsData(filters.state.activePage, filters.state.size);
     }, [filters]);
-
-    useEffect(() => {
-        loadAlerts(currData.id);
-        loadActivity(currData.id);
-        loadSearchData(currData.state);
-    }, [currData]);
 
     useEffect(() => {
         loadPredefinedReasons();
         loadAppUsers();
-        loadCommAlertsData(0, 10);
     }, []);
 
     const [messages, setMessages] = useState([]);
@@ -112,38 +104,40 @@ export default function CommunicationAlertsDetail({
     const [counter, setCounter] = useState(0);
     const [pageCounter, setpageCounter] = useState(0);
 
-    const nextAlertData = async (page, size, id, chainLinkId, filterText, recipients) => {
+    const nextAlertData = () => {
         // Logic for next and Prev
-        var currentPage = constAlertData[pageCounter].alerts.totalPages;
+        if (counter >= filters.state.size - 1) {
+            setCounter(0);
 
-        id = constAlertData[counter].alerts.data[0].commMessageId;
-
-        setCounter(counter + 1);
-        setpageCounter(pageCounter);
-
-        if (counter > size - 1) {
-            currentPage += 1;
-            loadCommAlertsData(page, size);
-            counter = 0;
-            console.log('yeah');
+            if (pageCounter <= totalPages) {
+                setpageCounter(pageCounter + 1);
+            }
+        } else {
+            setCounter(counter + 1);
         }
 
+        // use regex for counter and pageCounter
+        // if new page request loadCommAlertsData() and get the next page.
+
+        const nextData = constAlertData[counter].alerts.data[0];
+
+        console.log(nextData);
+        // { id: id, chainLinkId: chainLinkId, filterText: filterText, recipients, activePage: activePage, size: pageSize }
         history.push({
-            pathname: `/communication_alerts_detail/${id}`,
+            pathname: `/communication_alerts_detail/${nextData.commMessageId}`,
             state: {
-                id: id,
-                chainLinkId: filters.state.chainLinkId,
-                filterText: filters.state.filterText,
-                recipients: filters.state.recipients,
+                id: nextData.commMessageId,
+                chainLinkId: nextData.chainLinkId,
+                // filterText: [...new Set(nextData.alerts.data.map(item => item.keyword))],
+                recipients: [...new Set(nextData.recipients ? nextData.recipients.map(item => item) : '')],
                 size: filters.state.size,
                 counter: counter,
                 pageCounter: pageCounter
             }
         });
 
-        console.log('currentpage', currentPage);
         console.log('counter', counter);
-        console.log('size', filters.state.size);
+        console.log('pageCounter', pageCounter);
         //  if you have the data
 
         // if (id.length > size - 1 && totalPages) {
@@ -152,7 +146,7 @@ export default function CommunicationAlertsDetail({
         // }
     };
 
-    const prevAlertData = async (page, size, id, chainLinkId, filterText, recipients) => {
+    const prevAlertData = (page, size, id, chainLinkId, filterText, recipients) => {
         setCounter(counter - 1);
 
         id = constAlertData[counter - 1].alerts.data[0].commMessageId;
@@ -174,12 +168,13 @@ export default function CommunicationAlertsDetail({
         var filterRecipient = alertSearchParams.recipients.map(row => { return row; });
         var filterDateFrom = alertSearchParams.dateFrom;
         var filterDateTo = alertSearchParams.dateTo;
-        var isPageChange = alertSearchParams.activePage;
-        var insidePage = alertSearchParams.activePage;
         var updateInMsg = false;
         var updateInSort = false;
         var filterEscalations = alertSearchParams.escalation ? alertSearchParams.escalation : [];
 
+        var insidePage = page ? alertSearchParams.activePage ? alertSearchParams.activePage : filters.state.pageCounter ? filters.state.pageCounter : 0 : 0;
+
+        setCounter(filters.state.index);
         // if (alertSearchParams) {
         //     isPageChange = alertSearchParams.activePage !== page;
         //     insidePage = isTablePageSelect ? page : alertSearchParams.activePage || 0;
@@ -213,6 +208,7 @@ export default function CommunicationAlertsDetail({
             setConstAlertData(data);
             setTotalNoOfRecords(totalNoOfRecords);
             setTotalPages(totalPages);
+            setpageCounter(insidePage);
         } catch (e) {
             console.log(e);
 
