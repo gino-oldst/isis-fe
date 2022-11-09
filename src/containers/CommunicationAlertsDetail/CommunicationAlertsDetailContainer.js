@@ -109,21 +109,57 @@ export default function CommunicationAlertsDetail({
         setAlertLoading(false);
     };
 
-    const onPrevAndNext = (page, size) => {
+    const [counter, setCounter] = useState(0);
+    const [pageCounter, setpageCounter] = useState(0);
+
+    const nextAlertData = async (page, size, id, chainLinkId, filterText, recipients) => {
         // Logic for next and Prev
-        // let size = 100;
+        var currentPage = constAlertData[pageCounter].alerts.totalPages;
 
-        //  scroll through yung current data.
+        id = constAlertData[counter].alerts.data[0].commMessageId;
 
+        setCounter(counter + 1);
+        setpageCounter(pageCounter);
+
+        if (counter > size - 1) {
+            currentPage += 1;
+            loadCommAlertsData(page, size);
+            counter = 0;
+            console.log('yeah');
+        }
+
+        history.push({
+            pathname: `/communication_alerts_detail/${id}`,
+            state: {
+                id: id,
+                chainLinkId: filters.state.chainLinkId,
+                filterText: filters.state.filterText,
+                recipients: filters.state.recipients,
+                size: filters.state.size,
+                counter: counter,
+                pageCounter: pageCounter
+            }
+        });
+
+        console.log('currentpage', currentPage);
+        console.log('counter', counter);
+        console.log('size', filters.state.size);
         //  if you have the data
 
-        // selectedData = constAlertData[index]
-        // setCurrData(selectedData);
-
-        // if (index > size && totalPages){
+        // if (id.length > size - 1 && totalPages) {
         //     loadCommAlertsData(page, size);
-        //     index = 0
+        //     i = 0;
         // }
+    };
+
+    const prevAlertData = async (page, size, id, chainLinkId, filterText, recipients) => {
+        setCounter(counter - 1);
+
+        id = constAlertData[counter - 1].alerts.data[0].commMessageId;
+        history.push({
+            pathname: `/communication_alerts_detail/${id}`,
+            state: { id: id, chainLinkId: filters.state.chainLinkId, filterText: filters.state.filterText, recipients: filters.state.recipients }
+        });
     };
 
     const loadCommAlertsData = async (page, size, sort) => {
@@ -448,7 +484,7 @@ export default function CommunicationAlertsDetail({
 
     const showSuccessModal = (message) => {
         dispatch(setModalContent({
-            modalContent: <SuccessModal message={message} handleCloseModal={handleCloseModal}/>,
+            modalContent: <SuccessModal message={message} handleCloseModal={handleCloseModal} />,
             size: 'md'
         }));
     };
@@ -524,7 +560,8 @@ export default function CommunicationAlertsDetail({
         handleGenerate={handleGenerate}
         recipients={recipients}
         useMediaQuery={useMediaQuery}
-        onPrevAndNext={onPrevAndNext}
+        nextAlertData={nextAlertData}
+        prevAlertData={prevAlertData}
         breadcrumb={breadcrumb}
         sidebarMenu={sidebarMenu}
         handleCloseModal={handleCloseModal}

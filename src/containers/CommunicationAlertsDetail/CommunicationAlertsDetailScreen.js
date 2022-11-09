@@ -74,6 +74,8 @@ type Props = {
     messages: Array,
     handleGenerate: Function,
     handleSelectAll: Function,
+    nextAlertData: Function,
+    prevAlertData: Function,
     recipients: Array,
     alertsData: Array,
     alertList: Array,
@@ -107,6 +109,8 @@ function CommunicationAlertsDetailScreen({
     messages,
     handleGenerate,
     handleSelectAll,
+    nextAlertData,
+    prevAlertData,
     recipients,
     alertsData,
     alertsList,
@@ -598,6 +602,14 @@ function CommunicationAlertsDetailScreen({
                                                 style={{ fontSize: '32px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : detailData.subject} {/* RE: Trading Message */}</Typography>
                                             <Typography color='color-3' className='mr-auto' weight='bold'
                                                 style={{ fontSize: '16px', lineHeight: '24pt' }}>{detailData.source != null ? sourceMaker(detailData.source) : 'No Source'} {/* Email */}</Typography>
+                                            <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' onClick={prevAlertData} smooth={true}
+                                                disabled={loading} containerId='containerElement' duration={500}>
+                                                Prev
+                                            </Link>
+                                            <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' onClick={nextAlertData} smooth={true}
+                                                disabled={loading} containerId='containerElement' duration={500}>
+                                                Next
+                                            </Link>
                                         </Col>
                                     </Row>
                                     <Row className='mt-5'>
