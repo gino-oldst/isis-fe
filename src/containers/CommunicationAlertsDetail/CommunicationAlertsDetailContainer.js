@@ -208,7 +208,8 @@ export default function CommunicationAlertsDetail({
                     id: row.id,
                     policyId: row.policyId,
                     status: status,
-                    notes: note
+                    notes: note,
+                    assignedUserId: row.assignedUserId
                 };
 
                 const request = updateAlert(data);
@@ -239,7 +240,8 @@ export default function CommunicationAlertsDetail({
                 id: row.id,
                 policyId: row.policyId,
                 status: status,
-                notes: note
+                notes: note,
+                assignedUserId: row.assignedUserId
             };
 
             const request = await updateAlert(data);
@@ -265,7 +267,8 @@ export default function CommunicationAlertsDetail({
             const data = {
                 id: row.id,
                 escalation: escalation,
-                executorId: profileData.userId
+                executorId: profileData.userId,
+                assignedUserId: row.assignedUserId
             };
 
             const request = await updateAlert(data);
@@ -318,7 +321,8 @@ export default function CommunicationAlertsDetail({
                 id: row.id,
                 policyId: row.policyId,
                 status: status,
-                notes: note
+                notes: note,
+                assignedUserId: row.assignedUserId
             };
 
             const request = await updateAlert(data);
