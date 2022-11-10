@@ -17,7 +17,7 @@ import Typography from '../../components/base/Typography/Typography';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import Button from '../../components/base/Button/Button';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
-import { setMessageAlerts, setAlertsListDetail } from '../../redux/modules/communicationAlerts';
+import { setMessageAlerts, setAlertsListDetail, setPrevNextData } from '../../redux/modules/communicationAlerts';
 import HtmlToRtfBrowser from 'html-to-rtf-browser';
 import { storageKey } from '../../config/constants';
 import Storage from '../../utils/Storage';
@@ -37,11 +37,13 @@ export default function CommunicationAlertsDetail({
 }: Props): React$Element<any> {
     const history = useHistory();
     const dispatch = useDispatch();
+
+    const { isRowsSelected, selectedRows, appliedFilters, isTablePageSelect } = useSelector(({ table }) => table);
+    const { messageAlerts, alertsList, data, prevNextData } = useSelector(({ communicationAlerts }) => communicationAlerts);
+
     const filters = useLocation();
     const [loading, setLoading] = useState(true);
     const [alertLoading, setAlertLoading] = useState(false);
-    const { isRowsSelected, selectedRows, appliedFilters, isTablePageSelect } = useSelector(({ table }) => table);
-    const { messageAlerts, alertsList, data } = useSelector(({ communicationAlerts }) => communicationAlerts);
     const [isChecked, setIsChecked] = useState(true);
     const { profileData } = useSelector(({ authentication }) => authentication);
     const [isTimeout, setIsTimeout] = useState(false);
@@ -104,46 +106,59 @@ export default function CommunicationAlertsDetail({
     const [counter, setCounter] = useState(0);
     const [pageCounter, setpageCounter] = useState(0);
 
-    const nextAlertData = () => {
-        // Logic for next and Prev
-        if (counter >= filters.state.size - 1) {
-            setCounter(0);
+    const nextAlertData = async() => {
+        /**
+         * Logic for next and Prev
+         *
+         * Declare variables:
+         * _counter -> keeps track of the current index in the list of alerts returned per page
+         * _pageCounter -> Keeps track on what page we currently at in the returened paginated data
+         * nextData -> holder for the next alert we get
+         *
+         * */
+        var _counter = counter;
+        var _pageCounter = pageCounter;
+        var nextData = [];
 
+        if (counter >= filters.state.size - 1) {
+            _counter = 0; // Set counter to zero
+
+            // if new page request loadCommAlertsData() and get the next page.
             if (pageCounter <= totalPages) {
-                setpageCounter(pageCounter + 1);
+                _pageCounter += 1; // Increment page
+
+                // Request for a new page and get the fresh page
+                await loadCommAlertsData(_pageCounter, 10).then((data) => {
+                    // extract the next alert inside the nexpage returned from loadCommAlertsData()
+                    nextData = data[_counter].alerts.data;
+                });
             }
+        /**
+         * else if the counter has not exceeded the size index of our current page
+         * size index = size-1
+         * Sample: size = 10 then size_index = 10-1
+         */
         } else {
-            setCounter(counter + 1);
+            _counter += 1; // Increase counter count
+            nextData = prevNextData.currData[_counter].alerts.data; // extract the next alert accordingly
         }
 
-        // use regex for counter and pageCounter
-        // if new page request loadCommAlertsData() and get the next page.
-
-        const nextData = constAlertData[counter].alerts.data[0];
-
-        console.log(nextData);
-        // { id: id, chainLinkId: chainLinkId, filterText: filterText, recipients, activePage: activePage, size: pageSize }
+        /**
+         * Push the data from nextData that are needed in moving to the next data
+         */
         history.push({
-            pathname: `/communication_alerts_detail/${nextData.commMessageId}`,
+            pathname: `/communication_alerts_detail/${nextData[0].commMessageId}`,
             state: {
-                id: nextData.commMessageId,
-                chainLinkId: nextData.chainLinkId,
-                // filterText: [...new Set(nextData.alerts.data.map(item => item.keyword))],
-                recipients: [...new Set(nextData.recipients ? nextData.recipients.map(item => item) : '')],
+                id: nextData[0].commMessageId,
+                chainLinkId: nextData[0].commChainLinkId,
+                filterText: [...new Set(nextData.map(item => item.keyword))], // Map the keywords if multiple alerts and return a list
+                recipients: [...new Set(nextData[0].recipients ? nextData[0].recipients.map(item => item) : '')], // Map the recipients and list
                 size: filters.state.size,
-                counter: counter,
-                pageCounter: pageCounter
+                counter: _counter,
+                activePage: _pageCounter,
+                index: _counter
             }
         });
-
-        console.log('counter', counter);
-        console.log('pageCounter', pageCounter);
-        //  if you have the data
-
-        // if (id.length > size - 1 && totalPages) {
-        //     loadCommAlertsData(page, size);
-        //     i = 0;
-        // }
     };
 
     const prevAlertData = (page, size, id, chainLinkId, filterText, recipients) => {
@@ -157,8 +172,6 @@ export default function CommunicationAlertsDetail({
     };
 
     const loadCommAlertsData = async (page, size, sort) => {
-        setLoading(true);
-
         const alertSearchParams = JSON.parse(await StorageIDB.getItem(storageKey.alertSearchParams));
 
         var filterAlert = alertSearchParams.alert;
@@ -172,30 +185,9 @@ export default function CommunicationAlertsDetail({
         var updateInSort = false;
         var filterEscalations = alertSearchParams.escalation ? alertSearchParams.escalation : [];
 
-        var insidePage = page ? alertSearchParams.activePage ? alertSearchParams.activePage : filters.state.pageCounter ? filters.state.pageCounter : 0 : 0;
+        var insidePage = page;
 
         setCounter(filters.state.index);
-        // if (alertSearchParams) {
-        //     isPageChange = alertSearchParams.activePage !== page;
-        //     insidePage = isTablePageSelect ? page : alertSearchParams.activePage || 0;
-
-        //     if (isRequery) {
-        //         insidePage = 0;
-        //     }
-
-        //     filterAlert = alert.length === 0 && !isRequery ? alertSearchParams.alert : alert;
-        //     filterStatus = status.length === 0 && !isRequery ? alertSearchParams.status : status;
-        //     filterSources = sources.length === 0 && !isRequery ? alertSearchParams.source : sources;
-        //     filterDateFrom = dFrom === '' && !isRequery ? alertSearchParams.dateFrom : dFrom;
-        //     filterDateTo = dTo === '' && !isRequery ? alertSearchParams.dateTo : dTo;
-        //     filterEscalations = escalations.length === 0 && !isRequery ? alertSearchParams.escalation : escalations;
-
-        //     const slist = alertSearchParams.senders.length > 0 ? [...alertSearchParams.senders.map(row => { return row; })] : [];
-        //     const rlist = alertSearchParams.recipients.length > 0 ? [...alertSearchParams.recipients.map(row => { return row; })] : [];
-
-        //     filterSender = senders.length === 0 && !isRequery ? slist : senders;
-        //     filterRecipient = recipients.length === 0 && !isRequery ? rlist : recipients;
-        // }
 
         try {
             let alerts = [];
@@ -204,11 +196,18 @@ export default function CommunicationAlertsDetail({
 
             const { data, totalNoOfRecords, totalPages } = alerts.data;
 
-            // Keep the recent requested data
+            // dispatch(setPrevNextData({
+            //     currData: data,
+            //     currTotalPages: totalPages,
+            //     currIndex: filters.state.index,
+            //     currPage: insidePage
+            // }));
             setConstAlertData(data);
             setTotalNoOfRecords(totalNoOfRecords);
             setTotalPages(totalPages);
             setpageCounter(insidePage);
+
+            return data;
         } catch (e) {
             console.log(e);
 
@@ -267,7 +266,7 @@ export default function CommunicationAlertsDetail({
         try {
             const search = await getCommunicationMessageDetail(commMessageId.id);
 
-            setDetailData(filters);
+            setDetailData(search.data);
 
             const messages = await getMessageThread(commMessageId.chainLinkId, search.data.timeSent);
             const { data, totalNoOfRecords, totalPages } = messages.data;

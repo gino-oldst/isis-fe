@@ -211,6 +211,8 @@ export default function CommunicationAlertsContainer({
             dispatch(setActivePage(insidePage));
             setTableResultStore(alerts.data.data);
 
+            console.log(data);
+
             StorageIDB.setItem(storageKey.alertSearchParams, JSON.stringify({
                 alert: filterAlert,
                 status: filterStatus,
@@ -298,7 +300,7 @@ export default function CommunicationAlertsContainer({
 
         history.push({
             pathname: `/communication_alerts_detail/${commMessageId}`,
-            state: { id: commMessageId, chainLinkId: chainLinkId, filterText: filterText, recipients, activePage: activePage, size: pageSize, index: index }
+            state: { id: commMessageId, chainLinkId: chainLinkId, filterText: filterText, recipients, activePage: alertSearchParams.activePage, size: pageSize, index: index }
         });
     };
 
