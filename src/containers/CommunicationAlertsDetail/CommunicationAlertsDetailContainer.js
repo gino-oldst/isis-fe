@@ -39,7 +39,7 @@ export default function CommunicationAlertsDetail({
     const dispatch = useDispatch();
 
     const { isRowsSelected, selectedRows, appliedFilters, isTablePageSelect } = useSelector(({ table }) => table);
-    const { messageAlerts, alertsList, data, prevNextData } = useSelector(({ communicationAlerts }) => communicationAlerts);
+    const { messageAlerts, alertsList, data } = useSelector(({ communicationAlerts }) => communicationAlerts);
 
     const filters = useLocation();
     const [loading, setLoading] = useState(true);
@@ -108,7 +108,7 @@ export default function CommunicationAlertsDetail({
 
     const nextAlertData = async() => {
         /**
-         * Logic for next and Prev
+         * Logic for Next
          *
          * Declare variables:
          * _counter -> keeps track of the current index in the list of alerts returned per page
@@ -136,11 +136,11 @@ export default function CommunicationAlertsDetail({
         /**
          * else if the counter has not exceeded the size index of our current page
          * size index = size-1
-         * Sample: size = 10 then size_index = 10-1
+         * Sample: size = 10 then size_index = 10-1 is 9
          */
         } else {
             _counter += 1; // Increase counter count
-            nextData = prevNextData.currData[_counter].alerts.data; // extract the next alert accordingly
+            nextData = constAlertData.currData[_counter].alerts.data; // extract the next alert accordingly
         }
 
         /**
