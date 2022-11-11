@@ -39,7 +39,7 @@ export default function CommunicationAlertsDetail({
     const dispatch = useDispatch();
 
     const { isRowsSelected, selectedRows, appliedFilters, isTablePageSelect } = useSelector(({ table }) => table);
-    const { messageAlerts, alertsList, data } = useSelector(({ communicationAlerts }) => communicationAlerts);
+    const { messageAlerts, alertsList, data, prevNextData } = useSelector(({ communicationAlerts }) => communicationAlerts);
 
     const filters = useLocation();
     const [loading, setLoading] = useState(true);
@@ -64,6 +64,18 @@ export default function CommunicationAlertsDetail({
         }
     ];
 
+    const [messages, setMessages] = useState([]);
+    const [recipients, setRecipients] = useState('');
+    const [alerts, setAlerts] = useState([]);
+    const [appUser, setAppUser] = useState([]);
+    const [predefinedReasons, setPredefinedReasons] = useState([]);
+
+    const [constAlertData, setConstAlertData] = useState([]);
+    const [totalNoOfRecords, setTotalNoOfRecords] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [counter, setCounter] = useState(0);
+    const [pageCounter, setpageCounter] = useState(0);
+
     useEffect(() => {
         loadSearchData(filters.state);
         loadAlerts(filters.state.id);
@@ -75,16 +87,6 @@ export default function CommunicationAlertsDetail({
         loadPredefinedReasons();
         loadAppUsers();
     }, []);
-
-    const [messages, setMessages] = useState([]);
-    const [recipients, setRecipients] = useState('');
-    const [alerts, setAlerts] = useState([]);
-    const [appUser, setAppUser] = useState([]);
-    const [predefinedReasons, setPredefinedReasons] = useState([]);
-
-    const [constAlertData, setConstAlertData] = useState([]);
-    const [totalNoOfRecords, setTotalNoOfRecords] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
 
     const loadAlerts = async (id) => {
         setAlertLoading(true);
@@ -103,9 +105,6 @@ export default function CommunicationAlertsDetail({
         setAlertLoading(false);
     };
 
-    const [counter, setCounter] = useState(0);
-    const [pageCounter, setpageCounter] = useState(0);
-
     const nextAlertData = async() => {
         /**
          * Logic for Next
@@ -119,6 +118,9 @@ export default function CommunicationAlertsDetail({
         var _counter = counter;
         var _pageCounter = pageCounter;
         var nextData = [];
+
+        console.log(constAlertData);
+        console.log(prevNextData);
 
         if (counter >= filters.state.size - 1) {
             _counter = 0; // Set counter to zero
@@ -140,7 +142,7 @@ export default function CommunicationAlertsDetail({
          */
         } else {
             _counter += 1; // Increase counter count
-            nextData = constAlertData.currData[_counter].alerts.data; // extract the next alert accordingly
+            nextData = prevNextData.currData[_counter].alerts.data; // extract the next alert accordingly
         }
 
         /**
@@ -196,12 +198,13 @@ export default function CommunicationAlertsDetail({
 
             const { data, totalNoOfRecords, totalPages } = alerts.data;
 
-            // dispatch(setPrevNextData({
-            //     currData: data,
-            //     currTotalPages: totalPages,
-            //     currIndex: filters.state.index,
-            //     currPage: insidePage
-            // }));
+            dispatch(setPrevNextData({
+                currData: data,
+                currTotalPages: totalPages,
+                currIndex: filters.state.index,
+                currPage: insidePage
+            }));
+
             setConstAlertData(data);
             setTotalNoOfRecords(totalNoOfRecords);
             setTotalPages(totalPages);
