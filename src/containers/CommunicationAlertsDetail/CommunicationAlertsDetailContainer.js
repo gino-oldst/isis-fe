@@ -69,6 +69,7 @@ export default function CommunicationAlertsDetail({
     const [alerts, setAlerts] = useState([]);
     const [appUser, setAppUser] = useState([]);
     const [predefinedReasons, setPredefinedReasons] = useState([]);
+    const [searchWords, setSearchWords] = useState([]);
 
     const [constAlertData, setConstAlertData] = useState([]);
     const [totalNoOfRecords, setTotalNoOfRecords] = useState(0);
