@@ -611,14 +611,20 @@ function CommunicationAlertsDetailScreen({
                     <div className='alerts-detail__content'>
                         <Card className='px-5 py-4'>
                             <CardBody>
-                                <div className='alerts-detail__header d-flex align-items-center'>
-                                    <Typography color='color-3' className='alerts-detail__detail-heading mr-auto'
-                                        weight='regular' style={{ fontSize: '40px !important', lineHeight: '24pt' }}>{dataId != '' ? dataId : 'N/A'}
-                                    </Typography>
-                                    <Button className='nextandprev-button px-2 mr-2 py-2' onClick={prevAlertData}
-                                        disabled={loading || (pageCounter == 0 && counter == 0)} label='Previous Page'/>
-                                    <Button className='nextandprev-button px-2 mr-2 py-2' onClick={nextAlertData}
-                                        disabled={loading || (pageCounter == totalPages - 1 && counter == itemSize - 1)} label='Next Page'/>
+                                <div className='alerts-detail__header'>
+                                    <Row className='w-100 m-0 d-flex align-items-center'>
+                                        <Col lg={7} md={12} className='pl-0'>
+                                            <Typography color='color-3' className='alerts-detail__detail-heading mr-auto'
+                                                weight='regular' style={{ fontSize: '40px !important', lineHeight: '24pt' }}>{dataId != '' ? dataId : 'N/A'}
+                                            </Typography>
+                                        </Col>
+                                        <Col className='text-right pr-0' lg={5} md={12}>
+                                            <Button className='px-2 mr-2 py-2 nextandprev-button' onClick={prevAlertData}
+                                                disabled={loading || (pageCounter == 0 && counter == 0)} label='Previous Page'/>
+                                            <Button className='px-2 py-2 nextandprev-button' onClick={nextAlertData}
+                                                disabled={loading || (pageCounter == totalPages - 1 && counter == itemSize - 1)} label='Next Page'/>
+                                        </Col>
+                                    </Row>
                                 </div>
                                 <div className='alerts-detail__information mt-2'>
                                     <Row>
@@ -631,7 +637,7 @@ function CommunicationAlertsDetailScreen({
                                         </Col>
                                     </Row>
                                     <Row className='mt-5'>
-                                        <Col lg={7} className='mb-4'>
+                                        <Col lg={7} md={12} className='mb-4'>
                                             <div className='d-flex align-items-center justify-content-between'>
                                                 <Typography color='color-3' className='mr-3 mb-2' weight='semi-bold'
                                                     style={{ fontSize: '24px', lineHeight: '24pt' }}>Alert</Typography>
