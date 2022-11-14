@@ -147,6 +147,12 @@ function CommunicationAlertsDetailScreen({
         </Popover>
     );
 
+    const extractUserName = (executorId) => {
+        var user = appUser.find(item => item.value === executorId);
+
+        return user ? user.label : '';
+    };
+
     const messageActivities = activities.filter(row => row.target === 'COMMUNICATION_MESSAGE');
 
     const alertActivities = activities.filter(row => row.target === 'ALERT');
@@ -203,6 +209,12 @@ function CommunicationAlertsDetailScreen({
             size: 'md'
         }));
     };
+
+    const appUserAssign = [{ label: 'Unassigned', value: null }, ...appUser.map(row => ({
+        label: row.label,
+        value: row.value
+
+    }))];
 
     useEffect(() => {
         // scroll to active message
@@ -732,15 +744,18 @@ function CommunicationAlertsDetailScreen({
                                                                                     <div className='d-flex align-items-center'>
                                                                                         <Select
                                                                                             name='assign-user'
+                                                                                            closeMenuOnSelect={false}
+                                                                                            placeholder={'Unassigned'}
+                                                                                            isSearchable={false}
                                                                                             className='w-100 pr-2'
                                                                                             onChange={e => handleAppUserChange(e, alert)}
                                                                                             defaultValue={{
                                                                                                 label: alert.assignedUserId
                                                                                                     ? Object.values(appUser).find(e => e.value === alert.assignedUserId).label
-                                                                                                    : 'Select...',
-                                                                                                value: alert.assignedUserId ? alert.assignedUserId : ''
+                                                                                                    : appUserAssign[0].label,
+                                                                                                value: alert.assignedUserId ? alert.assignedUserId : appUserAssign[0].value
                                                                                             }}
-                                                                                            options={appUser} />
+                                                                                            options={appUserAssign} />
                                                                                     </div>
                                                                                 </td>
                                                                             </tr>
@@ -791,12 +806,12 @@ function CommunicationAlertsDetailScreen({
                                                     <Typography color='color-3' className='mr-3' weight='semi-bold'
                                                         style={{ fontSize: '24px', lineHeight: '24pt' }}>Message</Typography>
                                                     <Typography color='color-3' className='mr-3 mb-4' weight='regular'
-                                                        style={{ fontSize: '16px', lineHeight: '24pt' }}>Reported message is highlighted.</Typography>
+                                                        style={{ fontSize: '16px', lineHeight: '24pt' }}>Message is highlighted.</Typography>
                                                 </Col>
                                                 <Col className='text-left'>
                                                     <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' to={dataId} smooth={true}
                                                         disabled={loading} containerId='containerElement' duration={500}>
-                                                        Show Message
+                                                           Show Message
                                                     </Link>
                                                     <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' onClick={showActionsModal} smooth={true}
                                                         disabled={loading} containerId='containerElement' duration={500}>
@@ -961,9 +976,10 @@ function CommunicationAlertsDetailScreen({
                                                                                     return (activity.type == 'SYSTEM_EVENT'
                                                                                         ? <>
                                                                                             <div key={1} className='alert-detail__activity-info d-flex align-items-start mb-4'>
-                                                                                                {/* <span className='activity-icon'><span className='text-light'>J</span></span> */}
-                                                                                                <img src={logo} alt='Mariana_UFP_logo' className='login__logo' />
-                                                                                                <div className='d-block'>
+                                                                                                <div style={{ marginRight: '10px' }}>
+                                                                                                    <img src={logo} alt='Mariana_UFP_logo' className='login__logo' />
+                                                                                                </div>
+                                                                                                <div className='d-block activity-content'>
                                                                                                     <Typography color='color-3' variant='size-16'>{activity.event}</Typography>
                                                                                                     <Typography color='color-3' variant='size-14' className='text-muted'>{moment(activity.dateCreated).utc().local().format('DD/MM/YYYY h:mm A')}</Typography>
                                                                                                 </div>
@@ -972,8 +988,8 @@ function CommunicationAlertsDetailScreen({
                                                                                         : <>
                                                                                             <div key={2} className='alert-detail__activity-info d-flex align-items-center mb-4'>
                                                                                                 <span className='activity-icon'><span className='text-light'>{activity.executorId.charAt(0)}</span></span>
-                                                                                                <div className='d-block'>
-                                                                                                    <Typography color='color-3' variant='size-16'>User {truncateText(activity.executorId, 8)}: {activity.event}</Typography>
+                                                                                                <div className='d-block activity-content'>
+                                                                                                    <Typography color='color-3' variant='size-16'>{activity.event}</Typography>
                                                                                                     <Typography color='color-3' variant='size-14' className='text-muted'>{moment(activity.dateCreated).utc().local().format('DD/MM/YYYY h:mm A')}</Typography>
                                                                                                 </div>
                                                                                             </div>
@@ -996,7 +1012,7 @@ function CommunicationAlertsDetailScreen({
                                                                                     return (<>
                                                                                         <div key={2} className='alert-detail__activity-info d-flex align-items-center mb-4'>
                                                                                             <span className='activity-icon'><span className='text-light'>{activity.id.charAt(0)}</span></span>
-                                                                                            <div className='d-block'>
+                                                                                            <div className='d-block activity-content'>
                                                                                                 <Typography color='color-3' variant='size-16'>User {truncateText(activity.id, 8)}: {activity.event}</Typography>
                                                                                                 <Typography color='color-3' variant='size-14' className='text-muted'>{moment(activity.dateCreated).utc().local().format('DD/MM/YYYY h:mm A')}</Typography>
                                                                                             </div>
@@ -1020,8 +1036,10 @@ function CommunicationAlertsDetailScreen({
                                                                                     return (<>
                                                                                         <div key={1} className='alert-detail__activity-info d-flex align-items-start mb-4'>
                                                                                             {/* <span className='activity-icon'><span className='text-light'>J</span></span> */}
-                                                                                            <img src={logo} alt='Mariana_UFP_logo' className='login__logo' />
-                                                                                            <div className='d-block'>
+                                                                                            <div style={{ marginRight: '10px' }}>
+                                                                                                <img src={logo} alt='Mariana_UFP_logo' className='login__logo' />
+                                                                                            </div>
+                                                                                            <div className='d-block activity-content'>
                                                                                                 <Typography color='color-3' variant='size-16'>{activity.event}</Typography>
                                                                                                 <Typography color='color-3' variant='size-14' className='text-muted'>{moment(activity.dateCreated).utc().local().format('DD/MM/YYYY h:mm A')}</Typography>
                                                                                             </div>

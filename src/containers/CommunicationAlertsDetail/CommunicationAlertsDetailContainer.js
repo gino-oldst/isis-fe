@@ -78,7 +78,6 @@ export default function CommunicationAlertsDetail({
     const [itemSize, setItemSize] = useState(0);
 
     useEffect(() => {
-        loadSearchData(filters.state);
         loadAlerts(filters.state.id);
         loadActivity(filters.state.id);
         loadCommAlertsData(filters.state.activePage, filters.state.size);
@@ -97,8 +96,12 @@ export default function CommunicationAlertsDetail({
 
             // dispatch(setMessageAlerts(alertsData.data));
             const sortedData = JSON.parse(JSON.stringify(alertsData.data.data)).sort((a, b) => a.id > b.id ? 1 : -1);
+            const sort = {
+                column: ''
+            };
 
             setAlerts(sortedData);
+            setSearchWords([...new Set(sortedData.map(item => item.keyword))]);
         } catch (e) {
             console.error(e);
         }
@@ -314,7 +317,7 @@ export default function CommunicationAlertsDetail({
 
             setDetailData(search.data);
 
-            const messages = await getMessageThread(commMessageId.chainLinkId, search.data.timeSent);
+            const messages = await getMessageThread(search.data.chainLinkId, search.data.timeSent);
             const { data, totalNoOfRecords, totalPages } = messages.data;
 
             for (let i = 0; i < data.length; i++) {
@@ -345,8 +348,15 @@ export default function CommunicationAlertsDetail({
 
             // const recipients = await getRecipients(search.data.chainLinkId);
             // const extractedRecipients = extractRecipients(recipients.data);
+            if (commMessageId.recipients) {
+                setRecipients(commMessageId.recipients);
+            } else {
+                const recipients = [...new Set(alerts[0].recipients
+                    ? alerts[0].recipients.map(item => item)
+                    : '')];
 
-            setRecipients(commMessageId.recipients);
+                setRecipients(recipients);
+            }
         } catch (e) {
             console.error(e);
         }
@@ -365,7 +375,8 @@ export default function CommunicationAlertsDetail({
                     id: row.id,
                     policyId: row.policyId,
                     status: status,
-                    notes: note
+                    notes: note,
+                    assignedUserId: row.assignedUserId
                 };
 
                 const request = updateAlert(data);
@@ -396,7 +407,8 @@ export default function CommunicationAlertsDetail({
                 id: row.id,
                 policyId: row.policyId,
                 status: status,
-                notes: note
+                notes: note,
+                assignedUserId: row.assignedUserId
             };
 
             const request = await updateAlert(data);
@@ -422,7 +434,8 @@ export default function CommunicationAlertsDetail({
             const data = {
                 id: row.id,
                 escalation: escalation,
-                executorId: profileData.userId
+                executorId: profileData.userId,
+                assignedUserId: row.assignedUserId
             };
 
             const request = await updateAlert(data);
@@ -475,7 +488,8 @@ export default function CommunicationAlertsDetail({
                 id: row.id,
                 policyId: row.policyId,
                 status: status,
-                notes: note
+                notes: note,
+                assignedUserId: row.assignedUserId
             };
 
             const request = await updateAlert(data);
@@ -591,7 +605,7 @@ export default function CommunicationAlertsDetail({
         userId={userId}
         appUser={appUser}
         dataId={filters.state.id}
-        filterText={filters.state.filterText}
+        filterText={searchWords}
         detailData={detailData}
         alertsData={alerts}
         alertsList={alertsList}
