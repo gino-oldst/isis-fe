@@ -151,13 +151,17 @@ export default function CommunicationAlertsDetail({
         /**
          * Push the data from nextData that are needed in moving to the next data
          */
+        const recipients = [...new Set(nextData[0].recipients ? nextData[0].recipients.map(item => item) : '')];
+
+        console.log(nextData);
+
         history.push({
             pathname: `/communication_alerts_detail/${nextData[0].commMessageId}`,
             state: {
                 id: nextData[0].commMessageId,
                 chainLinkId: nextData[0].commChainLinkId,
                 filterText: [...new Set(nextData.map(item => item.keyword))], // Map the keywords if multiple alerts and return a list
-                recipients: [...new Set(nextData[0].recipients ? nextData[0].recipients.map(item => item) : '')], // Map the recipients and list
+                recipients: recipients.join(', '), // Map the recipients and list
                 size: filters.state.size,
                 counter: _counter,
                 activePage: _pageCounter,
@@ -197,13 +201,15 @@ export default function CommunicationAlertsDetail({
         /**
          * Push the data from nextData that are needed in moving to the next data
          */
+        const recipients = [...new Set(prevData[0].recipients ? prevData[0].recipients.map(item => item) : '')];
+
         history.push({
             pathname: `/communication_alerts_detail/${prevData[0].commMessageId}`,
             state: {
                 id: prevData[0].commMessageId,
                 chainLinkId: prevData[0].commChainLinkId,
                 filterText: [...new Set(prevData.map(item => item.keyword))], // Map the keywords if multiple alerts and return a list
-                recipients: [...new Set(prevData[0].recipients ? prevData[0].recipients.map(item => item) : '')], // Map the recipients and list
+                recipients: recipients.join(', '), // Map the recipients and list
                 size: filters.state.size,
                 counter: _counter,
                 activePage: _pageCounter,
@@ -320,7 +326,7 @@ export default function CommunicationAlertsDetail({
                     ? alerts[0].recipients.map(item => item)
                     : '')];
 
-                setRecipients(recipients);
+                setRecipients(recipients.join(', '));
             }
 
             const search = await getCommunicationMessageDetail(messageData.id);

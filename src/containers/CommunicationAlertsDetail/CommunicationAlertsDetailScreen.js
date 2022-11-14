@@ -1,6 +1,7 @@
 // @flow
 import React, { useState, useEffect, createRef } from 'react';
 import moment from 'moment';
+import './communication_alerts_detail.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import Table from '../../components/base/IsisTable/IsisTable';
 import Button from '../../components/base/Button/Button';
@@ -40,8 +41,6 @@ import {
     Form
 } from 'reactstrap';
 import { useIsMount } from '../../hooks/useIsMount';
-
-import './communication_alerts_detail.scss';
 import { MESSAGE_TYPE } from '../../config/constants';
 import { FaInfoCircle } from 'react-icons/fa';
 import { bulkUpdateAlert } from '../../api/alerts';
@@ -256,7 +255,7 @@ function CommunicationAlertsDetailScreen({
                                 <h4 className='box-label'>(Select All)</h4>
                             </Label>
                         </FormGroup>
-                        <div id='containerElement' className='alerts-detail__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
+                        <div id='containerElement' className='alerts-detail__message-thread pt-1 pb-5 mb-4 mt-4'>
                             <div>
                                 {messages.map(message => {
                                     return (!isDisclaimer(message.message)
@@ -641,7 +640,7 @@ function CommunicationAlertsDetailScreen({
                                             <div className='d-flex align-items-center justify-content-between'>
                                                 <Typography color='color-3' className='mr-3 mb-2' weight='semi-bold'
                                                     style={{ fontSize: '24px', lineHeight: '24pt' }}>Alert</Typography>
-                                                <Button weight='light' disabled={loading} className='ml-4 mr-4 alerts-detail__bulk-review'
+                                                <Button weight='light' disabled={loading} className='ml-4 alerts-detail__bulk-review'
                                                     disabled={loading} onClick={showActionsUpdateModal} label='Update all Status'/>
                                             </div>
                                             {alertLoading || loading
@@ -681,7 +680,7 @@ function CommunicationAlertsDetailScreen({
                                                                                 <td className='pb-2'>
                                                                                     <Typography color='color-3'>{alert.keyword}</Typography>
                                                                                 </td>
-                                                                                <td style={{ width: '250px' }}>
+                                                                                <td>
                                                                                     <div className='d-flex align-items-center'>
                                                                                         <Select
                                                                                             name='status'
@@ -719,7 +718,7 @@ function CommunicationAlertsDetailScreen({
                                                                                         }
                                                                                     </div>
                                                                                 </td>
-                                                                                <td style={{ width: '250px' }}>
+                                                                                <td>
                                                                                     <div className='d-flex align-items-center'>
                                                                                         <Select
                                                                                             name='escalation'
@@ -746,7 +745,7 @@ function CommunicationAlertsDetailScreen({
                                                                                             }]} />
                                                                                     </div>
                                                                                 </td>
-                                                                                <td style={{ width: '250px' }}>
+                                                                                <td>
                                                                                     <div className='d-flex align-items-center'>
                                                                                         <Select
                                                                                             name='assign-user'
@@ -784,7 +783,7 @@ function CommunicationAlertsDetailScreen({
                                                 </>
                                             }
                                         </Col>
-                                        <Col className='offset-lg-1 mb-4 mt-4' lg={4} md={12}>
+                                        <Col className='mb-4 offset-lg-1' lg={4} md={12}>
                                             <div style={{ border: '2px solid #D0D0D0', height: '100%', padding: '30px' }}>
                                                 <Typography color='color-3' className='mr-auto' weight='regular'
                                                     style={{ fontSize: '16px', lineHeight: '24pt' }} ><b>Date & Time: </b>{ detailData.timeSent != null ? isoToUTCLocal(detailData.timeSent) : 'N/A' }</Typography>
@@ -793,7 +792,7 @@ function CommunicationAlertsDetailScreen({
                                                 <Typography color='color-3' className='mr-auto' weight='regular'
                                                     style={{ fontSize: '16px', lineHeight: '24pt' }} >
                                                     <b>Recipient: </b>
-                                                    {loading || recipients === undefined
+                                                    {recipients === undefined
                                                         ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3'>
                                                             <span className='sr-only'>Loading...</span>
                                                         </Spinner>
@@ -806,7 +805,7 @@ function CommunicationAlertsDetailScreen({
                                         </Col>
                                     </Row>
                                     <Row>
-                                        <Col lg={7} className='mb-2'>
+                                        <Col lg={7} className='mb-2 mt-3'>
                                             <Row>
                                                 <Col>
                                                     <Typography color='color-3' className='mr-3' weight='semi-bold'
@@ -814,7 +813,7 @@ function CommunicationAlertsDetailScreen({
                                                     <Typography color='color-3' className='mr-3 mb-4' weight='regular'
                                                         style={{ fontSize: '16px', lineHeight: '24pt' }}>Message is highlighted.</Typography>
                                                 </Col>
-                                                <Col className='text-left'>
+                                                <Col className='text-right'>
                                                     <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' to={dataId} smooth={true}
                                                         disabled={loading} containerId='containerElement' duration={500}>
                                                            Show Message
@@ -826,28 +825,12 @@ function CommunicationAlertsDetailScreen({
                                                 </Col>
                                             </Row>
                                             <div className='d-flex flex-column' style={{ minWidth: '600px' }}>
-                                                {/* <div className='alerts-detail__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
-                                                    <div>
-                                                        {messages.map(message => {
-                                                            return (<>
-                                                                <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                    style={{ fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>
-                                                                <div className='message-box mb-4' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
-                                                                    <Highlighter highlightClassName='alertKeyword'
-                                                                        style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
-                                                                        searchWords={filterText}
-                                                                        autoEscape={true}
-                                                                        textToHighlight={message.message}/>
-                                                                </div></>);
-                                                        })}
-                                                    </div>
-                                                </div> */}
                                                 {loading
                                                     ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3'>
                                                         <span className='sr-only'>Loading...</span>
                                                     </Spinner>
                                                     : <>
-                                                        <div id='containerElement' className='alerts-detail__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
+                                                        <div id='containerElement' className='alerts-detail__message-thread pt-1 pb-5 mb-4 mt-4'>
                                                             <div>
                                                                 {messages.map(message => {
                                                                     return (!isDisclaimer(message.message)
