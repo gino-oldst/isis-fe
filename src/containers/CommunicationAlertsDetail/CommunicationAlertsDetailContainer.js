@@ -12,15 +12,16 @@ import {
     DATE_TO_UTC
 } from '../../utils/helpers';
 import { getCommunicationSearchData, getCommunicationMessageDetail, getMessageThread, getRecipients } from '../../api/communicationSearch';
-import { getActivityList, getKeywords, getMessageAlerts, postComment, updateAlert, retrievePredefinedReasons, getAppUser } from '../../api/communicationAlerts';
+import { getActivityList, getKeywords, getMessageAlerts, postComment, updateAlert, retrievePredefinedReasons, getAppUser, getCommunicationAlertData } from '../../api/communicationAlerts';
 import Typography from '../../components/base/Typography/Typography';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import Button from '../../components/base/Button/Button';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
-import { setMessageAlerts, setAlertsListDetail } from '../../redux/modules/communicationAlerts';
+import { setMessageAlerts, setAlertsListDetail, setPrevNextData } from '../../redux/modules/communicationAlerts';
 import HtmlToRtfBrowser from 'html-to-rtf-browser';
 import { storageKey } from '../../config/constants';
 import Storage from '../../utils/Storage';
+import StorageIDB from '../../utils/StorageIDB';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -36,13 +37,16 @@ export default function CommunicationAlertsDetail({
 }: Props): React$Element<any> {
     const history = useHistory();
     const dispatch = useDispatch();
+
+    const { isRowsSelected, selectedRows, appliedFilters, isTablePageSelect } = useSelector(({ table }) => table);
+    const { messageAlerts, alertsList, data, prevNextData } = useSelector(({ communicationAlerts }) => communicationAlerts);
+
     const filters = useLocation();
     const [loading, setLoading] = useState(true);
     const [alertLoading, setAlertLoading] = useState(false);
-    const { isRowsSelected, selectedRows, appliedFilters } = useSelector(({ table }) => table);
-    const { messageAlerts, alertsList } = useSelector(({ communicationAlerts }) => communicationAlerts);
     const [isChecked, setIsChecked] = useState(true);
     const { profileData } = useSelector(({ authentication }) => authentication);
+    const [isTimeout, setIsTimeout] = useState(false);
     const [detailData, setDetailData] = useState([]);
     const breadcrumb = [
         {
@@ -60,23 +64,31 @@ export default function CommunicationAlertsDetail({
         }
     ];
 
+    const [messages, setMessages] = useState([]);
+    const [recipients, setRecipients] = useState('');
+    const [alerts, setAlerts] = useState([]);
+    const [appUser, setAppUser] = useState([]);
+    const [predefinedReasons, setPredefinedReasons] = useState([]);
+    const [searchWords, setSearchWords] = useState([]);
+
+    const [constAlertData, setConstAlertData] = useState([]);
+    const [totalNoOfRecords, setTotalNoOfRecords] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [counter, setCounter] = useState(0);
+    const [pageCounter, setpageCounter] = useState(0);
+    const [itemSize, setItemSize] = useState(0);
+
     useEffect(() => {
+        loadSearchData(filters.state);
         loadAlerts(filters.state.id);
         loadActivity(filters.state.id);
-        loadSearchData(filters.state);
+        loadCommAlertsData(filters.state.activePage, filters.state.size);
     }, [filters]);
 
     useEffect(() => {
         loadPredefinedReasons();
         loadAppUsers();
     }, []);
-
-    const [messages, setMessages] = useState([]);
-    const [recipients, setRecipients] = useState('');
-    const [alerts, setAlerts] = useState([]);
-    const [searchWords, setSearchWords] = useState([]);
-    const [appUser, setAppUser] = useState([]);
-    const [predefinedReasons, setPredefinedReasons] = useState([]);
 
     const loadAlerts = async (id) => {
         setAlertLoading(true);
@@ -97,6 +109,155 @@ export default function CommunicationAlertsDetail({
         }
 
         setAlertLoading(false);
+    };
+
+    const nextAlertData = async() => {
+        /**
+         * Logic for Next
+         *
+         * Declare variables:
+         * _counter -> keeps track of the current index in the list of alerts returned per page
+         * _pageCounter -> Keeps track on what page we currently at in the returened paginated data
+         * nextData -> holder for the next alert we get
+         *
+         * */
+        var _counter = counter;
+        var _pageCounter = pageCounter;
+        var nextData = [];
+
+        if (counter >= filters.state.size - 1) {
+            _counter = 0; // Set counter to zero
+
+            // if new page request loadCommAlertsData() and get the next page.
+            if (pageCounter <= totalPages) {
+                _pageCounter += 1; // Increment page
+
+                // Request for a new page and get the fresh page
+                await loadCommAlertsData(_pageCounter, 10).then((data) => {
+                    // extract the next alert inside the nexpage returned from loadCommAlertsData()
+                    nextData = data[_counter].alerts.data;
+                });
+            }
+        /**
+         * else if the counter has not exceeded the size index of our current page
+         * size index = size-1
+         * Sample: size = 10 then size_index = 10-1 is 9
+         */
+        } else {
+            _counter += 1; // Increase counter count
+            nextData = prevNextData.currData[_counter].alerts.data; // extract the next alert accordingly
+        }
+
+        /**
+         * Push the data from nextData that are needed in moving to the next data
+         */
+        history.push({
+            pathname: `/communication_alerts_detail/${nextData[0].commMessageId}`,
+            state: {
+                id: nextData[0].commMessageId,
+                chainLinkId: nextData[0].commChainLinkId,
+                filterText: [...new Set(nextData.map(item => item.keyword))], // Map the keywords if multiple alerts and return a list
+                recipients: [...new Set(nextData[0].recipients ? nextData[0].recipients.map(item => item) : '')], // Map the recipients and list
+                size: filters.state.size,
+                counter: _counter,
+                activePage: _pageCounter,
+                index: _counter
+            }
+        });
+    };
+
+    const prevAlertData = async() => {
+        var _counter = counter;
+        var _pageCounter = pageCounter;
+        var prevData = [];
+
+        if (counter == 0) {
+            _counter = 9; // Set counter to 10
+
+            // if new page request loadCommAlertsData() and get the next page.
+            if (pageCounter > 0) {
+                _pageCounter -= 1; // decrement page
+
+                // Request for a new page and get the fresh page
+                await loadCommAlertsData(_pageCounter, 10).then((data) => {
+                    // extract the next alert inside the nexpage returned from loadCommAlertsData()
+                    prevData = data[_counter].alerts.data;
+                });
+            }
+        /**
+         * else if the counter has not exceeded the size index of our current page
+         * size index = size-1
+         * Sample: size = 10 then size_index = 10-1 is 9
+         */
+        } else {
+            _counter -= 1; // decrease counter count
+            prevData = prevNextData.currData[_counter].alerts.data; // extract the prev alert accordingly
+        }
+
+        /**
+         * Push the data from nextData that are needed in moving to the next data
+         */
+        history.push({
+            pathname: `/communication_alerts_detail/${prevData[0].commMessageId}`,
+            state: {
+                id: prevData[0].commMessageId,
+                chainLinkId: prevData[0].commChainLinkId,
+                filterText: [...new Set(prevData.map(item => item.keyword))], // Map the keywords if multiple alerts and return a list
+                recipients: [...new Set(prevData[0].recipients ? prevData[0].recipients.map(item => item) : '')], // Map the recipients and list
+                size: filters.state.size,
+                counter: _counter,
+                activePage: _pageCounter,
+                index: _counter
+            }
+        });
+    };
+
+    const loadCommAlertsData = async (page, size, sort) => {
+        const alertSearchParams = JSON.parse(await StorageIDB.getItem(storageKey.alertSearchParams));
+
+        var filterAlert = alertSearchParams.alert;
+        var filterStatus = alertSearchParams.status;
+        var filterSources = alertSearchParams.source;
+        var filterSender = alertSearchParams.senders.map(row => { return row; });
+        var filterRecipient = alertSearchParams.recipients.map(row => { return row; });
+        var filterDateFrom = alertSearchParams.dateFrom;
+        var filterDateTo = alertSearchParams.dateTo;
+        var updateInMsg = false;
+        var updateInSort = false;
+        var filterEscalations = alertSearchParams.escalation ? alertSearchParams.escalation : [];
+
+        var insidePage = page;
+
+        setCounter(filters.state.index);
+
+        try {
+            let alerts = [];
+
+            alerts = await getCommunicationAlertData(insidePage, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient, filterEscalations);
+
+            const { data, totalNoOfRecords, totalPages } = alerts.data;
+
+            dispatch(setPrevNextData({
+                currData: data,
+                currTotalPages: totalPages,
+                currIndex: filters.state.index,
+                currPage: insidePage
+            }));
+
+            setConstAlertData(data);
+            setTotalNoOfRecords(totalNoOfRecords);
+            setTotalPages(totalPages);
+            setpageCounter(insidePage);
+            setItemSize(data.length);
+
+            return data;
+        } catch (e) {
+            console.log(e);
+
+            if (e.status == 500 || e.status == 502 || e.status == 503 || e.status == 504 || e.status == 408 || e.status == 404 || e.status == 400) {
+                setIsTimeout(true);
+            }
+        }
     };
 
     const loadAppUsers = async () => {
@@ -142,11 +303,27 @@ export default function CommunicationAlertsDetail({
         setActivityLoading(false);
     };
 
-    const loadSearchData = async (commMessageId) => {
+    const loadSearchData = async (messageData) => {
         setLoading(true);
 
         try {
-            const search = await getCommunicationMessageDetail(commMessageId.id);
+            if (Object.keys(alertsList).length === 0) {
+                const keywords = await getKeywords();
+
+                dispatch(setAlertsListDetail(keywords));
+            }
+
+            if (messageData.recipients) {
+                setRecipients(messageData.recipients);
+            } else {
+                const recipients = [...new Set(alerts[0].recipients
+                    ? alerts[0].recipients.map(item => item)
+                    : '')];
+
+                setRecipients(recipients);
+            }
+
+            const search = await getCommunicationMessageDetail(messageData.id);
 
             setDetailData(search.data);
 
@@ -170,26 +347,6 @@ export default function CommunicationAlertsDetail({
             }
 
             setMessages(data);
-
-            if (Object.keys(alertsList).length === 0) {
-                const keywords = await getKeywords();
-
-                dispatch(setAlertsListDetail(keywords));
-            }
-
-            // history.push('/communication_alerts_detail', alerts);
-
-            // const recipients = await getRecipients(search.data.chainLinkId);
-            // const extractedRecipients = extractRecipients(recipients.data);
-            if (commMessageId.recipients) {
-                setRecipients(commMessageId.recipients);
-            } else {
-                const recipients = [...new Set(alerts[0].recipients
-                    ? alerts[0].recipients.map(item => item)
-                    : '')];
-
-                setRecipients(recipients);
-            }
         } catch (e) {
             console.error(e);
         }
@@ -372,7 +529,7 @@ export default function CommunicationAlertsDetail({
 
     const showSuccessModal = (message) => {
         dispatch(setModalContent({
-            modalContent: <SuccessModal message={message} handleCloseModal={handleCloseModal}/>,
+            modalContent: <SuccessModal message={message} handleCloseModal={handleCloseModal} />,
             size: 'md'
         }));
     };
@@ -448,6 +605,8 @@ export default function CommunicationAlertsDetail({
         handleGenerate={handleGenerate}
         recipients={recipients}
         useMediaQuery={useMediaQuery}
+        nextAlertData={nextAlertData}
+        prevAlertData={prevAlertData}
         breadcrumb={breadcrumb}
         sidebarMenu={sidebarMenu}
         handleCloseModal={handleCloseModal}
@@ -461,7 +620,11 @@ export default function CommunicationAlertsDetail({
         onSubmitComment={onSubmitComment}
         predefinedReasons={predefinedReasons}
         onSubmitEscalationChangeSingle = {onSubmitEscalationChangeSingle}
-        onSubmitAssignUserSingle={onSubmitAssignUserSingle}/>;
+        onSubmitAssignUserSingle={onSubmitAssignUserSingle}
+        totalPages={totalPages}
+        counter={counter}
+        pageCounter={pageCounter}
+        itemSize={itemSize}/>;
 }
 
 const SuccessModal = ({
