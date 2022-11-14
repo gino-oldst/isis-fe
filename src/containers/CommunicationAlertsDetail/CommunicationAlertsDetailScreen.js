@@ -616,9 +616,9 @@ function CommunicationAlertsDetailScreen({
                                         weight='regular' style={{ fontSize: '40px !important', lineHeight: '24pt' }}>{dataId != '' ? dataId : 'N/A'}
                                     </Typography>
                                     <Button className='nextandprev-button px-2 mr-2 py-2' onClick={prevAlertData}
-                                        disabled={pageCounter == 0 && counter == 0} label='Previous Page'/>
+                                        disabled={loading || (pageCounter == 0 && counter == 0)} label='Previous Page'/>
                                     <Button className='nextandprev-button px-2 mr-2 py-2' onClick={nextAlertData}
-                                        disabled={pageCounter == totalPages - 1 && counter == itemSize - 1} label='Next Page'/>
+                                        disabled={loading || (pageCounter == totalPages - 1 && counter == itemSize - 1)} label='Next Page'/>
                                 </div>
                                 <div className='alerts-detail__information mt-2'>
                                     <Row>
