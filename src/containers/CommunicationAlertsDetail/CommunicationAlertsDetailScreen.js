@@ -79,6 +79,7 @@ type Props = {
     totalPages: Int,
     counter: Int,
     pageCounter: Int,
+    itemSize: Int,
     recipients: Array,
     alertsData: Array,
     alertList: Array,
@@ -117,6 +118,7 @@ function CommunicationAlertsDetailScreen({
     totalPages,
     counter,
     pageCounter,
+    itemSize,
     recipients,
     alertsData,
     alertsList,
@@ -601,14 +603,10 @@ function CommunicationAlertsDetailScreen({
                                     <Typography color='color-3' className='alerts-detail__detail-heading mr-auto'
                                         weight='regular' style={{ fontSize: '40px !important', lineHeight: '24pt' }}>{dataId != '' ? dataId : 'N/A'}
                                     </Typography>
-                                    <Link className='btn btn-outline-primary nextandprev-button px-2 mr-2 py-2' onClick={prevAlertData} smooth={true}
-                                        disabled={pageCounter == 0} containerId='containerElement' duration={500}>
-                                        Previous Page
-                                    </Link>
-                                    <Link className='btn btn-outline-primary nextandprev-button px-2 mr-2 py-2' onClick={nextAlertData} smooth={true}
-                                        disabled={pageCounter == totalPages} containerId='containerElement' duration={500}>
-                                        Next Page
-                                    </Link>
+                                    <Button className='nextandprev-button px-2 mr-2 py-2' onClick={prevAlertData}
+                                        disabled={pageCounter == 0 && counter == 0} label='Previous Page'/>
+                                    <Button className='nextandprev-button px-2 mr-2 py-2' onClick={nextAlertData}
+                                        disabled={pageCounter == totalPages - 1 && counter == itemSize - 1} label='Next Page'/>
                                 </div>
                                 <div className='alerts-detail__information mt-2'>
                                     <Row>

@@ -75,6 +75,7 @@ export default function CommunicationAlertsDetail({
     const [totalPages, setTotalPages] = useState(0);
     const [counter, setCounter] = useState(0);
     const [pageCounter, setpageCounter] = useState(0);
+    const [itemSize, setItemSize] = useState(0);
 
     useEffect(() => {
         loadSearchData(filters.state);
@@ -250,6 +251,7 @@ export default function CommunicationAlertsDetail({
             setTotalNoOfRecords(totalNoOfRecords);
             setTotalPages(totalPages);
             setpageCounter(insidePage);
+            setItemSize(data.length);
 
             return data;
         } catch (e) {
@@ -614,7 +616,11 @@ export default function CommunicationAlertsDetail({
         onSubmitComment={onSubmitComment}
         predefinedReasons={predefinedReasons}
         onSubmitEscalationChangeSingle = {onSubmitEscalationChangeSingle}
-        onSubmitAssignUserSingle={onSubmitAssignUserSingle}/>;
+        onSubmitAssignUserSingle={onSubmitAssignUserSingle}
+        totalPages={totalPages}
+        counter={counter}
+        pageCounter={pageCounter}
+        itemSize={itemSize}/>;
 }
 
 const SuccessModal = ({
