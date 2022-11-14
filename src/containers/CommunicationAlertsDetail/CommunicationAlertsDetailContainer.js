@@ -119,8 +119,9 @@ export default function CommunicationAlertsDetail({
         var _pageCounter = pageCounter;
         var nextData = [];
 
-        console.log(constAlertData);
-        console.log(prevNextData);
+        console.log('filter size', filters.state.size - 1);
+        console.log('data counter', prevNextData.currIndex);
+        console.log('pagecounter', pageCounter);
 
         if (counter >= filters.state.size - 1) {
             _counter = 0; // Set counter to zero
@@ -163,13 +164,53 @@ export default function CommunicationAlertsDetail({
         });
     };
 
-    const prevAlertData = (page, size, id, chainLinkId, filterText, recipients) => {
-        setCounter(counter - 1);
+    const prevAlertData = async() => {
+        var _counter = counter;
+        var _pageCounter = pageCounter;
+        var prevData = [];
 
-        id = constAlertData[counter - 1].alerts.data[0].commMessageId;
+        console.log('filter size', filters.state.size - 1);
+        console.log('data counter', prevNextData.currIndex);
+        console.log('pagecounter', pageCounter);
+
+        if (counter == 0) {
+            _counter = 9; // Set counter to 10
+
+            // if new page request loadCommAlertsData() and get the next page.
+            if (pageCounter > 0) {
+                _pageCounter -= 1; // decrement page
+
+                // Request for a new page and get the fresh page
+                await loadCommAlertsData(_pageCounter, 10).then((data) => {
+                    // extract the next alert inside the nexpage returned from loadCommAlertsData()
+                    prevData = data[_counter].alerts.data;
+                });
+            }
+        /**
+         * else if the counter has not exceeded the size index of our current page
+         * size index = size-1
+         * Sample: size = 10 then size_index = 10-1 is 9
+         */
+        } else {
+            _counter -= 1; // decrease counter count
+            prevData = prevNextData.currData[_counter].alerts.data; // extract the prev alert accordingly
+        }
+
+        /**
+         * Push the data from nextData that are needed in moving to the next data
+         */
         history.push({
-            pathname: `/communication_alerts_detail/${id}`,
-            state: { id: id, chainLinkId: filters.state.chainLinkId, filterText: filters.state.filterText, recipients: filters.state.recipients }
+            pathname: `/communication_alerts_detail/${prevData[0].commMessageId}`,
+            state: {
+                id: prevData[0].commMessageId,
+                chainLinkId: prevData[0].commChainLinkId,
+                filterText: [...new Set(prevData.map(item => item.keyword))], // Map the keywords if multiple alerts and return a list
+                recipients: [...new Set(prevData[0].recipients ? prevData[0].recipients.map(item => item) : '')], // Map the recipients and list
+                size: filters.state.size,
+                counter: _counter,
+                activePage: _pageCounter,
+                index: _counter
+            }
         });
     };
 

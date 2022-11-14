@@ -76,6 +76,9 @@ type Props = {
     handleSelectAll: Function,
     nextAlertData: Function,
     prevAlertData: Function,
+    totalPages: Int,
+    counter: Int,
+    pageCounter: Int,
     recipients: Array,
     alertsData: Array,
     alertList: Array,
@@ -111,6 +114,9 @@ function CommunicationAlertsDetailScreen({
     handleSelectAll,
     nextAlertData,
     prevAlertData,
+    totalPages,
+    counter,
+    pageCounter,
     recipients,
     alertsData,
     alertsList,
@@ -593,23 +599,25 @@ function CommunicationAlertsDetailScreen({
                             <CardBody>
                                 <div className='alerts-detail__header d-flex align-items-center'>
                                     <Typography color='color-3' className='alerts-detail__detail-heading mr-auto'
-                                        weight='regular' style={{ fontSize: '40px !important', lineHeight: '24pt' }}>{dataId != '' ? dataId : 'N/A'}</Typography>
+                                        weight='regular' style={{ fontSize: '40px !important', lineHeight: '24pt' }}>{dataId != '' ? dataId : 'N/A'}
+                                    </Typography>
+                                    <Link className='btn btn-outline-primary nextandprev-button px-2 mr-2 py-2' onClick={prevAlertData} smooth={true}
+                                        disabled={pageCounter == 0} containerId='containerElement' duration={500}>
+                                        Previous Page
+                                    </Link>
+                                    <Link className='btn btn-outline-primary nextandprev-button px-2 mr-2 py-2' onClick={nextAlertData} smooth={true}
+                                        disabled={pageCounter == totalPages} containerId='containerElement' duration={500}>
+                                        Next Page
+                                    </Link>
                                 </div>
                                 <div className='alerts-detail__information mt-2'>
                                     <Row>
                                         <Col>
                                             <Typography color='color-3' className='alerts-detail__title mb-0 mr-auto' weight='regular'
-                                                style={{ fontSize: '32px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : detailData.subject} {/* RE: Trading Message */}</Typography>
+                                                style={{ fontSize: '32px', lineHeight: '24pt' }} >{detailData.subject != null ? detailData.subject : detailData.subject} {/* RE: Trading Message */}
+                                            </Typography>
                                             <Typography color='color-3' className='mr-auto' weight='bold'
                                                 style={{ fontSize: '16px', lineHeight: '24pt' }}>{detailData.source != null ? sourceMaker(detailData.source) : 'No Source'} {/* Email */}</Typography>
-                                            <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' onClick={prevAlertData} smooth={true}
-                                                disabled={loading} containerId='containerElement' duration={500}>
-                                                Prev
-                                            </Link>
-                                            <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' onClick={nextAlertData} smooth={true}
-                                                disabled={loading} containerId='containerElement' duration={500}>
-                                                Next
-                                            </Link>
                                         </Col>
                                     </Row>
                                     <Row className='mt-5'>
