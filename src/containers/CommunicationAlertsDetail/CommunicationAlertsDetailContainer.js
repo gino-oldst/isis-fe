@@ -79,6 +79,7 @@ export default function CommunicationAlertsDetail({
     const [itemSize, setItemSize] = useState(0);
 
     useEffect(() => {
+        loadSearchData(filters.state);
         loadAlerts(filters.state.id);
         loadActivity(filters.state.id);
         loadCommAlertsData(filters.state.activePage, filters.state.size);
@@ -123,10 +124,6 @@ export default function CommunicationAlertsDetail({
         var _counter = counter;
         var _pageCounter = pageCounter;
         var nextData = [];
-
-        console.log('filter size', filters.state.size - 1);
-        console.log('data counter', prevNextData.currIndex);
-        console.log('pagecounter', pageCounter);
 
         if (counter >= filters.state.size - 1) {
             _counter = 0; // Set counter to zero
@@ -173,10 +170,6 @@ export default function CommunicationAlertsDetail({
         var _counter = counter;
         var _pageCounter = pageCounter;
         var prevData = [];
-
-        console.log('filter size', filters.state.size - 1);
-        console.log('data counter', prevNextData.currIndex);
-        console.log('pagecounter', pageCounter);
 
         if (counter == 0) {
             _counter = 9; // Set counter to 10
@@ -310,11 +303,27 @@ export default function CommunicationAlertsDetail({
         setActivityLoading(false);
     };
 
-    const loadSearchData = async (commMessageId) => {
+    const loadSearchData = async (messageData) => {
         setLoading(true);
 
         try {
-            const search = await getCommunicationMessageDetail(commMessageId.id);
+            if (Object.keys(alertsList).length === 0) {
+                const keywords = await getKeywords();
+
+                dispatch(setAlertsListDetail(keywords));
+            }
+
+            if (messageData.recipients) {
+                setRecipients(messageData.recipients);
+            } else {
+                const recipients = [...new Set(alerts[0].recipients
+                    ? alerts[0].recipients.map(item => item)
+                    : '')];
+
+                setRecipients(recipients);
+            }
+
+            const search = await getCommunicationMessageDetail(messageData.id);
 
             setDetailData(search.data);
 
@@ -338,26 +347,6 @@ export default function CommunicationAlertsDetail({
             }
 
             setMessages(data);
-
-            if (Object.keys(alertsList).length === 0) {
-                const keywords = await getKeywords();
-
-                dispatch(setAlertsListDetail(keywords));
-            }
-
-            // history.push('/communication_alerts_detail', alerts);
-
-            // const recipients = await getRecipients(search.data.chainLinkId);
-            // const extractedRecipients = extractRecipients(recipients.data);
-            if (commMessageId.recipients) {
-                setRecipients(commMessageId.recipients);
-            } else {
-                const recipients = [...new Set(alerts[0].recipients
-                    ? alerts[0].recipients.map(item => item)
-                    : '')];
-
-                setRecipients(recipients);
-            }
         } catch (e) {
             console.error(e);
         }
