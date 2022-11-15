@@ -18,7 +18,7 @@ export async function getCommunicationAlertData(page, size, sort, alert, status,
         escalations: escalations.length > 0 ? [...escalations.map(row => { return row.value; })] : []
     };
 
-    const sortColumn = sort.column;
+    const sortColumn = sort ? sort.column : '';
     const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sortColumn},${sort.type}` : '&sort=timeSent,DESC';
 
     return await makeApiCall(`${GET_ALERT_DATA}?page=${page}&size=${size}${withSorting()}`, 'POST', filterBody);

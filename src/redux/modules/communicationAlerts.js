@@ -12,6 +12,14 @@ const SET_LOADING = 'SET_LOADING';
 const SET_COMMUNICATION_ALERTS_DATE_RANGE = 'SET_COMMUNICATION_ALERTS_DATE_RANGE';
 const SET_MESSAGE_ALERTS = 'SET_MESSAGE_ALERTS';
 const SET_ALERTS_LIST = 'SET_ALERTS_LIST';
+const SET_PREV_NEXT_DATA = 'SET_PREV_NEXT_DATA';
+
+export function setPrevNextData(data: Object) {
+    return {
+        type: SET_PREV_NEXT_DATA,
+        data
+    };
+}
 
 export function setAlertsListDetail(data: Object) {
     return {
@@ -171,7 +179,13 @@ const initialState = {
     messageAlerts: {
         alerts: {}
     },
-    alertsList: {}
+    alertsList: {},
+    prevNextData: {
+        currData: [],
+        currTotalPages: 0,
+        currIndex: 0,
+        currPage: 0
+    }
 };
 
 export default function communicationAlerts(state: Object = initialState, action: Object):
@@ -184,6 +198,17 @@ export default function communicationAlerts(state: Object = initialState, action
     alertsList: {}
   } {
     switch (action.type) {
+        case SET_PREV_NEXT_DATA:
+            return {
+                ...state,
+                prevNextData: {
+                    ...state.prevNextData,
+                    currData: action.data.currData,
+                    currTotalPages: action.data.currTotalPages,
+                    currIndex: action.data.currIndex,
+                    currPage: action.data.currPage
+                }
+            };
         case SET_ALERTS_LIST:
             return {
                 ...state,
