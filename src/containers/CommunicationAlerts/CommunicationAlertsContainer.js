@@ -212,7 +212,9 @@ export default function CommunicationAlertsContainer({
             dispatch(setCommunicationAlertsData(data, totalNoOfRecords, totalPages));
             dispatch(setIsRowSelected(0, []));
             dispatch(setActivePage(insidePage));
-            setTableResultStore(alerts.data);
+            setTableResultStore(alerts.data.data);
+
+            console.log(data);
 
             StorageIDB.setItem(storageKey.alertSearchParams, JSON.stringify({
                 alert: filterAlert,
@@ -288,10 +290,20 @@ export default function CommunicationAlertsContainer({
         return !!appliedFilters.filter(filter => filter.value.length > 0).length;
     };
 
-    const viewCommunicationAlertDetails = async (id, chainLinkId, filterText, recipients) => {
+    const viewCommunicationAlertDetails = async (commMessageId, chainLinkId, filterText, recipients) => {
+        // var index = tableResultStore.findIndex(obj => obj.id == id);
+        const alertSearchParams = JSON.parse(await StorageIDB.getItem(storageKey.alertSearchParams));
+        const index = alertSearchParams.data.data.findIndex(function(item, i) {
+            return item.alerts.data[0].commMessageId === commMessageId;
+        });
+
+        // alertSearchParams.data.data.map(function(item, i) {
+        //     console.log(item.alerts.data[0].commMessageId, commMessageId);
+        // });
+
         history.push({
-            pathname: `/communication_alerts_detail/${id}`,
-            state: { id: id, chainLinkId: chainLinkId, filterText: filterText, recipients }
+            pathname: `/communication_alerts_detail/${commMessageId}`,
+            state: { id: commMessageId, chainLinkId: chainLinkId, filterText: filterText, recipients, activePage: alertSearchParams.activePage, size: pageSize, index: index }
         });
     };
 
