@@ -1440,12 +1440,21 @@ export default function ReactTable({
                             }
                         </>
                     );
-                } else if (accessor == 'profileInternalPerson') {
-                    return (<span>Internal Person</span>);
-                } else if (accessor == 'profileEmails') {
-                    return (<span>Emails</span>);
+                } else if (accessor == 'profileName') {
+                    const firstName = cell.cell.row.original.firstName;
+                    const lastName = cell.cell.row.original.lastName;
+
+                    return (<span>{firstName} {lastName}</span>);
                 } else if (accessor == 'profileCompany') {
-                    return (<span>Company Person</span>);
+                    const company = cell.cell.row.original.company;
+
+                    return (<span>{company}</span>);
+                } else if (accessor == 'profileEmails') {
+                    return (<span>{cell.value == null ? 'None' : cell.value}</span>);
+                } else if (accessor == 'profileInternalPerson') {
+                    const isInternal = cell.cell.row.original.internal;
+
+                    return (<span>{isInternal ? 'Yes' : 'No'}</span>);
                 } else {
                     return (<span>{cell.value == null ? '' : cell.value}</span>);
                 }

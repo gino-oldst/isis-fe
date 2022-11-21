@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { setKeywords, setPoliciesData, setPolicyForm } from '../../redux/modules/profiles';
+import { setKeywords, setPolicyForm, setProfilesData } from '../../redux/modules/profiles';
 import ProfilesScreen from './ProfilesScreen';
 import type { Menu } from '../../types';
-import { deletePolicyMap, getAlertPoliciesData, deletePolicy, getKeywordSearch, getPolicymapById, getPolicymapByIdRaw, getPolicyMapByIdRaw, getPolicySearchData, postNewKeyword, postNewPolicy, postNewPolicyMap, updatePolicy, updatePolicyMap } from '../../api/profiles';
+import { deletePolicyMap, getAlertPoliciesData, deletePolicy, getKeywordSearch, getPolicymapById, getPolicymapByIdRaw, getPolicyMapByIdRaw, getPolicySearchData, postNewKeyword, postNewPolicy, postNewPolicyMap, updatePolicy, updatePolicyMap, postNewProfile, getProfileData } from '../../api/profiles';
 import { getAlertCategoryName } from '../../utils/helpers';
 import { CreateModal, DeleteModal, EditModal, SuccessModal } from './modals';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
+import debounce from 'debounce-async';
+import { getEmails } from '../../api/communicationSearch';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -44,20 +46,21 @@ export default function ProfilesContainer({
     const { table, form, keywords } = useSelector(({ profiles }) => profiles);
 
     useEffect(() => {
-        loadPolicyData(activePage, pageSize, sort, searchData, searchData);
+        loadPolicyData(activePage, pageSize, sort, searchData);
     }, [pageSize, activePage, sort]);
 
     const loadPolicyData = async (activePage, pageSize, sort, searchName) => {
         setLoading(true);
 
         try {
-            const alertPolicies = await getAlertPoliciesData(activePage, pageSize, sort, searchName);
-            const keywords = await getKeywordSearch();
+            // const alertPolicies = await getAlertPoliciesData(activePage, pageSize, sort, searchName);
+            // const keywords = await getKeywordSearch();
 
-            const { data, totalNoOfRecords, totalPages } = alertPolicies.data;
+            const profiles = await getProfileData(activePage, pageSize, sort, searchName);
+            const { data, totalNoOfRecords, totalPages } = profiles.data;
 
-            dispatch(setPoliciesData(data, totalNoOfRecords, totalPages));
-            dispatch(setKeywords(keywords));
+            dispatch(setProfilesData(data, totalNoOfRecords, totalPages));
+            // dispatch(setKeywords(keywords));
         } catch (e) {
             console.error(e);
         }
@@ -80,35 +83,17 @@ export default function ProfilesContainer({
     };
 
     // Handlers
-    const onCreateSubmit = async (name, type, selectedItems) => {
+    const onCreateSubmit = async (firstName, lastName, companyName, selectedEmails) => {
         try {
-            var policy = [];
-
-            await postNewPolicy({
-                internalCode: type.value,
-                name: name,
-                description: `List of keywords for ${name}`,
-                status: 0
-            }).then(x => {
-                policy = x;
+            await postNewProfile({
+                firstName: firstName,
+                lastName: lastName,
+                company: companyName
             });
-
-            const promises = selectedItems.map(item => {
-                const data = {
-                    keywordId: item.id,
-                    policyId: policy.id
-                };
-
-                const request = postNewPolicyMap(data);
-
-                return request;
-            });
-
-            const statusChange = await Promise.all(promises);
 
             reload();
 
-            showSuccessModal('Succes!', 'You have successfully added a Policy');
+            showSuccessModal('Succes!', 'You have successfully added a new Profile');
         } catch (e) {
             console.error(e);
             dispatch(setFlashNotification({
@@ -263,11 +248,30 @@ export default function ProfilesContainer({
         }
     };
 
+    const [lastOptions, setLastOptions] = useState([]);
+
+    const loadOptions = useMemo(() => {
+        return debounce(async (inputValue) => {
+            const { data } = await getEmails(inputValue, inputValue, inputValue);
+            const accounts = data.data;
+
+            const options = accounts.map((account) => ({
+                value: account.email,
+                label: `${account.email} (${account.firstName} ${account.lastName})`
+            }));
+
+            setLastOptions(options);
+
+            return options;
+        }, 300);
+    }, [setLastOptions]);
+
     // Modals
     const showPolicyCreateModal = () => {
         dispatch(setModalContent({
             modalContent: <CreateModal
                 onSubmit={onCreateSubmit}
+                loadOptions={loadOptions}
                 onCreateKeyWord={onCreateKeyWord}
                 handleCloseModal={handleCloseModal}/>,
             size: 'lg'

@@ -136,3 +136,44 @@ export async function deletePolicy(policyId) {
 export async function deletePolicyMap(id) {
     return await makeApiCall(`${DELETE_POLICY_MAP}/${id}`, 'DELETE');
 }
+
+// The New Life
+// Create
+// POST: {{storage-url}}/user-link
+
+// Retrieve
+// GET: {{storage-url}}/user-link/<user-link-id>
+
+/**
+ * POST
+ */
+const POST_NEW_PROFILE = `${config.apiStorage}/storage-service/user-link`;
+
+/**
+ * GET
+ */
+const GET_PROFILE_BY_ID = `${config.apiStorage}/storage-service/user-link`;
+const GET_PROFILE_DATA = `${config.apiStorage}/storage-service/user-link/search/paged`;
+/**
+ * FUNCTIONS
+ */
+
+export async function getProfileDataByID(id) {
+    const policy = await makeApiCall(`${GET_PROFILE_BY_ID}/${id}`, 'GET');
+
+    return policy.data;
+}
+
+export async function getProfileData(page, size, sort, name) {
+    const filterBody = { name: name };
+    const sortColumn = sort.column;
+    const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sortColumn},${sort.type}` : '&sort=dateCreated,ASC';
+
+    return await makeApiCall(`${GET_PROFILE_DATA}?page=${page}&size=${size}${withSorting()}`, 'POST', {});
+}
+
+export async function postNewProfile(requestBody) {
+    const ret = await makeApiCall(POST_NEW_PROFILE, 'POST', requestBody);
+
+    return ret.data;
+}

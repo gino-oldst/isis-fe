@@ -1,6 +1,6 @@
 // @flow
 const SET_SELECTED_POLICY = 'SET_SELECTED_POLICY';
-const SET_POLICIES_DATA = 'SET_POLICIES_DATA';
+const SET_PROFILES_DATA = 'SET_PROFILES_DATA';
 const SET_PARAMETERS_DATA = 'SET_PARAMETERS_DATA';
 const REPLACE_PARAMETER_STATUS = 'REPLACE_PARAMETER_STATUS';
 const REPLACE_PARAMETERS_DATA = 'REPLACE_PARAMETERS_DATA';
@@ -15,9 +15,9 @@ export function setSelectedPolicies(data: Object) {
     };
 }
 
-export function setPoliciesData(data: Array, totalNoOfRecords: String, totalPages: String) {
+export function setProfilesData(data: Array, totalNoOfRecords: String, totalPages: String) {
     return {
-        type: SET_POLICIES_DATA,
+        type: SET_PROFILES_DATA,
         data,
         totalNoOfRecords,
         totalPages
@@ -73,7 +73,7 @@ const initialState = {
         columns: [
             {
                 header: 'Name',
-                accessor: 'name',
+                accessor: 'profileName',
                 disableFilters: true,
                 clickable: true
             },
@@ -196,7 +196,7 @@ export default function profiles(state: Object = initialState, action: Object):
                     status: action.data.status
                 }
             };
-        case SET_POLICIES_DATA:
+        case SET_PROFILES_DATA:
             return {
                 ...state,
                 table: {
