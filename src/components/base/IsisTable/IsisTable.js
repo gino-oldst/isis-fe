@@ -39,6 +39,7 @@ import Storage from '../../../utils/Storage';
 import { Spinner } from 'react-bootstrap';
 import { after, before } from 'underscore';
 import { customWordHighlightLogic } from '../../../utils/highlightHelper';
+import { access } from 'fs';
 // Define a default UI for filtering
 
 function GlobalFilter({
@@ -1439,6 +1440,12 @@ export default function ReactTable({
                             }
                         </>
                     );
+                } else if (accessor == 'profileInternalPerson') {
+                    return (<span>Internal Person</span>);
+                } else if (accessor == 'profileEmails') {
+                    return (<span>Emails</span>);
+                } else if (accessor == 'profileCompany') {
+                    return (<span>Company Person</span>);
                 } else {
                     return (<span>{cell.value == null ? '' : cell.value}</span>);
                 }

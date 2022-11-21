@@ -4,8 +4,6 @@ import { useHistory } from 'react-router-dom';
 import { setKeywords, setPoliciesData, setPolicyForm } from '../../redux/modules/policies';
 import CommunicationPoliciesScreen from './PoliciesScreen';
 import type { Menu } from '../../types';
-
-import dataSample from './data_sample.json';
 import { deletePolicyMap, getAlertPoliciesData, deletePolicy, getKeywordSearch, getPolicymapById, getPolicymapByIdRaw, getPolicyMapByIdRaw, getPolicySearchData, postNewKeyword, postNewPolicy, postNewPolicyMap, updatePolicy, updatePolicyMap } from '../../api/policies';
 import { getAlertCategoryName } from '../../utils/helpers';
 import { CreateModal, DeleteModal, EditModal, SuccessModal } from './modals';

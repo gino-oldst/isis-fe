@@ -63,6 +63,13 @@ function App() {
             history.push('/communication_policies');
         },
         key: 'communication_policies'
+    }, {
+        label: 'Profiles',
+        onClick: () => {
+            dispatch(resetTableState());
+            history.push('/profiles');
+        },
+        key: 'profiles'
     }];
 
     // const sidebarMenu = [{
