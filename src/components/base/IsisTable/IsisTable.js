@@ -1450,7 +1450,12 @@ export default function ReactTable({
 
                     return (<span>{company}</span>);
                 } else if (accessor == 'profileEmails') {
-                    return (<span>{cell.value == null ? 'None' : cell.value}</span>);
+                    const identifiers = [...new Set(cell.cell.row.original.userLinkIdentifierDtos
+                        ? cell.cell.row.original.userLinkIdentifierDtos.map(item => item.identifier)
+                        : '')];
+                    const strIdentifiers = identifiers.join(', ');
+
+                    return (<span>{strIdentifiers != '' ? strIdentifiers : 'None'}</span>);
                 } else if (accessor == 'profileInternalPerson') {
                     const isInternal = cell.cell.row.original.internal;
 

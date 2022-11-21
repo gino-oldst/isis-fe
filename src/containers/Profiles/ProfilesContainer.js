@@ -88,7 +88,10 @@ export default function ProfilesContainer({
             await postNewProfile({
                 firstName: firstName,
                 lastName: lastName,
-                company: companyName
+                company: companyName,
+                identifiers: [...new Set(selectedEmails
+                    ? selectedEmails.map(item => item.value)
+                    : '')]
             });
 
             reload();
