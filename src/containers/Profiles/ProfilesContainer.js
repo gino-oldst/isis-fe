@@ -328,7 +328,7 @@ export default function ProfilesContainer({
     // Redirect
     const viewCommunicationPolicyDetails = async (id, name, type) => {
         history.push({
-            pathname: `/communication-policies-detail/${id}`,
+            pathname: `/profile-detail/${id}`,
             state: { id: id, name: name, type: type }
         });
     };
