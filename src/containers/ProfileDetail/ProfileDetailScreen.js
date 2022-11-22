@@ -127,20 +127,22 @@ function ProfileDetailScreen({
                                                         {profileData.userLinkIdentifierDtos.length > 0
                                                             ? <>
                                                                 {profileData.userLinkIdentifierDtos.map(profile => {
-                                                                    <Typography color='color-2' variant='size-16' className='pl-0'>{profile.identifier}</Typography>;
+                                                                    return (
+                                                                        <span className='email'>{profile.identifier}</span>
+                                                                    );
                                                                 })}
                                                             </>
                                                             : <>
                                                                 <Typography size={18} color='color-1' className='mr-3'
                                                                     weight='semi-bold'>0 Emails Associated</Typography>
                                                             </>
+
                                                         }
                                                     </>
                                                 }
                                                 {/* {userIdentifier.map(userIdentifier => {
                                                     <Typography color='color-2' variant='size-16' className='pl-0'>{userIdentifier.identifier}</Typography>;
                                                 })} */}
-                                                <Typography color='color-2' variant='size-16' className='pl-0'>sdas</Typography>
                                             </div>
                                         </Col>
                                     </Row>

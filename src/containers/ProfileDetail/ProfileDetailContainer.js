@@ -66,22 +66,6 @@ export default function ProfileDetailContainer({
             setProfileData(profileData);
 
             console.log(profileData);
-            // // Map Keywords to Policy Map
-            // const policyMapData = await getPolicymapById(activePage, pageSize, sort, { policyId: filters.state.id });
-            // const keywords = await getKeywordSearchNumbered();
-            // const keywordsModal = await getKeywordSearch();
-
-            // const { data, totalNoOfRecords, totalPages } = policyMapData.data;
-
-            // data.map((policyMap) => {
-            //     var keyword = keywords.filter(a => a.id == policyMap.keywordId)[0];
-
-            //     policyMap.word = keyword.label;
-            //     policyMap.number = keyword.number;
-            // });
-
-            // dispatch(setPoliciesData(data, totalNoOfRecords, totalPages));
-            // dispatch(setKeywords(keywords));
         } catch (e) {
             console.error(e);
         }
