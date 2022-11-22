@@ -107,7 +107,7 @@ function ProfileDetailScreen({
                                             <div className='mb-5'>
                                                 <span className='pl-0'
                                                     style={{ fontWeight: 'bold' }}>Internal Person: </span>
-                                                <span>{profileData.internal}</span>
+                                                <span>{profileData.internal ? 'Yes' : 'No'}</span>
                                             </div>
                                         </Col>
                                     </Row>
