@@ -5,9 +5,9 @@ import { setKeywords, setPoliciesData } from '../../redux/modules/policies';
 import type { Menu } from '../../types';
 
 import { deletePolicy, deletePolicyMap, getAlertPoliciesData, getAlertPolicyDataByID, getKeywordSearch, getKeywordSearchNumbered, getPolicymapById, getPolicymapByIdRaw, getPolicyMapByIdRaw, getPolicySearchData, postNewKeyword, postNewPolicy, postNewPolicyMap, updatePolicy, updatePolicyMap } from '../../api/policies';
-import { getProfileDataByID } from '../../api/profiles';
+import { getProfileDataByID, deleteUserProfile } from '../../api/profiles';
 import { getAlertCategoryName } from '../../utils/helpers';
-import { CreateModal, DeleteModal, EditModal, SuccessModal } from '../CommunicationPolicies/modals';
+import { CreateModal, DeleteModal, EditModal, SuccessModal } from './modals';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
 import ProfileDetailScreen from './ProfileDetailScreen';
@@ -64,8 +64,6 @@ export default function ProfileDetailContainer({
             const profileData = await getProfileDataByID(filters.state.id);
 
             setProfileData(profileData);
-
-            console.log(profileData);
         } catch (e) {
             console.error(e);
         }
@@ -178,6 +176,29 @@ export default function ProfileDetailContainer({
         }
     };
 
+    const onDeleteProfile = async (profileData) => {
+        try {
+            // TODO: Update delete of policy to update delete -> 1
+            var profile = [];
+
+            await getProfileDataByID(filters.state.id).then(x => {
+                profile = x;
+            });
+
+            const { data } = profile;
+
+            await deleteUserProfile(filters.state.id);
+
+            console.log(data);
+
+            reload();
+
+            showSuccessModal('Delete Success!', 'You have successfully deleted Profile');
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     // Modals
     const showPolicyEditModal = async (policy) => {
         // TODO: Filter by id to get specific keywords
@@ -207,6 +228,17 @@ export default function ProfileDetailContainer({
         }));
     };
 
+    const showProfileDeleteModal = (profile) => {
+        // TODO: Passing of the ID of the Category
+        dispatch(setModalContent({
+            modalContent: <DeleteModal
+                profileData={profileData}
+                onDelete={onDeleteProfile}
+                handleCloseModal={handleCloseModal}/>,
+            size: 'md'
+        }));
+    };
+
     const showSuccessModal = (title, message) => {
         dispatch(setModalContent({
             modalContent: <SuccessModal title={title} message={message} handleCloseModal={handleCloseModal}/>,
@@ -223,5 +255,6 @@ export default function ProfileDetailContainer({
         categoryName={categoryName}
         type={type}
         profileData={profileData}
+        showProfileDeleteModal = {showProfileDeleteModal}
         showPolicyEditModal={showPolicyEditModal}/>;
 }

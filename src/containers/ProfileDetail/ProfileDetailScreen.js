@@ -53,7 +53,8 @@ type Props = {
     categoryName: String,
     type: String,
     policyData: Object,
-    profileData: Array
+    profileData: Array,
+    showProfileDeleteModal: Function
 }
 
 function ProfileDetailScreen({
@@ -66,7 +67,9 @@ function ProfileDetailScreen({
     categoryName,
     type,
     policyData,
-    profileData
+    profileData,
+    showProfileDeleteModal
+
 }: Props): React$Element<any> {
     return (
         <div className='policies'>
@@ -86,7 +89,8 @@ function ProfileDetailScreen({
                                         <Col lg={6} className='text-right pr-0'>
                                             <Button weight='light' type='button' className='profile__edit-delete ml-2'
                                                 label='Edit'/>
-                                            <Button weight='light' type='button' className='profile__edit-delete ml-2'
+                                            <Button weight='light' type='button' onClick={showProfileDeleteModal}
+                                                className='profile__edit-delete ml-2'
                                                 label='Delete' />
                                         </Col>
                                     </Row>
