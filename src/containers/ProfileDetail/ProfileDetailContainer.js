@@ -146,7 +146,7 @@ export default function ProfileDetailContainer({
     const loadOptions = useMemo(() => {
         return debounce(async (inputValue) => {
             const { data } = await getEmails(inputValue, inputValue, inputValue);
-            const accounts = data;
+            const accounts = data.data;
 
             const options = accounts.map((account) => ({
                 value: account.email,
