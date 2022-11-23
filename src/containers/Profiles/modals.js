@@ -237,7 +237,7 @@ const EditModal = ({
 
 // Delete Modal
 const DeleteModal = ({
-    policyData,
+    profileData,
     onDelete,
     handleCloseModal
 }) => {
@@ -248,18 +248,18 @@ const DeleteModal = ({
             <div className='row action-modal__content mt-5 mb-4 d-flex justify-content-center align-items-center'>
                 <Typography variant='size-35' color='color-3'
                     className='playfair-font mb-4'>
-                    Delete Category?
+                    Delete Profile?
                 </Typography>
                 <Typography variant='size-16' color='color-3'
                     className='mb-3 text-center'>
-                    Once deleted all the words that is included in this category will not be included in the alert processing.
+                    Once deleted all the details will be permanent deleted.
                 </Typography>
             </div>
             <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
                 <Button label='Close' variant='primary' className='cancel-button px-4 mr-2 py-2'
                     onClick={handleCloseModal}/> {/* onClick={handleClose} disabled={submit} /> */}
                 <Button label='Delete' variant='primary' className='policies__save-button px-4 py-2'
-                    onClick={e => onDelete(policyData)}/>
+                    onClick={e => onDelete(profileData)}/>
             </div>
         </div>
     );

@@ -265,7 +265,7 @@ export default function ProfilesContainer({
             const { data } = await getEmails(inputValue, inputValue, inputValue);
             const accounts = data.data;
 
-            console.log(accounts);
+            console.log(data);
             const options = accounts.map((account) => ({
                 value: account.email,
                 label: `${account.email} (${account.firstName} ${account.lastName})`

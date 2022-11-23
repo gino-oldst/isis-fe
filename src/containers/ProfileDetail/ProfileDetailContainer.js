@@ -7,7 +7,7 @@ import type { Menu } from '../../types';
 import { deletePolicy, deletePolicyMap, getAlertPoliciesData, getAlertPolicyDataByID, getKeywordSearch, getKeywordSearchNumbered, getPolicymapById, getPolicymapByIdRaw, getPolicyMapByIdRaw, getPolicySearchData, postNewKeyword, postNewPolicy, postNewPolicyMap, updatePolicy, updatePolicyMap } from '../../api/policies';
 import { getProfileDataByID, deleteUserProfile, updateProfile } from '../../api/profiles';
 import { getAlertCategoryName } from '../../utils/helpers';
-import { CreateModal, DeleteModal, EditModal, SuccessModal } from './modals';
+import { CreateModal, DeleteModal, EditModal, SuccessModal } from '../../containers/Profiles/modals';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
 import ProfileDetailScreen from './ProfileDetailScreen';
