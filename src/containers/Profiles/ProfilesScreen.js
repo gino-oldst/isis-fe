@@ -74,6 +74,12 @@ function ProfilesScreen({
 }: Props): React$Element<any> {
     const { form } = useSelector(({ policies }) => policies);
 
+    const onKeyDownHandler = (e) => {
+        if (e.keyCode === 13) {
+            onSubmit();
+        }
+    };
+
     return (
         <div className='profiles'>
             <CollapsibleSidebar
@@ -94,20 +100,19 @@ function ProfilesScreen({
                                     <Row className='w-100 mr-0'>
                                         <Col lg={6} md={6} sm={6}
                                             xs={6}>
-                                            <Form>
-                                                <Label>Search Profiles</Label>
-                                                <FormGroup className='mb-3'>
-                                                    <div className='d-flex'>
-                                                        <Input name='filterId'
-                                                            type='text'
-                                                            onChange={onChange}
-                                                            className='shadow-none isis-control'
-                                                            placeholder='Search...'/>
-                                                        <Button weight='light' type='button' className='alerts__bulk-review ml-2'
-                                                            label='Search' onClick={onSubmit}/>
-                                                    </div>
-                                                </FormGroup>
-                                            </Form>
+                                            <Label>Search Profiles</Label>
+                                            <FormGroup className='mb-3'>
+                                                <div className='d-flex'>
+                                                    <Input name='filterId'
+                                                        type='text'
+                                                        onChange={onChange}
+                                                        onKeyDown={onKeyDownHandler}
+                                                        className='shadow-none isis-control'
+                                                        placeholder='Search...'/>
+                                                    <Button weight='light' type='button' className='alerts__bulk-review ml-2'
+                                                        label='Search' onClick={onSubmit}/>
+                                                </div>
+                                            </FormGroup>
                                         </Col>
                                         <Col lg={6} md={6} sm={6}
                                             xs={6} className='d-flex align-items-end justify-content-end mb-3 pr-0'>
