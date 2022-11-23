@@ -179,9 +179,7 @@ export async function getProfileData(page, size, sort, name) {
 }
 
 export async function postNewProfile(requestBody) {
-    const ret = await makeApiCall(POST_NEW_PROFILE, 'POST', requestBody);
-
-    return ret.data;
+    return await makeApiCall(POST_NEW_PROFILE, 'POST', requestBody);
 }
 
 const UPDATE_PROFILE = `${config.apiStorage}/storage-service/user-link`;

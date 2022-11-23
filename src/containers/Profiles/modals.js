@@ -152,7 +152,7 @@ const EditModal = ({
         setProfileLastName(defaultProfile.lastName);
         setProfileCompanyName(defaultProfile.company);
         setIsInternalPerson(defaultProfile.internal);
-        // setAssociatedEmails(defaultProfile.userLinkIdentifierDtos);
+        setAssociatedEmails(defaultProfile.userLinkIdentifierDtos);
     }, []);
 
     return (
@@ -201,7 +201,7 @@ const EditModal = ({
                                     name='filterSender'
                                     className='filter-select'
                                     onChange={(newTags) => handleSenderChange(newTags)}
-                                    value={defaultProfile.userLinkIdentifierDtos.length > 0
+                                    defaultValue={defaultProfile.userLinkIdentifierDtos.length > 0
                                         ? defaultProfile.userLinkIdentifierDtos.map(row => ({ label: row.identifier, value: row.identifier }))
                                         : []}
                                     placeholder={'Select Email...'}/>
@@ -224,7 +224,7 @@ const EditModal = ({
                 <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
                     onClick={handleCloseModal} /> {/* onClick={handleClose} disabled={submit} /> */}
                 <Button label='Edit' variant='primary' className='policies__save-button px-4 py-2'
-                    // disabled={profileFirstName == '' && profileLastName == '' && profileCompanyName == '' && associatedEmails}
+                    disabled={profileFirstName == '' || profileLastName == '' || profileCompanyName == ''}
                     onClick={e => onSubmit(defaultProfile.id, profileFirstName, profileLastName, profileCompanyName, isInternalPerson, associatedEmails)}/>
             </div>
         </div>

@@ -99,9 +99,23 @@ export default function ProfilesContainer({
 
             showSuccessModal('Succes!', 'You have successfully added a new Profile');
         } catch (e) {
-            console.error(e);
+            var message = '';
+
+            if (e.exception == 'AlreadyAssignedException') {
+                var msg = e.message;
+                var matches = msg.match(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/);
+                var email = msg.match(/[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+/);
+
+                userId = matches[0];
+                var user = table.data.filter(a => a.id == userId)[0];
+
+                message = `Identifier ${email} is already assigned to user ${user.firstName} ${user.lastName}`;
+            } else {
+                message = e.message;
+            }
+
             dispatch(setFlashNotification({
-                message: e.message,
+                message: message,
                 isError: false
             }));
         }
@@ -114,7 +128,10 @@ export default function ProfilesContainer({
                 firstName: firstName,
                 lastName: lastName,
                 company: companyName,
-                internal: isInternal
+                internal: isInternal,
+                identifiers: [...new Set(selectedEmails
+                    ? selectedEmails.map(item => item.value)
+                    : '')]
             });
 
             // const policyMapData = await getPolicymapByIdRaw({ policyId: id });

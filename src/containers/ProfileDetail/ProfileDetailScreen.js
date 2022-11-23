@@ -132,7 +132,7 @@ function ProfileDetailScreen({
                                                             ? <>
                                                                 {profileData.userLinkIdentifierDtos.map(profile => {
                                                                     return (
-                                                                        <span className='email'>{profile.identifier}</span>
+                                                                        <span className='email mr-2'>{profile.identifier}</span>
                                                                     );
                                                                 })}
                                                             </>

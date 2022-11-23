@@ -115,6 +115,7 @@ export default async function makeApiCall(
 
             errData.status = err.response.status ? err.response.status : err.response.data.status;
             errData.message = err.response.message ? err.response.message : err.response.data.message;
+            errData.exception = err.response.exception ? err.response.exception : err.response.data.exception;
 
             // cancelTokenSource.cancel('Request was canceled');
 
