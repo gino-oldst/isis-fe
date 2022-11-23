@@ -77,6 +77,10 @@ export default function ProfileDetailContainer({
         loadProfileData(activePage, pageSize, sort);
     };
 
+    const reloadTables = () => {
+        history.push('/profiles');
+    };
+
     const onCreateKeyWord = async (keyword) => {
         try {
             await postNewKeyword({ word: keyword });
@@ -129,9 +133,7 @@ export default function ProfileDetailContainer({
 
             await deleteUserProfile(filters.state.id);
 
-            console.log(data);
-
-            reload();
+            reloadTables();
 
             showSuccessModal('Delete Success!', 'You have successfully deleted Profile');
         } catch (e) {
