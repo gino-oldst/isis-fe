@@ -101,7 +101,6 @@ function ProfilesScreen({
                                                         <Input name='filterId'
                                                             type='text'
                                                             onChange={onChange}
-                                                            // defaultValue={filterSearchForm.filterId}
                                                             className='shadow-none isis-control'
                                                             placeholder='Search...'/>
                                                         <Button weight='light' type='button' className='alerts__bulk-review ml-2'

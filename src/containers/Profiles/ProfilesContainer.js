@@ -46,16 +46,13 @@ export default function ProfilesContainer({
     const { table, form, keywords } = useSelector(({ profiles }) => profiles);
 
     useEffect(() => {
-        loadPolicyData(activePage, pageSize, sort, searchData);
+        loadProfileData(activePage, pageSize, sort, searchData);
     }, [pageSize, activePage, sort]);
 
-    const loadPolicyData = async (activePage, pageSize, sort, searchName) => {
+    const loadProfileData = async (activePage, pageSize, sort, searchName) => {
         setLoading(true);
 
         try {
-            // const alertPolicies = await getAlertPoliciesData(activePage, pageSize, sort, searchName);
-            // const keywords = await getKeywordSearch();
-
             const profiles = await getProfileData(activePage, pageSize, sort, searchName);
             const { data, totalNoOfRecords, totalPages } = profiles.data;
 
@@ -73,7 +70,7 @@ export default function ProfilesContainer({
     };
 
     const reload = () => {
-        loadPolicyData(activePage, pageSize, sort, searchData);
+        loadProfileData(activePage, pageSize, sort, searchData);
     };
 
     const onChange = e => {
@@ -329,8 +326,6 @@ export default function ProfilesContainer({
     return <ProfilesScreen
         loading={loading}
         breadcrumb={breadcrumb}
-        onChange={onChange}
-        onSubmit={reload}
         onChange={onChange}
         onSubmit={reload}
         table={table}

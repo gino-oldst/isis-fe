@@ -171,11 +171,11 @@ export async function getProfileDataByID(id) {
 }
 
 export async function getProfileData(page, size, sort, name) {
-    const filterBody = { name: name };
+    const filterBody = { likeFirstName: name, likeLastName: name };
     const sortColumn = sort.column;
     const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sortColumn},${sort.type}` : '&sort=dateCreated,ASC';
 
-    return await makeApiCall(`${GET_PROFILE_DATA}?page=${page}&size=${size}${withSorting()}`, 'POST', {});
+    return await makeApiCall(`${GET_PROFILE_DATA}?page=${page}&size=${size}${withSorting()}`, 'POST', filterBody);
 }
 
 export async function postNewProfile(requestBody) {
