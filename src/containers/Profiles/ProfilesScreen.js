@@ -52,7 +52,7 @@ type Props = {
     viewPoliciesDetails: Function,
     showPolicyCreateModal: Function,
     showPolicyEditModal: Function,
-    showPolicyDeleteModal: Function,
+    showProfileDeleteModal: Function,
     viewCommunicationPolicyDetails: Function,
     onChange: Function,
     onSubmit: Function
@@ -67,7 +67,7 @@ function ProfilesScreen({
     viewPoliciesDetails,
     showPolicyCreateModal,
     showPolicyEditModal,
-    showPolicyDeleteModal,
+    showProfileDeleteModal,
     viewCommunicationPolicyDetails,
     onChange,
     onSubmit
@@ -134,7 +134,7 @@ function ProfilesScreen({
                                     pagination={true}
                                     sortable={false}
                                     fetching={table.loading}
-                                    viewDeleteModal={showPolicyDeleteModal}
+                                    viewDeleteModal={showProfileDeleteModal}
                                     viewEditModal={showPolicyEditModal}
                                     viewDetails={viewCommunicationPolicyDetails}/>
                             </CardBody>

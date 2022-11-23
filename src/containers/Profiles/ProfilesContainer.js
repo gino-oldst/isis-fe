@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { setKeywords, setPolicyForm, setProfilesData } from '../../redux/modules/profiles';
 import ProfilesScreen from './ProfilesScreen';
 import type { Menu } from '../../types';
-import { deletePolicyMap, getAlertPoliciesData, deletePolicy, getKeywordSearch, getPolicymapById, getPolicymapByIdRaw, getPolicyMapByIdRaw, getPolicySearchData, postNewKeyword, postNewPolicy, postNewPolicyMap, updatePolicy, updatePolicyMap, postNewProfile, getProfileData, updateProfile } from '../../api/profiles';
+import { deletePolicyMap, getAlertPoliciesData, deletePolicy, getKeywordSearch, getPolicymapById, getPolicymapByIdRaw, getPolicyMapByIdRaw, getPolicySearchData, postNewKeyword, postNewPolicy, postNewPolicyMap, updatePolicy, updatePolicyMap, postNewProfile, getProfileData, updateProfile, deleteUserProfile } from '../../api/profiles';
 import { getAlertCategoryName } from '../../utils/helpers';
 import { CreateModal, DeleteModal, EditModal, SuccessModal } from './modals';
 import { setModalContent } from '../../redux/modules/modalEvent';
@@ -131,63 +131,6 @@ export default function ProfilesContainer({
                     : '')]
             });
 
-            // const policyMapData = await getPolicymapByIdRaw({ policyId: id });
-            // const policyMapDataDeleted = await getPolicymapByIdRaw({ policyId: id, deleted: true });
-            // const activeMap = policyMapData.data.data;
-            // const activeMapDeleted = policyMapDataDeleted.data.data;
-
-            // var itemsToDelete = defaultKeywords.filter(a => !selectedItems.some(b => a.id === b.id));
-            // var itemsToAdd = selectedItems.filter(a => !defaultKeywords.some(b => a.id === b.id));
-
-            // // Delete
-            // itemsToDelete.map((policyMap) => {
-            //     var map = activeMap.filter(a => a.keywordId == policyMap.id && a.policyId == id)[0];
-
-            //     policyMap.mapId = map.id;
-            // });
-
-            // var promises = [];
-
-            // itemsToDelete.map(item => {
-            //     const data = {
-            //         id: item.mapId,
-            //         keywordId: item.id,
-            //         policyId: id,
-            //         deleted: 1
-            //     };
-
-            //     const request = updatePolicyMap(data);
-
-            //     promises.push(request);
-            // });
-
-            // itemsToAdd.map(item => {
-            //     var map = activeMapDeleted.filter(a => a.keywordId == item.id && a.policyId == id)[0];
-            //     var request = [];
-
-            //     if (map) {
-            //         const data = {
-            //             id: map.id,
-            //             keywordId: item.id,
-            //             policyId: id,
-            //             deleted: 0
-            //         };
-
-            //         request = updatePolicyMap(data);
-            //     } else {
-            //         const data = {
-            //             keywordId: item.id,
-            //             policyId: id
-            //         };
-
-            //         request = postNewPolicyMap(data);
-            //     }
-
-            //     promises.push(request);
-            // });
-
-            // const statusChange = await Promise.all(promises);
-
             reload();
 
             showSuccessModal('Success!', 'You have successfully edited a Profile');
@@ -196,63 +139,13 @@ export default function ProfilesContainer({
         }
     };
 
-    const onCreateKeyWord = async (keyword) => {
+    const onDeleteProfile = async (profileData) => {
         try {
-            await postNewKeyword({ word: keyword });
+            await deleteUserProfile(profileData.id);
 
-            // Reload Keywords
-            const keywords = await getKeywordSearch();
+            reload();
 
-            dispatch(setKeywords(keywords));
-
-            dispatch(setFlashNotification({
-                message: 'Added a new Keyword.',
-                isError: false
-            }));
-        } catch (e) {
-            console.error(e);
-        }
-    };
-
-    const onDeletePolicy = async (policyData) => {
-        try {
-            var policy = [];
-
-            await getPolicyMapByIdRaw(policyData.id).then(x => {
-                policy = x;
-            });
-
-            if (policy.status === 200) {
-                const { data } = policy.data;
-
-                await updatePolicy({
-                    id: policyData.id,
-                    name: policyData.name,
-                    description: `List of keywords for ${policyData.name}`,
-                    internalCode: policyData.internalCode,
-                    status: policyData.status,
-                    deleted: 1
-                });
-
-                const promises = data.map(item => {
-                    const data = {
-                        id: item.id,
-                        keywordId: item.keywordId,
-                        policyId: policyData.id,
-                        deleted: 1
-                    };
-
-                    const request = updatePolicyMap(data);
-
-                    return request;
-                });
-
-                const statusChange = await Promise.all(promises);
-
-                reload();
-
-                showSuccessModal('Delete Success!', 'You have successfully deleted a Policy');
-            }
+            showSuccessModal('Delete Success!', 'You have successfully deleted Profile');
         } catch (e) {
             console.error(e);
         }
@@ -265,7 +158,6 @@ export default function ProfilesContainer({
             const { data } = await getEmails(inputValue, inputValue, inputValue);
             const accounts = data.data;
 
-            console.log(data);
             const options = accounts.map((account) => ({
                 value: account.email,
                 label: `${account.email} (${account.firstName} ${account.lastName})`
@@ -299,11 +191,11 @@ export default function ProfilesContainer({
         }));
     };
 
-    const showPolicyDeleteModal = (policy) => {
+    const showProfileDeleteModal = (profile) => {
         dispatch(setModalContent({
             modalContent: <DeleteModal
-                policyData={policy}
-                onDelete={onDeletePolicy}
+                profileData={profile}
+                onDelete={onDeleteProfile}
                 handleCloseModal={handleCloseModal}/>,
             size: 'md'
         }));
@@ -334,9 +226,8 @@ export default function ProfilesContainer({
         sidebarMenu={sidebarMenu}
         showPolicyCreateModal={showPolicyCreateModal}
         showPolicyEditModal={showPolicyEditModal}
-        showPolicyDeleteModal={showPolicyDeleteModal}
-        viewCommunicationPolicyDetails={viewCommunicationPolicyDetails}
+        showProfileDeleteModal={showProfileDeleteModal}
         showPolicyEditModal={showPolicyEditModal}
-        showPolicyDeleteModal={showPolicyDeleteModal}
+        viewCommunicationPolicyDetails={viewCommunicationPolicyDetails}
         viewCommunicationPolicyDetails={viewCommunicationPolicyDetails}/>;
 }

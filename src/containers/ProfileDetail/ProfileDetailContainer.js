@@ -160,7 +160,6 @@ export default function ProfileDetailContainer({
     // Modals
 
     const showProfileDeleteModal = (profile) => {
-        // TODO: Passing of the ID of the Category
         dispatch(setModalContent({
             modalContent: <DeleteModal
                 profileData={profileData}
