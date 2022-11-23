@@ -147,9 +147,6 @@ export default function CommunicationPoliciesContainer({
             var itemsToDelete = defaultKeywords.filter(a => !selectedItems.some(b => a.id === b.id));
             var itemsToAdd = selectedItems.filter(a => !defaultKeywords.some(b => a.id === b.id));
 
-            console.log(itemsToDelete);
-            console.log(itemsToAdd);
-
             // Delete
             itemsToDelete.map((policyMap) => {
                 var map = activeMap.filter(a => a.keywordId == policyMap.id && a.policyId == id)[0];

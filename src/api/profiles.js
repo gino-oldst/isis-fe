@@ -177,3 +177,9 @@ export async function postNewProfile(requestBody) {
 
     return ret.data;
 }
+
+const UPDATE_PROFILE = `${config.apiStorage}/storage-service/user-link`;
+
+export async function updateProfile(data: Object) {
+    return await makeApiCall(UPDATE_PROFILE, 'PUT', data);
+}

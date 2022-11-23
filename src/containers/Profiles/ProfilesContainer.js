@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { setKeywords, setPolicyForm, setProfilesData } from '../../redux/modules/profiles';
 import ProfilesScreen from './ProfilesScreen';
 import type { Menu } from '../../types';
-import { deletePolicyMap, getAlertPoliciesData, deletePolicy, getKeywordSearch, getPolicymapById, getPolicymapByIdRaw, getPolicyMapByIdRaw, getPolicySearchData, postNewKeyword, postNewPolicy, postNewPolicyMap, updatePolicy, updatePolicyMap, postNewProfile, getProfileData } from '../../api/profiles';
+import { deletePolicyMap, getAlertPoliciesData, deletePolicy, getKeywordSearch, getPolicymapById, getPolicymapByIdRaw, getPolicyMapByIdRaw, getPolicySearchData, postNewKeyword, postNewPolicy, postNewPolicyMap, updatePolicy, updatePolicyMap, postNewProfile, getProfileData, updateProfile } from '../../api/profiles';
 import { getAlertCategoryName } from '../../utils/helpers';
 import { CreateModal, DeleteModal, EditModal, SuccessModal } from './modals';
 import { setModalContent } from '../../redux/modules/modalEvent';
@@ -83,12 +83,13 @@ export default function ProfilesContainer({
     };
 
     // Handlers
-    const onCreateSubmit = async (firstName, lastName, companyName, selectedEmails) => {
+    const onCreateSubmit = async (firstName, lastName, companyName, isInternal, selectedEmails) => {
         try {
             await postNewProfile({
                 firstName: firstName,
                 lastName: lastName,
                 company: companyName,
+                internal: isInternal,
                 identifiers: [...new Set(selectedEmails
                     ? selectedEmails.map(item => item.value)
                     : '')]
@@ -106,84 +107,76 @@ export default function ProfilesContainer({
         }
     };
 
-    const onEditSubmit = async (id, name, type, selectedItems, defaultKeywords) => {
+    const onEditSubmit = async (id, firstName, lastName, companyName, isInternal, selectedEmails) => {
         try {
-            var policy = [];
-
-            await updatePolicy({
+            await updateProfile({
                 id: id,
-                internalCode: type.value,
-                description: `List of keywords for ${name}`,
-                name: name,
-                status: 0,
-                deleted: 0
-            }).then(x => {
-                policy = x;
+                firstName: firstName,
+                lastName: lastName,
+                company: companyName,
+                internal: isInternal
             });
 
-            const policyMapData = await getPolicymapByIdRaw({ policyId: id });
-            const policyMapDataDeleted = await getPolicymapByIdRaw({ policyId: id, deleted: true });
-            const activeMap = policyMapData.data.data;
-            const activeMapDeleted = policyMapDataDeleted.data.data;
+            // const policyMapData = await getPolicymapByIdRaw({ policyId: id });
+            // const policyMapDataDeleted = await getPolicymapByIdRaw({ policyId: id, deleted: true });
+            // const activeMap = policyMapData.data.data;
+            // const activeMapDeleted = policyMapDataDeleted.data.data;
 
-            var itemsToDelete = defaultKeywords.filter(a => !selectedItems.some(b => a.id === b.id));
-            var itemsToAdd = selectedItems.filter(a => !defaultKeywords.some(b => a.id === b.id));
+            // var itemsToDelete = defaultKeywords.filter(a => !selectedItems.some(b => a.id === b.id));
+            // var itemsToAdd = selectedItems.filter(a => !defaultKeywords.some(b => a.id === b.id));
 
-            console.log(itemsToDelete);
-            console.log(itemsToAdd);
+            // // Delete
+            // itemsToDelete.map((policyMap) => {
+            //     var map = activeMap.filter(a => a.keywordId == policyMap.id && a.policyId == id)[0];
 
-            // Delete
-            itemsToDelete.map((policyMap) => {
-                var map = activeMap.filter(a => a.keywordId == policyMap.id && a.policyId == id)[0];
+            //     policyMap.mapId = map.id;
+            // });
 
-                policyMap.mapId = map.id;
-            });
+            // var promises = [];
 
-            var promises = [];
+            // itemsToDelete.map(item => {
+            //     const data = {
+            //         id: item.mapId,
+            //         keywordId: item.id,
+            //         policyId: id,
+            //         deleted: 1
+            //     };
 
-            itemsToDelete.map(item => {
-                const data = {
-                    id: item.mapId,
-                    keywordId: item.id,
-                    policyId: id,
-                    deleted: 1
-                };
+            //     const request = updatePolicyMap(data);
 
-                const request = updatePolicyMap(data);
+            //     promises.push(request);
+            // });
 
-                promises.push(request);
-            });
+            // itemsToAdd.map(item => {
+            //     var map = activeMapDeleted.filter(a => a.keywordId == item.id && a.policyId == id)[0];
+            //     var request = [];
 
-            itemsToAdd.map(item => {
-                var map = activeMapDeleted.filter(a => a.keywordId == item.id && a.policyId == id)[0];
-                var request = [];
+            //     if (map) {
+            //         const data = {
+            //             id: map.id,
+            //             keywordId: item.id,
+            //             policyId: id,
+            //             deleted: 0
+            //         };
 
-                if (map) {
-                    const data = {
-                        id: map.id,
-                        keywordId: item.id,
-                        policyId: id,
-                        deleted: 0
-                    };
+            //         request = updatePolicyMap(data);
+            //     } else {
+            //         const data = {
+            //             keywordId: item.id,
+            //             policyId: id
+            //         };
 
-                    request = updatePolicyMap(data);
-                } else {
-                    const data = {
-                        keywordId: item.id,
-                        policyId: id
-                    };
+            //         request = postNewPolicyMap(data);
+            //     }
 
-                    request = postNewPolicyMap(data);
-                }
+            //     promises.push(request);
+            // });
 
-                promises.push(request);
-            });
-
-            const statusChange = await Promise.all(promises);
+            // const statusChange = await Promise.all(promises);
 
             reload();
 
-            showSuccessModal('Success!', 'You have successfully edited a Policy');
+            showSuccessModal('Success!', 'You have successfully edited a Profile');
         } catch (e) {
             console.error(e);
         }
@@ -275,35 +268,18 @@ export default function ProfilesContainer({
             modalContent: <CreateModal
                 onSubmit={onCreateSubmit}
                 loadOptions={loadOptions}
-                onCreateKeyWord={onCreateKeyWord}
                 handleCloseModal={handleCloseModal}/>,
             size: 'lg'
         }));
     };
 
-    const showPolicyEditModal = async (policy) => {
-        const policyMapData = await getPolicymapByIdRaw({ policyId: policy.id });
-        const keywords = await getKeywordSearch();
-        const { data } = policyMapData.data;
-
-        var defaultSelectedItem = [];
-
-        data.map((policyMap) => {
-            var keyword = keywords.filter(a => a.id == policyMap.keywordId)[0];
-
-            defaultSelectedItem.push({
-                id: keyword.id,
-                label: keyword.label
-            });
-        });
-
+    const showPolicyEditModal = async (profile) => {
         dispatch(setModalContent({
             modalContent: <EditModal
                 onSubmit={onEditSubmit}
-                onCreateKeyWord={onCreateKeyWord}
-                handleCloseModal={handleCloseModal}
-                defaultPolicy={policy}
-                defaultKeywords={defaultSelectedItem}/>,
+                loadOptions={loadOptions}
+                defaultProfile={profile}
+                handleCloseModal={handleCloseModal}/>,
             size: 'lg'
         }));
     };
@@ -347,7 +323,6 @@ export default function ProfilesContainer({
         showPolicyEditModal={showPolicyEditModal}
         showPolicyDeleteModal={showPolicyDeleteModal}
         viewCommunicationPolicyDetails={viewCommunicationPolicyDetails}
-        showPolicyCreateModal={showPolicyCreateModal}
         showPolicyEditModal={showPolicyEditModal}
         showPolicyDeleteModal={showPolicyDeleteModal}
         viewCommunicationPolicyDetails={viewCommunicationPolicyDetails}/>;
