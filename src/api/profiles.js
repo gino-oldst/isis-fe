@@ -154,6 +154,12 @@ const POST_NEW_PROFILE = `${config.apiStorage}/storage-service/user-link`;
  */
 const GET_PROFILE_BY_ID = `${config.apiStorage}/storage-service/user-link`;
 const GET_PROFILE_DATA = `${config.apiStorage}/storage-service/user-link/search/paged`;
+
+/**
+ * DELETE
+ */
+const DELETE_USER_PROFILE = `${config.apiStorage}/storage-service/user-link`;
+
 /**
  * FUNCTIONS
  */
@@ -182,4 +188,8 @@ const UPDATE_PROFILE = `${config.apiStorage}/storage-service/user-link`;
 
 export async function updateProfile(data: Object) {
     return await makeApiCall(UPDATE_PROFILE, 'PUT', data);
+}
+
+export async function deleteUserProfile(id) {
+    return await makeApiCall(`${DELETE_USER_PROFILE}/${id}`, 'DELETE');
 }

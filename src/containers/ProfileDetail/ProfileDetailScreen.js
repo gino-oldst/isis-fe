@@ -53,7 +53,8 @@ type Props = {
     categoryName: String,
     type: String,
     policyData: Object,
-    profileData: Array
+    profileData: Array,
+    showProfileDeleteModal: Function
 }
 
 function ProfileDetailScreen({
@@ -66,7 +67,9 @@ function ProfileDetailScreen({
     categoryName,
     type,
     policyData,
-    profileData
+    profileData,
+    showProfileDeleteModal
+
 }: Props): React$Element<any> {
     return (
         <div className='policies'>
@@ -86,7 +89,8 @@ function ProfileDetailScreen({
                                         <Col lg={6} className='text-right pr-0'>
                                             <Button weight='light' type='button' className='profile__edit-delete ml-2'
                                                 label='Edit'/>
-                                            <Button weight='light' type='button' className='profile__edit-delete ml-2'
+                                            <Button weight='light' type='button' onClick={showProfileDeleteModal}
+                                                className='profile__edit-delete ml-2'
                                                 label='Delete' />
                                         </Col>
                                     </Row>
@@ -127,20 +131,22 @@ function ProfileDetailScreen({
                                                         {profileData.userLinkIdentifierDtos.length > 0
                                                             ? <>
                                                                 {profileData.userLinkIdentifierDtos.map(profile => {
-                                                                    return (<Typography color='color-2' variant='size-16' className='pl-0'>{profile.identifier}</Typography>);
+                                                                    return (
+                                                                        <span className='email'>{profile.identifier}</span>
+                                                                    );
                                                                 })}
                                                             </>
                                                             : <>
                                                                 <Typography size={18} color='color-1' className='mr-3'
                                                                     weight='semi-bold'>No emails</Typography>
                                                             </>
+
                                                         }
                                                     </>
                                                 }
                                                 {/* {userIdentifier.map(userIdentifier => {
                                                     <Typography color='color-2' variant='size-16' className='pl-0'>{userIdentifier.identifier}</Typography>;
                                                 })} */}
-                                                <Typography color='color-2' variant='size-16' className='pl-0'>sdas</Typography>
                                             </div>
                                         </Col>
                                     </Row>
