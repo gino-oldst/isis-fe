@@ -1,16 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { setKeywords, setPoliciesData } from '../../redux/modules/policies';
 import type { Menu } from '../../types';
 
 import { deletePolicy, deletePolicyMap, getAlertPoliciesData, getAlertPolicyDataByID, getKeywordSearch, getKeywordSearchNumbered, getPolicymapById, getPolicymapByIdRaw, getPolicyMapByIdRaw, getPolicySearchData, postNewKeyword, postNewPolicy, postNewPolicyMap, updatePolicy, updatePolicyMap } from '../../api/policies';
-import { getProfileDataByID, deleteUserProfile } from '../../api/profiles';
+import { getProfileDataByID, deleteUserProfile, updateProfile } from '../../api/profiles';
 import { getAlertCategoryName } from '../../utils/helpers';
 import { CreateModal, DeleteModal, EditModal, SuccessModal } from './modals';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
 import ProfileDetailScreen from './ProfileDetailScreen';
+import debounce from 'debounce-async';
+import { getEmails } from '../../api/communicationSearch';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -93,84 +95,22 @@ export default function ProfileDetailContainer({
         }
     };
 
-    const onEditSubmit = async (id, name, type, selectedItems, defaultKeywords) => {
+    const onEditSubmit = async (id, firstName, lastName, companyName, isInternal, selectedEmails) => {
         try {
-            var policy = [];
-
-            await updatePolicy({
+            await updateProfile({
                 id: id,
-                internalCode: type.value,
-                description: `List of keywords for ${name}`,
-                name: name,
-                status: 0,
-                deleted: 0
-            }).then(x => {
-                policy = x;
+                firstName: firstName,
+                lastName: lastName,
+                company: companyName,
+                internal: isInternal,
+                identifiers: [...new Set(selectedEmails
+                    ? selectedEmails.map(item => item.value)
+                    : '')]
             });
-
-            const policyMapData = await getPolicymapByIdRaw({ policyId: id });
-            const policyMapDataDeleted = await getPolicymapByIdRaw({ policyId: id, deleted: true });
-            const activeMap = policyMapData.data.data;
-            const activeMapDeleted = policyMapDataDeleted.data.data;
-
-            var itemsToDelete = defaultKeywords.filter(a => !selectedItems.some(b => a.id === b.id));
-            var itemsToAdd = selectedItems.filter(a => !defaultKeywords.some(b => a.id === b.id));
-
-            console.log(itemsToDelete);
-            console.log(itemsToAdd);
-
-            // Delete
-            itemsToDelete.map((policyMap) => {
-                var map = activeMap.filter(a => a.keywordId == policyMap.id && a.policyId == id)[0];
-
-                policyMap.mapId = map.id;
-            });
-
-            var promises = [];
-
-            itemsToDelete.map(item => {
-                const data = {
-                    id: item.mapId,
-                    keywordId: item.id,
-                    policyId: id,
-                    deleted: 1
-                };
-
-                const request = updatePolicyMap(data);
-
-                promises.push(request);
-            });
-
-            itemsToAdd.map(item => {
-                var map = activeMapDeleted.filter(a => a.keywordId == item.id && a.policyId == id)[0];
-                var request = [];
-
-                if (map) {
-                    const data = {
-                        id: map.id,
-                        keywordId: item.id,
-                        policyId: id,
-                        deleted: 0
-                    };
-
-                    request = updatePolicyMap(data);
-                } else {
-                    const data = {
-                        keywordId: item.id,
-                        policyId: id
-                    };
-
-                    request = postNewPolicyMap(data);
-                }
-
-                promises.push(request);
-            });
-
-            const statusChange = await Promise.all(promises);
 
             reload();
 
-            showSuccessModal('Success!', 'You have successfully edited a Policy');
+            showSuccessModal('Success!', 'You have successfully edited a Profile');
         } catch (e) {
             console.error(e);
         }
@@ -199,34 +139,25 @@ export default function ProfileDetailContainer({
         }
     };
 
+    const [lastOptions, setLastOptions] = useState([]);
+
+    const loadOptions = useMemo(() => {
+        return debounce(async (inputValue) => {
+            const { data } = await getEmails(inputValue, inputValue, inputValue);
+            const accounts = data;
+
+            const options = accounts.map((account) => ({
+                value: account.email,
+                label: `${account.email} (${account.firstName} ${account.lastName})`
+            }));
+
+            setLastOptions(options);
+
+            return options;
+        }, 300);
+    }, [setLastOptions]);
+
     // Modals
-    const showPolicyEditModal = async (policy) => {
-        // TODO: Filter by id to get specific keywords
-        const policyMapData = await getPolicymapByIdRaw({ policyId: policyData.id });
-        const keywords = await getKeywordSearch();
-        const { data } = policyMapData.data;
-
-        var defaultSelectedItem = [];
-
-        data.map((policyMap) => {
-            var keyword = keywords.filter(a => a.id == policyMap.keywordId)[0];
-
-            defaultSelectedItem.push({
-                id: keyword.id,
-                label: keyword.label
-            });
-        });
-
-        dispatch(setModalContent({
-            modalContent: <EditModal
-                onSubmit={onEditSubmit}
-                onCreateKeyWord={onCreateKeyWord}
-                handleCloseModal={handleCloseModal}
-                defaultPolicy={policyData}
-                defaultKeywords={defaultSelectedItem}/>,
-            size: 'lg'
-        }));
-    };
 
     const showProfileDeleteModal = (profile) => {
         // TODO: Passing of the ID of the Category
@@ -236,6 +167,17 @@ export default function ProfileDetailContainer({
                 onDelete={onDeleteProfile}
                 handleCloseModal={handleCloseModal}/>,
             size: 'md'
+        }));
+    };
+
+    const showProfileEditModal = async (profile) => {
+        dispatch(setModalContent({
+            modalContent: <EditModal
+                onSubmit={onEditSubmit}
+                loadOptions={loadOptions}
+                defaultProfile={profileData}
+                handleCloseModal={handleCloseModal}/>,
+            size: 'lg'
         }));
     };
 
@@ -256,5 +198,5 @@ export default function ProfileDetailContainer({
         type={type}
         profileData={profileData}
         showProfileDeleteModal = {showProfileDeleteModal}
-        showPolicyEditModal={showPolicyEditModal}/>;
+        showProfileEditModal={showProfileEditModal}/>;
 }
