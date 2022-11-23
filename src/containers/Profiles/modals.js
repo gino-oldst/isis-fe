@@ -196,7 +196,6 @@ const EditModal = ({
                         <Col lg={12}>
                             <FormGroup className='mb-4'>
                                 <Label for='categoryType'>Associated Email</Label>
-                                {JSON.stringify(associatedEmails)}
                                 <AsyncSelect
                                     isMulti={true}
                                     noOptionsMessage={() => 'Email Not Found'}
