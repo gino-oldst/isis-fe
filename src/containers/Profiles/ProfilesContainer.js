@@ -94,7 +94,7 @@ export default function ProfilesContainer({
 
             reload();
 
-            showSuccessModal('Succes!', 'You have successfully added a new Profile');
+            showSuccessModal('Success!', 'You have successfully added a new Profile');
         } catch (e) {
             var message = '';
 

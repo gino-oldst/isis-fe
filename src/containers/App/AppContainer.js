@@ -57,19 +57,19 @@ function App() {
         },
         key: 'communication_search'
     }, {
-        label: 'Policies',
-        onClick: () => {
-            dispatch(resetTableState());
-            history.push('/communication_policies');
-        },
-        key: 'communication_policies'
-    }, {
         label: 'Profiles',
         onClick: () => {
             dispatch(resetTableState());
             history.push('/profiles');
         },
         key: 'profiles'
+    }, {
+        label: 'Policies',
+        onClick: () => {
+            dispatch(resetTableState());
+            history.push('/communication_policies');
+        },
+        key: 'communication_policies'
     }];
 
     // const sidebarMenu = [{

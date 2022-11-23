@@ -649,13 +649,13 @@ function IsisTable({
                                 <th {...column.getHeaderProps()}>
                                     <span onClick={() => column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                             column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' && column.id !== 'policyDetailKeyword' && column.id !== 'policyDetailKeywordNumber' && column.id !== 'alertPolicyInternalCode' &&
-                                            column.id !== 'alertPolicyName' && handleSort(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
+                                            column.id !== 'alertPolicyName' && column.id !== 'profileEmails' && handleSort(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
                                     className={() => column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                     column.id !== 'expander' && column.id !== 'recipient' && 'cursor-pointer'}>
                                         {column.render('Header')}
                                         {column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                             column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' &&
-                                            column.id !== 'policyDetailKeyword' && column.id !== 'policyDetailKeywordNumber' && column.id !== 'alertPolicyInternalCode' && column.id !== 'alertPolicyName' &&
+                                            column.id !== 'policyDetailKeyword' && column.id !== 'policyDetailKeywordNumber' && column.id !== 'alertPolicyInternalCode' && column.id !== 'alertPolicyName' && column.id !== 'profileEmails' &&
                                             renderSortControl(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
                                     </span>
                                     {column.canFilter ? column.render('Filter') : null}

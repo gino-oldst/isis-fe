@@ -172,8 +172,14 @@ export async function getProfileDataByID(id) {
 
 export async function getProfileData(page, size, sort, name) {
     const filterBody = { likeFirstName: name, likeLastName: name };
-    const sortColumn = sort.column;
-    const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sortColumn},${sort.type}` : '&sort=dateCreated,ASC';
+    const sortColumn = sort.column == 'profileName'
+        ? 'firstName'
+        : sort.column == 'profileCompany'
+            ? 'company'
+            : sort.column == 'profileInternalPerson'
+                ? 'isInternal'
+                : sort.column;
+    const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? `&sort=${sortColumn},${sort.type}` : '&sort=dateCreated,DESC';
 
     return await makeApiCall(`${GET_PROFILE_DATA}?page=${page}&size=${size}${withSorting()}`, 'POST', filterBody);
 }

@@ -112,8 +112,7 @@ function ProfilesScreen({
                                         <Col lg={6} md={6} sm={6}
                                             xs={6} className='d-flex align-items-end justify-content-end mb-3 pr-0'>
                                             <Button weight='light' className='alerts__bulk-review mr-2' label='Upload CSV'
-                                                iconLeft={ImUpload2}
-                                                onClick={showPolicyCreateModal}/>
+                                                disabled={true} iconLeft={ImUpload2}/>
                                             <Button weight='light' className='alerts__bulk-review mr-2' label='New Profile'
                                                 iconLeft={ImPlus}
                                                 onClick={showPolicyCreateModal}/>
