@@ -1302,6 +1302,7 @@ export default function ReactTable({
                     return <span>{value}</span>;
                 } else if (accessor == 'policiesAction') {
                     const rowData = cell.cell.row.original;
+                    const allData = cell.data;
 
                     return (
                         <>
@@ -1315,7 +1316,7 @@ export default function ReactTable({
                                     <DropdownItem onClick={() => viewDetails(rowData.id, rowData.name, rowData.internalCode)}>
                                         View
                                     </DropdownItem>
-                                    <DropdownItem onClick={() => viewEditModal(rowData)}>
+                                    <DropdownItem onClick={() => viewEditModal(rowData, allData)}>
                                         Edit
                                     </DropdownItem>
                                     <DropdownItem onClick={() => viewDeleteModal(rowData)}>

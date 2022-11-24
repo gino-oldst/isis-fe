@@ -50,10 +50,10 @@ type Props = {
     table: Any,
     activePage: Int,
     viewPoliciesDetails: Function,
-    showPolicyCreateModal: Function,
-    showPolicyEditModal: Function,
+    showProfileCreateModal: Function,
+    showProfileEditModal: Function,
     showProfileDeleteModal: Function,
-    viewCommunicationPolicyDetails: Function,
+    viewProfileDetails: Function,
     onChange: Function,
     onSubmit: Function
 }
@@ -65,10 +65,10 @@ function ProfilesScreen({
     table,
     activePage,
     viewPoliciesDetails,
-    showPolicyCreateModal,
-    showPolicyEditModal,
+    showProfileCreateModal,
+    showProfileEditModal,
     showProfileDeleteModal,
-    viewCommunicationPolicyDetails,
+    viewProfileDetails,
     onChange,
     onSubmit
 }: Props): React$Element<any> {
@@ -120,7 +120,7 @@ function ProfilesScreen({
                                                 disabled={true} iconLeft={ImUpload2}/>
                                             <Button weight='light' className='alerts__bulk-review mr-2' label='New Profile'
                                                 iconLeft={ImPlus}
-                                                onClick={showPolicyCreateModal}/>
+                                                onClick={showProfileCreateModal}/>
                                         </Col>
                                     </Row>
                                 </div>
@@ -135,8 +135,8 @@ function ProfilesScreen({
                                     sortable={false}
                                     fetching={table.loading}
                                     viewDeleteModal={showProfileDeleteModal}
-                                    viewEditModal={showPolicyEditModal}
-                                    viewDetails={viewCommunicationPolicyDetails}/>
+                                    viewEditModal={showProfileEditModal}
+                                    viewDetails={viewProfileDetails}/>
                             </CardBody>
                         </Card>
                     </div>

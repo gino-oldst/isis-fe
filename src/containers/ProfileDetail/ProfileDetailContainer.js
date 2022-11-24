@@ -1,10 +1,8 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { setKeywords, setPoliciesData } from '../../redux/modules/policies';
 import type { Menu } from '../../types';
 
-import { deletePolicy, deletePolicyMap, getAlertPoliciesData, getAlertPolicyDataByID, getKeywordSearch, getKeywordSearchNumbered, getPolicymapById, getPolicymapByIdRaw, getPolicyMapByIdRaw, getPolicySearchData, postNewKeyword, postNewPolicy, postNewPolicyMap, updatePolicy, updatePolicyMap } from '../../api/policies';
 import { getProfileDataByID, deleteUserProfile, updateProfile } from '../../api/profiles';
 import { getAlertCategoryName } from '../../utils/helpers';
 import { CreateModal, DeleteModal, EditModal, SuccessModal } from '../../containers/Profiles/modals';
@@ -33,10 +31,8 @@ export default function ProfileDetailContainer({
     const [loading, setLoading] = useState(true);
     const [categoryName, setCategoryName] = useState('');
     const [type, setType] = useState('');
-    const [policyData, setPolicyData] = useState([]);
     const [profileData, setProfileData] = useState([]);
-
-    const { table } = useSelector(({ policiesDetail }) => policiesDetail);
+    const { table, form, keywords } = useSelector(({ profiles }) => profiles);
     const breadcrumb = [
         {
             label: 'Home',
@@ -53,13 +49,11 @@ export default function ProfileDetailContainer({
         }
     ];
 
-    const { pageSize, activePage, sort } = useSelector(({ table }) => table);
-
     useEffect(() => {
-        loadProfileData(activePage, pageSize, sort);
-    }, [pageSize, activePage, sort]);
+        loadProfileData();
+    }, []);
 
-    const loadProfileData = async (activePage, pageSize, sort) => {
+    const loadProfileData = async () => {
         setLoading(true);
 
         try {
@@ -74,29 +68,11 @@ export default function ProfileDetailContainer({
     };
 
     const reload = () => {
-        loadProfileData(activePage, pageSize, sort);
+        loadProfileData();
     };
 
     const reloadTables = () => {
         history.push('/profiles');
-    };
-
-    const onCreateKeyWord = async (keyword) => {
-        try {
-            await postNewKeyword({ word: keyword });
-
-            // Reload Keywords
-            const keywords = await getKeywordSearch();
-
-            dispatch(setKeywords(keywords));
-
-            dispatch(setFlashNotification({
-                message: 'Added a new Keyword.',
-                isError: false
-            }));
-        } catch (e) {
-            console.error(e);
-        }
     };
 
     const onEditSubmit = async (id, firstName, lastName, companyName, isInternal, selectedEmails) => {
@@ -116,13 +92,31 @@ export default function ProfileDetailContainer({
 
             showSuccessModal('Success!', 'You have successfully edited a Profile');
         } catch (e) {
+            var message = '';
+
+            if (e.exception == 'AlreadyAssignedException') {
+                var msg = e.message;
+                var matches = msg.match(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/);
+                var email = msg.match(/[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+/);
+
+                userId = matches[0];
+                var user = table.data.filter(a => a.id == userId)[0];
+
+                message = `Email ${email} is already assigned to user ${user.firstName} ${user.lastName}`;
+            } else {
+                message = e.message;
+            }
+
+            dispatch(setFlashNotification({
+                message: message,
+                isError: false
+            }));
             console.error(e);
         }
     };
 
     const onDeleteProfile = async (profileData) => {
         try {
-            // TODO: Update delete of policy to update delete -> 1
             var profile = [];
 
             await getProfileDataByID(filters.state.id).then(x => {
@@ -160,7 +154,6 @@ export default function ProfileDetailContainer({
     }, [setLastOptions]);
 
     // Modals
-
     const showProfileDeleteModal = (profile) => {
         dispatch(setModalContent({
             modalContent: <DeleteModal
@@ -192,8 +185,6 @@ export default function ProfileDetailContainer({
     return <ProfileDetailScreen
         loading={loading}
         breadcrumb={breadcrumb}
-        table={table}
-        activePage={activePage}
         sidebarMenu={sidebarMenu}
         categoryName={categoryName}
         type={type}

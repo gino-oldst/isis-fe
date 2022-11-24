@@ -1,10 +1,10 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { setKeywords, setPolicyForm, setProfilesData } from '../../redux/modules/profiles';
+import { setProfilesData } from '../../redux/modules/profiles';
 import ProfilesScreen from './ProfilesScreen';
 import type { Menu } from '../../types';
-import { deletePolicyMap, getAlertPoliciesData, deletePolicy, getKeywordSearch, getPolicymapById, getPolicymapByIdRaw, getPolicyMapByIdRaw, getPolicySearchData, postNewKeyword, postNewPolicy, postNewPolicyMap, updatePolicy, updatePolicyMap, postNewProfile, getProfileData, updateProfile, deleteUserProfile } from '../../api/profiles';
+import { postNewProfile, getProfileData, updateProfile, deleteUserProfile } from '../../api/profiles';
 import { getAlertCategoryName } from '../../utils/helpers';
 import { CreateModal, DeleteModal, EditModal, SuccessModal } from './modals';
 import { setModalContent } from '../../redux/modules/modalEvent';
@@ -31,6 +31,8 @@ export default function ProfilesContainer({
     const [categoryType, setCategoryType] = useState({});
     const [selectedKeywords, setSelectedKeywords] = useState([]);
     const [searchData, setSearchData] = useState('');
+    const { pageSize, activePage, sort } = useSelector(({ table }) => table);
+    const { table, form, keywords } = useSelector(({ profiles }) => profiles);
     const breadcrumb = [
         {
             label: 'Home',
@@ -41,9 +43,6 @@ export default function ProfilesContainer({
             path: '/profiles'
         }
     ];
-
-    const { pageSize, activePage, sort } = useSelector(({ table }) => table);
-    const { table, form, keywords } = useSelector(({ profiles }) => profiles);
 
     useEffect(() => {
         loadProfileData(activePage, pageSize, sort, searchData);
@@ -57,16 +56,11 @@ export default function ProfilesContainer({
             const { data, totalNoOfRecords, totalPages } = profiles.data;
 
             dispatch(setProfilesData(data, totalNoOfRecords, totalPages));
-            // dispatch(setKeywords(keywords));
         } catch (e) {
             console.error(e);
         }
 
         setLoading(false);
-    };
-
-    const viewPolicyDetails = async row => {
-        history.push(`/policies/${row.original.id}`);
     };
 
     const reload = () => {
@@ -106,19 +100,21 @@ export default function ProfilesContainer({
                 userId = matches[0];
                 var user = table.data.filter(a => a.id == userId)[0];
 
-                message = `Identifier ${email} is already assigned to user ${user.firstName} ${user.lastName}`;
+                message = `Email ${email} is already assigned to user ${user.firstName} ${user.lastName}`;
             } else {
                 message = e.message;
             }
 
             dispatch(setFlashNotification({
                 message: message,
-                isError: false
+                isError: false,
+                duration: 6000
             }));
+            console.error(e);
         }
     };
 
-    const onEditSubmit = async (id, firstName, lastName, companyName, isInternal, selectedEmails) => {
+    const onEditSubmit = async (id, firstName, lastName, companyName, isInternal, selectedEmails, tableData) => {
         try {
             await updateProfile({
                 id: id,
@@ -135,6 +131,26 @@ export default function ProfilesContainer({
 
             showSuccessModal('Success!', 'You have successfully edited a Profile');
         } catch (e) {
+            var message = '';
+
+            if (e.exception == 'AlreadyAssignedException') {
+                var msg = e.message;
+                var matches = msg.match(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/);
+                var email = msg.match(/[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+/);
+
+                userId = matches[0];
+                var user = tableData.filter(a => a.id == userId)[0];
+
+                message = `Email ${email} is already assigned to user ${user.firstName} ${user.lastName}`;
+            } else {
+                message = e.message;
+            }
+
+            dispatch(setFlashNotification({
+                message: message,
+                isError: false,
+                duration: 6000
+            }));
             console.error(e);
         }
     };
@@ -170,7 +186,7 @@ export default function ProfilesContainer({
     }, [setLastOptions]);
 
     // Modals
-    const showPolicyCreateModal = () => {
+    const showProfileCreateModal = () => {
         dispatch(setModalContent({
             modalContent: <CreateModal
                 onSubmit={onCreateSubmit}
@@ -180,10 +196,11 @@ export default function ProfilesContainer({
         }));
     };
 
-    const showPolicyEditModal = async (profile) => {
+    const showProfileEditModal = async (profile, tableData) => {
         dispatch(setModalContent({
             modalContent: <EditModal
                 onSubmit={onEditSubmit}
+                tableData={tableData}
                 loadOptions={loadOptions}
                 defaultProfile={profile}
                 handleCloseModal={handleCloseModal}/>,
@@ -209,7 +226,7 @@ export default function ProfilesContainer({
     };
 
     // Redirect
-    const viewCommunicationPolicyDetails = async (id, name, type) => {
+    const viewProfileDetails = async (id, name, type) => {
         history.push({
             pathname: `/profile-detail/${id}`,
             state: { id: id, name: name, type: type }
@@ -219,15 +236,13 @@ export default function ProfilesContainer({
     return <ProfilesScreen
         loading={loading}
         breadcrumb={breadcrumb}
-        onChange={onChange}
-        onSubmit={reload}
         table={table}
         activePage={activePage}
         sidebarMenu={sidebarMenu}
-        showPolicyCreateModal={showPolicyCreateModal}
-        showPolicyEditModal={showPolicyEditModal}
+        onChange={onChange}
+        onSubmit={reload}
+        showProfileCreateModal={showProfileCreateModal}
+        showProfileEditModal={showProfileEditModal}
         showProfileDeleteModal={showProfileDeleteModal}
-        showPolicyEditModal={showPolicyEditModal}
-        viewCommunicationPolicyDetails={viewCommunicationPolicyDetails}
-        viewCommunicationPolicyDetails={viewCommunicationPolicyDetails}/>;
+        viewProfileDetails={viewProfileDetails}/>;
 }

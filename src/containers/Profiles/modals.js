@@ -4,7 +4,7 @@ import Button from '../../components/base/Button/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import CommunicationPoliciesContainer from './ProfilesContainer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Col, FormGroup, Input, Label, Row } from 'reactstrap';
+import { Alert, Col, FormGroup, Input, Label, Row } from 'reactstrap';
 import Select from '../../components/base/Select/Select';
 import AsyncSelect from 'react-select/async';
 import './profiles.scss';
@@ -120,6 +120,7 @@ const CreateModal = ({
 // Edit Modal
 const EditModal = ({
     defaultProfile,
+    tableData,
     onSubmit,
     loadOptions,
     handleCloseModal
@@ -159,6 +160,10 @@ const EditModal = ({
         );
     }, []);
 
+    // const [visible, setVisible] = useState(true);
+
+    // const onDismiss = () => setVisible(false);
+
     return (
         <div className='action-modal p-4'>
             <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
@@ -167,8 +172,15 @@ const EditModal = ({
                 className='ml-3 mb-4 playfair-font text-left'>
                 Edit a Profile
             </Typography>
-            <div className='policies__information mt-5 w-100 mb-4'>
+            <div className='policies__information mt-2 w-100 mb-4'>
                 <div className='modal-body'>
+                    {/* <Row>
+                        <Col lg={12}>
+                            <Alert color='info' isOpen={visible} toggle={onDismiss}>
+                                I am an alert and I can be dismissed!
+                            </Alert>
+                        </Col>
+                    </Row> */}
                     <Row>
                         <Col lg={12} sm={12}>
                             <FormGroup className='mb-3'>
@@ -229,7 +241,7 @@ const EditModal = ({
                     onClick={handleCloseModal} /> {/* onClick={handleClose} disabled={submit} /> */}
                 <Button label='Edit' variant='primary' className='policies__save-button px-4 py-2'
                     disabled={profileFirstName == '' || profileLastName == '' || profileCompanyName == ''}
-                    onClick={e => onSubmit(defaultProfile.id, profileFirstName, profileLastName, profileCompanyName, isInternalPerson, associatedEmails)}/>
+                    onClick={e => onSubmit(defaultProfile.id, profileFirstName, profileLastName, profileCompanyName, isInternalPerson, associatedEmails, tableData)}/>
             </div>
         </div>
     );
