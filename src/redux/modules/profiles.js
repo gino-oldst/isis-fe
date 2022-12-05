@@ -5,6 +5,7 @@ const SET_PARAMETERS_DATA = 'SET_PARAMETERS_DATA';
 const REPLACE_PARAMETER_STATUS = 'REPLACE_PARAMETER_STATUS';
 const REPLACE_PARAMETERS_DATA = 'REPLACE_PARAMETERS_DATA';
 const SET_LOADING = 'SET_LOADING';
+const SET_CSV_LOADING = 'SET_CSV_LOADING';
 const SET_KEYWORDS = 'SET_KEYWORDS';
 const SET_POLICY_FORM = 'SET_POLICY_FORM';
 
@@ -50,6 +51,13 @@ export function replaceParametersData(data: Object) {
 export function setLoading() {
     return {
         type: SET_LOADING
+    };
+}
+
+export function setCsvLoading(data: Boolean) {
+    return {
+        type: SET_CSV_LOADING,
+        data
     };
 }
 
@@ -148,6 +156,7 @@ const initialState = {
         categoryType: '',
         selectedKeywords: []
     },
+    isCSVLoading: false,
     keywords: []
 };
 
@@ -158,8 +167,6 @@ export default function profiles(state: Object = initialState, action: Object):
   } {
     switch (action.type) {
         case SET_POLICY_FORM:
-            console.log(action);
-
             return {
                 ...state,
                 form: {
@@ -185,6 +192,11 @@ export default function profiles(state: Object = initialState, action: Object):
                     ...state.selected,
                     loading: true
                 }
+            };
+        case SET_CSV_LOADING:
+            return {
+                ...state,
+                isCSVLoading: action.data
             };
         case SET_SELECTED_POLICY:
             return {

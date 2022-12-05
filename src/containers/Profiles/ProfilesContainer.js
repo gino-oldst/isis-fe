@@ -1,16 +1,17 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { setProfilesData } from '../../redux/modules/profiles';
+import { setCsvLoading, setProfilesData } from '../../redux/modules/profiles';
 import ProfilesScreen from './ProfilesScreen';
 import type { Menu } from '../../types';
-import { postNewProfile, getProfileData, updateProfile, deleteUserProfile } from '../../api/profiles';
+import { postNewProfile, getProfileData, updateProfile, deleteUserProfile, uploadProfile } from '../../api/profiles';
 import { getAlertCategoryName } from '../../utils/helpers';
-import { CreateModal, DeleteModal, EditModal, SuccessModal } from './modals';
+import { CreateModal, DeleteModal, EditModal, SuccessModal, UploadCSVModal } from './modals';
 import { setModalContent } from '../../redux/modules/modalEvent';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
 import debounce from 'debounce-async';
 import { getEmails } from '../../api/communicationSearch';
+import { delay } from 'underscore';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -27,6 +28,7 @@ export default function ProfilesContainer({
     const history = useHistory();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
+    const [isUploadingCSV, setIsUploadingCSV] = useState(true);
     const [categoryName, setCategoryName] = useState('');
     const [categoryType, setCategoryType] = useState({});
     const [selectedKeywords, setSelectedKeywords] = useState([]);
@@ -107,7 +109,7 @@ export default function ProfilesContainer({
 
             dispatch(setFlashNotification({
                 message: message,
-                isError: false,
+                isError: true,
                 duration: 6000
             }));
             console.error(e);
@@ -148,7 +150,7 @@ export default function ProfilesContainer({
 
             dispatch(setFlashNotification({
                 message: message,
-                isError: false,
+                isError: true,
                 duration: 6000
             }));
             console.error(e);
@@ -165,6 +167,41 @@ export default function ProfilesContainer({
         } catch (e) {
             console.error(e);
         }
+    };
+
+    const delay = (duration) =>
+        new Promise(resolve => setTimeout(resolve, duration));
+
+    const onUploadProfile = async (selectedFile) => {
+        dispatch(setCsvLoading(true));
+
+        try {
+            // Create an object of formData
+            const formData = new FormData();
+
+            // Update the formData object
+            formData.append(
+                'file',
+                selectedFile,
+                selectedFile.name
+            );
+
+            await uploadProfile(formData);
+
+            reload();
+
+            showSuccessModal('Upload Success!', 'You have successfully Uploaded Profiles from a CSV File');
+        } catch (e) {
+            console.error(e);
+            dispatch(setFlashNotification({
+                message: e.message,
+                isError: true,
+                duration: 6000
+            }));
+            // handleCloseModal();
+        }
+
+        dispatch(setCsvLoading(false));
     };
 
     const [lastOptions, setLastOptions] = useState([]);
@@ -218,6 +255,15 @@ export default function ProfilesContainer({
         }));
     };
 
+    const showProfileUploadModal = (profile) => {
+        dispatch(setModalContent({
+            modalContent: <UploadCSVModal
+                onSubmit={onUploadProfile}
+                handleCloseModal={handleCloseModal}/>,
+            size: 'md'
+        }));
+    };
+
     const showSuccessModal = (title, message) => {
         dispatch(setModalContent({
             modalContent: <SuccessModal title={title} message={message} handleCloseModal={handleCloseModal}/>,
@@ -244,5 +290,6 @@ export default function ProfilesContainer({
         showProfileCreateModal={showProfileCreateModal}
         showProfileEditModal={showProfileEditModal}
         showProfileDeleteModal={showProfileDeleteModal}
+        showProfileUploadModal={showProfileUploadModal}
         viewProfileDetails={viewProfileDetails}/>;
 }

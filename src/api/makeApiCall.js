@@ -51,6 +51,11 @@ export default async function makeApiCall(
             'Content-Type': 'multipart/form-data;',
             Authorization: `Basic ${config.adminApplAuthHeader}`
         };
+    } else if (endpoint.includes('upload-user-link')) {
+        request.headers = {
+            'Content-Type': 'multipart/form-data;',
+            Authorization: `Bearer ${accessToken}`
+        };
     } else if (endpoint.includes('generate-token')) {
         request.headers = {};
     } else if (endpoint.includes('/download/messages') || endpoint.includes('/download/alerts')) {

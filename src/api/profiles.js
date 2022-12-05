@@ -52,6 +52,12 @@ export async function updateProfile(data: Object) {
     return await makeApiCall(UPDATE_PROFILE, 'PUT', data);
 }
 
+const UPLOAD_PROFILE = `${config.apiStorage}/storage-service/user-link/upload-user-link`;
+
+export async function uploadProfile(data: FormData) {
+    return await makeApiCall(UPLOAD_PROFILE, 'POST', data);
+}
+
 export async function deleteUserProfile(id) {
     return await makeApiCall(`${DELETE_USER_PROFILE}/${id}`, 'DELETE');
 }

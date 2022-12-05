@@ -4,14 +4,12 @@ import Button from '../../components/base/Button/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import CommunicationPoliciesContainer from './ProfilesContainer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Alert, Col, FormGroup, Input, Label, Row } from 'reactstrap';
+import { Alert, Col, CustomInput, FormGroup, Input, Label, Row } from 'reactstrap';
 import Select from '../../components/base/Select/Select';
 import AsyncSelect from 'react-select/async';
 import './profiles.scss';
-import MultiSelect from '@kenshooui/react-multi-select';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { ImCross, ImPlus } from 'react-icons/im';
-import { setPolicyForm } from '../../redux/modules/policies';
 
 // Create Modal
 const CreateModal = ({
@@ -22,7 +20,6 @@ const CreateModal = ({
     handleCloseModal
 }) => {
     const dispatch = useDispatch();
-    const { keywords } = useSelector(({ policies }) => policies);
     const [profileFirstName, setProfileFirstName] = useState('');
     const [profileLastName, setProfileLastName] = useState('');
     const [profileCompanyName, setProfileCompanyName] = useState('');
@@ -126,7 +123,6 @@ const EditModal = ({
     handleCloseModal
 }) => {
     const dispatch = useDispatch();
-    const { keywords } = useSelector(({ policies }) => policies);
     const [profileFirstName, setProfileFirstName] = useState('');
     const [profileLastName, setProfileLastName] = useState('');
     const [profileCompanyName, setProfileCompanyName] = useState('');
@@ -247,6 +243,61 @@ const EditModal = ({
     );
 };
 
+// Upload CSV Modal
+const UploadCSVModal = ({
+    onSubmit,
+    handleCloseModal
+}) => {
+    const dispatch = useDispatch();
+    const { isCSVLoading } = useSelector(({ profiles }) => profiles);
+    const [uploadedFile, setUploadedFile] = useState(null);
+    const [label, setLabel] = useState(Date.now);
+
+    const handleFileChange = (event) => {
+        setUploadedFile(event.target.files[0]);
+    };
+
+    const reset = () => {
+        setUploadedFile(null);
+        setLabel(Date.now);
+    };
+
+    return (
+        <div className='action-modal p-4'>
+            <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
+                onClick={handleCloseModal}/>
+            <Typography variant='size-30' color='color-3'
+                className='ml-3 mb-4 playfair-font text-left'>
+                Upload CSV File {JSON.stringify(isCSVLoading)}
+            </Typography>
+            <div className='policies__information mt-2 w-100 mb-4'>
+                <div className='modal-body'>
+                    <Row>
+                        <Col lg={12} sm={12}>
+                            <FormGroup>
+                                <Label for='customFile'>CSV File</Label>
+                                <CustomInput
+                                    type='file'
+                                    name='customFile'
+                                    accept='.csv'
+                                    label={'Choose CSV File.'}
+                                    key={label}
+                                    onChange={(file) => handleFileChange(file)}/>
+                            </FormGroup>
+                        </Col>
+                    </Row>
+                </div>
+            </div>
+            <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
+                <Button label='Reset' variant='light' className='cancel-button px-4 mr-2 py-2'
+                    disabled={isCSVLoading} onClick={reset}/>
+                <Button label={isCSVLoading ? 'Uploading...' : 'Upload'} variant='primary' className='policies__save-button px-4 py-2'
+                    disabled={isCSVLoading} isLoading={isCSVLoading} onClick={e => onSubmit(uploadedFile)}/>
+            </div>
+        </div>
+    );
+};
+
 // Delete Modal
 const DeleteModal = ({
     profileData,
@@ -309,5 +360,5 @@ const SuccessModal = ({
 };
 
 export {
-    CreateModal, EditModal, DeleteModal, SuccessModal
+    CreateModal, EditModal, DeleteModal, SuccessModal, UploadCSVModal
 };
