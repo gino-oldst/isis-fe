@@ -11,7 +11,6 @@ import { setModalContent } from '../../redux/modules/modalEvent';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
 import debounce from 'debounce-async';
 import { getEmails } from '../../api/communicationSearch';
-import { delay } from 'underscore';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -92,6 +91,8 @@ export default function ProfilesContainer({
 
             showSuccessModal('Success!', 'You have successfully added a new Profile');
         } catch (e) {
+            reload();
+
             var message = '';
 
             if (e.exception == 'AlreadyAssignedException') {
@@ -133,6 +134,8 @@ export default function ProfilesContainer({
 
             showSuccessModal('Success!', 'You have successfully edited a Profile');
         } catch (e) {
+            reload();
+
             var message = '';
 
             if (e.exception == 'AlreadyAssignedException') {
@@ -169,9 +172,6 @@ export default function ProfilesContainer({
         }
     };
 
-    const delay = (duration) =>
-        new Promise(resolve => setTimeout(resolve, duration));
-
     const onUploadProfile = async (selectedFile) => {
         dispatch(setCsvLoading(true));
 
@@ -192,12 +192,14 @@ export default function ProfilesContainer({
 
             showSuccessModal('Upload Success!', 'You have successfully Uploaded Profiles from a CSV File');
         } catch (e) {
-            console.error(e);
+            reload();
+
             dispatch(setFlashNotification({
                 message: e.message,
                 isError: true,
-                duration: 6000
+                duration: 10000
             }));
+            console.error(e);
             // handleCloseModal();
         }
 

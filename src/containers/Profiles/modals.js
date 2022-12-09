@@ -268,7 +268,7 @@ const UploadCSVModal = ({
                 onClick={handleCloseModal}/>
             <Typography variant='size-30' color='color-3'
                 className='ml-3 mb-4 playfair-font text-left'>
-                Upload CSV File {JSON.stringify(isCSVLoading)}
+                Upload CSV File
             </Typography>
             <div className='policies__information mt-2 w-100 mb-4'>
                 <div className='modal-body'>
