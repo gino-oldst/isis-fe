@@ -51,6 +51,11 @@ export default async function makeApiCall(
             'Content-Type': 'multipart/form-data;',
             Authorization: `Basic ${config.adminApplAuthHeader}`
         };
+    } else if (endpoint.includes('upload-user-link')) {
+        request.headers = {
+            'Content-Type': 'multipart/form-data;',
+            Authorization: `Bearer ${accessToken}`
+        };
     } else if (endpoint.includes('generate-token')) {
         request.headers = {};
     } else if (endpoint.includes('/download/messages') || endpoint.includes('/download/alerts')) {
@@ -115,6 +120,7 @@ export default async function makeApiCall(
 
             errData.status = err.response.status ? err.response.status : err.response.data.status;
             errData.message = err.response.message ? err.response.message : err.response.data.message;
+            errData.exception = err.response.exception ? err.response.exception : err.response.data.exception;
 
             // cancelTokenSource.cancel('Request was canceled');
 

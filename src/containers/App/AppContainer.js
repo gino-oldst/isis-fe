@@ -57,6 +57,13 @@ function App() {
         },
         key: 'communication_search'
     }, {
+        label: 'Profiles',
+        onClick: () => {
+            dispatch(resetTableState());
+            history.push('/profiles');
+        },
+        key: 'profiles'
+    }, {
         label: 'Policies',
         onClick: () => {
             dispatch(resetTableState());

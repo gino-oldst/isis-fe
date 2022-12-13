@@ -16,6 +16,8 @@ const Dashboard = React.lazy(() => import('../containers/Dashboard/DashboardCont
 // const RestrictedList = React.lazy(() => import('../containers/RestrictedList/RestrictedListContainer'));
 const CommunicationSearchResults = React.lazy(() => import('../containers/CommunicationSearchResults/CommunicationSearchResultsContainer'));
 const CommunicationSearchMessageDetails = React.lazy(() => import('../containers/CommunicationSearchMessageDetails/CommunicationSearchMessageDetailsContainer'));
+const Profiles = React.lazy(() => import('../containers/Profiles/ProfilesContainer'));
+const ProfileDetail = React.lazy(() => import('../containers/ProfileDetail/ProfileDetailContainer'));
 // ROUTE IMPORT CODE GENERATOR INDICATOR DO NOT DELETE
 
 const routes = [{
@@ -62,6 +64,16 @@ const routes = [{
     path: '/communication_search_message_details',
     name: 'CommunicationSearchMessageDetails',
     component: CommunicationSearchMessageDetails,
+    authedRoute: true
+}, {
+    path: '/profiles',
+    name: 'Profiles',
+    component: Profiles,
+    authedRoute: true
+}, {
+    path: '/profile-detail',
+    name: 'ProfileDetail',
+    component: ProfileDetail,
     authedRoute: true
 }, {
     path: '*',

@@ -39,6 +39,7 @@ import Storage from '../../../utils/Storage';
 import { Spinner } from 'react-bootstrap';
 import { after, before } from 'underscore';
 import { customWordHighlightLogic } from '../../../utils/highlightHelper';
+import { access } from 'fs';
 // Define a default UI for filtering
 
 function GlobalFilter({
@@ -648,13 +649,13 @@ function IsisTable({
                                 <th {...column.getHeaderProps()}>
                                     <span onClick={() => column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                             column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' && column.id !== 'policyDetailKeyword' && column.id !== 'policyDetailKeywordNumber' && column.id !== 'alertPolicyInternalCode' &&
-                                            column.id !== 'alertPolicyName' && handleSort(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
+                                            column.id !== 'alertPolicyName' && column.id !== 'profileEmails' && handleSort(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
                                     className={() => column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                     column.id !== 'expander' && column.id !== 'recipient' && 'cursor-pointer'}>
                                         {column.render('Header')}
                                         {column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                             column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' &&
-                                            column.id !== 'policyDetailKeyword' && column.id !== 'policyDetailKeywordNumber' && column.id !== 'alertPolicyInternalCode' && column.id !== 'alertPolicyName' &&
+                                            column.id !== 'policyDetailKeyword' && column.id !== 'policyDetailKeywordNumber' && column.id !== 'alertPolicyInternalCode' && column.id !== 'alertPolicyName' && column.id !== 'profileEmails' &&
                                             renderSortControl(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
                                     </span>
                                     {column.canFilter ? column.render('Filter') : null}
@@ -1267,11 +1268,11 @@ export default function ReactTable({
                                 {...cell.cell.row.getToggleRowExpandedProps()} className='table__arrow-square d-flex justify-content-center align-items-center'>
                                 {cell.cell.row.isExpanded ? '🔼' : '🔽'}
                             </Typography>
-                            <div className='table__number-square d-flex justify-content-center align-items-center'>
+                            {/* <div className='table__number-square d-flex justify-content-center align-items-center'>
                                 <Typography weight={'bold'} variant={'size-16'} color='color-3'>
                                     {cell.cell.row.original.alerts.data.length}
                                 </Typography>
-                            </div>
+                            </div> */}
                             {/* <Typography weight={'bold'} variant={'size-16'} color='color-3'
                                 className='color-link-text cursor-pointer pl-3 table__box-label'
                                 onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients)}>
@@ -1301,6 +1302,7 @@ export default function ReactTable({
                     return <span>{value}</span>;
                 } else if (accessor == 'policiesAction') {
                     const rowData = cell.cell.row.original;
+                    const allData = cell.data;
 
                     return (
                         <>
@@ -1314,7 +1316,7 @@ export default function ReactTable({
                                     <DropdownItem onClick={() => viewDetails(rowData.id, rowData.name, rowData.internalCode)}>
                                         View
                                     </DropdownItem>
-                                    <DropdownItem onClick={() => viewEditModal(rowData)}>
+                                    <DropdownItem onClick={() => viewEditModal(rowData, allData)}>
                                         Edit
                                     </DropdownItem>
                                     <DropdownItem onClick={() => viewDeleteModal(rowData)}>
@@ -1351,7 +1353,7 @@ export default function ReactTable({
                             {/* {JSON.stringify(stats.marketAbuse.open != 0 || stats.marketAbuse.resolved != 0 || stats.marketAbuse.archived != 0 || stats.marketAbuse.inReview != 0)} */}
                             { (stats.marketAbuse.open != 0 || stats.marketAbuse.resolved != 0 ||
                                 stats.marketAbuse.archived != 0 || stats.marketAbuse.inReview != 0) &&
-                                <div className='alert-status-column d-flex align-items-center mb-3' style={{ minWidth: '200px !important' }}>
+                                <div className='alert-status-column d-flex align-items-center mt-2 mb-3' style={{ minWidth: '200px !important' }}>
                                     <Badge status={'title'} text={'Market Abuse'} isCustom='true'
                                         className='mr-2'/>
                                     {stats.marketAbuse.open != 0 &&
@@ -1373,7 +1375,7 @@ export default function ReactTable({
                             }
                             { (stats.conduct.open > 0 || stats.conduct.resolved > 0 ||
                                 stats.conduct.archived > 0 || stats.conduct.inReview > 0) &&
-                                <div className='alert-status-column d-flex align-items-center mb-3' style={{ minWidth: '200px !important' }}>
+                                <div className='alert-status-column d-flex align-items-center mt-2 mb-3' style={{ minWidth: '200px !important' }}>
                                     <Badge status={'title'} text={'Conduct'} isCustom='true'
                                         className='mr-2'/>
                                     {stats.conduct.open != 0 &&
@@ -1395,7 +1397,7 @@ export default function ReactTable({
                             }
                             { (stats.mislanguage.open > 0 || stats.mislanguage.resolved > 0 ||
                                 stats.mislanguage.archived > 0 || stats.mislanguage.inReview > 0) &&
-                                <div className='alert-status-column d-flex align-items-center mb-3' style={{ minWidth: '200px !important' }}>
+                                <div className='alert-status-column d-flex align-items-center mt-2 mb-3' style={{ minWidth: '200px !important' }}>
                                     <Badge status={'title'} text={'Mislanguage'} isCustom='true'
                                         className='mr-2'/>
                                     {stats.mislanguage.open != 0 &&
@@ -1417,7 +1419,7 @@ export default function ReactTable({
                             }
                             { (stats.others.open > 0 || stats.others.resolved > 0 ||
                                 stats.others.archived > 0 || stats.others.inReview > 0) &&
-                                <div className='alert-status-column d-flex align-items-center' style={{ minWidth: '200px !important' }}>
+                                <div className='alert-status-column d-flex align-items-center mt-2' style={{ minWidth: '200px !important' }}>
                                     <Badge status={'title'} text={'Others'} isCustom='true'
                                         className='mr-2'/>
                                     {stats.others.open != 0 &&
@@ -1439,6 +1441,26 @@ export default function ReactTable({
                             }
                         </>
                     );
+                } else if (accessor == 'profileName') {
+                    const firstName = cell.cell.row.original.firstName;
+                    const lastName = cell.cell.row.original.lastName;
+
+                    return (<span>{firstName} {lastName}</span>);
+                } else if (accessor == 'profileCompany') {
+                    const company = cell.cell.row.original.company;
+
+                    return (<span>{company}</span>);
+                } else if (accessor == 'profileEmails') {
+                    const identifiers = [...new Set(cell.cell.row.original.userLinkIdentifierDtos
+                        ? cell.cell.row.original.userLinkIdentifierDtos.map(item => item.identifier)
+                        : '')];
+                    const strIdentifiers = identifiers.join(', ');
+
+                    return (<span>{strIdentifiers != '' ? strIdentifiers : 'None'}</span>);
+                } else if (accessor == 'profileInternalPerson') {
+                    const isInternal = cell.cell.row.original.internal;
+
+                    return (<span>{isInternal ? 'Yes' : 'No'}</span>);
                 } else {
                     return (<span>{cell.value == null ? '' : cell.value}</span>);
                 }
