@@ -7,7 +7,7 @@ import type { Menu } from '../../types';
 import dataSample from '../CommunicationAlerts/MOCK_DATA.json';
 import filterSample from '../CommunicationAlerts/filters.json';
 import moment from 'moment';
-import { downloadCommSearchList, getCommunicationSearchData, getEmails, getEmailsAll } from '../../api/communicationSearch';
+import { downloadCommSearchList, getCommunicationSearchData, getCommunicationSearchDataOpenSearch, getEmails, getEmailsAll } from '../../api/communicationSearch';
 import { setCommunicationSearchData, setColumnFilterValues, setSearchFilterValues } from '../../redux/modules/communicationSearch';
 import { setActivePage } from '../../redux/modules/isisTable';
 import { filter } from 'underscore';
@@ -187,12 +187,16 @@ export default function CommunicationSearchResultsContainer({
         }
 
         try {
-            const search = searchParams.data != null && !isRequery
-                ? !isTablePageSelect
-                    ? searchParams
-                    : await getCommunicationSearchData(insidePage, size, sort, newFilters)
-                : await getCommunicationSearchData(page, size, sort, newFilters);
-            const { data, searchIds, totalNoOfRecords, totalPages } = search.data;
+            const openSearchData = await getCommunicationSearchDataOpenSearch(page, size, sort, newFilters);
+
+            console.log(openSearchData);
+            const { data, searchIds, totalNoOfRecords, totalPages } = openSearchData;
+            // const search = searchParams.data != null && !isRequery
+            //     ? !isTablePageSelect
+            //         ? searchParams
+            //         : await getCommunicationSearchData(insidePage, size, sort, newFilters)
+            //     : await getCommunicationSearchData(page, size, sort, newFilters);
+            // const { data, searchIds, totalNoOfRecords, totalPages } = search.data;
 
             // Map data and add the keyword to object as filterKeyword
             data.map(item => {
@@ -207,7 +211,8 @@ export default function CommunicationSearchResultsContainer({
             Storage.removeItem(storageKey.searchParams);
             Storage.setItem(storageKey.searchParams, JSON.stringify({
                 filterSearchForm: newFilters,
-                data: search.data,
+                // data: search.data,
+                data: openSearchData,
                 activePage: insidePage
             }));
         } catch (e) {

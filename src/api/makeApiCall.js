@@ -51,6 +51,11 @@ export default async function makeApiCall(
             'Content-Type': 'multipart/form-data;',
             Authorization: `Basic ${config.adminApplAuthHeader}`
         };
+    } else if (endpoint.includes('search-isis-opensearch')) {
+        request.headers = {
+            'Content-Type': 'application/json',
+            Authorization: `Basic ${config.openSearchAuthHeader}`
+        };
     } else if (endpoint.includes('upload-user-link')) {
         request.headers = {
             'Content-Type': 'multipart/form-data;',

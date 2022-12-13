@@ -70,6 +70,65 @@ export async function getCommunicationSearchData(page, size, sort, filters) {
     return await makeApiCall(`${GET_SEARCH_DATA}?page=${page}&size=${size}${withSorting()}`, 'POST', filterBody);
 }
 
+const GET_SEARCH_DATA_OPEN_SEARCH = `${config.openSearchUrl}/test_messages/_search/`;
+
+export async function getCommunicationSearchDataOpenSearch(page, size, sort, filters) {
+    previousKeyword = filters.filterText;
+
+    // const filterBody = {
+    //     message: filters.filterText,
+    //     senders: filters.filterSenders.length > 0 ? [...filters.filterSenders.map(row => { return row.value; })] : [],
+    //     recipients: filters.filterRecipients.length > 0 ? [...filters.filterRecipients.map(row => { return row.value; })] : [],
+    //     sources: filters.filterSource.length > 0 ? [...filters.filterSource.map(row => { return row.value; })] : [],
+    //     dateSentFrom: filters.filterDateFrom,
+    //     dateSentTo: filters.filterDateTo,
+    //     bypassType: 'DEFAULT'
+    // };
+
+    if (filters.filterId != '' || filters.filterId) {
+        filterBody.id = filters.filterId;
+    }
+
+    const sortColumn = sort.column;
+    const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? [sortColumn, sort.type] : ['time_sent', 'desc'];
+
+    const filterBody = {
+        size: size,
+        from: 0,
+        sort: [
+            {
+                time_sent: {
+                    order: 'desc'
+                }
+            }
+        ]
+    };
+
+    const { data } = await makeApiCall(`${GET_SEARCH_DATA_OPEN_SEARCH}?scroll=1m`, 'GET', filterBody);
+
+    const messageList = data.hits.hits.map((msg) => ({
+        id: msg._id,
+        chainLinkId: msg._source.chain_id,
+        sender: msg._source.sender,
+        recipients: msg._source.recipients.split(','),
+        source: msg._source.source,
+        timeSent: msg._source.time_sent,
+        type: msg._source.type,
+        message: msg._source.content
+    }));
+
+    const processedResult = {
+        data: messageList,
+        searchIds: '',
+        totalCurrentElements: size,
+        totalNoOfRecords: data.hits.total.value,
+        totalPages: Math.floor(data.hits.total.value / size)
+    };
+
+    // return await makeApiCall(`${GET_SEARCH_DATA}?page=${page}&size=${size}${withSorting()}`, 'POST', filterBody);
+    return processedResult;
+}
+
 // const GET_SEARCH_DATA = `${config.apiStorage}/storage-service/alert/search/paged`;
 
 // export async function getCommunicationSearchData(page, size, sort, filters) {

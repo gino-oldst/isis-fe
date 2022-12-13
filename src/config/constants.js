@@ -10,7 +10,9 @@ const config = {
     adminApplAuthHeader: process.env.REACT_APP_ADMIN_APP_AUTH_HEADER,
     apiStorage: process.env.REACT_APP_STORAGE_API_HOST,
     apiAuth: process.env.REACT_APP_AUTH_API_HOST,
-    versionName: process.env.REACT_APP_VERSION_VALUE
+    versionName: process.env.REACT_APP_VERSION_VALUE,
+    openSearchUrl: process.env.REACT_APP_OPEN_SEARCH_URL,
+    openSearchAuthHeader: process.env.REACT_APP_OPEN_SEARCH_AUTH_HEADER
 };
 
 // keys for localstorage
