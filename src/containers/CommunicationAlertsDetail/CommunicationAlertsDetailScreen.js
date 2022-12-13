@@ -644,147 +644,242 @@ function CommunicationAlertsDetailScreen({
                                                     disabled={loading} onClick={showActionsUpdateModal} label='Update all Status'/>
                                             </div>
                                             {alertLoading || loading
-                                                ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3'>
+                                                ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3 mb-2'>
                                                     <span className='sr-only'>Loading...</span>
                                                 </Spinner>
                                                 : <>
-                                                    <table className='table'>
-                                                        {alertsData.length > 0
-                                                            ? <>
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th className='pb-2'>
-                                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Alert</Typography>
-                                                                        </th>
-                                                                        <th className='pb-2'>
-                                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Trigered Text</Typography>
-                                                                        </th>
-                                                                        <th className='pb-2'>
-                                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Status</Typography>
-                                                                        </th>
-                                                                        <th className='pb-2'>
-                                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Escalation</Typography>
-                                                                        </th>
-                                                                        <th className='pb-2'>
-                                                                            <Typography color='color-3' className='mr-3' weight='semi-bold'>Assign To</Typography>
-                                                                        </th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {alertsData.map(alert => {
-                                                                        return (<>
-                                                                            <tr>
-                                                                                <td className='pb-2'>
-                                                                                    <Typography color='color-3'>{alert.policyName}</Typography>
-                                                                                </td>
-                                                                                <td className='pb-2'>
-                                                                                    <Typography color='color-3'>{alert.keyword}</Typography>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <div className='d-flex align-items-center'>
-                                                                                        <Select
-                                                                                            name='status'
-                                                                                            className='w-100 pr-2'
-                                                                                            isDisabled={false}
-                                                                                            isSearchable={false}
-                                                                                            onChange={e => handleDetailStatusChange(e, alert)}
-                                                                                            defaultValue={{
-                                                                                                label: <Badge status={alert.status} />,
-                                                                                                value: alert.status
-                                                                                            }}
-                                                                                            options={[{
-                                                                                                name: 'OPEN',
-                                                                                                label: <Badge status='Open' />,
-                                                                                                value: 'OPEN'
-                                                                                            }, {
-                                                                                                name: 'IN_REVIEW',
-                                                                                                label: <Badge status='In Review' />,
-                                                                                                value: 'IN_REVIEW'
-                                                                                            }, {
-                                                                                                name: 'RESOLVED',
-                                                                                                label: <Badge status='Resolved' />,
-                                                                                                value: 'RESOLVED'
-                                                                                            }, {
-                                                                                                name: 'ARCHIVED',
-                                                                                                label: <Badge status='Archived' />,
-                                                                                                value: 'ARCHIVED'
-                                                                                            }]} />
-                                                                                        {alert.status == 'RESOLVED' &&
-                                                                                            <div>
-                                                                                                <OverlayTrigger style={{ cursor: 'pointer' }} placement='bottom-start' overlay={renderAlertInfo(alert.notes)}>
-                                                                                                    <FaInfoCircle style={{ color: '#004C98', cursor: 'pointer' }} size={24}/>
-                                                                                                </OverlayTrigger>
-                                                                                            </div>
-                                                                                        }
-                                                                                    </div>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <div className='d-flex align-items-center'>
-                                                                                        <Select
-                                                                                            name='escalation'
-                                                                                            className='w-100 pr-2'
-                                                                                            isDisabled={false}
-                                                                                            isSearchable={false}
-                                                                                            onChange={e => handleDetailEscalationChange(e, alert)}
-                                                                                            defaultValue={{
-                                                                                                label: <Badge status={alert.escalation ? alert.escalation : 'Base'} />,
-                                                                                                value: alert.escalation ? alert.escalation : 'BASE'
-                                                                                            }}
-                                                                                            options={[{
-                                                                                                name: 'BASE',
-                                                                                                label: <Badge status='Base' />,
-                                                                                                value: 'BASE'
-                                                                                            }, {
-                                                                                                name: 'MANAGER',
-                                                                                                label: <Badge status='Manager' />,
-                                                                                                value: 'MANAGER'
-                                                                                            }, {
-                                                                                                name: 'CO',
-                                                                                                label: <Badge status='CO' />,
-                                                                                                value: 'CO'
-                                                                                            }]} />
-                                                                                    </div>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <div className='d-flex align-items-center'>
-                                                                                        <Select
-                                                                                            name='assign-user'
-                                                                                            closeMenuOnSelect={false}
-                                                                                            placeholder={'Unassigned'}
-                                                                                            isSearchable={false}
-                                                                                            className='w-100 pr-2'
-                                                                                            onChange={e => handleAppUserChange(e, alert)}
-                                                                                            defaultValue={{
-                                                                                                label: alert.assignedUserId
-                                                                                                    ? Object.values(appUser).find(e => e.value === alert.assignedUserId).label
-                                                                                                    : appUserAssign[0].label,
-                                                                                                value: alert.assignedUserId ? alert.assignedUserId : appUserAssign[0].value
-                                                                                            }}
-                                                                                            options={appUserAssign} />
-                                                                                    </div>
-                                                                                </td>
-                                                                            </tr>
-                                                                        </>);
-                                                                    })}
-                                                                </tbody>
-                                                            </>
-                                                            : <>
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th className='pb-2 text-center'>
-                                                                            <Typography size={18} color='color-1' className='mr-3'
-                                                                                weight='semi-bold'>No Alerts</Typography>
-                                                                        </th>
-                                                                    </tr>
-                                                                </thead>
-                                                            </>
-                                                        }
-                                                    </table>
+                                                    <div className='pb-2'>
+                                                        <table className='table'>
+                                                            {alertsData.length > 0
+                                                                ? <>
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Alert</Typography>
+                                                                            </th>
+                                                                            <th className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Trigered Text</Typography>
+                                                                            </th>
+                                                                            <th className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Status</Typography>
+                                                                            </th>
+                                                                            <th className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Escalation</Typography>
+                                                                            </th>
+                                                                            <th className='pb-2'>
+                                                                                <Typography color='color-3' className='mr-3' weight='semi-bold'>Assign To</Typography>
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {alertsData.map(alert => {
+                                                                            return (<>
+                                                                                <tr>
+                                                                                    <td className='pb-2'>
+                                                                                        <Typography color='color-3'>{alert.policyName}</Typography>
+                                                                                    </td>
+                                                                                    <td className='pb-2'>
+                                                                                        <Typography color='color-3'>{alert.keyword}</Typography>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <div className='d-flex align-items-center'>
+                                                                                            <Select
+                                                                                                name='status'
+                                                                                                className='w-100 pr-2'
+                                                                                                isDisabled={false}
+                                                                                                isSearchable={false}
+                                                                                                onChange={e => handleDetailStatusChange(e, alert)}
+                                                                                                defaultValue={{
+                                                                                                    label: <Badge status={alert.status} />,
+                                                                                                    value: alert.status
+                                                                                                }}
+                                                                                                options={[{
+                                                                                                    name: 'OPEN',
+                                                                                                    label: <Badge status='Open' />,
+                                                                                                    value: 'OPEN'
+                                                                                                }, {
+                                                                                                    name: 'IN_REVIEW',
+                                                                                                    label: <Badge status='In Review' />,
+                                                                                                    value: 'IN_REVIEW'
+                                                                                                }, {
+                                                                                                    name: 'RESOLVED',
+                                                                                                    label: <Badge status='Resolved' />,
+                                                                                                    value: 'RESOLVED'
+                                                                                                }, {
+                                                                                                    name: 'ARCHIVED',
+                                                                                                    label: <Badge status='Archived' />,
+                                                                                                    value: 'ARCHIVED'
+                                                                                                }]} />
+                                                                                            {alert.status == 'RESOLVED' &&
+                                                                                                <div>
+                                                                                                    <OverlayTrigger style={{ cursor: 'pointer' }} placement='bottom-start' overlay={renderAlertInfo(alert.notes)}>
+                                                                                                        <FaInfoCircle style={{ color: '#004C98', cursor: 'pointer' }} size={24}/>
+                                                                                                    </OverlayTrigger>
+                                                                                                </div>
+                                                                                            }
+                                                                                        </div>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <div className='d-flex align-items-center'>
+                                                                                            <Select
+                                                                                                name='escalation'
+                                                                                                className='w-100 pr-2'
+                                                                                                isDisabled={false}
+                                                                                                isSearchable={false}
+                                                                                                onChange={e => handleDetailEscalationChange(e, alert)}
+                                                                                                defaultValue={{
+                                                                                                    label: <Badge status={alert.escalation ? alert.escalation : 'Base'} />,
+                                                                                                    value: alert.escalation ? alert.escalation : 'BASE'
+                                                                                                }}
+                                                                                                options={[{
+                                                                                                    name: 'BASE',
+                                                                                                    label: <Badge status='Base' />,
+                                                                                                    value: 'BASE'
+                                                                                                }, {
+                                                                                                    name: 'MANAGER',
+                                                                                                    label: <Badge status='Manager' />,
+                                                                                                    value: 'MANAGER'
+                                                                                                }, {
+                                                                                                    name: 'CO',
+                                                                                                    label: <Badge status='CO' />,
+                                                                                                    value: 'CO'
+                                                                                                }]} />
+                                                                                        </div>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <div className='d-flex align-items-center'>
+                                                                                            <Select
+                                                                                                name='assign-user'
+                                                                                                closeMenuOnSelect={false}
+                                                                                                placeholder={'Unassigned'}
+                                                                                                isSearchable={false}
+                                                                                                className='w-100 pr-2'
+                                                                                                onChange={e => handleAppUserChange(e, alert)}
+                                                                                                defaultValue={{
+                                                                                                    label: alert.assignedUserId
+                                                                                                        ? Object.values(appUser).find(e => e.value === alert.assignedUserId).label
+                                                                                                        : appUserAssign[0].label,
+                                                                                                    value: alert.assignedUserId ? alert.assignedUserId : appUserAssign[0].value
+                                                                                                }}
+                                                                                                options={appUserAssign} />
+                                                                                        </div>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </>);
+                                                                        })}
+                                                                    </tbody>
+                                                                </>
+                                                                : <>
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th className='pb-2 text-center'>
+                                                                                <Typography size={18} color='color-1' className='mr-3'
+                                                                                    weight='semi-bold'>No Alerts</Typography>
+                                                                            </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                </>
+                                                            }
+                                                        </table>
+                                                    </div>
                                                 </>
                                             }
+                                            <div className='pb-2 pt-5'>
+                                                <Row>
+                                                    <Col>
+                                                        <Typography color='color-3' className='mr-3' weight='semi-bold'
+                                                            style={{ fontSize: '24px', lineHeight: '24pt' }}>Message</Typography>
+                                                        <Typography color='color-3' className='mr-3 mb-4' weight='regular'
+                                                            style={{ fontSize: '16px', lineHeight: '24pt' }}>Message is highlighted.</Typography>
+                                                    </Col>
+                                                    <Col className='text-right'>
+                                                        <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' to={dataId} smooth={true}
+                                                            disabled={loading} containerId='containerElement' duration={500}>
+                                                            Show Message
+                                                        </Link>
+                                                        <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' onClick={showActionsModal} smooth={true}
+                                                            disabled={loading} containerId='containerElement' duration={500}>
+                                                            Download Page
+                                                        </Link>
+                                                    </Col>
+                                                </Row>
+                                                <div className='d-flex flex-column' style={{ minWidth: '600px' }}>
+                                                    {loading
+                                                        ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3'>
+                                                            <span className='sr-only'>Loading...</span>
+                                                        </Spinner>
+                                                        : <>
+                                                            <div id='containerElement' className='alerts-detail__message-thread pt-1 pb-5 mb-4 mt-4'>
+                                                                <div>
+                                                                    {messages.map(message => {
+                                                                        return (!isDisclaimer(message.message)
+                                                                            ? <>
+                                                                                <Element name={message.id} className={`element mb-1 ${message.id == dataId && 'active-message'}`}>
+                                                                                    {isMessageEvent(message.message) || message.type === MESSAGE_TYPE.JOIN || message.type === MESSAGE_TYPE.LEAVE
+                                                                                        ? <div className='message-box-event'>
+                                                                                            <Typography color='color-2' className='mr-3 text-center' weight='regular'
+                                                                                                style={{ backgroundColor: '121212', fontSize: '14px', lineHeight: '24pt' }}>{isoToUTCLocal(message.timeSent)} {message.type != null || message.source.toLowerCase() == 'bloomberg_chat' && `*** ${message.sender}` } {message.message} </Typography>
+                                                                                        </div>
+                                                                                        : <>
+                                                                                            {message.showSender &&
+                                                                                                <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                                                                    style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> <span> {isoToUTCLocal(message.timeSent)}</span></Typography>}
+                                                                                            <div className='message-box'>
+                                                                                                <Highlighter highlightClassName='alertKeyword'
+                                                                                                    style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
+                                                                                                    searchWords={filterText}
+                                                                                                    autoEscape={true}
+                                                                                                    textToHighlight={message.message}/>
+                                                                                                {isDebug()
+                                                                                                    ? <Typography color='color-1' className='mr-3 text-right messageID' weight='regular'
+                                                                                                        style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}>ID: {message.id} </Typography>
+                                                                                                    : ''}
+                                                                                            </div>
+                                                                                        </>
+                                                                                    }
+                                                                                </Element>
+                                                                            </>
+                                                                            : <>
+                                                                                <Element name={message.id} className={`element mb-1 ${message.id == dataId && 'active-message'}`}>
+                                                                                    {/* {message.showSender &&
+                                                                                        <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                                                            style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b>{message.showSender} {isoToUTCLocal(message.timeSent)}</Typography>} */}
+                                                                                    {isMessageEvent(message.message) || message.type === MESSAGE_TYPE.JOIN || message.type === MESSAGE_TYPE.LEAVE
+                                                                                        ? <div className='message-box-event'>
+                                                                                            <Typography color='color-1' className='mr-3 text-center' weight='regular'
+                                                                                                style={{ backgroundColor: '121212', fontSize: '14px', lineHeight: '24pt' }}>{isoToUTCLocal(message.timeSent)} {message.type != null || !message.source.toLowerCase() == 'bloomberg_chat' && `*** ${message.sender}` } {message.message} </Typography>
+                                                                                        </div>
+                                                                                        : <>
+                                                                                            {/* <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                                                                style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography> */}
+                                                                                            {message.showSender &&
+                                                                                                <Typography color='color-3' className='mr-3 mb-2' weight='regular'
+                                                                                                    style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>}
+                                                                                            <div className='message-box'>
+                                                                                                <Highlighter highlightClassName='alertKeyword'
+                                                                                                    style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
+                                                                                                    searchWords={[]}
+                                                                                                    autoEscape={true}
+                                                                                                    textToHighlight={message.message}/>
+                                                                                                {isDebug()
+                                                                                                    ? <Typography color='color-1' className='mr-3 text-right messageID' weight='regular'
+                                                                                                        style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}> ID: {message.id} </Typography>
+                                                                                                    : ''}
+                                                                                            </div>
+                                                                                        </>
+                                                                                    }
+                                                                                </Element>
+                                                                            </>);
+                                                                    })}
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                    }
+                                                </div>
+                                            </div>
                                         </Col>
                                         <Col className='mb-4 offset-lg-1' lg={4} md={12}>
-                                            <div style={{ border: '2px solid #D0D0D0', height: '100%', padding: '30px' }}>
+                                            <div style={{ border: '2px solid #D0D0D0', height: 'auto', padding: '30px' }}>
                                                 <Typography color='color-3' className='mr-auto' weight='regular'
                                                     style={{ fontSize: '16px', lineHeight: '24pt' }} ><b>Date & Time: </b>{ detailData.timeSent != null ? isoToUTCLocal(detailData.timeSent) : 'N/A' }</Typography>
                                                 <Typography color='color-3' className='mr-auto' weight='regular'
@@ -804,118 +899,10 @@ function CommunicationAlertsDetailScreen({
                                             </div>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    {/* <Row>
                                         <Col lg={7} className='mb-2 mt-3'>
-                                            <Row>
-                                                <Col>
-                                                    <Typography color='color-3' className='mr-3' weight='semi-bold'
-                                                        style={{ fontSize: '24px', lineHeight: '24pt' }}>Message</Typography>
-                                                    <Typography color='color-3' className='mr-3 mb-4' weight='regular'
-                                                        style={{ fontSize: '16px', lineHeight: '24pt' }}>Message is highlighted.</Typography>
-                                                </Col>
-                                                <Col className='text-right'>
-                                                    <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' to={dataId} smooth={true}
-                                                        disabled={loading} containerId='containerElement' duration={500}>
-                                                           Show Message
-                                                    </Link>
-                                                    <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' onClick={showActionsModal} smooth={true}
-                                                        disabled={loading} containerId='containerElement' duration={500}>
-                                                        Download Page
-                                                    </Link>
-                                                </Col>
-                                            </Row>
-                                            <div className='d-flex flex-column' style={{ minWidth: '600px' }}>
-                                                {loading
-                                                    ? <Spinner animation='border' role='status' className='d-flex my-auto text-center mr-3'>
-                                                        <span className='sr-only'>Loading...</span>
-                                                    </Spinner>
-                                                    : <>
-                                                        <div id='containerElement' className='alerts-detail__message-thread pt-1 pb-5 mb-4 mt-4'>
-                                                            <div>
-                                                                {messages.map(message => {
-                                                                    return (!isDisclaimer(message.message)
-                                                                        ? <>
-                                                                            <Element name={message.id} className={`element mb-1 ${message.id == dataId && 'active-message'}`}>
-                                                                                {isMessageEvent(message.message) || message.type === MESSAGE_TYPE.JOIN || message.type === MESSAGE_TYPE.LEAVE
-                                                                                    ? <div className='message-box-event'>
-                                                                                        <Typography color='color-2' className='mr-3 text-center' weight='regular'
-                                                                                            style={{ backgroundColor: '121212', fontSize: '14px', lineHeight: '24pt' }}>{isoToUTCLocal(message.timeSent)} {message.type != null || message.source.toLowerCase() == 'bloomberg_chat' && `*** ${message.sender}` } {message.message} </Typography>
-                                                                                    </div>
-                                                                                    : <>
-                                                                                        {/* <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                            style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography> */}
-                                                                                        {message.showSender &&
-                                                                                            <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                                style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> <span> {isoToUTCLocal(message.timeSent)}</span></Typography>}
-                                                                                        <div className='message-box'>
-                                                                                            <Highlighter highlightClassName='alertKeyword'
-                                                                                                style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
-                                                                                                searchWords={filterText}
-                                                                                                autoEscape={true}
-                                                                                                textToHighlight={message.message}/>
-                                                                                            {isDebug()
-                                                                                                ? <Typography color='color-1' className='mr-3 text-right messageID' weight='regular'
-                                                                                                    style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}>ID: {message.id} </Typography>
-                                                                                                : ''}
-                                                                                        </div>
-                                                                                    </>
-                                                                                }
-                                                                            </Element>
-                                                                        </>
-                                                                        : <>
-                                                                            <Element name={message.id} className={`element mb-1 ${message.id == dataId && 'active-message'}`}>
-                                                                                {/* {message.showSender &&
-                                                                                    <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                        style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b>{message.showSender} {isoToUTCLocal(message.timeSent)}</Typography>} */}
-                                                                                {isMessageEvent(message.message) || message.type === MESSAGE_TYPE.JOIN || message.type === MESSAGE_TYPE.LEAVE
-                                                                                    ? <div className='message-box-event'>
-                                                                                        <Typography color='color-1' className='mr-3 text-center' weight='regular'
-                                                                                            style={{ backgroundColor: '121212', fontSize: '14px', lineHeight: '24pt' }}>{isoToUTCLocal(message.timeSent)} {message.type != null || !message.source.toLowerCase() == 'bloomberg_chat' && `*** ${message.sender}` } {message.message} </Typography>
-                                                                                    </div>
-                                                                                    : <>
-                                                                                        {/* <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                            style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography> */}
-                                                                                        {message.showSender &&
-                                                                                            <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                                style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>}
-                                                                                        <div className='message-box'>
-                                                                                            <Highlighter highlightClassName='alertKeyword'
-                                                                                                style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
-                                                                                                searchWords={[]}
-                                                                                                autoEscape={true}
-                                                                                                textToHighlight={message.message}/>
-                                                                                            {isDebug()
-                                                                                                ? <Typography color='color-1' className='mr-3 text-right messageID' weight='regular'
-                                                                                                    style={{ backgroundColor: '121212', fontSize: '11px', lineHeight: '24pt' }}> ID: {message.id} </Typography>
-                                                                                                : ''}
-                                                                                        </div>
-                                                                                    </>
-                                                                                }
-                                                                            </Element>
-                                                                        </>);
-                                                                })}
-                                                            </div>
-                                                        </div>
-                                                    </>
-                                                }
-                                                {/* <Button label='Load previous 5 message' variant='outline-primary' className='ok-button px-4 mr-2 py-2' /> */}
-                                                {/* <div className='alert__message-thread mb-4 mt-4'>
-                                                    <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                        style={{ fontSize: '16px', lineHeight: '24pt' }}><b>Daniel Caplin</b> 17/12/21, 8:02 AM</Typography>
-                                                    {[1, 2, 3, 4, 5].map(item => {
-                                                        return (<div className='message-box mb-4' style={{ padding: '15px 20px', background: '#F6F6F6', borderRadius: '0px 10px 10px 10px' }}>
-                                                            <Highlighter highlightClassName='alertKeyword'
-                                                                style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
-                                                                searchWords={['flame']}
-                                                                autoEscape={true}
-                                                                textToHighlight='This stock is going up in flames.'/>
-                                                        </div>);
-                                                    })}
-                                                </div> */}
-                                                {/* <Button label='Load next 5 message' variant='outline-primary' className='ok-button px-4 mr-2 py-2' /> */}
-                                            </div>
                                         </Col>
-                                    </Row>
+                                    </Row> */}
                                     <Row>
                                         <Col lg={4} className='mt-5 mb-4'>
                                             <Form onSubmit={onSubmitComment}>

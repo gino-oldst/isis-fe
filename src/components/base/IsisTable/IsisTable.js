@@ -39,6 +39,7 @@ import Storage from '../../../utils/Storage';
 import { Spinner } from 'react-bootstrap';
 import { after, before } from 'underscore';
 import { customWordHighlightLogic } from '../../../utils/highlightHelper';
+import { access } from 'fs';
 // Define a default UI for filtering
 
 function GlobalFilter({
@@ -648,13 +649,13 @@ function IsisTable({
                                 <th {...column.getHeaderProps()}>
                                     <span onClick={() => column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                             column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' && column.id !== 'policyDetailKeyword' && column.id !== 'policyDetailKeywordNumber' && column.id !== 'alertPolicyInternalCode' &&
-                                            column.id !== 'alertPolicyName' && handleSort(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
+                                            column.id !== 'alertPolicyName' && column.id !== 'profileEmails' && handleSort(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
                                     className={() => column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                     column.id !== 'expander' && column.id !== 'recipient' && 'cursor-pointer'}>
                                         {column.render('Header')}
                                         {column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                             column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' &&
-                                            column.id !== 'policyDetailKeyword' && column.id !== 'policyDetailKeywordNumber' && column.id !== 'alertPolicyInternalCode' && column.id !== 'alertPolicyName' &&
+                                            column.id !== 'policyDetailKeyword' && column.id !== 'policyDetailKeywordNumber' && column.id !== 'alertPolicyInternalCode' && column.id !== 'alertPolicyName' && column.id !== 'profileEmails' &&
                                             renderSortControl(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
                                     </span>
                                     {column.canFilter ? column.render('Filter') : null}
@@ -1440,6 +1441,26 @@ export default function ReactTable({
                             }
                         </>
                     );
+                } else if (accessor == 'profileName') {
+                    const firstName = cell.cell.row.original.firstName;
+                    const lastName = cell.cell.row.original.lastName;
+
+                    return (<span>{firstName} {lastName}</span>);
+                } else if (accessor == 'profileCompany') {
+                    const company = cell.cell.row.original.company;
+
+                    return (<span>{company}</span>);
+                } else if (accessor == 'profileEmails') {
+                    const identifiers = [...new Set(cell.cell.row.original.userLinkIdentifierDtos
+                        ? cell.cell.row.original.userLinkIdentifierDtos.map(item => item.identifier)
+                        : '')];
+                    const strIdentifiers = identifiers.join(', ');
+
+                    return (<span>{strIdentifiers != '' ? strIdentifiers : 'None'}</span>);
+                } else if (accessor == 'profileInternalPerson') {
+                    const isInternal = cell.cell.row.original.internal;
+
+                    return (<span>{isInternal ? 'Yes' : 'No'}</span>);
                 } else {
                     return (<span>{cell.value == null ? '' : cell.value}</span>);
                 }

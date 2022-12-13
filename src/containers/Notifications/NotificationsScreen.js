@@ -63,7 +63,7 @@ export default function NotificationsScreen({
                                 </div>
                                 {today.map((tod, idx) => {
                                     return (
-                                        <DropdownItem key={`today-${idx}`} className='px-4 py-4 d-flex align-items-center'>
+                                        <DropdownItem key={`today-${idx}`} className='px-4 py-4 d-flex align-items-center' onClick={() => handleReadNotif(tod, tod.seen)}>
                                             <div className='navbar__notifications__icon'>
                                                 <img src={bellIcon} alt='Notification_Bell_Icon' className='notification_icon' />
                                             </div>
@@ -83,8 +83,7 @@ export default function NotificationsScreen({
                                             </div> */}
                                             <div className={`mr-2 navbar__notifications__${tod.seen ? 'unread' : 'read'}-icon`}>
                                                 <FontAwesomeIcon className={`navbar__notification-${tod.seen ? 'unread' : 'read'}`} icon='circle'
-                                                    size='xs'
-                                                    data-tip={true} data-for={tod.id} onClick={() => handleReadNotif(tod, tod.seen)} />
+                                                    size='xs' data-tip={true} data-for={tod.id}/>
                                             </div>
                                             <Tooltip place='left' id={`today-${tod.id}`}>
                                                 <Typography variant='size-10' weight='light' color='color-3'>{!tod.seen ? 'Mark as read' : 'Mark as unread'}</Typography>
@@ -103,7 +102,7 @@ export default function NotificationsScreen({
                                     </div>
                                     {yesterday.map((yes, idx) => {
                                         return (
-                                            <DropdownItem key={`yesterdat-${idx}`} className='px-4 py-4 d-flex align-items-center'>
+                                            <DropdownItem key={`yesterdat-${idx}`} className='px-4 py-4 d-flex align-items-center' onClick={() => handleReadNotif(yes, yes.seen)} >
                                                 <div className='navbar__notifications__icon'>
                                                     <img src={bellIcon} alt='Notification_Bell_Icon' className='notification_icon' />
                                                 </div>
@@ -123,8 +122,7 @@ export default function NotificationsScreen({
                                                 </div> */}
                                                 <div className={`mr-2 navbar__notifications__${yes.seen ? 'unread' : 'read'}-icon`}>
                                                     <FontAwesomeIcon className={`navbar__notification-${yes.seen ? 'unread' : 'read'}`} icon='circle'
-                                                        size='xs'
-                                                        data-tip={true} data-for={yes.id} onClick={() => handleReadNotif(yes, yes.seen)} />
+                                                        size='xs' data-tip={true} data-for={yes.id}/>
                                                 </div>
                                                 <Tooltip place='left' id={`yesterday-${yes.id}`}>
                                                     <Typography variant='size-10' weight='light' color='color-3'>{!yes.seen ? 'Mark as read' : 'Mark as unread'}</Typography>

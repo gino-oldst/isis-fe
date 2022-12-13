@@ -79,6 +79,7 @@ export default function CommunicationAlertsDetail({
     const [itemSize, setItemSize] = useState(0);
 
     useEffect(() => {
+        loadAppUsers();
         loadSearchData(filters.state);
         loadAlerts(filters.state.id);
         loadActivity(filters.state.id);
@@ -87,7 +88,6 @@ export default function CommunicationAlertsDetail({
 
     useEffect(() => {
         loadPredefinedReasons();
-        loadAppUsers();
     }, []);
 
     const loadAlerts = async (id) => {
@@ -153,8 +153,6 @@ export default function CommunicationAlertsDetail({
          */
         const recipients = [...new Set(nextData[0].recipients ? nextData[0].recipients.map(item => item) : '')];
 
-        console.log(nextData);
-
         history.push({
             pathname: `/communication_alerts_detail/${nextData[0].commMessageId}`,
             state: {
@@ -218,7 +216,7 @@ export default function CommunicationAlertsDetail({
         });
     };
 
-    const loadCommAlertsData = async (page, size, sort) => {
+    const loadCommAlertsData = async (page = 0, size = 10, sort) => {
         const alertSearchParams = JSON.parse(await StorageIDB.getItem(storageKey.alertSearchParams));
 
         var filterAlert = alertSearchParams.alert;
@@ -234,7 +232,7 @@ export default function CommunicationAlertsDetail({
 
         var insidePage = page;
 
-        setCounter(filters.state.index);
+        setCounter(filters.state.index ? filters.state.index : 0);
 
         try {
             let alerts = [];
