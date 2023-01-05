@@ -80,7 +80,7 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
     }
 
     const sortColumn = sort.column;
-    const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? [sortColumn, sort.type] : ['time_sent', 'desc'];
+    const sortValue = sort.column != '' && sort.column != 'timeSent' && sort.type != '' ? [sortColumn, sort.type] : ['time_sent', sort.type != '' ? sort.type : 'desc'];
 
     // Get Filters
     const filterBody = {
@@ -88,8 +88,8 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
         from: (page * size),
         sort: [
             {
-                time_sent: {
-                    order: 'desc'
+                [sortValue[0]]: {
+                    order: sortValue[1]
                 }
             }
         ],
