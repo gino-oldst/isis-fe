@@ -92,6 +92,7 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
     const sortColumn = sort.column;
     const withSorting = () => sort && sort.column !== '' && sort.type !== '' ? [sortColumn, sort.type] : ['time_sent', 'desc'];
 
+    // Get Filters
     const filterBody = {
         size: size,
         from: 0,
@@ -101,10 +102,60 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
                     order: 'desc'
                 }
             }
-        ]
+        ],
+        query: {
+            bool: {
+                // Condition for MUST for source
+                must: [],
+                // Condition for SHOULD for senders and recipients
+                should: [],
+                // Specifies the minimum number of queries that the document must match for it to be returned in the results.
+                minimum_should_match: 1,
+                filter: [{
+                    range: {
+                        time_sent: {
+                            gte: filters.filterDateFrom.replace('T', ' '),
+                            lte: filters.filterDateTo.replace('T', ' '),
+                            format: 'yyyy-MM-dd HH:mm:ss',
+                            relation: 'within'
+                        }
+                    }
+                }]
+            }
+        }
     };
 
-    const { data } = await makeApiCall(`${GET_SEARCH_DATA_OPEN_SEARCH}?scroll=1m`, 'GET', filterBody);
+    // Append senders if available
+    if (filters.filterSenders.length > 0) {
+        filters.filterSenders.map(sender => {
+            filterBody.query.bool.should.push({ match_phrase: { sender: sender.value } });
+        });
+    }
+
+    // Append recipients if available
+    if (filters.filterRecipients.length > 0) {
+        filters.filterRecipients.map(recipeint => {
+            filterBody.query.bool.should.push({ match_phrase: { recipients: recipeint.value } });
+        });
+    }
+
+    // Append sources if available
+    if (filters.filterSource.length > 0) {
+        filters.filterSource.map(source => {
+            filterBody.query.bool.must.push({ match_phrase: { source: source.value } });
+        });
+    }
+
+    // Append filter text if available
+    if (filters.filterText != '') {
+        filterBody.query.bool.filter.push({
+            match_phrase: {
+                content: filters.filterText
+            }
+        });
+    }
+
+    const { data } = await makeApiCall(`${GET_SEARCH_DATA_OPEN_SEARCH}?scroll=1m`, 'POST', JSON.stringify(filterBody));
 
     const messageList = data.hits.hits.map((msg) => ({
         id: msg._id,
