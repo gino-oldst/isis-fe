@@ -24,6 +24,9 @@ export async function getCommunicationAlertData(page, size, sort, alert, status,
     return await makeApiCall(`${GET_ALERT_DATA}?page=${page}&size=${size}${withSorting()}`, 'POST', filterBody);
 }
 
+//* getting alerts data by open search
+const GET_SEARCH_DATA_OPEN_SEARCH = `${config.openSearchUrl}/storage-service/quick-communication/thread-search/paged`;
+
 // {{storage-url}}/alert/1090b868-2a3b-4e5e-82c0-bcd915d1f401
 // ALERTS
 const GET_TRIGGER_ALERT_DATA = `${config.apiStorage}/storage-service/alert/`;

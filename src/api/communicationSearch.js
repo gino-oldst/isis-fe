@@ -70,7 +70,7 @@ export async function getCommunicationSearchData(page, size, sort, filters) {
     return await makeApiCall(`${GET_SEARCH_DATA}?page=${page}&size=${size}${withSorting()}`, 'POST', filterBody);
 }
 
-const GET_SEARCH_DATA_OPEN_SEARCH = `${config.openSearchUrl}/test_messages/_search/`;
+const GET_SEARCH_DATA_OPEN_SEARCH = `${config.openSearchUrl}/test-index/_search/`;
 
 export async function getCommunicationSearchDataOpenSearch(page, size, sort, filters) {
     previousKeyword = filters.filterText;
@@ -148,6 +148,11 @@ export async function getCommunicationMessageDetail(commMessageId) {
     return await makeApiCall(`${GET_COMM_MESSAGE_DATA}${commMessageId}`, 'GET');
 }
 
+// message details via open search
+export async function getCommunicationMessageDetailOpenSearch(commMessageId) {
+    return await makeApiCall(`${GET_SEARCH_DATA_OPEN_SEARCH}?scroll=1m`, 'GET');
+}
+
 // recent search (before-after)
 // POST <host>/storage-service/recent/search?size=5
 // {
@@ -175,6 +180,64 @@ export async function getMessageThread(chainLinkId, timeSent) {
     };
 
     return await makeApiCall(`${GET_MESSAGE_THREAD}?sort=timeSent,ASC`, 'POST', filterBody);
+}
+
+//  Get whole message thread via open search
+export async function getMessageThreadOpenSearch(chainLinkId, timeSent, size) {
+    const filterBody = {
+        size: size,
+        from: 0,
+        sort: [
+            {
+                time_sent: {
+                    order: 'asc'
+                }
+            }
+        ],
+        query: {
+            bool: {
+                must: [
+                    {
+                        match_phrase: {
+                            chain_id: chainLinkId
+                        }
+                    }
+                ],
+                filter: {
+                    range: {
+                        time_sent: {
+                            gte: moment(timeSent).utc().local().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+                            lte: moment(timeSent).utc().local().set({ hour: 23, minute: 59, second: 0, millisecond: 0 }),
+                            format: 'YYYY-MM-DDTHH:mm:ss',
+                            relation: 'within'
+                        }
+                    }
+                }
+
+            }
+        }
+    };
+
+    const { data } = await makeApiCall(`${GET_SEARCH_DATA_OPEN_SEARCH}?scroll=1m`, 'GET', filterBody);
+
+    const messageThreadList = data.hits.hits.map((msg) => ({
+        chainLinkId: msg._source.chain_id,
+        timeSent: msg._source.time_sent,
+        message: msg._source.content,
+        sender: msg._source.sender,
+        source: msg._source.source,
+        type: msg._source.type
+    }));
+
+    const processedResult = {
+        data: messageThreadList
+        // totalCurrentElements: size,
+        // totalNoOfRecords: data.hits.total.value,
+        // totalPages: Math.floor(data.hits.total.value / size)
+
+    };
+
+    return processedResult;
 }
 
 // message activity log (user comments on the message)

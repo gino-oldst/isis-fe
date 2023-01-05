@@ -368,10 +368,10 @@ export default function CommunicationSearchResultsContainer({
         event.preventDefault();
     };
 
-    const handleItemClick = (id, chainLinkId, filterText) => {
+    const handleItemClick = (id, chainLinkId, filterText, sender, recipients) => {
         history.push({
             pathname: `/communication_search_message_details/${id}`,
-            state: { id: id, chainLinkId: chainLinkId, filterText: filterText }
+            state: { id: id, chainLinkId: chainLinkId, filterText: filterText, sender: sender, recipients: recipients }
         });
     };
 

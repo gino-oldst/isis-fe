@@ -11,7 +11,7 @@ import { getUsers } from '../../api/users';
 import {
     DATE_TO_UTC
 } from '../../utils/helpers';
-import { getCommunicationSearchData, getCommunicationMessageDetail, getMessageThread, getRecipients } from '../../api/communicationSearch';
+import { getCommunicationSearchData, getCommunicationMessageDetail, getMessageThread, getRecipients, getMessageThreadOpenSearch, getCommunicationMessageDetailOpenSearch } from '../../api/communicationSearch';
 import { getActivityList, getKeywords, getMessageAlerts, postComment, updateAlert, retrievePredefinedReasons, getAppUser, getCommunicationAlertData } from '../../api/communicationAlerts';
 import Typography from '../../components/base/Typography/Typography';
 import { setModalContent } from '../../redux/modules/modalEvent';
@@ -66,6 +66,7 @@ export default function CommunicationAlertsDetail({
 
     const [messages, setMessages] = useState([]);
     const [recipients, setRecipients] = useState('');
+    const [sender, setSender] = useState('');
     const [alerts, setAlerts] = useState([]);
     const [appUser, setAppUser] = useState([]);
     const [predefinedReasons, setPredefinedReasons] = useState([]);
@@ -327,12 +328,12 @@ export default function CommunicationAlertsDetail({
                 setRecipients(recipients.join(', '));
             }
 
-            const search = await getCommunicationMessageDetail(messageData.id);
+            const search = await getCommunicationMessageDetailOpenSearch(messageData.id);
 
             setDetailData(search.data);
 
-            const messages = await getMessageThread(search.data.chainLinkId, search.data.timeSent);
-            const { data, totalNoOfRecords, totalPages } = messages.data;
+            const messages = await getMessageThreadOpenSearch(search.data.chainLinkId, search.data.timeSent);
+            const { data, totalNoOfRecords, totalPages } = messages;
 
             for (let i = 0; i < data.length; i++) {
                 var tempData = data[i];
@@ -608,6 +609,7 @@ export default function CommunicationAlertsDetail({
         handleSelectAll={handleSelectAll}
         handleGenerate={handleGenerate}
         recipients={recipients}
+        sender= {sender}
         useMediaQuery={useMediaQuery}
         nextAlertData={nextAlertData}
         prevAlertData={prevAlertData}

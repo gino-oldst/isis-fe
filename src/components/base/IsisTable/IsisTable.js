@@ -1108,7 +1108,7 @@ export default function ReactTable({
                 if (accessor == 'id') {
                     return (
                         <div>
-                            <span title={cell.value} className={'font-weight-bold color-link-text cursor-pointer'} onClick={() => viewDetails(cell.value, cell.cell.row.original.chainLinkId, cell.cell.row.original.keyword)}>
+                            <span title={cell.value} className={'font-weight-bold color-link-text cursor-pointer'} onClick={() => viewDetails(cell.value, cell.cell.row.original.chainLinkId, cell.cell.row.original.keyword, cell.cell.row.original.sender, cell.cell.row.original.recipients, cell.cell.row.original.timeSent)}>
                                 {cell.value}
                             </span>
                         </div>

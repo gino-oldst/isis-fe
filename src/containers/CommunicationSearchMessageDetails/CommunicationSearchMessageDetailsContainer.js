@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import CommunicationSearchMessageDetailsScreen from './CommunicationSearchMessageDetailsScreen';
 import type { Menu } from '../../types';
-import { getCommunicationMessageDetail, getRecentMessages, addMessageActivity, getRecipients, getMessageThread } from '../../api/communicationSearch';
+import { getCommunicationMessageDetail, getRecentMessages, addMessageActivity, getRecipients, getMessageThread, getMessageThreadOpenSearch, getCommunicationMessageDetailOpenSearch } from '../../api/communicationSearch';
 import { getActivityList, getKeywords, getMessageAlerts, postComment, updateAlert, retrievePredefinedReasons } from '../../api/communicationAlerts';
 import messageSample from './messageData.json';
 import { setFlashNotification } from '../../redux/modules/flashNotification';
@@ -131,21 +131,21 @@ export default function CommunicationSearchMessageDetailsContainer({
 
         setMessages(updateArr);
 
-        console.log(updateArr);
-
         setMessageStorage(messageData);
     };
 
-    const loadSearchData = async (commMessageId) => {
+    const loadSearchData = async (messageData) => {
         setLoading(true);
 
         try {
-            const search = await getCommunicationMessageDetail(commMessageId.id);
+            const search = await getCommunicationMessageDetailOpenSearch(messageData.id);
 
             setDetailData(search.data);
 
-            const messages = await getMessageThread(commMessageId.chainLinkId, search.data.timeSent);
-            const { data, totalNoOfRecords, totalPages } = messages.data;
+            const messages = await getMessageThreadOpenSearch(messageData.chainLinkId, search.data.timeSent);
+            const { data, totalNoOfRecords, totalPages } = messages;
+
+            console.log(messageData);
 
             for (let i = 0; i < data.length; i++) {
                 var tempData = data[i];
@@ -167,11 +167,21 @@ export default function CommunicationSearchMessageDetailsContainer({
 
             setMessages(data);
 
-            const recipients = await getRecipients(search.data.chainLinkId);
+            if (messageData.recipients) {
+                setRecipients(messageData.recipients);
+            } else {
+                const recipients = [...new Set(alerts[0].recipients
+                    ? alerts[0].recipients.map(item => item)
+                    : '')];
 
-            const extractedRecipients = extractRecipients(recipients.data);
+                setRecipients(recipients.join(', '));
+            }
 
-            setRecipients(extractedRecipients);
+            // const recipients = await getRecipients(search.data.chainLinkId);
+
+            // const extractedRecipients = extractRecipients(recipients.data);
+
+            // setRecipients(extractedRecipients);
         } catch (e) {
             console.error(e);
         }
