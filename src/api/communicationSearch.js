@@ -75,16 +75,6 @@ const GET_SEARCH_DATA_OPEN_SEARCH = `${config.openSearchUrl}/test-index/_search/
 export async function getCommunicationSearchDataOpenSearch(page, size, sort, filters) {
     previousKeyword = filters.filterText;
 
-    // const filterBody = {
-    //     message: filters.filterText,
-    //     senders: filters.filterSenders.length > 0 ? [...filters.filterSenders.map(row => { return row.value; })] : [],
-    //     recipients: filters.filterRecipients.length > 0 ? [...filters.filterRecipients.map(row => { return row.value; })] : [],
-    //     sources: filters.filterSource.length > 0 ? [...filters.filterSource.map(row => { return row.value; })] : [],
-    //     dateSentFrom: filters.filterDateFrom,
-    //     dateSentTo: filters.filterDateTo,
-    //     bypassType: 'DEFAULT'
-    // };
-
     if (filters.filterId != '' || filters.filterId) {
         filterBody.id = filters.filterId;
     }
@@ -95,7 +85,7 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
     // Get Filters
     const filterBody = {
         size: size,
-        from: 0,
+        from: (page * size),
         sort: [
             {
                 time_sent: {
@@ -110,7 +100,7 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
                 // Condition for SHOULD for senders and recipients
                 should: [],
                 // Specifies the minimum number of queries that the document must match for it to be returned in the results.
-                minimum_should_match: 1,
+                minimum_should_match: 2,
                 filter: [{
                     range: {
                         time_sent: {
@@ -142,9 +132,12 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
     // Append sources if available
     if (filters.filterSource.length > 0) {
         filters.filterSource.map(source => {
-            filterBody.query.bool.must.push({ match_phrase: { source: source.value } });
+            filterBody.query.bool.should.push({ match_phrase: { source: source.value } });
         });
     }
+
+    // Count all items inside should (n-1)
+    filterBody.query.bool.minimum_should_match = filterBody.query.bool.should.length > 2 ? 2 : 1;
 
     // Append filter text if available
     if (filters.filterText != '') {
@@ -155,7 +148,7 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
         });
     }
 
-    const { data } = await makeApiCall(`${GET_SEARCH_DATA_OPEN_SEARCH}?scroll=1m`, 'POST', JSON.stringify(filterBody));
+    const { data } = await makeApiCall(`${GET_SEARCH_DATA_OPEN_SEARCH}`, 'POST', JSON.stringify(filterBody));
 
     const messageList = data.hits.hits.map((msg) => ({
         id: msg._id,
