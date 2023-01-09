@@ -204,11 +204,6 @@ export async function getCommunicationMessageDetail(commMessageId) {
     return await makeApiCall(`${GET_COMM_MESSAGE_DATA}${commMessageId}`, 'GET');
 }
 
-// message details via open search
-export async function getCommunicationMessageDetailOpenSearch(commMessageId) {
-    return await makeApiCall(`${GET_SEARCH_DATA_OPEN_SEARCH}?scroll=1m`, 'GET');
-}
-
 // recent search (before-after)
 // POST <host>/storage-service/recent/search?size=5
 // {
@@ -238,15 +233,22 @@ export async function getMessageThread(chainLinkId, timeSent) {
     return await makeApiCall(`${GET_MESSAGE_THREAD}?sort=timeSent,ASC`, 'POST', filterBody);
 }
 
+const GET_MESSAGE_THREAD_DATA_OPEN_SEARCH = `${config.openSearchUrl}/test-index/_search/`;
+
+// message details via open search
+export async function getCommunicationMessageDetailOpenSearch(commMessageId) {
+    return await makeApiCall(`${GET_MESSAGE_THREAD_DATA_OPEN_SEARCH}?scroll=1m`, 'GET');
+}
+
 //  Get whole message thread via open search
-export async function getMessageThreadOpenSearch(chainLinkId, timeSent, size) {
+export async function getMessageThreadOpenSearch(chainLinkId, timeSent) {
     const filterBody = {
-        size: size,
+        size: 100,
         from: 0,
         sort: [
             {
                 time_sent: {
-                    order: 'asc'
+                    order: 'desc'
                 }
             }
         ],
@@ -262,9 +264,9 @@ export async function getMessageThreadOpenSearch(chainLinkId, timeSent, size) {
                 filter: {
                     range: {
                         time_sent: {
-                            gte: moment(timeSent).utc().local().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
-                            lte: moment(timeSent).utc().local().set({ hour: 23, minute: 59, second: 0, millisecond: 0 }),
-                            format: 'YYYY-MM-DDTHH:mm:ss',
+                            gte: moment(timeSent).utc().local().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).format('YYYY-MM-DD HH:mm:ss'),
+                            lte: moment(timeSent).utc().local().set({ hour: 23, minute: 59, second: 0, millisecond: 0 }).format('YYYY-MM-DD HH:mm:ss'),
+                            format: 'yyyy-MM-dd HH:mm:ss',
                             relation: 'within'
                         }
                     }
@@ -274,7 +276,9 @@ export async function getMessageThreadOpenSearch(chainLinkId, timeSent, size) {
         }
     };
 
-    const { data } = await makeApiCall(`${GET_SEARCH_DATA_OPEN_SEARCH}?scroll=1m`, 'GET', filterBody);
+    console.log(filterBody);
+
+    const { data } = await makeApiCall(`${GET_MESSAGE_THREAD_DATA_OPEN_SEARCH}`, 'POST', JSON.stringify(filterBody));
 
     const messageThreadList = data.hits.hits.map((msg) => ({
         chainLinkId: msg._source.chain_id,

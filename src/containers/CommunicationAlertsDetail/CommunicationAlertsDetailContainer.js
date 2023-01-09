@@ -330,9 +330,11 @@ export default function CommunicationAlertsDetail({
 
             const search = await getCommunicationMessageDetailOpenSearch(messageData.id);
 
-            setDetailData(search.data);
+            setDetailData(messageData);
 
-            const messages = await getMessageThreadOpenSearch(search.data.chainLinkId, search.data.timeSent);
+            console.log(messageData);
+
+            const messages = await getMessageThreadOpenSearch(messageData.chainLinkId, messageData.timeSent);
             const { data, totalNoOfRecords, totalPages } = messages;
 
             for (let i = 0; i < data.length; i++) {
