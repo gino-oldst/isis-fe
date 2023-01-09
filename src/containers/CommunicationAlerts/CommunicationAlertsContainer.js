@@ -290,7 +290,7 @@ export default function CommunicationAlertsContainer({
         return !!appliedFilters.filter(filter => filter.value.length > 0).length;
     };
 
-    const viewCommunicationAlertDetails = async (commMessageId, chainLinkId, filterText, recipients) => {
+    const viewCommunicationAlertDetails = async (commMessageId, chainLinkId, filterText, recipients, sender, timeSent) => {
         // var index = tableResultStore.findIndex(obj => obj.id == id);
         const alertSearchParams = JSON.parse(await StorageIDB.getItem(storageKey.alertSearchParams));
         const index = alertSearchParams.data.data.findIndex(function(item, i) {
@@ -303,7 +303,7 @@ export default function CommunicationAlertsContainer({
 
         history.push({
             pathname: `/communication_alerts_detail/${commMessageId}`,
-            state: { id: commMessageId, chainLinkId: chainLinkId, filterText: filterText, recipients, activePage: alertSearchParams.activePage, size: pageSize, index: index }
+            state: { id: commMessageId, chainLinkId: chainLinkId, filterText: filterText, recipients, activePage: alertSearchParams.activePage, size: pageSize, index: index, sender: sender, timeSent: timeSent }
         });
     };
 
