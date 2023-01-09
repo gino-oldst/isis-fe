@@ -123,7 +123,10 @@ export default function CommunicationSearchContainer({
                     filterId: values.filterId,
                     filterText: values.filterText,
                     filterSenders: values.filterSenders,
-                    filterRecipients: values.filterRecipients
+                    filterRecipients: values.filterRecipients,
+                    filterSource: values.filterSource,
+                    filterDateFrom: values.filterDateFrom,
+                    filterDateTo: values.filterDateTo
                 };
             });
 

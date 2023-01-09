@@ -313,7 +313,7 @@ function CommunicationSearchScreen({
                                                         {source.map(sourc => (
                                                             <FormGroup check={true} className='mb-1 '>
                                                                 <Label check={true} className='d-flex align-items-center'>
-                                                                    <Checkbox value={{ label: sourc.name, value: sourc.value }} disabled={sourc.disabled}/>
+                                                                    <Checkbox checked={filterSearchForm.filterSource.find(obj => obj.value === sourc.value)} value={{ label: sourc.name, value: sourc.value }} disabled={sourc.disabled}/>
                                                                     <span className='box-label'>{sourc.name}</span>
                                                                 </Label>
                                                             </FormGroup>

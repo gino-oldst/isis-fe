@@ -80,7 +80,7 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
     }
 
     const sortColumn = sort.column;
-    const sortValue = sort.column != '' && sort.column != 'timeSent' && sort.type != '' ? [sortColumn, sort.type] : ['time_sent', sort.type != '' ? sort.type : 'desc'];
+    const sortValue = sort.column != '' && sort.column != 'timeSent' && sort.type != '' ? [sortColumn, sort.type] : ['time_sent', sort.type != '' ? 'desc' : sort.type];
 
     // Get Filters
     const filterBody = {
@@ -97,29 +97,39 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
             bool: {
                 // Condition for MUST for source
                 must: [],
+                must_not: [
+                    { match_phrase: { content: '[Bloomberg created note: Remains as a participant of the room.]' } }// Filters out all system events
+                ],
                 // Condition for SHOULD for senders and recipients
                 should: [],
                 // Specifies the minimum number of queries that the document must match for it to be returned in the results.
-                minimum_should_match: 2,
-                filter: [{
-                    range: {
-                        time_sent: {
-                            gte: filters.filterDateFrom.replace('T', ' '),
-                            lte: filters.filterDateTo.replace('T', ' '),
-                            format: 'yyyy-MM-dd HH:mm:ss',
-                            relation: 'within'
+                minimum_should_match: 1,
+                filter: [
+                    {
+                        range: {
+                            time_sent: {
+                                gte: filters.filterDateFrom.replace('T', ' '),
+                                lte: filters.filterDateTo.replace('T', ' '),
+                                format: 'yyyy-MM-dd HH:mm:ss',
+                                relation: 'within'
+                            }
                         }
-                    }
-                }]
+                    },
+                    { match_phrase: { type: 'Send' } }// Filters out all system events
+                ]
             }
         }
     };
+
+    // counter of multiple fields
+    var fieldsShouldMatchCounter = 0;
 
     // Append senders if available
     if (filters.filterSenders.length > 0) {
         filters.filterSenders.map(sender => {
             filterBody.query.bool.should.push({ match_phrase: { sender: sender.value } });
         });
+        fieldsShouldMatchCounter++;
     }
 
     // Append recipients if available
@@ -127,6 +137,7 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
         filters.filterRecipients.map(recipeint => {
             filterBody.query.bool.should.push({ match_phrase: { recipients: recipeint.value } });
         });
+        fieldsShouldMatchCounter++;
     }
 
     // Append sources if available
@@ -134,10 +145,11 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
         filters.filterSource.map(source => {
             filterBody.query.bool.should.push({ match_phrase: { source: source.value } });
         });
+        // fieldsShouldMatchCounter++;
     }
 
     // Count all items inside should (n-1)
-    filterBody.query.bool.minimum_should_match = filterBody.query.bool.should.length > 2 ? 2 : 1;
+    filterBody.query.bool.minimum_should_match = filterBody.query.bool.should.length > 2 ? fieldsShouldMatchCounter : 1;
 
     // Append filter text if available
     if (filters.filterText != '') {

@@ -119,7 +119,8 @@ export default function CommunicationSearchResultsContainer({
                     filterId: values.filterId,
                     filterText: values.filterText,
                     filterSenders: values.filterSenders,
-                    filterRecipients: values.filterRecipients
+                    filterRecipients: values.filterRecipients,
+                    filterSource: values.filterSource
                 };
             });
 
@@ -189,7 +190,6 @@ export default function CommunicationSearchResultsContainer({
         try {
             const openSearchData = await getCommunicationSearchDataOpenSearch(page, size, sort, newFilters);
 
-            console.log(openSearchData);
             const { data, searchIds, totalNoOfRecords, totalPages } = openSearchData;
             // const search = searchParams.data != null && !isRequery
             //     ? !isTablePageSelect
@@ -207,6 +207,11 @@ export default function CommunicationSearchResultsContainer({
 
             dispatch(setCommunicationSearchData(data, searchIds, totalNoOfRecords, totalPages));
             dispatch(setActivePage(insidePage));
+
+            // setFilterSearchForm({
+            //     ...filterSearchForm,
+            //     ...newFilters
+            // });
 
             Storage.removeItem(storageKey.searchParams);
             Storage.setItem(storageKey.searchParams, JSON.stringify({
