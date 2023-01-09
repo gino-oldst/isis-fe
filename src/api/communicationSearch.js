@@ -79,8 +79,9 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
         filterBody.id = filters.filterId;
     }
 
-    const sortColumn = sort.column;
-    const sortValue = sort.column != '' && sort.column != 'timeSent' && sort.type != '' ? [sortColumn, sort.type] : ['time_sent', sort.type != '' ? 'desc' : sort.type];
+    const sortColumn = 'time_sent'; // sort.column;
+    // const sortValue = sort.column != '' && sort.type != '' ? [sortColumn, sort.type] : ['time_sent', sort.type != '' ? 'desc' : sort.type];
+    const sortValue = sort.type ? [sortColumn, sort.type] : [sortColumn, 'DESC'];
 
     // Get Filters
     const filterBody = {
@@ -145,11 +146,11 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
         filters.filterSource.map(source => {
             filterBody.query.bool.should.push({ match_phrase: { source: source.value } });
         });
-        // fieldsShouldMatchCounter++;
+        fieldsShouldMatchCounter++;
     }
 
     // Count all items inside should (n-1)
-    filterBody.query.bool.minimum_should_match = filterBody.query.bool.should.length > 2 ? fieldsShouldMatchCounter : 1;
+    filterBody.query.bool.minimum_should_match = fieldsShouldMatchCounter;
 
     // Append filter text if available
     if (filters.filterText != '') {

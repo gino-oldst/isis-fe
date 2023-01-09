@@ -224,8 +224,6 @@ function CommunicationSearchResultsScreen({
         setFilterDate(clonedDate);
     };
 
-    console.log(defaultSources);
-
     return (
         <div className='search-results'>
             <CollapsibleSidebar
