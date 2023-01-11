@@ -1106,9 +1106,14 @@ export default function ReactTable({
 
             const cellRender = (accessor, cell, row) => {
                 if (accessor == 'id') {
+                    const recipients = [...new Set(cell.cell.row.original.recipients
+                        ? cell.cell.row.original.recipients.map(item => item)
+                        : '')];
+                    const strRecipients = recipients.join(', ');
+
                     return (
                         <div>
-                            <span title={cell.value} className={'font-weight-bold color-link-text cursor-pointer'} onClick={() => viewDetails(cell.value, cell.cell.row.original.chainLinkId, cell.cell.row.original.keyword, cell.cell.row.original.sender, cell.cell.row.original.recipients, cell.cell.row.original.timeSent)}>
+                            <span title={cell.value} className={'font-weight-bold color-link-text cursor-pointer'} onClick={() => viewDetails(cell.value, cell.cell.row.original.chainLinkId, cell.cell.row.original.keyword, cell.cell.row.original.recipients, cell.cell.row.original.sender, cell.cell.row.original.timeSent)}>
                                 {cell.value}
                             </span>
                         </div>

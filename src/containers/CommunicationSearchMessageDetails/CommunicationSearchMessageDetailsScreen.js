@@ -424,7 +424,7 @@ function CommunicationSearchMessageDetailsScreen({
                                                             <span className='sr-only'>Loading...</span>
                                                         </Spinner>
                                                         : recipients != null
-                                                            ? truncateText(recipients.join(', '), 400)
+                                                            ? recipients
                                                             : 'N/A'
                                                     }
                                                 </Typography>

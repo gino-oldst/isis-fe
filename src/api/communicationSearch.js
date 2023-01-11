@@ -277,8 +277,6 @@ export async function getMessageThreadOpenSearch(chainLinkId, timeSent) {
         }
     };
 
-    console.log(filterBody);
-
     const { data } = await makeApiCall(`${GET_MESSAGE_THREAD_DATA_OPEN_SEARCH}`, 'POST', JSON.stringify(filterBody));
 
     const messageThreadList = data.hits.hits.map((msg) => ({
