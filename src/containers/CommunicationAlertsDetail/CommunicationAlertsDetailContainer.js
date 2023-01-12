@@ -352,6 +352,7 @@ export default function CommunicationAlertsDetail({
             }
 
             setMessages(data);
+            console.log(filters.state.id);
         } catch (e) {
             console.error(e);
         }
@@ -549,6 +550,7 @@ export default function CommunicationAlertsDetail({
         event.map(ev => {
             setDownloadFlag(ev);
         });
+        console.log(event);
     };
 
     const setDownloadFlag = (event) => {

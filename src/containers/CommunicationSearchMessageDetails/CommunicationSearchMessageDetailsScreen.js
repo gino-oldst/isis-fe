@@ -197,7 +197,6 @@ function CommunicationSearchMessageDetailsScreen({
                                                         <Highlighter highlightClassName='alertKeyword'
                                                             style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
                                                             searchWords={[filterText]}
-                                                            findChunks={customWordHighlightLogic}
                                                             autoEscape={true}
                                                             textToHighlight={message.message} />
                                                     </div>
