@@ -70,7 +70,7 @@ export async function getCommunicationSearchData(page, size, sort, filters) {
     return await makeApiCall(`${GET_SEARCH_DATA}?page=${page}&size=${size}${withSorting()}`, 'POST', filterBody);
 }
 
-const GET_SEARCH_DATA_OPEN_SEARCH = `${config.openSearchUrl}/test-index/_search/`;
+const GET_SEARCH_DATA_OPEN_SEARCH = `${config.openSearchUrl}`;
 
 export async function getCommunicationSearchDataOpenSearch(page, size, sort, filters) {
     previousKeyword = filters.filterText;
@@ -234,7 +234,7 @@ export async function getMessageThread(chainLinkId, timeSent) {
     return await makeApiCall(`${GET_MESSAGE_THREAD}?sort=timeSent,ASC`, 'POST', filterBody);
 }
 
-const GET_MESSAGE_THREAD_DATA_OPEN_SEARCH = `${config.openSearchUrl}/test-index/_search/`;
+const GET_MESSAGE_THREAD_DATA_OPEN_SEARCH = `${config.openSearchUrl}`;
 
 // message details via open search
 export async function getCommunicationMessageDetailOpenSearch(commMessageId) {
