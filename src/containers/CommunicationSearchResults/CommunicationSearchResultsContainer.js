@@ -191,6 +191,8 @@ export default function CommunicationSearchResultsContainer({
             const openSearchData = await getCommunicationSearchDataOpenSearch(page, size, sort, newFilters);
 
             const { data, searchIds, totalNoOfRecords, totalPages } = openSearchData;
+
+            console.log(openSearchData);
             // const search = searchParams.data != null && !isRequery
             //     ? !isTablePageSelect
             //         ? searchParams
@@ -373,10 +375,10 @@ export default function CommunicationSearchResultsContainer({
         event.preventDefault();
     };
 
-    const handleItemClick = (id, chainLinkId, filterText, sender, recipients, timeSent, source) => {
+    const handleItemClick = (id, chainLinkId, filterText, sender, recipients, timeSent, source, size) => {
         history.push({
             pathname: `/communication_search_message_details/${id}`,
-            state: { id: id, chainLinkId: chainLinkId, filterText: filterText, recipients: recipients, timeSent: timeSent, sender: sender, source: source }
+            state: { id: id, chainLinkId: chainLinkId, filterText: filterText, recipients: recipients, timeSent: timeSent, sender: sender, source: source, size: size }
         });
     };
 

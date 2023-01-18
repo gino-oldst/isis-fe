@@ -244,12 +244,12 @@ export async function getCommunicationMessageDetailOpenSearch(commMessageId) {
 //  Get whole message thread via open search
 export async function getMessageThreadOpenSearch(chainLinkId, timeSent) {
     const filterBody = {
-        size: 100,
+        size: 1000,
         from: 0,
         sort: [
             {
                 time_sent: {
-                    order: 'desc'
+                    order: 'asc'
                 }
             }
         ],
@@ -291,7 +291,7 @@ export async function getMessageThreadOpenSearch(chainLinkId, timeSent) {
 
     const processedResult = {
         data: messageThreadList
-        // totalCurrentElements: size,
+        // totalCurrentElements: size
         // totalNoOfRecords: data.hits.total.value,
         // totalPages: Math.floor(data.hits.total.value / size)
 
