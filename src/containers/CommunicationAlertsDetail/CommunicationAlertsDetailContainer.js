@@ -331,6 +331,7 @@ export default function CommunicationAlertsDetail({
             const search = await getCommunicationMessageDetailOpenSearch(messageData.id);
 
             setDetailData(messageData);
+            console.log(messageData);
 
             const messages = await getMessageThreadOpenSearch(messageData.chainLinkId, messageData.timeSent);
             const { data, totalNoOfRecords, totalPages } = messages;

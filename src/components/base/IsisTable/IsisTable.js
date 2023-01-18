@@ -1113,7 +1113,7 @@ export default function ReactTable({
 
                     return (
                         <div>
-                            <span title={cell.value} className={'font-weight-bold color-link-text cursor-pointer'} onClick={() => viewDetails(cell.value, cell.cell.row.original.chainLinkId, cell.cell.row.original.keyword, cell.cell.row.original.sender, cell.cell.row.original.recipients, cell.cell.row.original.timeSent)}>
+                            <span title={cell.value} className={'font-weight-bold color-link-text cursor-pointer'} onClick={() => viewDetails(cell.value, cell.cell.row.original.chainLinkId, cell.cell.row.original.keyword, cell.cell.row.original.sender, cell.cell.row.original.recipients, cell.cell.row.original.timeSent, cell.cell.row.original.source)}>
                                 {cell.value}
                             </span>
                         </div>
@@ -1137,7 +1137,7 @@ export default function ReactTable({
                     const strRecipients = recipients.join(', ');
 
                     return (
-                        <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients, cell.cell.row.original.alerts.data[0].sender, cell.cell.row.original.alerts.data[0].timeSent)}
+                        <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients, cell.cell.row.original.alerts.data[0].sender, cell.cell.row.original.alerts.data[0].timeSent, cell.cell.row.original.alerts.data[0].source)}
                             className='date-column cursor-pointer'>
                             <div>{readableDate}</div>
                         </div>
@@ -1177,7 +1177,7 @@ export default function ReactTable({
                     const strRecipients = recipients.join(', ');
 
                     return (
-                        <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients, cell.cell.row.original.alerts.data[0].sender, cell.cell.row.original.alerts.data[0].timeSent)}
+                        <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients, cell.cell.row.original.alerts.data[0].sender, cell.cell.row.original.alerts.data[0].timeSent, cell.cell.row.original.alerts.data[0].source)}
                             className='recipient-column d-flex flex-column text-wrap cursor-pointer'>
                             {cell.cell.row.original.alerts.data[0].sender != null
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
@@ -1210,7 +1210,7 @@ export default function ReactTable({
                     const strRecipients = recipients.join(', ');
 
                     return (
-                        <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients, cell.cell.row.original.alerts.data[0].sender, cell.cell.row.original.alerts.data[0].timeSent)}
+                        <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients, cell.cell.row.original.alerts.data[0].sender, cell.cell.row.original.alerts.data[0].timeSent, cell.cell.row.original.alerts.data[0].source)}
                             className='recipient-column d-flex flex-column cursor-pointer'>
                             {recipients
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
@@ -1246,7 +1246,7 @@ export default function ReactTable({
                     const strRecipients = recipients.join(', ');
 
                     return (
-                        <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients, cell.cell.row.original.alerts.data[0].sender, cell.cell.row.original.alerts.data[0].timeSent)}
+                        <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients, cell.cell.row.original.alerts.data[0].sender, cell.cell.row.original.alerts.data[0].timeSent, cell.cell.row.original.alerts.data[0].source)}
                             className='d-flex flex-column cursor-pointer'>
                             {cell.cell.row.original.alerts.data[0].source != null
                                 ? <Typography size={14} color='color-3' className='table__box-label' >
@@ -1343,7 +1343,7 @@ export default function ReactTable({
                     const strRecipients = recipients.join(', ');
 
                     return (
-                        <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients, cell.cell.row.original.alerts.data[0].sender, cell.cell.row.original.alerts.data[0].timeSent)}
+                        <div onClick={() => viewDetails(cell.cell.row.original.alerts.data[0].commMessageId, cell.cell.row.original.alerts.data[0].commChainLinkId, keywords, strRecipients, cell.cell.row.original.alerts.data[0].sender, cell.cell.row.original.alerts.data[0].timeSent, cell.cell.row.original.alerts.data[0].source)}
                             className='alert-summary-message-column d-flex align-items-center mb-3 cursor-pointer' style={{ minWidth: '200px !important' }}>
                             <p >{truncateText(summaryMessage, 150)}</p>
                         </div>
