@@ -368,3 +368,36 @@ export function downloadCommSearchList(filters: Object) {
     // return await makeApiCall(DOWNLOAD_SEARCH_LIST, 'POST', filterBody);
     return Promise.all([makeApiCall(DOWNLOAD_SEARCH_LIST, 'POST', filterBody)]);
 }
+
+const DOWNLOAD_SEARCH_LIST_OPEN_SEACH = `${config.openSearchUrl}`;
+
+export function downloadCommSearchListOpenSearch(filters: Object) {
+    const filterBody = {
+        size: 1000,
+        from: 0,
+        sort: [
+            {
+                time_sent: {
+                    order: 'asc'
+                }
+            }
+        ]
+    };
+    const { data } = Promise.all([makeApiCall(DOWNLOAD_SEARCH_LIST_OPEN_SEACH, 'POST', JSON.stringify(filterBody))]);
+
+    const downloadDataFromSearch = data.hits.hits.map((msg) => ({
+        sender: msg._source.sender,
+        recipients: msg._source.recipients.split(','),
+        source: msg._source.source,
+        timeSent: msg._source.time_sent,
+        message: msg._source.content
+    }));
+
+    const processedResult = {
+        data: downloadDataFromSearch
+        // totalCurrentElements: size
+        // totalNoOfRecords: data.hits.total.value,
+        // totalPages: Math.floor(data.hits.total.value / size)
+
+    };
+}

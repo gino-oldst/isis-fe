@@ -145,9 +145,6 @@ export default function CommunicationSearchMessageDetailsContainer({
             const messages = await getMessageThreadOpenSearch(messageData.chainLinkId, messageData.timeSent);
             const { data, totalNoOfRecords, totalPages } = messages;
 
-            console.log('messageData', messageData);
-            console.log('messages', messages);
-
             for (let i = 0; i < data.length; i++) {
                 var tempData = data[i];
 

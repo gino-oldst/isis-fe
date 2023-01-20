@@ -7,7 +7,7 @@ import type { Menu } from '../../types';
 import dataSample from '../CommunicationAlerts/MOCK_DATA.json';
 import filterSample from '../CommunicationAlerts/filters.json';
 import moment from 'moment';
-import { downloadCommSearchList, getCommunicationSearchData, getCommunicationSearchDataOpenSearch, getEmails, getEmailsAll } from '../../api/communicationSearch';
+import { downloadCommSearchList, downloadCommSearchListOpenSearch, getCommunicationSearchData, getCommunicationSearchDataOpenSearch, getEmails, getEmailsAll } from '../../api/communicationSearch';
 import { setCommunicationSearchData, setColumnFilterValues, setSearchFilterValues } from '../../redux/modules/communicationSearch';
 import { setActivePage } from '../../redux/modules/isisTable';
 import { filter } from 'underscore';
@@ -431,6 +431,7 @@ export default function CommunicationSearchResultsContainer({
             setDownloading(true);
             downloadCommSearchList(filterSearchForm).then(([response]) => {
                 setDownloading(false);
+                console.log(filterSearchForm);
 
                 if (response.status !== 200) {
                     dispatch(setFlashNotification({
