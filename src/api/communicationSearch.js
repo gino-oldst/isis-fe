@@ -96,10 +96,9 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
         ],
         query: {
             bool: {
-                // Condition for MUST for source
                 must: [],
                 must_not: [
-                    { match_phrase: { content: '[Bloomberg created note: Remains as a participant of the room.]' } }// Filters out all system events
+                    { match_phrase: { content: '[Bloomberg created note: ]' } } // Filters out all system events
                 ],
                 // Condition for SHOULD for senders and recipients
                 should: [],
@@ -139,6 +138,12 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
             filterBody.query.bool.should.push({ match_phrase: { recipients: recipeint.value } });
         });
         fieldsShouldMatchCounter++;
+    }
+
+    // Append text
+    // { match_phrase: { content: filters.filterText } }
+    if (filters.filterText != '') {
+        filterBody.query.bool.must.push({ match_phrase: { content: filters.filterText } });
     }
 
     // Append sources if available
