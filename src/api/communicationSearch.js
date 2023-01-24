@@ -166,6 +166,14 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
         });
     }
 
+    if (filters.filterId != '') {
+        filterBody.query.bool.filter.push({
+            match: {
+                _id: filters.filterId
+            }
+        });
+    }
+
     const { data } = await makeApiCall(`${GET_SEARCH_DATA_OPEN_SEARCH}`, 'POST', JSON.stringify(filterBody));
 
     const messageList = data.hits.hits.map((msg) => ({
