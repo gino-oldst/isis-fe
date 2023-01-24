@@ -75,9 +75,9 @@ const GET_SEARCH_DATA_OPEN_SEARCH = `${config.openSearchUrl}`;
 export async function getCommunicationSearchDataOpenSearch(page, size, sort, filters) {
     previousKeyword = filters.filterText;
 
-    if (filters.filterId != '' || filters.filterId) {
-        filterBody.id = filters.filterId;
-    }
+    // if (filters.filterId != '' || filters.filterId) {
+    //     filterBody.id = filters.filterId;
+    // }
 
     const sortColumn = 'time_sent'; // sort.column;
     // const sortValue = sort.column != '' && sort.type != '' ? [sortColumn, sort.type] : ['time_sent', sort.type != '' ? 'desc' : sort.type];
@@ -166,12 +166,16 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
         });
     }
 
-    if (filters.filterId != '') {
+    if (filters.filterId.trim() != '') {
         filterBody.query.bool.filter.push({
             match: {
                 _id: filters.filterId
             }
         });
+
+        // remove should and filter
+        filterBody.query.bool.filter = [];
+        filterBody.query.bool.should = [];
     }
 
     const { data } = await makeApiCall(`${GET_SEARCH_DATA_OPEN_SEARCH}`, 'POST', JSON.stringify(filterBody));
