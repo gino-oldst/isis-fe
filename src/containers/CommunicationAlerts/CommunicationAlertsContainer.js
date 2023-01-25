@@ -214,8 +214,6 @@ export default function CommunicationAlertsContainer({
             dispatch(setActivePage(insidePage));
             setTableResultStore(alerts.data.data);
 
-            console.log(data);
-
             StorageIDB.setItem(storageKey.alertSearchParams, JSON.stringify({
                 alert: filterAlert,
                 status: filterStatus,

@@ -331,7 +331,6 @@ export default function CommunicationAlertsDetail({
             const search = await getCommunicationMessageDetailOpenSearch(messageData.id);
 
             setDetailData(messageData);
-            console.log(messageData);
 
             const messages = await getMessageThreadOpenSearch(messageData.chainLinkId, messageData.timeSent);
             const { data, totalNoOfRecords, totalPages } = messages;
@@ -353,7 +352,6 @@ export default function CommunicationAlertsDetail({
             }
 
             setMessages(data);
-            console.log(filters.state.id);
         } catch (e) {
             console.error(e);
         }
