@@ -12,7 +12,8 @@ const config = {
     apiAuth: process.env.REACT_APP_AUTH_API_HOST,
     versionName: process.env.REACT_APP_VERSION_VALUE,
     openSearchUrl: process.env.REACT_APP_OPEN_SEARCH_URL,
-    openSearchAuthHeader: process.env.REACT_APP_OPEN_SEARCH_AUTH_HEADER
+    openSearchAuthHeader: process.env.REACT_APP_OPEN_SEARCH_AUTH_HEADER,
+    manualMessageDataDate: process.env.REACT_APP_MESSAGE_DATE
 };
 
 // keys for localstorage
