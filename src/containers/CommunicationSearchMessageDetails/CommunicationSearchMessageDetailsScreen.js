@@ -75,7 +75,12 @@ type Props = {
     messages: Array,
     recipients: Array,
     filterText: String,
-    messageButtonDisable: Any
+    messageButtonDisable: Any,
+    handleClickedMsgThreadNext: Function,
+    handleClickedMsgThreadPrevious: Function,
+    loadingNext: Boolean,
+    loadingPrevious: Boolean,
+    showPrevAndNext: Boolean
 }
 
 function CommunicationSearchMessageDetailsScreen({
@@ -97,7 +102,12 @@ function CommunicationSearchMessageDetailsScreen({
     messages,
     recipients,
     filterText,
-    messageButtonDisable
+    messageButtonDisable,
+    handleClickedMsgThreadNext,
+    handleClickedMsgThreadPrevious,
+    loadingNext,
+    loadingPrevious,
+    showPrevAndNext
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -182,6 +192,13 @@ function CommunicationSearchMessageDetailsScreen({
                         </FormGroup>
                         <div id='containerElement' className='communication-search-message-details__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
                             <div>
+                                { showPrevAndNext &&
+                                    <div className='d-flex justify-content-center'>
+                                        <Button label='Load Previous' type='button' disabled={loading}
+                                            isLoading={loadingPrevious} variant='info' className='px-4 mt-3 mr-2 py-2'
+                                            onClick={handleClickedMsgThreadPrevious}/>
+                                    </div>
+                                }
                                 {messages.map(message => {
                                     return (!isDisclaimer(message.message)
                                         ? <>
@@ -220,6 +237,13 @@ function CommunicationSearchMessageDetailsScreen({
                                             </Element>
                                         </>);
                                 })}
+                                { showPrevAndNext &&
+                                    <div className='element d-flex justify-content-center'>
+                                        <Button label='Load Next' type='button' disabled={loading}
+                                            isLoading={loadingNext} variant='info' className='px-4 mt-3 mr-2 py-2'
+                                            onClick={handleClickedMsgThreadNext}/>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </CheckboxGroup>
