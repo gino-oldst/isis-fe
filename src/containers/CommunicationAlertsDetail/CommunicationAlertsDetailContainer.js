@@ -161,11 +161,14 @@ export default function CommunicationAlertsDetail({
                 chainLinkId: nextData[0].commChainLinkId,
                 filterText: [...new Set(nextData.map(item => item.keyword))], // Map the keywords if multiple alerts and return a list
                 recipients: recipients.join(', '), // Map the recipients and list
+                sender: nextData[0].sender,
+                timeSent: nextData[0].timeSent,
                 size: filters.state.size,
                 counter: _counter,
                 activePage: _pageCounter,
                 index: _counter
             }
+
         });
     };
 
@@ -210,6 +213,8 @@ export default function CommunicationAlertsDetail({
                 filterText: [...new Set(prevData.map(item => item.keyword))], // Map the keywords if multiple alerts and return a list
                 recipients: recipients.join(', '), // Map the recipients and list
                 size: filters.state.size,
+                sender: prevData[0].sender,
+                timeSent: prevData[0].timeSent,
                 counter: _counter,
                 activePage: _pageCounter,
                 index: _counter
