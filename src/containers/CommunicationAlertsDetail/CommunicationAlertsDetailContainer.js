@@ -163,6 +163,7 @@ export default function CommunicationAlertsDetail({
                 recipients: recipients.join(', '), // Map the recipients and list
                 sender: nextData[0].sender,
                 timeSent: nextData[0].timeSent,
+                source: nextData[0].source,
                 size: filters.state.size,
                 counter: _counter,
                 activePage: _pageCounter,
@@ -214,6 +215,7 @@ export default function CommunicationAlertsDetail({
                 recipients: recipients.join(', '), // Map the recipients and list
                 size: filters.state.size,
                 sender: prevData[0].sender,
+                source: prevData[0].source,
                 timeSent: prevData[0].timeSent,
                 counter: _counter,
                 activePage: _pageCounter,
