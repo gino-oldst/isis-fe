@@ -11,7 +11,7 @@ import { getUsers } from '../../api/users';
 import {
     DATE_TO_UTC
 } from '../../utils/helpers';
-import { getCommunicationSearchData, getCommunicationMessageDetail, getMessageThread, getRecipients, getMessageThreadOpenSearch, getCommunicationMessageDetailOpenSearch } from '../../api/communicationSearch';
+import { getCommunicationSearchData, getCommunicationMessageDetail, getMessageThread, getRecipients, getMessageThreadOpenSearch, getCommunicationMessageDetailOpenSearch, getPreviousAndNextMessagesOpenSearch } from '../../api/communicationSearch';
 import { getActivityList, getKeywords, getMessageAlerts, postComment, updateAlert, retrievePredefinedReasons, getAppUser, getCommunicationAlertData } from '../../api/communicationAlerts';
 import Typography from '../../components/base/Typography/Typography';
 import { setModalContent } from '../../redux/modules/modalEvent';
@@ -315,6 +315,86 @@ export default function CommunicationAlertsDetail({
         setActivityLoading(false);
     };
 
+    const [loadingPrevious, setLoadingPrevious] = useState(false);
+    const [loadingNext, setLoadingNext] = useState(false);
+
+    const handleClickedMsgThreadPrevious = async (event) => {
+        setLoadingPrevious(true);
+        // on prev
+        // get top record of the array
+        var topMessage = messages[0];
+
+        // use its default time as lte
+        var newPrevMessages = await getPreviousAndNextMessagesOpenSearch(topMessage.id, topMessage.chainLinkId, topMessage.timeSent);
+
+        // Process Sender headers
+        for (let i = 0; i < newPrevMessages.length; i++) {
+            var tempData = newPrevMessages[i];
+
+            if (i == 0) {
+                newPrevMessages[i].showSender = true;
+            } else {
+                var prevTempData = newPrevMessages[i - 1];
+
+                if (tempData.sender == prevTempData.sender) {
+                    newPrevMessages[i].showSender = false;
+                } else {
+                    newPrevMessages[i].showSender = true;
+                }
+            }
+        }
+
+        // prepend the results to the existing array
+        // Get messages array from current state
+        const localMessages = [...messages];
+
+        // Prepends the newPerson to the start of people array
+        localMessages.unshift(...newPrevMessages);
+
+        // Return the updated state to your component for re-render
+        setMessages(localMessages);
+        setLoadingPrevious(false);
+    };
+
+    const handleClickedMsgThreadNext = async (event) => {
+        setLoadingNext(true);
+        // get bottom record of the array
+        var bottomMessage = messages[messages.length - 1];
+
+        // use its default time as lte
+        var newPrevMessages = await getPreviousAndNextMessagesOpenSearch(bottomMessage.id, bottomMessage.chainLinkId, bottomMessage.timeSent, true);
+
+        // Process Sender headers
+        for (let i = 0; i < newPrevMessages.length; i++) {
+            var tempData = newPrevMessages[i];
+
+            if (i == 0) {
+                newPrevMessages[i].showSender = true;
+            } else {
+                var prevTempData = newPrevMessages[i - 1];
+
+                if (tempData.sender == prevTempData.sender) {
+                    newPrevMessages[i].showSender = false;
+                } else {
+                    newPrevMessages[i].showSender = true;
+                }
+            }
+        }
+
+        // append the results to the existing array
+        // Get messages array from current state
+        const localMessages = [...messages];
+
+        // Prepends the newPerson to the start of people array
+        localMessages.push(...newPrevMessages);
+
+        // Return the updated state to your component for re-render
+        setMessages(localMessages);
+        setLoadingNext(false);
+    };
+
+    const [showPrevAndNext, setShowPrevAndNext] = useState(false);
+
     const loadSearchData = async (messageData) => {
         setLoading(true);
 
@@ -339,7 +419,16 @@ export default function CommunicationAlertsDetail({
 
             setDetailData(messageData);
 
-            const messages = await getMessageThreadOpenSearch(messageData.chainLinkId, messageData.timeSent);
+            var messages = await getMessageThreadOpenSearch(messageData.chainLinkId, messageData.timeSent);
+
+            // Fix for too many messages and the alerted messages gets cut down
+            if (messages.totalNoOfRecords > messages.data.length) {
+                messages = await getMessageThreadOpenSearch(messageData.chainLinkId, messageData.timeSent, true);
+                setShowPrevAndNext(true);
+            } else {
+                setShowPrevAndNext(false);
+            }
+
             const { data, totalNoOfRecords, totalPages } = messages;
 
             for (let i = 0; i < data.length; i++) {
@@ -616,6 +705,11 @@ export default function CommunicationAlertsDetail({
         messages={messages}
         handleSelectAll={handleSelectAll}
         handleGenerate={handleGenerate}
+        handleClickedMsgThreadNext={handleClickedMsgThreadNext}
+        handleClickedMsgThreadPrevious={handleClickedMsgThreadPrevious}
+        showPrevAndNext={showPrevAndNext}
+        loadingNext={loadingNext}
+        loadingPrevious={loadingPrevious}
         recipients={recipients}
         sender= {sender}
         useMediaQuery={useMediaQuery}

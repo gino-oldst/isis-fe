@@ -263,9 +263,20 @@ export async function getCommunicationMessageDetailOpenSearch(commMessageId) {
 }
 
 //  Get whole message thread via open search
-export async function getMessageThreadOpenSearch(chainLinkId, timeSent) {
-    const filterBody = {
-        size: 1000,
+export async function getMessageThreadOpenSearch(chainLinkId, timeSent, isGetByHour = false) {
+    var gteLocal = '';
+    var lteLocal = '';
+
+    if (isGetByHour) {
+        gteLocal = moment(timeSent).utc().local().subtract(3, 'hours').format('YYYY-MM-DD HH:mm:ss');
+        lteLocal = moment(timeSent).utc().local().add(3, 'hours').format('YYYY-MM-DD HH:mm:ss');
+    } else {
+        gteLocal = moment(timeSent).utc().local().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).format('YYYY-MM-DD HH:mm:ss');
+        lteLocal = moment(timeSent).utc().local().set({ hour: 23, minute: 59, second: 0, millisecond: 0 }).format('YYYY-MM-DD HH:mm:ss');
+    }
+
+    var filterBody = {
+        size: 500,
         from: 0,
         sort: [
             {
@@ -286,8 +297,8 @@ export async function getMessageThreadOpenSearch(chainLinkId, timeSent) {
                 filter: {
                     range: {
                         time_sent: {
-                            gte: moment(timeSent).utc().local().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).format('YYYY-MM-DD HH:mm:ss'),
-                            lte: moment(timeSent).utc().local().set({ hour: 23, minute: 59, second: 0, millisecond: 0 }).format('YYYY-MM-DD HH:mm:ss'),
+                            gte: gteLocal,
+                            lte: lteLocal,
                             format: 'yyyy-MM-dd HH:mm:ss',
                             relation: 'within'
                         }
@@ -311,14 +322,82 @@ export async function getMessageThreadOpenSearch(chainLinkId, timeSent) {
     }));
 
     const processedResult = {
-        data: messageThreadList
-        // totalCurrentElements: size
-        // totalNoOfRecords: data.hits.total.value,
+        data: messageThreadList,
+        // totalCurrentElements: size,
+        totalNoOfRecords: data.hits.total.value
         // totalPages: Math.floor(data.hits.total.value / size)
 
     };
 
     return processedResult;
+}
+
+export async function getPreviousAndNextMessagesOpenSearch(indexId, chainLinkId, timeSent, isNext = false) {
+    var gteLocal = '';
+    var lteLocal = '';
+
+    if (isNext) {
+        // use its default time as gte
+        // and use time+1 as lte
+        gteLocal = moment(timeSent).utc().local().format('YYYY-MM-DD HH:mm:ss');
+        lteLocal = moment(timeSent).utc().local().add(1, 'hours').format('YYYY-MM-DD HH:mm:ss');
+    } else {
+        // use its default time as lte
+        // and use time-1 as gte
+        gteLocal = moment(timeSent).utc().local().subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss');
+        lteLocal = moment(timeSent).utc().local().format('YYYY-MM-DD HH:mm:ss');
+    }
+
+    var filterBody = {
+        size: 100,
+        from: 0,
+        sort: [
+            {
+                time_sent: {
+                    order: 'asc'
+                }
+            }
+        ],
+        query: {
+            bool: {
+                must: [
+                    {
+                        match_phrase: {
+                            chain_id: chainLinkId
+                        }
+                    }
+                ],
+                must_not: [
+                    { match_phrase: { _id: indexId } }
+                ],
+                filter: {
+                    range: {
+                        time_sent: {
+                            gte: gteLocal,
+                            lte: lteLocal,
+                            format: 'yyyy-MM-dd HH:mm:ss',
+                            relation: 'within'
+                        }
+                    }
+                }
+
+            }
+        }
+    };
+
+    const { data } = await makeApiCall(`${GET_MESSAGE_THREAD_DATA_OPEN_SEARCH}`, 'POST', JSON.stringify(filterBody));
+
+    const messageThreadList = data.hits.hits.map((msg) => ({
+        id: msg._id,
+        chainLinkId: msg._source.chain_id,
+        timeSent: msg._source.time_sent,
+        message: msg._source.content,
+        sender: msg._source.sender,
+        source: msg._source.source,
+        type: msg._source.type
+    }));
+
+    return messageThreadList;
 }
 
 // message activity log (user comments on the message)

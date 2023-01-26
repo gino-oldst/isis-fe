@@ -89,7 +89,12 @@ type Props = {
     onSubmitComment: Function,
     predefinedReasons: Array,
     onSubmitEscalationChangeSingle: Function,
-    onSubmitAssignUserSingle: Function
+    onSubmitAssignUserSingle: Function,
+    handleClickedMsgThreadNext: Function,
+    handleClickedMsgThreadPrevious: Function,
+    loadingNext: Boolean,
+    loadingPrevious: Boolean,
+    showPrevAndNext: Boolean
 }
 
 function CommunicationAlertsDetailScreen({
@@ -128,7 +133,12 @@ function CommunicationAlertsDetailScreen({
     onSubmitComment,
     predefinedReasons,
     onSubmitEscalationChangeSingle,
-    onSubmitAssignUserSingle
+    onSubmitAssignUserSingle,
+    handleClickedMsgThreadNext,
+    handleClickedMsgThreadPrevious,
+    loadingNext,
+    loadingPrevious,
+    showPrevAndNext
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -811,6 +821,13 @@ function CommunicationAlertsDetailScreen({
                                                         : <>
                                                             <div id='containerElement' className='alerts-detail__message-thread pt-1 pb-5 mb-4 mt-4'>
                                                                 <div>
+                                                                    { showPrevAndNext &&
+                                                                        <div className='d-flex justify-content-center'>
+                                                                            <Button label='Load Previous' type='button' disabled={loading}
+                                                                                isLoading={loadingPrevious} variant='info' className='px-4 mt-3 mr-2 py-2'
+                                                                                onClick={handleClickedMsgThreadPrevious}/>
+                                                                        </div>
+                                                                    }
                                                                     {messages.map(message => {
                                                                         return (!isDisclaimer(message.message)
                                                                             ? <>
@@ -871,6 +888,13 @@ function CommunicationAlertsDetailScreen({
                                                                                 </Element>
                                                                             </>);
                                                                     })}
+                                                                    { showPrevAndNext &&
+                                                                        <div className='element d-flex justify-content-center'>
+                                                                            <Button label='Load Next' type='button' disabled={loading}
+                                                                                isLoading={loadingNext} variant='info' className='px-4 mt-3 mr-2 py-2'
+                                                                                onClick={handleClickedMsgThreadNext}/>
+                                                                        </div>
+                                                                    }
                                                                 </div>
                                                             </div>
                                                         </>
