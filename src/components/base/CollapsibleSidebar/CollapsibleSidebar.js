@@ -7,6 +7,8 @@ import { MdKeyboardArrowDown } from 'react-icons/md';
 import Typography from '../Typography/Typography';
 import type { Menu } from '../../../types';
 import './collapsible-sidebar.scss';
+import moment from 'moment';
+import { config } from '../../../config/constants';
 
 type Props = {
     className?: string,
@@ -29,7 +31,6 @@ export default function CollapsibleSidebar({
                     <Icon color='#fff' size={30} className='m-3'/>
                 </div>
             </div>
-            {/* <div style={{ marginTop: '50px' }} /> */}
             <div className={`collapsible-sidebar__content${!isOpen ? ' is-visible' : ''}  ${className}`}>
                 <div className='collapsible-sidebar__content-menu'>
                     {menu.map((item, i) =>
@@ -61,8 +62,15 @@ export default function CollapsibleSidebar({
                         </Accordion>
                     )}
                 </div>
-
                 {children}
+            </div>
+            <div className={`mt-3 collapsible-sidebar__content${!isOpen ? ' is-visible' : ''}`}>
+                <div className={'collapsible-sidebar__menu-footer'}>
+                    <div>
+                        <Typography variant='size-13' className='ml-3 mb-0'>Messages in Database</Typography>
+                        <Typography variant='size-13' weight='bold' className='ml-3 mb-0'>{config.manualMessageDataDate} to {moment(new Date()).format('MMM YYYY')}</Typography>
+                    </div>
+                </div>
             </div>
         </div>
     );

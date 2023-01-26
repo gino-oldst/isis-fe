@@ -192,7 +192,6 @@ export default function CommunicationSearchResultsContainer({
 
             const { data, searchIds, totalNoOfRecords, totalPages } = openSearchData;
 
-            console.log(openSearchData);
             // const search = searchParams.data != null && !isRequery
             //     ? !isTablePageSelect
             //         ? searchParams

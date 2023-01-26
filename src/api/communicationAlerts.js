@@ -121,8 +121,8 @@ export function downloadCommAlertsList(alert, status, dFrom, dTo, sources, sende
         statusTypes: status.length > 0 ? [...status.map(row => { return row.value; })] : ['OPEN', 'RESOLVED', 'IN_REVIEW'],
         dateFrom: dFrom,
         dateTo: dTo,
-        senders: senders,
-        recipients: recipients
+        senders: senders.length > 0 ? [...senders.map(row => { return row.value; })] : [],
+        recipients: recipients.length > 0 ? [...recipients.map(row => { return row.value; })] : []
     };
 
     return Promise.all([makeApiCall(DOWNLOAD_ALERTS_LIST, 'POST', filterBody)]);
