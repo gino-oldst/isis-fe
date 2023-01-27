@@ -391,8 +391,20 @@ function CommunicationSearchResultsScreen({
                                         </Form>
                                     </Col>
                                 </Row>
-                                <Typography color='color-3' className='search-results__box-label' >{table.totalNoOfRecords > 0 ? numberWithCommas(table.totalNoOfRecords) : '0'} Results</Typography>
+                                {/* About 10,000+ results. Please expand your search criteria to get better results. */}
                                 <div className='search-results__information mt-5'>
+                                    <Row>
+                                        <Col lg={12}>
+                                            { table.totalNoOfRecords < 10000
+                                                ? <Typography variant='size-14' color='color-3' className='search-results__box-label' >
+                                                    {table.totalNoOfRecords > 0 ? numberWithCommas(table.totalNoOfRecords) : '0'} Results
+                                                </Typography>
+                                                : <Typography variant='size-14' color='color-3' className='search-results__box-label' >
+                                                    About 10,000+ results. Please expand your search criteria to get better results.
+                                                </Typography>
+                                            }
+                                        </Col>
+                                    </Row>
                                     <Row>
                                         <Col lg={12} className='overflow-auto'>
                                             <IsisTable className='search-results__table table-striped'
