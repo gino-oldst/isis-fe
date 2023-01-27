@@ -342,7 +342,7 @@ function CommunicationSearchMessageDetailsScreen({
                                                         containerId='containerElement' duration={500}>
                                                         Show Message
                                                     </Link>
-                                                    <Link className='btn btn-outline-primary download-button px-2 mr-2 py-2' onClick={showActionsModal} smooth={true}
+                                                    <Link className='btn btn-outline-primary ok-button px-2 mr-2 py-2' onClick={showActionsModal} smooth={true}
                                                         containerId='containerElement' duration={500}>
                                                         Download Page
                                                     </Link>
@@ -353,8 +353,8 @@ function CommunicationSearchMessageDetailsScreen({
                                                         <span className='sr-only'>Loading...</span>
                                                     </Spinner>
                                                     : <>
-                                                        <div className='d-flex flex-column'>
-                                                            <div id='containerElement' className='communication-search-message-details__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
+                                                        <div className='d-flex flex-column' >
+                                                            <div id='containerElement' className='communication-search-message-details__message-thread pt-1 pb-5 mb-4 mt-4'>
                                                                 <div>
                                                                     { showPrevAndNext &&
                                                                         <div className='d-flex justify-content-center'>
