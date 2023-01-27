@@ -41,7 +41,7 @@ import { setModalContent } from '../../redux/modules/modalEvent';
 import { resetTableState } from '../../redux/modules/table';
 import { setLoading, setAlertsDateRange } from '../../redux/modules/alerts';
 import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
-import { COMMUNICATION_ALERT_SOURCE_OPTIONS, COMMUNICATION_ALERT_STATUS_OPTIONS, COMMUNICATION_ALERT_ESCALATIONS_OPTIONS } from '../../config/constants';
+import { COMMUNICATION_ALERT_SOURCE_OPTIONS, COMMUNICATION_ALERT_STATUS_OPTIONS, COMMUNICATION_ALERT_ESCALATIONS_OPTIONS, config } from '../../config/constants';
 import { DropdownButton, OverlayTrigger, Popover } from 'react-bootstrap';
 import AsyncSelect from 'react-select/async';
 import 'react-date-range/dist/styles.css'; // main style file
@@ -87,7 +87,8 @@ type Props = {
     predefinedReasons: Array<any>,
     defaultEscalation: Array<any>,
     handleEscalation: Function,
-    downloading: Boolean
+    downloading: Boolean,
+    totalNoOfRecords: Integer
 }
 
 function CommunicationAlertsScreen({
@@ -128,7 +129,8 @@ function CommunicationAlertsScreen({
     predefinedReasons,
     defaultEscalation,
     handleEscalation,
-    downloading
+    downloading,
+    totalNoOfRecords
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -457,7 +459,9 @@ function CommunicationAlertsScreen({
                                             <Button weight='light' className='alerts__bulk-review mr-2' label='Bulk Review'
                                                 disabled={selectedRows.length === 0} onClick={showActionsModal}/>
                                             <Button weight='light' className='alerts__bulk-review' isLoading={downloading}
-                                                label='Download Data' disabled={loading} onClick={handleDownloadAlertData}/>
+                                                {...table.totalNoOfRecords > config.hardLimitAlertDownload && { title: 'Too many alerts. Please Filter more.' }} label='Download Data'
+                                                disabled={loading || table.totalNoOfRecords > config.hardLimitAlertDownload || table.totalNoOfRecords == 0}
+                                                onClick={handleDownloadAlertData}/>
                                         </Col>
                                     </Row>
                                 </div>

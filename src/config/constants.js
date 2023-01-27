@@ -13,7 +13,8 @@ const config = {
     versionName: process.env.REACT_APP_VERSION_VALUE,
     openSearchUrl: process.env.REACT_APP_OPEN_SEARCH_URL,
     openSearchAuthHeader: process.env.REACT_APP_OPEN_SEARCH_AUTH_HEADER,
-    manualMessageDataDate: process.env.REACT_APP_MESSAGE_DATE
+    manualMessageDataDate: process.env.REACT_APP_MESSAGE_DATE,
+    hardLimitAlertDownload: parseInt(process.env.REACT_APP_HARD_LIMIT_ALERT_DOWNLOAD)
 };
 
 // keys for localstorage
