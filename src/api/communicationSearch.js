@@ -178,8 +178,8 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
         });
 
         // remove should and filter
-        filterBody.query.bool.filter = [];
-        filterBody.query.bool.should = [];
+        // filterBody.query.bool.filter = [];
+        // filterBody.query.bool.should = [];
     }
 
     const { data } = await makeApiCall(`${GET_SEARCH_DATA_OPEN_SEARCH}`, 'POST', JSON.stringify(filterBody));
@@ -373,7 +373,7 @@ export async function getPreviousAndNextMessagesOpenSearch(indexId, chainLinkId,
                 filter: {
                     range: {
                         time_sent: {
-                            gte: gteLocal,
+                            gt: gteLocal,
                             lte: lteLocal,
                             format: 'yyyy-MM-dd HH:mm:ss',
                             relation: 'within'

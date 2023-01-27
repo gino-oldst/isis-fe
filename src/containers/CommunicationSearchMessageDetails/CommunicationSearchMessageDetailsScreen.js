@@ -192,13 +192,6 @@ function CommunicationSearchMessageDetailsScreen({
                         </FormGroup>
                         <div id='containerElement' className='communication-search-message-details__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
                             <div>
-                                { showPrevAndNext &&
-                                    <div className='d-flex justify-content-center'>
-                                        <Button label='Load Previous' type='button' disabled={loading}
-                                            isLoading={loadingPrevious} variant='info' className='px-4 mt-3 mr-2 py-2'
-                                            onClick={handleClickedMsgThreadPrevious}/>
-                                    </div>
-                                }
                                 {messages.map(message => {
                                     return (!isDisclaimer(message.message)
                                         ? <>
@@ -237,13 +230,6 @@ function CommunicationSearchMessageDetailsScreen({
                                             </Element>
                                         </>);
                                 })}
-                                { showPrevAndNext &&
-                                    <div className='element d-flex justify-content-center'>
-                                        <Button label='Load Next' type='button' disabled={loading}
-                                            isLoading={loadingNext} variant='info' className='px-4 mt-3 mr-2 py-2'
-                                            onClick={handleClickedMsgThreadNext}/>
-                                    </div>
-                                }
                             </div>
                         </div>
                     </CheckboxGroup>
@@ -370,13 +356,20 @@ function CommunicationSearchMessageDetailsScreen({
                                                         <div className='d-flex flex-column'>
                                                             <div id='containerElement' className='communication-search-message-details__message-thread pr-5 pt-1 pb-5 mb-4 mt-4'>
                                                                 <div>
+                                                                    { showPrevAndNext &&
+                                                                        <div className='d-flex justify-content-center'>
+                                                                            <Button label='Load Previous' type='button' disabled={loading}
+                                                                                isLoading={loadingPrevious} variant='info' className='px-4 mt-3 mr-2 py-2'
+                                                                                onClick={handleClickedMsgThreadPrevious}/>
+                                                                        </div>
+                                                                    }
                                                                     {messages.map(message => {
                                                                         return (!isDisclaimer(message.message)
                                                                             ? <>
                                                                                 <Element name={message.id} className={`element mb-1 ${message.id == dataId && 'active-message'}`}>
                                                                                     {isMessageEvent(message.message) || message.type === MESSAGE_TYPE.JOIN || message.type === MESSAGE_TYPE.LEAVE
                                                                                         ? <div className='message-box-event'>
-                                                                                            <Typography color='color-2' className='mr-3 text-center' weight='regular'
+                                                                                            <Typography color='color-1' className='mr-3 text-center' weight='regular'
                                                                                                 style={{ backgroundColor: '121212', fontSize: '14px', lineHeight: '24pt' }}>{isoToUTCLocal(message.timeSent)} {message.type != null || !message.source.toLowerCase() == 'bloomberg_chat' && `*** ${message.sender}` } {message.message} </Typography>
                                                                                         </div>
                                                                                         : <>
@@ -384,7 +377,7 @@ function CommunicationSearchMessageDetailsScreen({
                                                                                                 style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography> */}
                                                                                             {message.showSender &&
                                                                                                 <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                                    style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b>{message.showSender} {isoToUTCLocal(message.timeSent)}</Typography>}
+                                                                                                    style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> <span> {isoToUTCLocal(message.timeSent)}</span></Typography>}
                                                                                             <div className='message-box'>
                                                                                                 <Highlighter highlightClassName='alertKeyword'
                                                                                                     style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
@@ -409,7 +402,7 @@ function CommunicationSearchMessageDetailsScreen({
                                                                                         </div>
                                                                                         : <>{message.showSender &&
                                                                                             <Typography color='color-3' className='mr-3 mb-2' weight='regular'
-                                                                                                style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b>{message.showSender} {isoToUTCLocal(message.timeSent)}</Typography>}
+                                                                                                style={{ backgroundColor: '121212', fontSize: '16px', lineHeight: '24pt' }}><b>{message.sender}</b> {isoToUTCLocal(message.timeSent)}</Typography>}
                                                                                         <div className='message-box'>
                                                                                             <Highlighter highlightClassName='alertKeyword'
                                                                                                 style={{ fontSize: '14px', lineHeight: '20pt', fontWeight: '400' }}
@@ -426,6 +419,13 @@ function CommunicationSearchMessageDetailsScreen({
                                                                                 </Element>
                                                                             </>);
                                                                     })}
+                                                                    { showPrevAndNext &&
+                                                                        <div className='element d-flex justify-content-center'>
+                                                                            <Button label='Load Next' type='button' disabled={loading}
+                                                                                isLoading={loadingNext} variant='info' className='px-4 mt-3 mr-2 py-2'
+                                                                                onClick={handleClickedMsgThreadNext}/>
+                                                                        </div>
+                                                                    }
                                                                 </div>
                                                             </div>
                                                         </div>
