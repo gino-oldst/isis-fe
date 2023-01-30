@@ -42,12 +42,13 @@ import { resetTableState } from '../../redux/modules/table';
 import { setLoading, setAlertsDateRange } from '../../redux/modules/alerts';
 import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
 import { COMMUNICATION_ALERT_SOURCE_OPTIONS, COMMUNICATION_ALERT_STATUS_OPTIONS, COMMUNICATION_ALERT_ESCALATIONS_OPTIONS, config } from '../../config/constants';
-import { DropdownButton, OverlayTrigger, Popover } from 'react-bootstrap';
+import { DropdownButton, OverlayTrigger, Popover, PopoverContent } from 'react-bootstrap';
 import AsyncSelect from 'react-select/async';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
 import './communication_alerts.scss';
+import { FaExclamationCircle } from 'react-icons/fa';
 
 type Props = {
     loading: Boolean,
@@ -440,6 +441,15 @@ function CommunicationAlertsScreen({
         setFilterDate(clonedDate);
     };
 
+    const renderAlertInfo = (text) => (
+        <Popover id='popover-basic'>
+            <PopoverContent>
+                <Typography color='color-3' className='mr-auto' weight='regular'
+                    style={{ fontSize: '12px' }} >{text}</Typography>
+            </PopoverContent>
+        </Popover>
+    );
+
     return (
         <div className='alerts'>
             <CollapsibleSidebar
@@ -451,17 +461,27 @@ function CommunicationAlertsScreen({
                         <Card className='px-4 py-2'>
                             <CardBody>
                                 <div className='alerts__header mb-4'>
-                                    <Row className='w-100 mr-0'>
+                                    <Row className='w-100 ml-0'>
                                         <Col lg={6}>
                                             <Typography color='color-3' className='alerts__title pl-0'>Communication Alerts</Typography>
                                         </Col>
-                                        <Col lg={6} className='text-right pr-0'>
-                                            <Button weight='light' className='alerts__bulk-review mr-2' label='Bulk Review'
-                                                disabled={selectedRows.length === 0} onClick={showActionsModal}/>
-                                            <Button weight='light' className='alerts__bulk-review' isLoading={downloading}
-                                                {...table.totalNoOfRecords > config.hardLimitAlertDownload && { title: 'Too many alerts. Please Filter more.' }} label='Download Data'
-                                                disabled={loading || table.totalNoOfRecords > config.hardLimitAlertDownload || table.totalNoOfRecords == 0}
-                                                onClick={handleDownloadAlertData}/>
+                                        <Col lg={6} className='pr-0'>
+                                            <div className='d-flex justify-content-end'>
+                                                <Button weight='light' className='alerts__bulk-review mr-2' label='Bulk Review'
+                                                    disabled={selectedRows.length === 0} onClick={showActionsModal}/>
+                                                <Button weight='light' className='alerts__bulk-review' isLoading={downloading}
+                                                    label='Download Data'
+                                                    disabled={loading || table.totalNoOfRecords > config.hardLimitAlertDownload || table.totalNoOfRecords == 0}
+                                                    onClick={handleDownloadAlertData}/>
+                                                {table.totalNoOfRecords > config.hardLimitAlertDownload &&
+                                                    <div className='d-flex align-items-center'>
+                                                        <OverlayTrigger style={{ cursor: 'pointer' }} placement='bottom'
+                                                            overlay={renderAlertInfo('Too many alerts. Please expand your search criteria to enable download.')}>
+                                                            <FaExclamationCircle className='ml-2' style={{ color: '#FFCC00', cursor: 'pointer' }} size={24}/>
+                                                        </OverlayTrigger>
+                                                    </div>
+                                                }
+                                            </div>
                                         </Col>
                                     </Row>
                                 </div>

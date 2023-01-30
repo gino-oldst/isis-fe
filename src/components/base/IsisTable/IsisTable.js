@@ -647,13 +647,13 @@ function IsisTable({
                         <tr {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers.map(column => (
                                 <th {...column.getHeaderProps()}>
-                                    <span onClick={() => column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
+                                    <span onClick={() => column.id !== 'alertMessageSummary' && column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                             column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' && column.id !== 'policyDetailKeyword' && column.id !== 'policyDetailKeywordNumber' && column.id !== 'alertPolicyInternalCode' &&
                                             column.id !== 'alertPolicyName' && column.id !== 'profileEmails' && column.id !== 'senderSearch' && column.id !== 'source' && handleSort(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
                                     className={() => column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                     column.id !== 'expander' && column.id !== 'recipient' && 'cursor-pointer'}>
                                         {column.render('Header')}
-                                        {column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
+                                        {column.id !== 'alertMessageSummary' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                             column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' &&
                                             column.id !== 'policyDetailKeyword' && column.id !== 'policyDetailKeywordNumber' && column.id !== 'alertPolicyInternalCode' && column.id !== 'alertPolicyName' && column.id !== 'profileEmails' && column.id !== 'senderSearch' && column.id !== 'source' &&
                                             renderSortControl(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}

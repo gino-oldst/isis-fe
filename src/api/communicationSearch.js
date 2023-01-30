@@ -242,7 +242,7 @@ export async function getRecentMessages(messageId, size) {
     return await makeApiCall(`${GET_RECENT_MESSAGE_DATA}?size=${size}`, 'POST', filterBody);
 }
 
-// Get Whole Message Thread
+// Get Whole Message 1
 const GET_MESSAGE_THREAD = `${config.apiStorage}/storage-service/message/search`;
 
 export async function getMessageThread(chainLinkId, timeSent) {
