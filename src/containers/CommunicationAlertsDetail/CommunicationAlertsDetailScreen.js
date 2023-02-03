@@ -887,7 +887,6 @@ function CommunicationAlertsDetailScreen({
                                                         </Spinner>
                                                         : <>
                                                             <div id='containerElement' className='alerts-detail__message-thread pt-1 pb-5 mb-4 mt-4'>
-                                                                {JSON.stringify(filterText)}
                                                                 <div>
                                                                     { showPrevAndNext &&
                                                                         <div className='d-flex justify-content-center'>
