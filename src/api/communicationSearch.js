@@ -262,6 +262,12 @@ export async function getCommunicationMessageDetailOpenSearch(commMessageId) {
     return await makeApiCall(`${GET_MESSAGE_THREAD_DATA_OPEN_SEARCH}?scroll=1m`, 'GET');
 }
 
+const GET_MESSAGE_THREAD_DATA_OPEN_SEARCH_DOC = `${config.openSearchDocUrl}`;
+
+export async function getCommunicationMessageDetailOpenSearchNotification(commMessageId) {
+    return await makeApiCall(`${GET_MESSAGE_THREAD_DATA_OPEN_SEARCH_DOC}${commMessageId}`, 'GET');
+}
+
 //  Get whole message thread via open search
 export async function getMessageThreadOpenSearch(chainLinkId, timeSent, isGetByHour = false) {
     var gteLocal = '';

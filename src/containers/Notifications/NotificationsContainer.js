@@ -8,6 +8,9 @@ import { setNotifications } from '../../redux/modules/notifications';
 import { setLoggingOut } from '../../redux/modules/authentication';
 import { useHistory } from 'react-router-dom';
 
+// Get message information from API call
+import { getCommunicationMessageDetailOpenSearchNotification } from '../../api/communicationSearch';
+
 function NotificationsContainer(): React$Element<any> {
     const dispatch = useDispatch();
     const history = useHistory();
@@ -62,9 +65,13 @@ function NotificationsContainer(): React$Element<any> {
     };
 
     const viewCommunicationAlertDetails = async (id) => {
+        const communicationMessageDetails = await getCommunicationMessageDetailOpenSearchNotification(id);
+
+        const message = communicationMessageDetails.data._source;
+
         history.push({
             pathname: `/communication_alerts_detail/${id}`,
-            state: { id: id }
+            state: { id: id, chainLinkId: message.chain_id, filterText: message.content, recipients: message.recipients, sender: message.sender, timeSent: message.time_sent, source: message.source }
         });
     };
 
