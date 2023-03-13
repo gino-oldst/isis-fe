@@ -327,20 +327,20 @@ export default function CommunicationSearchResultsContainer({
         };
 
         // Check here
-        if (filterSearchForm.filterSenders.length == 0) {
-            initialError.errorSenders = 'Please add Senders';
-            formValid = false;
-        }
+        // if (filterSearchForm.filterSenders.length == 0) {
+        //     initialError.errorSenders = 'Please add Senders';
+        //     formValid = false;
+        // }
 
         // if (filterSearchForm.filterRecipients.length == 0) {
         //     initialError.errorRecipients = 'Please add Recipients';
         //     formValid = false;
         // }
 
-        if (filterSearchForm.filterDateFrom == '' && filterSearchForm.filterDateTo == '') {
-            initialError.errorDate = 'Please add Date/Time Range';
-            formValid = false;
-        }
+        // if (filterSearchForm.filterDateFrom == '' && filterSearchForm.filterDateTo == '') {
+        //     initialError.errorDate = 'Please add Date/Time Range';
+        //     formValid = false;
+        // }
 
         if (moment(filterSearchForm.filterDateFrom).format('YYYY-MM-DD') === moment(filterSearchForm.filterDateTo).format('YYYY-MM-DD') &&
             moment(filterSearchForm.filterDateFrom).format('HH:mm') > moment(filterSearchForm.filterDateTo).format('HH:mm')) {
