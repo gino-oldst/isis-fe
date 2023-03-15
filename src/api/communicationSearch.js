@@ -108,16 +108,6 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
                 // Specifies the minimum number of queries that the document must match for it to be returned in the results.
                 minimum_should_match: 1,
                 filter: [
-                    {
-                        range: {
-                            time_sent: {
-                                gte: filters.filterDateFrom.replace('T', ' '),
-                                lte: filters.filterDateTo.replace('T', ' '),
-                                format: 'yyyy-MM-dd HH:mm:ss',
-                                relation: 'within'
-                            }
-                        }
-                    },
                     { match_phrase: { type: 'Send' } }// Filters out all system events
                     // Add regex
                 ]
@@ -127,6 +117,21 @@ export async function getCommunicationSearchDataOpenSearch(page, size, sort, fil
 
     // counter of multiple fields
     var fieldsShouldMatchCounter = 0;
+
+    if (filters.filterDateFrom !== '' && filters.filterDateTo !== '') {
+        filterBody.query.bool.filter.push(
+            {
+                range: {
+                    time_sent: {
+                        gte: filters.filterDateFrom.replace('T', ' '),
+                        lte: filters.filterDateTo.replace('T', ' '),
+                        format: 'yyyy-MM-dd HH:mm:ss',
+                        relation: 'within'
+                    }
+                }
+            }
+        );
+    }
 
     // Append senders if available
     if (filters.filterSenders.length > 0) {

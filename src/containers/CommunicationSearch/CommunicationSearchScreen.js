@@ -243,7 +243,7 @@ function CommunicationSearchScreen({
                                                         } */}
                                                     </FormGroup>
                                                     <FormGroup>
-                                                        <Label>Date/Time Range*</Label>
+                                                        <Label>Date/Time Range</Label>
                                                         <DropdownButton variant='outline-light' id='dropdown-basic-button' alignRight={true}
                                                             title={filterDate[0].startDate === '' ? 'Select Date' : convertedStartDate + ' - ' + convertedEndDate}>
                                                             <DropdownItem>
@@ -271,11 +271,11 @@ function CommunicationSearchScreen({
                                                                 </div>
                                                             </DropdownItem>
                                                         </DropdownButton>
-                                                        { errorForm.errorDate !== '' &&
+                                                        {/* { errorForm.errorDate !== '' &&
                                                             <Typography variant='size-14' className='form-text text-danger'>
                                                                 {errorForm.errorDate}
                                                             </Typography>
-                                                        }
+                                                        } */}
                                                     </FormGroup>
                                                 </div>
                                             </Col>

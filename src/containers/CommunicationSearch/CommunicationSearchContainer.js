@@ -225,10 +225,10 @@ export default function CommunicationSearchContainer({
         //     formValid = false;
         // }
 
-        if (filterSearchForm.filterDateFrom == '' && filterSearchForm.filterDateTo == '') {
-            initialError.errorDate = 'Please add Date/Time Range';
-            formValid = false;
-        }
+        // if (filterSearchForm.filterDateFrom == '' && filterSearchForm.filterDateTo == '') {
+        //     initialError.errorDate = 'Please add Date/Time Range';
+        //     formValid = false;
+        // }
 
         // moment(dateState[0].startDate).format('HH:mm')
         if (moment(filterSearchForm.filterDateFrom).format('YYYY-MM-DD') === moment(filterSearchForm.filterDateTo).format('YYYY-MM-DD') &&
