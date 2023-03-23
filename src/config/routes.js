@@ -1,4 +1,5 @@
 import React from 'react';
+import { downloadAllHistoricData } from '../api/communicationSearch';
 
 const Login = React.lazy(() => import('../containers/Login/LoginContainer'));
 const NotFound = React.lazy(() => import('../containers/NotFound/NotFoundContainer'));
@@ -18,6 +19,7 @@ const CommunicationSearchResults = React.lazy(() => import('../containers/Commun
 const CommunicationSearchMessageDetails = React.lazy(() => import('../containers/CommunicationSearchMessageDetails/CommunicationSearchMessageDetailsContainer'));
 const Profiles = React.lazy(() => import('../containers/Profiles/ProfilesContainer'));
 const ProfileDetail = React.lazy(() => import('../containers/ProfileDetail/ProfileDetailContainer'));
+const HistoricData = React.lazy(() => import('../containers/HistoricIngestion/HistoricIngestionContainer'));
 // ROUTE IMPORT CODE GENERATOR INDICATOR DO NOT DELETE
 
 const routes = [{
@@ -74,6 +76,12 @@ const routes = [{
     path: '/profile-detail',
     name: 'ProfileDetail',
     component: ProfileDetail,
+    authedRoute: true
+},
+{
+    path: 'historic-data',
+    name: 'HistoricData',
+    component: HistoricData,
     authedRoute: true
 }, {
     path: '*',

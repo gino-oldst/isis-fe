@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { DropdownButton } from 'react-bootstrap';
 import { FaSearch } from 'react-icons/fa';
 import { MdInsertComment } from 'react-icons/md';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     Card,
     CardBody, Col, DropdownItem, Form, FormGroup, Input, InputGroup,
@@ -18,6 +18,7 @@ import Typography from '../../components/base/Typography/Typography';
 import withLoading from '../../components/modules/withLoading/withLoading';
 import type { Menu } from '../../types';
 import './communication_search.scss';
+import { useIsMount } from '../../hooks/useIsMount';
 
 import { AllCheckerCheckbox, Checkbox, CheckboxGroup } from '@createnl/grouped-checkboxes';
 import { DateRangePicker } from 'react-date-range';
@@ -25,6 +26,8 @@ import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import AsyncSelect from 'react-select/async';
 import { DATE_TO_SHORT_DATE } from '../../utils/helpers';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { setModalContent } from '../../redux/modules/modalEvent';
 
 type Props = {
     loading: Boolean,
@@ -46,7 +49,8 @@ type Props = {
     errorForm: Array<Any>,
     filterSearchForm: Array<Any>,
     status:Array<Any>,
-    source:Array<Any>
+    source:Array<Any>,
+    handleCloseModal: Function
 }
 
 function CommunicationSearchScreen({
@@ -69,9 +73,20 @@ function CommunicationSearchScreen({
     errorForm,
     filterSearchForm,
     status,
-    source
+    source,
+    handleCloseModal,
+    isValidDateRange,
+    viewModal,
+    setViewModal,
+    downloadAllHistoricData,
+    downloadReutersHistoricData,
+    downloadBloombergHistoricData
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
+
+    const isMount = useIsMount();
+
+    const { profileData } = useSelector(({ authentication }) => authentication);
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -95,6 +110,8 @@ function CommunicationSearchScreen({
         }
     ]);
 
+    const [activeModal, setActiveModal] = useState('invalid-range');
+
     useEffect(() => {
         var newDate = [{
             startDate: filterDate[0].startDate ? filterDate[0].startDate : new Date(today.setHours(0, 0, 0, 0)),
@@ -104,6 +121,16 @@ function CommunicationSearchScreen({
 
         setDateState(newDate);
     }, [filterDate]);
+
+    useEffect(() => {
+        if (viewModal && activeModal === 'invalid-range') {
+            if (filterDate[0].startDate && filterDate[0].endDate) {
+                if (!isValidDateRange(filterDate[0].startDate, filterDate[0].endDate)) {
+                    showActionsModal();
+                }
+            }
+        }
+    }, [viewModal]);
 
     const convertedStartDate = DATE_TO_SHORT_DATE(dateState[0].startDate);
 
@@ -158,6 +185,28 @@ function CommunicationSearchScreen({
 
         setDateState(clonedDate);
         setFilterDate(clonedDate);
+    };
+
+    const handleCloseActionsModal = () => {
+        handleCloseModal();
+        setActiveModal('invalid-range');
+        setViewModal(false);
+    };
+
+    const showActionsModal = () => {
+        dispatch(setModalContent({
+            modalContent: <ActionModal
+                userId={profileData.userId}
+                activeModal={activeModal}
+                setActiveModal={setActiveModal}
+                handleCloseModal={handleCloseModal}
+                handleCloseActionsModal={handleCloseActionsModal}
+                setViewModal={setViewModal}
+                dateFrom={filterDate[0].startDate}
+                dateTo={filterDate[0].endDate}
+                filterDate={filterDate}
+                setFilterDate={setFilterDate} />
+        }));
     };
 
     return (
@@ -346,3 +395,106 @@ function CommunicationSearchScreen({
 const CommunicationSearch: any = withLoading<React$Element<Props>>(CommunicationSearchScreen);
 
 export default CommunicationSearch;
+
+const ActionModal = ({
+    userId,
+    handleCloseModal,
+    dateFrom,
+    dateTo,
+    setActiveModal,
+    handleCloseActionsModal,
+    setViewModal,
+    setFilterDate,
+    filterDate
+}) => {
+    const dispatch = useDispatch();
+    const [submit, setSubmit] = useState(false);
+
+    const showRedirectModal = () => {
+        setActiveModal('redirect');
+        dispatch(setModalContent({
+            modalContent: <RedirectModal
+                handleCloseModal={handleCloseModal}
+                handleCloseActionsModal={handleCloseActionsModal}
+                handleClose={handleClose}
+                redirectToPage={redirectToPage} />
+        }));
+    };
+
+    const redirectToPage = () => {
+        return null;
+    };
+
+    // const downloadData = async () => {
+    //     setSubmit(true);
+
+    //     const payload = {
+    //         dateFrom: dateFrom,
+    //         dateTo: dateTo
+    //     }
+
+    //     try {
+    //         // const result = await downloadHistoricData(payload);
+
+    //         if (result.status === 200) {
+    //             console.log(true);
+    //         }
+    //     } catch (err) {
+    //         console.log(err);
+    //     }
+    // };
+
+    const handleClose = () => {
+        handleCloseActionsModal();
+        setViewModal(false);
+    };
+
+    return (
+        <div className='action-modal p-5'>
+            <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
+                onClick={handleCloseModal} />
+            <Typography variant='size-26' color='color-3'
+                className='mb-4 playfair-font'> Missing Data </Typography>
+            <Typography color='color-3' variant='size-16' className='playfair-font'>
+                Some data from this range is missing. Would you like to download the missing data or adjust the date range?
+            </Typography>
+            <div className='search-modal__buttons d-flex justify-content-center'>
+                <Button label='Adjust Range' variant='light' className='cancel-button px-4 mr-2 py-2'
+                    onClick={() => {
+                        handleClose();
+                    }}/>
+                <Button label='Download Data' variant='primary' className='search__download-button px-4 py-2'
+                    onClick={() => {
+                        // downloadData();
+                        showRedirectModal();
+                    }} />
+            </div>
+        </div>
+    );
+};
+
+const RedirectModal = ({
+    redirectToPage,
+    handleCloseModal,
+    handleClose
+}) => {
+    return (
+        <div className='action-modal p-5'>
+            <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
+                onClick={handleCloseModal} />
+            <Typography variant='size-26' color='color-3'
+                className='mb-4 playfair-font'> Downloading Data </Typography>
+            <Typography color='color-3' variant='size-16' className='playfair-font'>
+                Kindly wait for the data to finish downloading. You can view the progress of your download below.
+            </Typography>
+            <div className='search-modal__buttons d-flex justify-content-center'>
+                <Button label='Close' variant='light' className='cancel-button px-4 mr-2 py-2'
+                    onClick={handleClose}/>
+                <Button label='View Progress' variant='primary' className='search__download-button px-4 py-2'
+                    onClick={() => {
+                        redirectToPage();
+                    }} />
+            </div>
+        </div>
+    );
+};

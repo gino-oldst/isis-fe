@@ -70,6 +70,14 @@ function App() {
             history.push('/communication_policies');
         },
         key: 'communication_policies'
+    // }];
+    }, {
+        label: 'Historic Data',
+        onClick: () => {
+            dispatch(resetTableState());
+            history.push('/historic_data');
+        },
+        key: 'historic_data'
     }];
 
     // const sidebarMenu = [{

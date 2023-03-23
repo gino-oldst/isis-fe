@@ -68,7 +68,7 @@ export default function CollapsibleSidebar({
                 <div className={'collapsible-sidebar__menu-footer'}>
                     <div>
                         <Typography variant='size-13' className='ml-3 mb-0'>Messages in Database</Typography>
-                        <Typography variant='size-13' weight='bold' className='ml-3 mb-0'>{config.manualMessageDataDate} to {moment(new Date()).format('MMM YYYY')}</Typography>
+                        <Typography variant='size-13' weight='bold' className='ml-3 mb-0'>{moment(new Date()).subtract(3, 'months').format('MMM YYYY')} to {moment(new Date()).format('MMM YYYY')}</Typography>
                     </div>
                 </div>
             </div>

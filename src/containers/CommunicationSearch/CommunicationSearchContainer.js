@@ -7,7 +7,7 @@ import { useHistory } from 'react-router-dom';
 import type { Menu } from '../../types';
 import CommunicationSearchScreen from './CommunicationSearchScreen';
 
-import { getEmails } from '../../api/communicationSearch';
+import { getEmails, downloadBloombergHistoricData, downloadAllHistoricData, downloadReutersHistoricData } from '../../api/communicationSearch';
 import { storageKey } from '../../config/constants';
 import Storage from '../../utils/Storage';
 import { DATE_TO_UTC_LOCAL } from '../../utils/helpers';
@@ -26,6 +26,8 @@ export default function CommunicationSearchContainer({
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
     const { table, selected, searchFilterValue } = useSelector(({ communicationSearch }) => communicationSearch);
+    const [threeMonths, setThreeMonths] = useState(moment().subtract(3, 'months'));
+    const [viewModal, setViewModal] = useState(false);
     const breadcrumb = [
         {
             label: 'Home',
@@ -237,6 +239,11 @@ export default function CommunicationSearchContainer({
             formValid = false;
         }
 
+        if (await !isValidDateRange(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo)) {
+            formValid = false;
+            setViewModal(true);
+        }
+
         if (formValid) {
             Storage.removeItem(storageKey.searchParams);
             Storage.setItem(storageKey.searchParams, JSON.stringify({
@@ -281,6 +288,17 @@ export default function CommunicationSearchContainer({
         }, 300);
     }, [setLastOptions]);
 
+    const isValidDateRange = (dateFrom, dateTo) => {
+        if (moment(dateFrom) < threeMonths && moment(dateTo) < threeMonths) {
+            // check if data exists in db
+            // if data does not exist
+
+            return false;
+        }
+
+        return true;
+    };
+
     return <CommunicationSearchScreen
         loading={loading}
         userId={userId}
@@ -299,6 +317,13 @@ export default function CommunicationSearchContainer({
         loadOptions={loadOptions}
         errorForm={errorForm}
         filterSearchForm={filterSearchForm}
+        isValidDateRange={isValidDateRange}
+        handleCloseModal={handleCloseModal}
+        viewModal={viewModal}
+        setViewModal={setViewModal}
+        downloadAllHistoricData={downloadAllHistoricData}
+        downloadBloombergHistoricData={downloadBloombergHistoricData}
+        downloadReutersHistoricData={downloadReutersHistoricData}
         // status={status}
         source={source}/>;
 }

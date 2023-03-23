@@ -41,6 +41,7 @@ export default function CommunicationSearchResultsContainer({
     const [lastOptions, setLastOptions] = useState([]);
     const [tableResultStore, setTableResultStore] = useState([]);
     const [downloading, setDownloading] = useState(false);
+    const [threeMonths, setThreeMonths] = useState('');
     const breadcrumb = [
         {
             label: 'Home',
@@ -88,6 +89,7 @@ export default function CommunicationSearchResultsContainer({
                 filterSearchForm,
                 false
             );
+            setThreeMonths(new Date(moment().subtract(3, 'months')));
         }, 150);
     }, [pageSize, activePage, sort]);
 
@@ -342,6 +344,10 @@ export default function CommunicationSearchResultsContainer({
         //     formValid = false;
         // }
 
+        if (isValidDateRange(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo)) {
+            formValid = false;
+        }
+
         if (moment(filterSearchForm.filterDateFrom).format('YYYY-MM-DD') === moment(filterSearchForm.filterDateTo).format('YYYY-MM-DD') &&
             moment(filterSearchForm.filterDateFrom).format('HH:mm') > moment(filterSearchForm.filterDateTo).format('HH:mm')) {
             initialError.errorDate = 'Date From Overlaps Date To';
@@ -444,6 +450,16 @@ export default function CommunicationSearchResultsContainer({
         // await downloadCommSearchList(filterSearchForm);
     };
 
+    const isValidDateRange = (dateFrom, dateTo) => {
+        if (moment(dateFrom) < threeMonths && moment(dateTo) < threeMonths) {
+            // check if data exists in db
+            // if data does not exist
+            return false;
+        }
+
+        return true;
+    };
+
     return <CommunicationSearchResultsScreen
         loading={loading}
         downloading={downloading}
@@ -474,5 +490,6 @@ export default function CommunicationSearchResultsContainer({
         defaultRecipients={filterSearchForm.filterRecipients}
         defaultSender={filterSearchForm.filterSenders}
         errorForm={errorForm}
-        isTimeout={isTimeout}/>;
+        isTimeout={isTimeout}
+        isValidDateRange={isValidDateRange}/>;
 }
