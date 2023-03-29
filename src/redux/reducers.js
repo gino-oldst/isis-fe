@@ -19,3 +19,5 @@ export { default as profiles } from './modules/profiles';
 
 export { default as communicationAlerts } from './modules/communicationAlerts';
 export { default as communicationSearch } from './modules/communicationSearch';
+
+export { default as historicData } from './modules/historicData';

@@ -50,7 +50,8 @@ type Props = {
     filterSearchForm: Array<Any>,
     status:Array<Any>,
     source:Array<Any>,
-    handleCloseModal: Function
+    handleCloseModal: Function,
+    redirectToPage: Function
 }
 
 function CommunicationSearchScreen({
@@ -80,7 +81,8 @@ function CommunicationSearchScreen({
     setViewModal,
     downloadAllHistoricData,
     downloadReutersHistoricData,
-    downloadBloombergHistoricData
+    downloadBloombergHistoricData,
+    redirectToPage
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
 
@@ -205,7 +207,8 @@ function CommunicationSearchScreen({
                 dateFrom={filterDate[0].startDate}
                 dateTo={filterDate[0].endDate}
                 filterDate={filterDate}
-                setFilterDate={setFilterDate} />
+                setFilterDate={setFilterDate}
+                redirectToPage={redirectToPage} />
         }));
     };
 
@@ -405,7 +408,8 @@ const ActionModal = ({
     handleCloseActionsModal,
     setViewModal,
     setFilterDate,
-    filterDate
+    filterDate,
+    redirectToPage
 }) => {
     const dispatch = useDispatch();
     const [submit, setSubmit] = useState(false);
@@ -419,10 +423,6 @@ const ActionModal = ({
                 handleClose={handleClose}
                 redirectToPage={redirectToPage} />
         }));
-    };
-
-    const redirectToPage = () => {
-        return null;
     };
 
     // const downloadData = async () => {
@@ -486,6 +486,7 @@ const RedirectModal = ({
                 className='mb-4 playfair-font'> Downloading Data </Typography>
             <Typography color='color-3' variant='size-16' className='playfair-font'>
                 Kindly wait for the data to finish downloading. You can view the progress of your download below.
+                <br/>
             </Typography>
             <div className='search-modal__buttons d-flex justify-content-center'>
                 <Button label='Close' variant='light' className='cancel-button px-4 mr-2 py-2'

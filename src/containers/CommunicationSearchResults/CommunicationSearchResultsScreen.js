@@ -89,7 +89,9 @@ type Props = {
     errorForm: Array<Any>,
     isTimeout: Boolean,
     handleDownloadSearchData: Function,
-    downloading: Boolean
+    downloading: Boolean,
+    redirectToPage: Function,
+    handleCloseModal: Function
 }
 
 function CommunicationSearchResultsScreen({
@@ -127,7 +129,14 @@ function CommunicationSearchResultsScreen({
     errorForm,
     isTimeout,
     handleDownloadSearchData,
-    downloading
+    downloading,
+    isValidDateRange,
+    redirectToPage,
+    viewModal,
+    setViewModal,
+    downloadAllHistoricData,
+    downloadReutersHistoricData,
+    downloadBloombergHistoricData
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
@@ -154,6 +163,8 @@ function CommunicationSearchResultsScreen({
         }
     ]);
 
+    const [activeModal, setActiveModal] = useState('invalid-range');
+
     const sourceOptions = [{ label: 'Select All', value: 'all' }, ...Object.keys(COMMUNICATION_ALERT_SOURCE_OPTIONS).map(row => ({
         label: row,
         value: row
@@ -168,6 +179,16 @@ function CommunicationSearchResultsScreen({
 
         setDateState(newDate);
     }, [filterDate]);
+
+    useEffect(() => {
+        if (viewModal && activeModal === 'invalid-range') {
+            if (filterDate[0].startDate && filterDate[0].endDate) {
+                if (!isValidDateRange(filterDate[0].startDate, filterDate[0].endDate)) {
+                    showActionsModal();
+                }
+            }
+        }
+    }, [viewModal]);
 
     const convertedStartDate = moment(dateState[0].startDate).utc().local().format('MMM. DD, YYYY hh:mm A'); // for adding time in format hh:mm A
 
@@ -222,6 +243,29 @@ function CommunicationSearchResultsScreen({
 
         setDateState(clonedDate);
         setFilterDate(clonedDate);
+    };
+
+    const handleCloseActionsModal = () => {
+        handleCloseModal();
+        setActiveModal('invalid-range');
+        setViewModal(false);
+    };
+
+    const showActionsModal = () => {
+        dispatch(setModalContent({
+            modalContent: <ActionModal
+                userId={profileData.userId}
+                activeModal={activeModal}
+                setActiveModal={setActiveModal}
+                handleCloseModal={handleCloseModal}
+                handleCloseActionsModal={handleCloseActionsModal}
+                setViewModal={setViewModal}
+                dateFrom={filterDate[0].startDate}
+                dateTo={filterDate[0].endDate}
+                filterDate={filterDate}
+                setFilterDate={setFilterDate}
+                redirectToPage={redirectToPage} />
+        }));
     };
 
     return (
@@ -436,3 +480,104 @@ function CommunicationSearchResultsScreen({
 const CommunicationResultsSearch: any = withLoading<React$Element<Props>>(CommunicationSearchResultsScreen);
 
 export default CommunicationResultsSearch;
+
+const ActionModal = ({
+    userId,
+    handleCloseModal,
+    dateFrom,
+    dateTo,
+    setActiveModal,
+    handleCloseActionsModal,
+    setViewModal,
+    setFilterDate,
+    filterDate,
+    redirectToPage
+}) => {
+    const dispatch = useDispatch();
+    const [submit, setSubmit] = useState(false);
+
+    const showRedirectModal = () => {
+        setActiveModal('redirect');
+        dispatch(setModalContent({
+            modalContent: <RedirectModal
+                handleCloseModal={handleCloseModal}
+                handleCloseActionsModal={handleCloseActionsModal}
+                handleClose={handleClose}
+                redirectToPage={redirectToPage} />
+        }));
+    };
+
+    // const downloadData = async () => {
+    //     setSubmit(true);
+
+    //     const payload = {
+    //         dateFrom: dateFrom,
+    //         dateTo: dateTo
+    //     }
+
+    //     try {
+    //         // const result = await downloadHistoricData(payload);
+
+    //         if (result.status === 200) {
+    //             console.log(true);
+    //         }
+    //     } catch (err) {
+    //         console.log(err);
+    //     }
+    // };
+
+    const handleClose = () => {
+        handleCloseActionsModal();
+        setViewModal(false);
+    };
+
+    return (
+        <div className='action-modal p-5'>
+            <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
+                onClick={handleCloseModal} />
+            <Typography variant='size-26' color='color-3'
+                className='mb-4 playfair-font'> Missing Data </Typography>
+            <Typography color='color-3' variant='size-16' className='playfair-font'>
+                Some data from this range is missing. Would you like to download the missing data or adjust the date range?
+            </Typography>
+            <div className='search-modal__buttons d-flex justify-content-center'>
+                <Button label='Adjust Range' variant='light' className='cancel-button px-4 mr-2 py-2'
+                    onClick={() => {
+                        handleClose();
+                    }}/>
+                <Button label='Download Data' variant='primary' className='search__download-button px-4 py-2'
+                    onClick={() => {
+                        // downloadData();
+                        showRedirectModal();
+                    }} />
+            </div>
+        </div>
+    );
+};
+
+const RedirectModal = ({
+    redirectToPage,
+    handleCloseModal,
+    handleClose
+}) => {
+    return (
+        <div className='action-modal p-5'>
+            <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
+                onClick={handleCloseModal} />
+            <Typography variant='size-26' color='color-3'
+                className='mb-4 playfair-font'> Downloading Data </Typography>
+            <Typography color='color-3' variant='size-16' className='playfair-font'>
+                Kindly wait for the data to finish downloading. You can view the progress of your download below.
+                <br/>
+            </Typography>
+            <div className='search-modal__buttons d-flex justify-content-center'>
+                <Button label='Close' variant='light' className='cancel-button px-4 mr-2 py-2'
+                    onClick={handleClose}/>
+                <Button label='View Progress' variant='primary' className='search__download-button px-4 py-2'
+                    onClick={() => {
+                        redirectToPage();
+                    }} />
+            </div>
+        </div>
+    );
+};

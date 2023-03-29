@@ -75,7 +75,7 @@ function App() {
         label: 'Historic Data',
         onClick: () => {
             dispatch(resetTableState());
-            history.push('/historic_data');
+            history.push('/historic_ingestion');
         },
         key: 'historic_data'
     }];

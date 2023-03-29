@@ -19,7 +19,7 @@ const CommunicationSearchResults = React.lazy(() => import('../containers/Commun
 const CommunicationSearchMessageDetails = React.lazy(() => import('../containers/CommunicationSearchMessageDetails/CommunicationSearchMessageDetailsContainer'));
 const Profiles = React.lazy(() => import('../containers/Profiles/ProfilesContainer'));
 const ProfileDetail = React.lazy(() => import('../containers/ProfileDetail/ProfileDetailContainer'));
-const HistoricData = React.lazy(() => import('../containers/HistoricIngestion/HistoricIngestionContainer'));
+const HistoricIngestion = React.lazy(() => import('../containers/HistoricIngestion/HistoricIngestionContainer'));
 // ROUTE IMPORT CODE GENERATOR INDICATOR DO NOT DELETE
 
 const routes = [{
@@ -77,11 +77,10 @@ const routes = [{
     name: 'ProfileDetail',
     component: ProfileDetail,
     authedRoute: true
-},
-{
-    path: 'historic-data',
-    name: 'HistoricData',
-    component: HistoricData,
+}, {
+    path: '/historic_ingestion',
+    name: 'HistoricIngestion',
+    component: HistoricIngestion,
     authedRoute: true
 }, {
     path: '*',

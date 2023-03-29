@@ -3,12 +3,10 @@
 const SET_HISTORIC_DATA = 'SET_HISTORIC_DATA';
 const SET_LOADING = 'SET_LOADING';
 
-export function setHistoricData(data: Array, totalNoOfRecords: Integer, totalPages: Integer) {
+export function setHistoricData(data: Array) {
     return {
         type: SET_HISTORIC_DATA,
-        data,
-        totalNoOfRecords,
-        totalPages
+        data
     };
 }
 
@@ -36,13 +34,13 @@ const initialState = {
             },
             {
                 header: 'Import Date',
-                accessor: 'importDate',
+                accessor: 'dateImported',
                 disableFilters: true,
                 clickable: false
             },
             {
                 header: 'Expiry Date',
-                accessor: 'expiryDate',
+                accessor: 'dateExpiry',
                 disableFilters: true,
                 clickable: false
             },
@@ -59,8 +57,22 @@ const initialState = {
     }
 };
 
-export default function HistoricData(state: Object = initialState, action: Object):
+export default function historicData(state: Object = initialState, action: Object):
  | any
  | {
     table: {},
- }
+ } {
+    switch (action.type) {
+        case SET_HISTORIC_DATA:
+            return {
+                ...state,
+                table: {
+                    ...state.table,
+                    data: action.data
+                }
+            };
+
+        default:
+            return state;
+    }
+}

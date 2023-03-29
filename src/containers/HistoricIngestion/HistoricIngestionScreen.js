@@ -93,136 +93,15 @@ type Props = {
 }
 
 function HistoricIngestionScreen({
-    defaultRecipients,
-    defaultSender,
-    defaultSources,
-    loading,
-    userId,
     breadcrumb,
+    loading,
     sidebarMenu,
     table,
-    activePage,
-    useMediaQuery,
-    handleCloseModal,
-    viewCommunicationAlertDetails,
-    isCheckAll,
-    handleSelectAll,
-    handleItemCheck,
-    handleItemClick,
-    loadSearchData,
-    isLoading,
-    setSearchId,
-    setKeyword,
-    filterKeyword,
-    filterId,
-    handleSearchClick,
-    loadOptions,
-    handleRecipientChange,
-    handleSenderChange,
-    filterDate,
-    setFilterDate,
-    handleSource,
-    handleUniqueID,
-    handleKeyword,
-    errorForm,
-    isTimeout,
-    handleDownloadSearchData,
-    downloading
+    history,
+    data
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
-
-    const [isOpen, setIsOpen] = useState(false);
-
-    const toggleOpen = () => {
-        setIsOpen(!isOpen);
-    };
-
-    const [dateOptions, setDateOptions] = useState({
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
-
-    const today = new Date();
-
-    const [dateState, setDateState] = useState([
-        {
-            startDate: new Date(today.setHours(0, 0, 0, 0)),
-            endDate: new Date(today.setHours(23, 59, 0, 0)),
-            key: 'selection'
-        }
-    ]);
-
-    const sourceOptions = [{ label: 'Select All', value: 'all' }, ...Object.keys(COMMUNICATION_ALERT_SOURCE_OPTIONS).map(row => ({
-        label: row,
-        value: row
-    }))];
-
-    useEffect(() => {
-        var newDate = [{
-            startDate: filterDate[0].startDate ? filterDate[0].startDate : new Date(today.setHours(0, 0, 0, 0)),
-            endDate: filterDate[0].endDate ? filterDate[0].endDate : new Date(today.setHours(23, 59, 0, 0)),
-            key: 'selection'
-        }];
-
-        setDateState(newDate);
-    }, [filterDate]);
-
-    const convertedStartDate = moment(dateState[0].startDate).utc().local().format('MMM. DD, YYYY hh:mm A'); // for adding time in format hh:mm A
-
-    const convertedEndDate = moment(dateState[0].endDate).utc().local().format('MMM. DD, YYYY hh:mm A'); // for adding time in format hh:mm A
-
-    const handleDates = (dates) => {
-        var copyDates = dateState[0];
-
-        const clonedDate = JSON.parse(JSON.stringify(dates));
-
-        clonedDate[0].startDate = new Date(clonedDate[0].startDate);
-        clonedDate[0].endDate = new Date(clonedDate[0].endDate);
-
-        Object.keys(copyDates).map((e, i) => {
-            if (e == 'startDate') {
-                var hours = parseInt(copyDates[e].getHours());
-                var minutes = parseInt(copyDates[e].getMinutes());
-
-                clonedDate[0].startDate.setHours(hours, minutes, 0, 0);
-            } else if (e == 'endDate') {
-                var hours = parseInt(copyDates[e].getHours());
-                var minutes = parseInt(copyDates[e].getMinutes());
-
-                clonedDate[0].endDate.setHours(hours, minutes, 0, 0);
-            }
-        });
-
-        setDateState(clonedDate);
-        setFilterDate(clonedDate);
-    };
-
-    const handleTime = (event) => {
-        var name = event.target.getAttribute('name');
-        var timeParts = event.target.value.match(/(\d+):(\d+)/);
-
-        const clonedDate = JSON.parse(JSON.stringify(dateState));
-
-        clonedDate[0].startDate = new Date(clonedDate[0].startDate);
-        clonedDate[0].endDate = new Date(clonedDate[0].endDate);
-
-        if (name == 'timeStart' && timeParts) {
-            var hours = parseInt(timeParts[1]);
-            var minutes = parseInt(timeParts[2]);
-
-            clonedDate[0].startDate.setHours(hours, minutes, 0, 0);
-        } else if (name == 'timeEnd' && timeParts) {
-            var hours = parseInt(timeParts[1]);
-            var minutes = parseInt(timeParts[2]);
-
-            clonedDate[0].endDate.setHours(hours, minutes, 0, 0);
-        }
-
-        setDateState(clonedDate);
-        setFilterDate(clonedDate);
-    };
 
     return (
         <div className='search-results'>
@@ -235,176 +114,10 @@ function HistoricIngestionScreen({
                         <Card className='px-4 py-2'>
                             <CardBody>
                                 <div className='search-results__header d-flex align-items-center justify-content-between'>
-                                    <Typography color='color-3' className='search-results__title'>Search Results</Typography>
-                                    <Button weight='light' className='search-results__download' label='Download Data'
-                                        isLoading={downloading} disabled={loading} onClick={handleDownloadSearchData}/>
+                                    <Typography color='color-3' className='search-results__title'>Historic Data Ingested</Typography>
                                 </div>
-                                <Row className='pl-2'>
-                                    <Col lg={12}>
-                                        <Form onSubmit={handleSearchClick}>
-                                            <fieldset disabled={loading}>
-                                                <Row>
-                                                    <Col>
-                                                        <FormGroup>
-                                                            <Label for='filterId'>Unique ID</Label>
-                                                            <InputGroup>
-                                                                <InputGroupAddon addonType='prepend'>
-                                                                    <InputGroupText>
-                                                                        <FaSearch size={18} color='#004C98'/>
-                                                                    </InputGroupText>
-                                                                </InputGroupAddon>
-                                                                <Input name='filterId' type='text' defaultValue={filterId}
-                                                                    onChange={handleUniqueID} className='shadow-none isis-control' placeholder='Search unique ID'/>
-                                                            </InputGroup>
-                                                        </FormGroup>
-                                                    </Col>
-                                                    <Col>
-                                                        <FormGroup>
-                                                            <Label for='filterText'>Keyword</Label>
-                                                            <InputGroup>
-                                                                <InputGroupAddon addonType='prepend'>
-                                                                    <InputGroupText>
-                                                                        <MdInsertComment size={18} color='#004C98'/>
-                                                                    </InputGroupText>
-                                                                </InputGroupAddon>
-                                                                <Input name='filterText' type='text' defaultValue={filterKeyword}
-                                                                    onChange={handleKeyword} className='shadow-none isis-control' placeholder='Search a Keyword'/>
-                                                            </InputGroup>
-                                                        </FormGroup>
-                                                    </Col>
-                                                    <Col>
-                                                        <FormGroup>
-                                                            <Label for='filterText'>Source</Label>
-                                                            <Select
-                                                                isMulti={true}
-                                                                placeholder={'Search Source'}
-                                                                isSearchable={false}
-                                                                isDisabled={loading}
-                                                                className='status-select'
-                                                                name='source'
-                                                                onChange={selected => {
-                                                                    selected.find(option => option.value === 'all')
-                                                                        ? handleSource(sourceOptions.splice(1))
-                                                                        : handleSource(selected);
-                                                                }}
-                                                                value={defaultSources.length > 0
-                                                                    ? defaultSources.map(row => ({ label: sourceMaker(row.label), value: row.value }))
-                                                                    : []}
-                                                                options={sourceOptions.map(row => ({ label: sourceMaker(row.label), value: row.value }))}/>
-                                                        </FormGroup>
-                                                    </Col>
-                                                </Row>
-                                                <Row>
-                                                    <Col>
-                                                        <FormGroup>
-                                                            <Label for='filterSender'>Sender</Label>
-                                                            <AsyncSelect
-                                                                isMulti={true}
-                                                                value={defaultSender.length > 0
-                                                                    ? defaultSender.map(row => ({ label: row.label, value: row.value }))
-                                                                    : []}
-                                                                cacheOptions={true}
-                                                                loadOptions={loadOptions}
-                                                                components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
-                                                                name='filterSender'
-                                                                className='filter-select'
-                                                                onChange={(newTags) => handleSenderChange(newTags)}
-                                                                placeholder={'Select Sender...'}
-                                                                noOptionsMessage={() => 'Enter a Sender'}/>
-                                                            {errorForm.errorSenders !== '' &&
-                                                                <Typography variant='size-14' className='form-text text-danger'>
-                                                                    {errorForm.errorSenders}
-                                                                </Typography>
-                                                            }
-                                                        </FormGroup>
-                                                    </Col>
-                                                    <Col>
-                                                        <FormGroup>
-                                                            <Label for='filterRecipient'>Recipient</Label>
-                                                            <AsyncSelect
-                                                                isMulti={true}
-                                                                value={defaultRecipients.length > 0
-                                                                    ? defaultRecipients.map(row => ({ label: row.label, value: row.value }))
-                                                                    : []}
-                                                                cacheOptions={true}
-                                                                loadOptions={loadOptions}
-                                                                components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
-                                                                name='filterRecipient'
-                                                                className='filter-select'
-                                                                onChange={(newTags) => handleRecipientChange(newTags)}
-                                                                placeholder={'Select Recipient...'}
-                                                                noOptionsMessage={() => 'Enter a Recipient'}/>
-                                                            {/* {errorForm.errorRecipients !== '' &&
-                                                                <Typography variant='size-14' className='form-text text-danger'>
-                                                                    {errorForm.errorRecipients}
-                                                                </Typography>
-                                                            } */}
-                                                        </FormGroup>
-                                                    </Col>
-                                                    <Col>
-                                                        <FormGroup>
-                                                            <Label for='dropdown-basic-button'>Date & Time</Label>
-                                                            <DropdownButton variant='outline-light' id='dropdown-basic-button' alignRight={true}
-                                                                title={filterDate[0].startDate === '' ? 'Select Date' : convertedStartDate + ' - ' + convertedEndDate}>
-                                                                <DropdownItem>
-                                                                    <DateRangePicker
-                                                                        onChange={item => handleDates([item.selection])}
-                                                                        showSelectionPreview={true}
-                                                                        moveRangeOnFirstSelection={false}
-                                                                        months={2}
-                                                                        inputRanges={[]}
-                                                                        ranges={dateState}
-                                                                        showDateDisplay={false}
-                                                                        value={filterDate.startDate === '' ? null : filterDate}
-                                                                        direction='horizontal'/>
-                                                                    <div className='d-flex time-wrapper'>
-                                                                        <div className='rdrTime'>
-                                                                            <Input type='time' name='timeStart' placeholder='hh:mm'
-                                                                                value={moment(dateState[0].startDate).format('HH:mm')} required={true} formNoValidate={true}
-                                                                                onChange={e => handleTime(e)}/>
-                                                                        </div>
-                                                                        <div className='rdrTime'>
-                                                                            <Input type='time' name='timeEnd' placeholder='hh:mm'
-                                                                                value={moment(dateState[0].endDate).format('HH:mm')} required={true} formNoValidate={true}
-                                                                                onChange={e => handleTime(e)}/>
-                                                                        </div>
-                                                                    </div>
-                                                                </DropdownItem>
-                                                            </DropdownButton>
-                                                            {errorForm.errorDate !== '' &&
-                                                                <Typography variant='size-14' className='form-text text-danger'>
-                                                                    {errorForm.errorDate}
-                                                                </Typography>
-                                                            }
-                                                        </FormGroup>
-                                                    </Col>
-                                                </Row>
-                                                <Row>
-                                                    <Col>
-                                                        <FormGroup>
-                                                            <Button label='Search' variant='primary' type='submit'
-                                                                className='alerts__save-button px-4 py-2'/>
-                                                        </FormGroup>
-                                                    </Col>
-                                                </Row>
-                                            </fieldset>
-                                        </Form>
-                                    </Col>
-                                </Row>
                                 {/* About 10,000+ results. Please expand your search criteria to get better results. */}
                                 <div className='search-results__information mt-5'>
-                                    <Row>
-                                        <Col lg={12}>
-                                            { table.totalNoOfRecords < 10000
-                                                ? <Typography variant='size-14' color='color-3' className='search-results__box-label' >
-                                                    {table.totalNoOfRecords > 0 ? numberWithCommas(table.totalNoOfRecords) : '0'} Results
-                                                </Typography>
-                                                : <Typography variant='size-14' color='color-3' className='search-results__box-label' >
-                                                    About 10,000+ results. Please expand your search criteria to get better results.
-                                                </Typography>
-                                            }
-                                        </Col>
-                                    </Row>
                                     <Row>
                                         <Col lg={12} className='overflow-auto'>
                                             <IsisTable className='search-results__table table-striped'
@@ -414,13 +127,8 @@ function HistoricIngestionScreen({
                                                 tablePagination={table.totalPages}
                                                 totalNoOfRecords={table.totalNoOfRecords}
                                                 selectableRows={false}
-                                                activePage={activePage}
                                                 pagination={true}
-                                                sortable={true}
-                                                fetching={table.loading}
-                                                viewDetails={handleItemClick}
-                                                filterKeyword={filterKeyword}
-                                                isTimeout={isTimeout}/>
+                                                sortable={false}/>
                                         </Col>
                                     </Row>
                                 </div>

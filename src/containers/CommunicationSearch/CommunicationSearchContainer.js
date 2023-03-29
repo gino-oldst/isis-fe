@@ -299,6 +299,12 @@ export default function CommunicationSearchContainer({
         return true;
     };
 
+    const redirectToPage = () => {
+        history.push({
+            pathname: '/historic_ingestion'
+        });
+    };
+
     return <CommunicationSearchScreen
         loading={loading}
         userId={userId}
@@ -324,6 +330,7 @@ export default function CommunicationSearchContainer({
         downloadAllHistoricData={downloadAllHistoricData}
         downloadBloombergHistoricData={downloadBloombergHistoricData}
         downloadReutersHistoricData={downloadReutersHistoricData}
+        redirectToPage={redirectToPage}
         // status={status}
         source={source}/>;
 }

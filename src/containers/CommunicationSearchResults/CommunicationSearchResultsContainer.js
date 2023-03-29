@@ -7,7 +7,7 @@ import type { Menu } from '../../types';
 import dataSample from '../CommunicationAlerts/MOCK_DATA.json';
 import filterSample from '../CommunicationAlerts/filters.json';
 import moment from 'moment';
-import { downloadCommSearchList, getCommunicationSearchData, getCommunicationSearchDataOpenSearch, getEmails, getEmailsAll } from '../../api/communicationSearch';
+import { downloadCommSearchList, getCommunicationSearchData, getCommunicationSearchDataOpenSearch, getEmails, getEmailsAll, downloadBloombergHistoricData, downloadAllHistoricData, downloadReutersHistoricData } from '../../api/communicationSearch';
 import { setCommunicationSearchData, setColumnFilterValues, setSearchFilterValues } from '../../redux/modules/communicationSearch';
 import { setActivePage } from '../../redux/modules/isisTable';
 import { filter } from 'underscore';
@@ -42,6 +42,7 @@ export default function CommunicationSearchResultsContainer({
     const [tableResultStore, setTableResultStore] = useState([]);
     const [downloading, setDownloading] = useState(false);
     const [threeMonths, setThreeMonths] = useState('');
+    const [viewModal, setViewModal] = useState(false);
     const breadcrumb = [
         {
             label: 'Home',
@@ -460,6 +461,12 @@ export default function CommunicationSearchResultsContainer({
         return true;
     };
 
+    const redirectToPage = () => {
+        history.push({
+            pathname: '/historic_ingestion'
+        });
+    };
+
     return <CommunicationSearchResultsScreen
         loading={loading}
         downloading={downloading}
@@ -491,5 +498,11 @@ export default function CommunicationSearchResultsContainer({
         defaultSender={filterSearchForm.filterSenders}
         errorForm={errorForm}
         isTimeout={isTimeout}
-        isValidDateRange={isValidDateRange}/>;
+        isValidDateRange={isValidDateRange}
+        viewModal={viewModal}
+        setViewModal={setViewModal}
+        downloadAllHistoricData={downloadAllHistoricData}
+        downloadBloombergHistoricData={downloadBloombergHistoricData}
+        downloadReutersHistoricData={downloadReutersHistoricData}
+        redirectToPage={redirectToPage}/>;
 }
