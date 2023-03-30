@@ -7,7 +7,8 @@ import { useHistory } from 'react-router-dom';
 import type { Menu } from '../../types';
 import CommunicationSearchScreen from './CommunicationSearchScreen';
 
-import { getEmails, downloadBloombergHistoricData, downloadAllHistoricData, downloadReutersHistoricData } from '../../api/communicationSearch';
+import { getEmails } from '../../api/communicationSearch';
+import { getData, downloadBloombergHistoricData, downloadAllHistoricData, downloadReutersHistoricData } from '../../api/historicIngestion';
 import { storageKey } from '../../config/constants';
 import Storage from '../../utils/Storage';
 import { DATE_TO_UTC_LOCAL } from '../../utils/helpers';
@@ -25,6 +26,7 @@ export default function CommunicationSearchContainer({
     const history = useHistory();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
+    const [historicData, setHistoricData] = useState('');
     const { table, selected, searchFilterValue } = useSelector(({ communicationSearch }) => communicationSearch);
     const [threeMonths, setThreeMonths] = useState(moment().subtract(3, 'months'));
     const [viewModal, setViewModal] = useState(false);
@@ -81,6 +83,16 @@ export default function CommunicationSearchContainer({
         errorRecipients: ''
     });
 
+    const getDaysArray = function(start, end) {
+        const arr = [];
+
+        for (let dt = new Date(start); dt <= new Date(end); dt.setDate(dt.getDate() + 1)) {
+            arr.push(moment(new Date(dt)).format('YYYY-MM-DD'));
+        }
+
+        return arr;
+    };
+
     useEffect(() => {
         const dateFrom = filterDate[0].startDate != '' ? DATE_TO_UTC_LOCAL(filterDate[0].startDate) : '';
         const dateTo = filterDate[0].endDate != '' ? DATE_TO_UTC_LOCAL(filterDate[0].endDate) : '';
@@ -102,6 +114,16 @@ export default function CommunicationSearchContainer({
             loadSearchValuesFromStorage();
         }, 100);
     }, []);
+
+    useEffect(() => {
+        loadHistoricData();
+    }, []);
+
+    const loadHistoricData = async () => {
+        await getData().then((result) => {
+            setHistoricData(result.data);
+        });
+    };
 
     const loadSearchValuesFromStorage = async () => {
         const searchParams = JSON.parse(Storage.getItem(storageKey.searchParams));
@@ -239,7 +261,7 @@ export default function CommunicationSearchContainer({
             formValid = false;
         }
 
-        if (await !isValidDateRange(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo)) {
+        if (!isValidDateRange(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo)) {
             formValid = false;
             setViewModal(true);
         }
@@ -290,10 +312,31 @@ export default function CommunicationSearchContainer({
 
     const isValidDateRange = (dateFrom, dateTo) => {
         if (moment(dateFrom) < threeMonths && moment(dateTo) < threeMonths) {
-            // check if data exists in db
-            // if data does not exist
+            const dateList = getDaysArray(moment(dateFrom), moment(dateTo));
 
-            return false;
+            console.log(dateList);
+
+            const dataDates = new Array();
+
+            for (let i = 0; i < historicData.length; i++) {
+                dataDates.push(historicData[i].dataDate);
+            }
+
+            for (let i = 0; i < dateList.length; i++) {
+                for (let j = 0; j < dataDates.length; j++) {
+                    if (dateList[i] === dataDates[j]) {
+                        break;
+                    }
+
+                    if (j === dataDates.length - 1) {
+                        console.log(dateList[i]);
+
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         return true;
@@ -303,6 +346,20 @@ export default function CommunicationSearchContainer({
         history.push({
             pathname: '/historic_ingestion'
         });
+    };
+
+    const downloadAllData = async () => {
+        console.log('button pressed');
+
+        await downloadAllHistoricData(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo);
+    };
+
+    const downloadBloombergData = async () => {
+        await downloadBloombergHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo);
+    };
+
+    const downloadReutersData = async () => {
+        await downloadReutersHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo);
     };
 
     return <CommunicationSearchScreen
@@ -327,9 +384,9 @@ export default function CommunicationSearchContainer({
         handleCloseModal={handleCloseModal}
         viewModal={viewModal}
         setViewModal={setViewModal}
-        downloadAllHistoricData={downloadAllHistoricData}
-        downloadBloombergHistoricData={downloadBloombergHistoricData}
-        downloadReutersHistoricData={downloadReutersHistoricData}
+        downloadAllHistoricData={downloadAllData}
+        downloadBloombergHistoricData={downloadBloombergData}
+        downloadReutersHistoricData={downloadReutersData}
         redirectToPage={redirectToPage}
         // status={status}
         source={source}/>;

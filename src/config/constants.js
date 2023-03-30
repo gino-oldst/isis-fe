@@ -10,6 +10,7 @@ const config = {
     adminApplAuthHeader: process.env.REACT_APP_ADMIN_APP_AUTH_HEADER,
     apiStorage: process.env.REACT_APP_STORAGE_API_HOST,
     apiAuth: process.env.REACT_APP_AUTH_API_HOST,
+    apiExtraction: process.env.REACT_APP_EXTRACTION_API_HOST,
     versionName: process.env.REACT_APP_VERSION_VALUE,
     openSearchUrl: process.env.REACT_APP_OPEN_SEARCH_URL,
     openSearchDocUrl: process.env.REACT_APP_OPEN_SEARCH_DOC_URL,

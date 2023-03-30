@@ -1,5 +1,56 @@
-[{"dataDate": "December 10, 2022", "source": "Bloomberg", "importDate": "March 20, 2023", "expiryDate": "April 20, 2023", "userId": "admin"},
-{"dataDate": "December 15, 2022", "source": "Bloomberg", "importDate": "March 20, 2023", "expiryDate": "April 20, 2023", "userId": "admin"},
-{"dataDate": "December 20, 2022", "source": "Bloomberg", "importDate": "March 20, 2023", "expiryDate": "April 20, 2023", "userId": "admin"},
-{"dataDate": "December 18, 2022", "source": "Bloomberg", "importDate": "March 20, 2023", "expiryDate": "April 20, 2023", "userId": "admin"}
+[
+    {
+        "id": "00400352-4cbb-4abb-9d2d-caacd6e17e5c",
+        "userId": "valid_id",
+        "dataDate": "2022-01-22",
+        "dateImported": "2023-03-28",
+        "dateExpiry": "2023-04-28",
+        "expired": false,
+        "source": "bloomberg"
+    },
+    {
+        "id": "16c774b7-f8d6-4339-a2fc-aabd78b55ec0",
+        "userId": "valid_id",
+        "dataDate": "2022-01-20",
+        "dateImported": "2023-03-28",
+        "dateExpiry": "2023-04-28",
+        "expired": false,
+        "source": "bloomberg"
+    },
+    {
+        "id": "229c2691-8681-410d-848a-98852d48a603",
+        "userId": "valid_id",
+        "dataDate": "2022-01-24",
+        "dateImported": "2023-03-28",
+        "dateExpiry": "2023-04-28",
+        "expired": false,
+        "source": "bloomberg"
+    },
+    {
+        "id": "d07ce7d5-bff8-47e7-9b53-16f4bfc5b498",
+        "userId": "valid_id",
+        "dataDate": "2022-01-23",
+        "dateImported": "2023-03-28",
+        "dateExpiry": "2023-04-28",
+        "expired": false,
+        "source": "bloomberg"
+    },
+    {
+        "id": "ded671d8-14d3-4c66-b709-3e2309d7fe4d",
+        "userId": "valid_id",
+        "dataDate": "2022-01-21",
+        "dateImported": "2023-03-28",
+        "dateExpiry": "2023-04-28",
+        "expired": false,
+        "source": "bloomberg"
+    },
+    {
+        "id": "f693920c-d674-4383-8818-dc782a237630",
+        "userId": "valid_id",
+        "dataDate": "2022-01-25",
+        "dateImported": "2023-03-28",
+        "dateExpiry": "2023-04-28",
+        "expired": false,
+        "source": "bloomberg"
+    }
 ]

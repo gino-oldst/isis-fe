@@ -322,12 +322,13 @@ export default function CommunicationAlertsContainer({
                         id: alert.id,
                         policyId: alert.policyId,
                         status: status,
-                        notes: note
+                        notes: note,
+                        assignedUserId: alert.assignedUserId
                     };
 
-                    return updateAlert(data).then(function(results) {
-                        return results;
-                    });
+                    const request = updateAlert(data);
+
+                    return request;
                 });
             });
 

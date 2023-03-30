@@ -104,23 +104,23 @@ function HistoricIngestionScreen({
     const { profileData } = useSelector(({ authentication }) => authentication);
 
     return (
-        <div className='search-results'>
+        <div className='historic-ingestion'>
             <CollapsibleSidebar
                 menu={sidebarMenu} />
             <div className='w-100'>
                 <Breadcrumbs className='position-sticky' links={breadcrumb} />
                 <div className='overflow-auto h-100 pb-40'>
-                    <div className='search-results__content'>
+                    <div className='historic-ingestion__content'>
                         <Card className='px-4 py-2'>
                             <CardBody>
-                                <div className='search-results__header d-flex align-items-center justify-content-between'>
-                                    <Typography color='color-3' className='search-results__title'>Historic Data Ingested</Typography>
+                                <div className='historic-ingestion__header d-flex align-items-center justify-content-between'>
+                                    <Typography color='color-3' className='historic-ingestion__title'>Historic Data Ingested</Typography>
                                 </div>
                                 {/* About 10,000+ results. Please expand your search criteria to get better results. */}
-                                <div className='search-results__information mt-5'>
+                                <div className='historic-ingestion__information mt-5'>
                                     <Row>
                                         <Col lg={12} className='overflow-auto'>
-                                            <IsisTable className='search-results__table table-striped'
+                                            <IsisTable className='historic-ingestion__table table-striped'
                                                 loading={loading}
                                                 tableColumns={table.columns}
                                                 tableData={table.data}
