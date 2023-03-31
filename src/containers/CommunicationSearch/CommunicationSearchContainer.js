@@ -12,6 +12,7 @@ import { getData, downloadBloombergHistoricData, downloadAllHistoricData, downlo
 import { storageKey } from '../../config/constants';
 import Storage from '../../utils/Storage';
 import { DATE_TO_UTC_LOCAL } from '../../utils/helpers';
+import storage from 'redux-persist/lib/storage';
 
 type Props = {
     sidebarMenu: Array<Menu>,
@@ -129,9 +130,9 @@ export default function CommunicationSearchContainer({
         const searchParams = JSON.parse(Storage.getItem(storageKey.searchParams));
 
         if (searchParams) {
-            var values = searchParams.filterSearchForm;
+            const values = searchParams.filterSearchForm;
 
-            var newFilters = {
+            const newFilters = {
                 filterId: values.filterId,
                 filterText: values.filterText,
                 filterDateFrom: '',
@@ -154,7 +155,7 @@ export default function CommunicationSearchContainer({
                 };
             });
 
-            var newDate = {
+            const newDate = {
                 startDate: values.filterDateFrom ? new Date(values.filterDateFrom) : '',
                 endDate: values.filterDateTo ? new Date(values.filterDateTo) : ''
             };
@@ -164,7 +165,7 @@ export default function CommunicationSearchContainer({
     };
 
     const handleSenderChange = (updatedList) => {
-        var list = [];
+        const list = [];
 
         updatedList.map(op => {
             list.push(op.value);
@@ -182,7 +183,7 @@ export default function CommunicationSearchContainer({
     };
 
     const handleRecipientChange = (updatedList) => {
-        var list = [];
+        const list = [];
 
         updatedList.map(op => {
             list.push(op.value);
@@ -200,7 +201,7 @@ export default function CommunicationSearchContainer({
     };
 
     const handleStatus = (event) => {
-        var updatedList = [];
+        const updatedList = [];
 
         event.map(ev => {
             if (ev.checked) {
@@ -215,7 +216,7 @@ export default function CommunicationSearchContainer({
     };
 
     const handleSource = (event) => {
-        var updatedList = [];
+        const updatedList = [];
 
         event.map(ev => {
             if (ev.checked) {
@@ -231,7 +232,7 @@ export default function CommunicationSearchContainer({
 
     const onSubmit = async e => {
         e.preventDefault();
-        var formValid = true;
+        let formValid = true;
         const initialError = {
             errorDate: '',
             errorSenders: '',
@@ -262,6 +263,7 @@ export default function CommunicationSearchContainer({
         }
 
         if (!isValidDateRange(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo)) {
+            console.log(JSON.parse(Storage.getItem(storageKey.user)).username);
             formValid = false;
             setViewModal(true);
         }
@@ -349,17 +351,15 @@ export default function CommunicationSearchContainer({
     };
 
     const downloadAllData = async () => {
-        console.log('button pressed');
-
-        await downloadAllHistoricData(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo);
+        await downloadAllHistoricData(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
     };
 
     const downloadBloombergData = async () => {
-        await downloadBloombergHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo);
+        await downloadBloombergHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
     };
 
     const downloadReutersData = async () => {
-        await downloadReutersHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo);
+        await downloadReutersHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
     };
 
     return <CommunicationSearchScreen

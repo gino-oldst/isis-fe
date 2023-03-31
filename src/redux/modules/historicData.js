@@ -3,10 +3,12 @@
 const SET_HISTORIC_DATA = 'SET_HISTORIC_DATA';
 const SET_LOADING = 'SET_LOADING';
 
-export function setHistoricData(data: Array) {
+export function setHistoricData(data: Array, totalNoOfRecords: Integer, totalPages: Integer) {
     return {
         type: SET_HISTORIC_DATA,
-        data
+        data,
+        totalNoOfRecords,
+        totalPages
     };
 }
 
@@ -68,7 +70,8 @@ export default function historicData(state: Object = initialState, action: Objec
                 ...state,
                 table: {
                     ...state.table,
-                    data: action.data
+                    data: action.data,
+                    totalNoOfRecords: action.totalNoOfRecords
                 }
             };
 

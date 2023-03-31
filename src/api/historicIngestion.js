@@ -10,11 +10,12 @@ export async function getData() {
 const DOWNLOAD_BLOOMBERG_DATA = `${config.apiExtraction}/extraction-service/historic-data/download/reuters`;
 const DOWNLOAD_REUTERS_DATA = `${config.apiExtraction}/extraction-service/historic-data/download/bloomberg`;
 
-export async function downloadAllHistoricData(dateFrom, dateTo) {
+export async function downloadAllHistoricData(dateFrom, dateTo, user) {
     try {
         const data = {
             dateFrom: dateFrom,
-            dateTo: dateTo
+            dateTo: dateTo,
+            userId: user
         };
 
         console.log(data);
@@ -27,19 +28,21 @@ export async function downloadAllHistoricData(dateFrom, dateTo) {
     }
 }
 
-export async function downloadBloombergHistoricData(dateFrom, dateTo) {
+export async function downloadBloombergHistoricData(dateFrom, dateTo, user) {
     const request = {
         dateFrom: dateFrom,
-        dateTo: dateTo
+        dateTo: dateTo,
+        userId: user
     };
 
     await makeApiCall(DOWNLOAD_BLOOMBERG_DATA, 'POST', request);
 }
 
-export async function downloadReutersHistoricData(dateFrom, dateTo) {
+export async function downloadReutersHistoricData(dateFrom, dateTo, user) {
     const request = {
         dateFrom: dateFrom,
-        dateTo: dateTo
+        dateTo: dateTo,
+        userId: user
     };
 
     await makeApiCall(DOWNLOAD_REUTERS_DATA, 'POST', request);

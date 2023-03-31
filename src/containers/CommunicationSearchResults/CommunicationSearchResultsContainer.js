@@ -7,7 +7,8 @@ import type { Menu } from '../../types';
 import dataSample from '../CommunicationAlerts/MOCK_DATA.json';
 import filterSample from '../CommunicationAlerts/filters.json';
 import moment from 'moment';
-import { downloadCommSearchList, getCommunicationSearchData, getCommunicationSearchDataOpenSearch, getEmails, getEmailsAll, downloadBloombergHistoricData, downloadAllHistoricData, downloadReutersHistoricData } from '../../api/communicationSearch';
+import { downloadCommSearchList, getCommunicationSearchData, getCommunicationSearchDataOpenSearch, getEmails, getEmailsAll } from '../../api/communicationSearch';
+import { downloadBloombergHistoricData, downloadAllHistoricData, downloadReutersHistoricData } from '../../api/historicIngestion';
 import { setCommunicationSearchData, setColumnFilterValues, setSearchFilterValues } from '../../redux/modules/communicationSearch';
 import { setActivePage } from '../../redux/modules/isisTable';
 import { filter } from 'underscore';
@@ -104,9 +105,9 @@ export default function CommunicationSearchResultsContainer({
         const searchParams = JSON.parse(Storage.getItem(storageKey.searchParams));
 
         if (searchParams) {
-            var values = searchParams.filterSearchForm;
+            const values = searchParams.filterSearchForm;
 
-            var newFilters = {
+            const newFilters = {
                 filterId: values.filterId,
                 filterText: values.filterText,
                 filterDateFrom: '',
@@ -127,7 +128,7 @@ export default function CommunicationSearchResultsContainer({
                 };
             });
 
-            var newDate = {
+            const newDate = {
                 startDate: values.filterDateFrom ? new Date(values.filterDateFrom) : '',
                 endDate: values.filterDateTo ? new Date(values.filterDateTo) : ''
             };
@@ -162,8 +163,8 @@ export default function CommunicationSearchResultsContainer({
 
         const searchParams = JSON.parse(Storage.getItem(storageKey.searchParams));
 
-        var values = searchParams.filterSearchForm;
-        var newFilters = {
+        const values = searchParams.filterSearchForm;
+        const newFilters = {
             filterId: '',
             filterText: '',
             filterDateFrom: '',
@@ -172,8 +173,8 @@ export default function CommunicationSearchResultsContainer({
             filterRecipients: [],
             filterSource: []
         };
-        var isPageChange = 0;
-        var insidePage = 0;
+        let isPageChange = 0;
+        let insidePage = 0;
 
         newFilters.filterId = appliedFilters.filterId === '' ? values.filterId : appliedFilters.filterId;
         newFilters.filterText = appliedFilters.filterText === '' ? values.filterText : appliedFilters.filterText;
@@ -252,7 +253,7 @@ export default function CommunicationSearchResultsContainer({
     const [recipientStore, setRecipientStore] = useState([]);
 
     const handleSenderChange = (updatedList) => {
-        var list = [];
+        const list = [];
 
         updatedList.map(op => {
             list.push({ label: op.label, value: op.value });
@@ -269,7 +270,7 @@ export default function CommunicationSearchResultsContainer({
     };
 
     const handleRecipientChange = (updatedList) => {
-        var list = [];
+        const list = [];
 
         updatedList.map(op => {
             list.push({ label: op.label, value: op.value });
@@ -322,7 +323,7 @@ export default function CommunicationSearchResultsContainer({
     };
 
     const handleSearchClick = (event) => {
-        var formValid = true;
+        let formValid = true;
         const initialError = {
             errorDate: '',
             errorSenders: '',
@@ -389,7 +390,7 @@ export default function CommunicationSearchResultsContainer({
     };
 
     const handleAppliedFiltersChange = (appliedFilters, sort, dateRange) => {
-        var updatedList = [];
+        const updatedList = [];
 
         appliedFilters.map(ev => {
             switch (ev.id.toLowerCase()) {

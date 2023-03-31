@@ -533,12 +533,12 @@ function IsisTable({
     };
 
     useEffect(() => {
-        var selectedRowsClone = JSON.parse(JSON.stringify(selectedRows));
+        const selectedRowsClone = JSON.parse(JSON.stringify(selectedRows));
 
-        var notInSelected = [];
-        var toBeSpliced = [];
-        var compareList = [];
-        var dispatchList = [];
+        let notInSelected = [];
+        let toBeSpliced = [];
+        let compareList = [];
+        let dispatchList = [];
 
         // See if not existing in previous selected row if not in currently selected
         if (selectedRowsClone.length > selectedRowsIsis.length) {
@@ -559,7 +559,7 @@ function IsisTable({
         });
 
         selectedRowsIsis.map(row => {
-            var index = selectedRowsClone.findIndex(item => item.alerts.data.length < row.original.alerts.data.length && item.alerts.data[0].commMessageId === row.original.alerts.data[0].commMessageId);
+            const index = selectedRowsClone.findIndex(item => item.alerts.data.length < row.original.alerts.data.length && item.alerts.data[0].commMessageId === row.original.alerts.data[0].commMessageId);
 
             if (index > -1) {
                 selectedRowsClone.splice(index, 1);
@@ -643,6 +643,7 @@ function IsisTable({
                             </th>
                         </tr>
                     }
+                    {/* delete last row (column.id !== dataDate when sorting is included) */}
                     {!hideHeader && headerGroups.map(headerGroup => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers.map(column => (
@@ -656,6 +657,7 @@ function IsisTable({
                                         {column.id !== 'alertMessageSummary' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                             column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' &&
                                             column.id !== 'policyDetailKeyword' && column.id !== 'policyDetailKeywordNumber' && column.id !== 'alertPolicyInternalCode' && column.id !== 'alertPolicyName' && column.id !== 'profileEmails' && column.id !== 'senderSearch' && column.id !== 'source' &&
+                                            column.id !== 'dataDate' && column.id !== 'dateExpiry' && column.id !== 'dateImported' && column.id !== 'userId' &&
                                             renderSortControl(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
                                     </span>
                                     {column.canFilter ? column.render('Filter') : null}
@@ -806,7 +808,7 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
 
     useEffect(() => {
         if (!toggle && row.isSelected && selectedRows.length > 0 && data.length > 0) {
-            var filteredList = checked.length > 0
+            const filteredList = checked.length > 0
                 ? data.map(r => { return checked.find(el => el === r.id) ? r : null; }).filter(function(element) {
                     return element !== null;
                 })
@@ -827,7 +829,7 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
 
     useEffect(() => {
         if (row.isSelected || toggle) {
-            var rowData = row.original.alerts.data;
+            const rowData = row.original.alerts.data;
 
             setChecked([...rowData.map(item => { return item.id; })]);
             setParentRowSelected(true);
@@ -863,8 +865,8 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                 row.toggleRowSelected(event.target.checked);
             } else {
                 var updatedList = JSON.parse(JSON.stringify(selectedRows)); // [...selectedRows];
-                var nlist = [];
-                var xlist = [];
+                let nlist = [];
+                let xlist = [];
 
                 nlist = updatedList.map(r => { return r.alerts.data.find(el => el.commMessageId === data.commMessageId) ? r : null; }).filter(function(element) {
                     return element !== null;
@@ -916,7 +918,7 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                 //     updatedList.splice(index);
                 // }
             });
-            var index = updatedList.findIndex(item => item.alerts.data.length === 0);
+            const index = updatedList.findIndex(item => item.alerts.data.length === 0);
 
             if (index > -1) {
                 updatedList.splice(index);
@@ -987,13 +989,13 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
                                     <strong className='highlighted-text'>{children}</strong>
                                 );
 
-                                var newAfter = alertLevelMessage.toUpperCase().indexOf(cell.row.original.alerts.data[0].keyword.toUpperCase(), 0);
+                                const newAfter = alertLevelMessage.toUpperCase().indexOf(cell.row.original.alerts.data[0].keyword.toUpperCase(), 0);
 
-                                var newBefore = alertLevelMessage.slice(0, newAfter);
-                                var getValueAfter = alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length);
+                                const newBefore = alertLevelMessage.slice(0, newAfter);
+                                const getValueAfter = alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length);
 
-                                var newBeforeResult = newBefore.substring(newBefore.length - 75);
-                                var newAfterResult = getValueAfter.substring(getValueAfter, 75);
+                                const newBeforeResult = newBefore.substring(newBefore.length - 75);
+                                const newAfterResult = getValueAfter.substring(getValueAfter, 75);
                                 // var result = newBefore.substring(newBefore.length - 75) + ' ' + alertKeyword + ' ' + alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length);
 
                                 // console.log(newBefore.substring(newBefore.length - 75) + ' ' + cell.row.original.alerts.data[0].keyword + ' ' + alertLevelMessage.slice(newAfter + cell.row.original.alerts.data[0].keyword.length));
@@ -1023,7 +1025,7 @@ function SubRows({ row, rowProps, visibleColumns, data, loading, alertsList }) {
 function SubRowAsync({ row, rowProps, visibleColumns }) {
     const [loading, setLoading] = React.useState(true);
     const [data, setData] = React.useState([]);
-    var alertData = JSON.parse(JSON.stringify(row.original.alerts.data)).sort((a, b) => a.id > b.id ? 1 : -1);
+    const alertData = JSON.parse(JSON.stringify(row.original.alerts.data)).sort((a, b) => a.id > b.id ? 1 : -1);
     const { alertsList } = useSelector(({ isisTable }) => isisTable);
 
     React.useEffect(() => {

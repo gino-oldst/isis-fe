@@ -36,7 +36,7 @@ export default function HistoricIngestionContainer({
             await getData().then((result) => {
                 console.log(result);
 
-                dispatch(setHistoricData(result.data));
+                dispatch(setHistoricData(result.data, result.data.length, result.data.length / 10));
             });
         } catch (e) {
             console.log(e);

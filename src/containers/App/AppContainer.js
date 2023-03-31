@@ -77,7 +77,7 @@ function App() {
             dispatch(resetTableState());
             history.push('/historic_ingestion');
         },
-        key: 'historic_data'
+        key: 'historic_ingestion'
     }];
 
     // const sidebarMenu = [{
