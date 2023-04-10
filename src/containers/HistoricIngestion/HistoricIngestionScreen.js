@@ -127,7 +127,7 @@ function HistoricIngestionScreen({
                                                 tablePagination={table.totalPages}
                                                 totalNoOfRecords={table.totalNoOfRecords}
                                                 selectableRows={false}
-                                                pagination={true}
+                                                // pagination={true}
                                                 sortable={false}/>
                                         </Col>
                                     </Row>

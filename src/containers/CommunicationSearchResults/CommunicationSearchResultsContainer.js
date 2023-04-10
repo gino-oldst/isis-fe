@@ -8,7 +8,7 @@ import dataSample from '../CommunicationAlerts/MOCK_DATA.json';
 import filterSample from '../CommunicationAlerts/filters.json';
 import moment from 'moment';
 import { downloadCommSearchList, getCommunicationSearchData, getCommunicationSearchDataOpenSearch, getEmails, getEmailsAll } from '../../api/communicationSearch';
-import { downloadBloombergHistoricData, downloadAllHistoricData, downloadReutersHistoricData } from '../../api/historicIngestion';
+import { getData, downloadBloombergHistoricData, downloadAllHistoricData, downloadReutersHistoricData } from '../../api/historicIngestion';
 import { setCommunicationSearchData, setColumnFilterValues, setSearchFilterValues } from '../../redux/modules/communicationSearch';
 import { setActivePage } from '../../redux/modules/isisTable';
 import { filter } from 'underscore';
@@ -44,6 +44,7 @@ export default function CommunicationSearchResultsContainer({
     const [downloading, setDownloading] = useState(false);
     const [threeMonths, setThreeMonths] = useState('');
     const [viewModal, setViewModal] = useState(false);
+    const [historicData, setHistoricData] = useState('');
     const breadcrumb = [
         {
             label: 'Home',
@@ -155,6 +156,16 @@ export default function CommunicationSearchResultsContainer({
             errorDate: ''
         });
     }, [filterDate]);
+
+    useEffect(() => {
+        loadHistoricData();
+    }, []);
+
+    const loadHistoricData = async () => {
+        await getData().then((result) => {
+            setHistoricData(result.data);
+        });
+    };
 
     const [isTimeout, setIsTimeout] = useState(false);
 
@@ -346,8 +357,10 @@ export default function CommunicationSearchResultsContainer({
         //     formValid = false;
         // }
 
-        if (isValidDateRange(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo)) {
+        if (!isValidDateRange(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo)) {
             formValid = false;
+            setViewModal(true);
+            console.log('invalid range');
         }
 
         if (moment(filterSearchForm.filterDateFrom).format('YYYY-MM-DD') === moment(filterSearchForm.filterDateTo).format('YYYY-MM-DD') &&
@@ -452,11 +465,43 @@ export default function CommunicationSearchResultsContainer({
         // await downloadCommSearchList(filterSearchForm);
     };
 
+    const getDaysArray = function(start, end) {
+        const arr = [];
+
+        for (let dt = new Date(start); dt <= new Date(end); dt.setDate(dt.getDate() + 1)) {
+            arr.push(moment(new Date(dt)).format('YYYY-MM-DD'));
+        }
+
+        return arr;
+    };
+
     const isValidDateRange = (dateFrom, dateTo) => {
         if (moment(dateFrom) < threeMonths && moment(dateTo) < threeMonths) {
-            // check if data exists in db
-            // if data does not exist
-            return false;
+            const dateList = getDaysArray(moment(dateFrom), moment(dateTo));
+
+            console.log(dateList);
+
+            const dataDates = new Array();
+
+            for (let i = 0; i < historicData.length; i++) {
+                dataDates.push(historicData[i].dataDate);
+            }
+
+            for (let i = 0; i < dateList.length; i++) {
+                for (let j = 0; j < dataDates.length; j++) {
+                    if (dateList[i] === dataDates[j]) {
+                        break;
+                    }
+
+                    if (j === dataDates.length - 1) {
+                        console.log(dateList[i]);
+
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         return true;
@@ -466,6 +511,18 @@ export default function CommunicationSearchResultsContainer({
         history.push({
             pathname: '/historic_ingestion'
         });
+    };
+
+    const downloadAllData = async () => {
+        // await downloadAllHistoricData(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
+    };
+
+    const downloadBloombergData = async () => {
+        // await downloadBloombergHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
+    };
+
+    const downloadReutersData = async () => {
+        // await downloadReutersHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
     };
 
     return <CommunicationSearchResultsScreen

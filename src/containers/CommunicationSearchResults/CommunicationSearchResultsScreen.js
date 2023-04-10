@@ -171,7 +171,7 @@ function CommunicationSearchResultsScreen({
     }))];
 
     useEffect(() => {
-        var newDate = [{
+        const newDate = [{
             startDate: filterDate[0].startDate ? filterDate[0].startDate : new Date(today.setHours(0, 0, 0, 0)),
             endDate: filterDate[0].endDate ? filterDate[0].endDate : new Date(today.setHours(23, 59, 0, 0)),
             key: 'selection'
@@ -195,7 +195,7 @@ function CommunicationSearchResultsScreen({
     const convertedEndDate = moment(dateState[0].endDate).utc().local().format('MMM. DD, YYYY hh:mm A'); // for adding time in format hh:mm A
 
     const handleDates = (dates) => {
-        var copyDates = dateState[0];
+        const copyDates = dateState[0];
 
         const clonedDate = JSON.parse(JSON.stringify(dates));
 
@@ -221,8 +221,8 @@ function CommunicationSearchResultsScreen({
     };
 
     const handleTime = (event) => {
-        var name = event.target.getAttribute('name');
-        var timeParts = event.target.value.match(/(\d+):(\d+)/);
+        const name = event.target.getAttribute('name');
+        const timeParts = event.target.value.match(/(\d+):(\d+)/);
 
         const clonedDate = JSON.parse(JSON.stringify(dateState));
 
@@ -264,7 +264,9 @@ function CommunicationSearchResultsScreen({
                 dateTo={filterDate[0].endDate}
                 filterDate={filterDate}
                 setFilterDate={setFilterDate}
-                redirectToPage={redirectToPage} />
+                redirectToPage={redirectToPage}
+                downloadAllHistoricData={downloadAllHistoricData} />,
+            size: 'md'
         }));
     };
 
@@ -491,7 +493,8 @@ const ActionModal = ({
     setViewModal,
     setFilterDate,
     filterDate,
-    redirectToPage
+    redirectToPage,
+    downloadAllHistoricData
 }) => {
     const dispatch = useDispatch();
     const [submit, setSubmit] = useState(false);
@@ -503,7 +506,8 @@ const ActionModal = ({
                 handleCloseModal={handleCloseModal}
                 handleCloseActionsModal={handleCloseActionsModal}
                 handleClose={handleClose}
-                redirectToPage={redirectToPage} />
+                redirectToPage={redirectToPage} />,
+            size: 'md'
         }));
     };
 
@@ -532,23 +536,26 @@ const ActionModal = ({
     };
 
     return (
-        <div className='action-modal p-5'>
+        <div className='action-modal p-4'>
             <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
                 onClick={handleCloseModal} />
-            <Typography variant='size-26' color='color-3'
-                className='mb-4 playfair-font'> Missing Data </Typography>
-            <Typography color='color-3' variant='size-16' className='playfair-font'>
-                Some data from this range is missing. Would you like to download the missing data or adjust the date range?
-            </Typography>
-            <div className='search-modal__buttons d-flex justify-content-center'>
+            <div className='row action-modal__content mt-5 mb-4 d-flex justify-content-center align-items-center'>
+                <Typography variant='size-35' color='color-3'
+                    className='mb-4 playfair-font'> Missing Data </Typography>
+                <Typography color='color-3' variant='size-16' className='mb-3 playfair-font text-center'>
+                    Some data from this range is missing. Would you like to download the missing data or adjust the date range?
+                </Typography>
+            </div>
+            <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
                 <Button label='Adjust Range' variant='light' className='cancel-button px-4 mr-2 py-2'
                     onClick={() => {
                         handleClose();
                     }}/>
                 <Button label='Download Data' variant='primary' className='search__download-button px-4 py-2'
                     onClick={() => {
-                        // downloadData();
+                        downloadAllHistoricData();
                         showRedirectModal();
+                        // redirectToPage();
                     }} />
             </div>
         </div>
@@ -561,20 +568,22 @@ const RedirectModal = ({
     handleClose
 }) => {
     return (
-        <div className='action-modal p-5'>
+        <div className='action-modal p-4'>
             <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
                 onClick={handleCloseModal} />
-            <Typography variant='size-26' color='color-3'
-                className='mb-4 playfair-font'> Downloading Data </Typography>
-            <Typography color='color-3' variant='size-16' className='playfair-font'>
-                Kindly wait for the data to finish downloading. You can view the progress of your download below.
-                <br/>
-            </Typography>
-            <div className='search-modal__buttons d-flex justify-content-center'>
+            <div className='row action-modal__content mt-5 mb-4 d-flex justify-content-center align-items-center'>
+                <Typography variant='size-35' color='color-3'
+                    className='mb-4 playfair-font'> Downloading Data </Typography>
+                <Typography color='color-3' variant='size-16' className='mb-3 playfair-font text-center'>
+                    Kindly wait for the data to finish downloading. You can view the progress of your download below.
+                </Typography>
+            </div>
+            <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
                 <Button label='Close' variant='light' className='cancel-button px-4 mr-2 py-2'
                     onClick={handleClose}/>
                 <Button label='View Progress' variant='primary' className='search__download-button px-4 py-2'
                     onClick={() => {
+                        handleClose();
                         redirectToPage();
                     }} />
             </div>
