@@ -514,15 +514,15 @@ export default function CommunicationSearchResultsContainer({
     };
 
     const downloadAllData = async () => {
-        // await downloadAllHistoricData(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
+        await downloadAllHistoricData(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
     };
 
     const downloadBloombergData = async () => {
-        // await downloadBloombergHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
+        await downloadBloombergHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
     };
 
     const downloadReutersData = async () => {
-        // await downloadReutersHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
+        await downloadReutersHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
     };
 
     return <CommunicationSearchResultsScreen
