@@ -559,8 +559,8 @@ export default function CommunicationSearchResultsContainer({
         isValidDateRange={isValidDateRange}
         viewModal={viewModal}
         setViewModal={setViewModal}
-        downloadAllHistoricData={downloadAllHistoricData}
-        downloadBloombergHistoricData={downloadBloombergHistoricData}
-        downloadReutersHistoricData={downloadReutersHistoricData}
+        downloadAllHistoricData={downloadAllData}
+        downloadBloombergHistoricData={downloadBloombergData}
+        downloadReutersHistoricData={downloadReutersData}
         redirectToPage={redirectToPage}/>;
 }
