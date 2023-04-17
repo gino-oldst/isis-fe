@@ -47,3 +47,22 @@ export async function downloadReutersHistoricData(dateFrom, dateTo, user) {
 
     await makeApiCall(DOWNLOAD_REUTERS_DATA, 'POST', request);
 }
+
+const PURGE_HISTORIC_DATA = `${config.apiExtraction}/extraction-service/historic-data/purge-data`;
+
+export async function purgeHistoricData(data) {
+    console.log(data);
+
+    const request = {
+        id: data.id,
+        userId: data.userId,
+        dataDate: data.dataDate,
+        dateImported: data.dateImported,
+        dateExpiry: data.dateExpiry,
+        historicDataStatus: 'Deleted',
+        expired: true,
+        source: data.source
+    };
+
+    return await makeApiCall(PURGE_HISTORIC_DATA, 'PUT', request);
+}

@@ -4,6 +4,9 @@ const SET_HISTORIC_DATA = 'SET_HISTORIC_DATA';
 const SET_LOADING = 'SET_LOADING';
 
 export function setHistoricData(data: Array, totalNoOfRecords: Integer, totalPages: Integer) {
+    console.log(totalNoOfRecords);
+    console.log(totalPages);
+
     return {
         type: SET_HISTORIC_DATA,
         data,
@@ -51,6 +54,18 @@ const initialState = {
                 accessor: 'userId',
                 disableFilters: true,
                 clickable: false
+            },
+            {
+                header: 'Status',
+                accessor: 'historicDataStatus',
+                disableFilters: true,
+                clickable: false
+            },
+            {
+                header: '',
+                accessor: 'historicDataFunction',
+                disableFilters: true,
+                clickable: false
             }
         ],
         data: [],
@@ -71,7 +86,8 @@ export default function historicData(state: Object = initialState, action: Objec
                 table: {
                     ...state.table,
                     data: action.data,
-                    totalNoOfRecords: action.totalNoOfRecords
+                    totalNoOfRecords: action.totalNoOfRecords,
+                    totalPages: action.totalPages
                 }
             };
 

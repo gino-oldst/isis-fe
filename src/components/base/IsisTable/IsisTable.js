@@ -657,7 +657,7 @@ function IsisTable({
                                         {column.id !== 'alertMessageSummary' && column.id !== 'selection' && column.id !== 'chainLinkId' && column.id !== 'id' && column.id !== 'message' &&
                                             column.id !== 'alertId' && column.id !== 'keyword' && column.id !== 'policiesStatus' && column.id !== 'policiesAction' && column.id !== 'expander' && column.id !== 'status' && column.id !== 'recipient' && column.id !== 'recipients' &&
                                             column.id !== 'policyDetailKeyword' && column.id !== 'policyDetailKeywordNumber' && column.id !== 'alertPolicyInternalCode' && column.id !== 'alertPolicyName' && column.id !== 'profileEmails' && column.id !== 'senderSearch' && column.id !== 'source' &&
-                                            column.id !== 'dataDate' && column.id !== 'dateExpiry' && column.id !== 'dateImported' && column.id !== 'userId' &&
+                                            column.id !== 'dataDate' && column.id !== 'dateExpiry' && column.id !== 'dateImported' && column.id !== 'userId' && column.id !== 'historicDataStatus' && column.id !== 'historicDataFunction' &&
                                             renderSortControl(column.id == 'senderSearch' ? 'sender' : column.id == 'date' ? 'timeSent' : column.id == 'alertSource' ? 'source' : column.id)}
                                     </span>
                                     {column.canFilter ? column.render('Filter') : null}
@@ -741,6 +741,8 @@ function IsisTable({
                             {Array.from(Array(tablePagination), (_, i) => {
                                 const dynamicPageIndex = activePage > maxPage ? activePage - 2 + i : i + 1;
 
+                                console.log(tablePagination);
+
                                 return i <= maxPage + 3 && dynamicPageIndex <= tablePagination && <span key={i}
                                     className={`cursor-pointer ${activePage + 1 === dynamicPageIndex ? 'active' : ''} ${fetching ? 'text-muted' : ''}`}
                                     onClick={() => {
@@ -753,7 +755,10 @@ function IsisTable({
                             <span className={`cursor-pointer pagination-navigate
                             ${activePage + 1 === tablePagination || tablePagination === 0 || fetching ? 'text-muted' : ''}`}
                             onClick={() => {
-                                if (activePage + 1 !== tablePagination && tablePagination > 0 && !fetching) setTableActivePage(activePage + 1);
+                                if (activePage + 1 !== tablePagination && tablePagination > 0 && !fetching) {
+                                    setTableActivePage(activePage + 1);
+                                    gotoPage(activePage + 1);
+                                }
                             }}>
                                 Next
                             </span>
@@ -1468,6 +1473,25 @@ export default function ReactTable({
                     const isInternal = cell.cell.row.original.internal;
 
                     return (<span>{isInternal ? 'Yes' : 'No'}</span>);
+                } else if (accessor == 'historicDataFunction') {
+                    const rowData = cell.cell.row.original;
+
+                    return (
+                        <>
+                            <UncontrolledDropdown>
+                                <DropdownToggle
+                                    caret={true}
+                                    color='primary'>
+                                    Action  ▼
+                                </DropdownToggle>
+                                <DropdownMenu left={true} className='historic-data-dropdown'>
+                                    <DropdownItem onClick={() => viewDeleteModal(rowData)}>
+                                        Delete
+                                    </DropdownItem>
+                                </DropdownMenu>
+                            </UncontrolledDropdown>
+                        </>
+                    );
                 } else {
                     return (<span>{cell.value == null ? '' : cell.value}</span>);
                 }

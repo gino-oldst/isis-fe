@@ -17,96 +17,6 @@
         font-family: $font-family-2;
     }
 
-    &__date-filter-options {
-        max-height: 130px;
-        padding: 0.2rem 1.5rem;
-        font-weight: 600;
-        font-size: 1.1rem;
-
-        .form-check {
-            padding-bottom: 0.2rem;
-        }
-    }
-
-    &__date-picker {
-        .btn-group {
-            width: 25%;
-        }
-    }
-
-    &__status-filters {
-        background-color: #f6f6f6;
-        border-radius: 2px;
-        padding: 30px;
-        margin-bottom: 5px;
-    }
-
-    &__search-bar{
-        .form-control {
-            border-left: none !important;
-            font-size: 16px !important;
-        }
-    
-        .form-control:focus {
-            border-color: #ced4da !important;
-            outline: 0;
-        }
-        
-        .form-group {
-            margin-bottom: 0;
-            padding-bottom: 10px;
-        }
-
-        .form-control.isis-control {
-            border-left: none !important;
-            font-size: 16px !important;
-        }
-    
-        .form-control:focus {
-            border-color: #ced4da !important;
-            outline: 0;
-        }
-
-        .react-tag-input__input,
-        .filter-select,
-        .status-select,
-        .dropdown-toggle{
-            font-size: 16px !important;
-        }
-    }
-
-    .MuiInputAdornment-root.MuiInputAdornment-positionEnd {
-        display: none;
-    }
-
-    &__filter-reset-button {
-        border: $bg-download-button;
-        background-color: $bg-download-button;
-        border-radius: 0.2rem;
-
-        &:hover,
-        &:focus,
-        &:active {
-            background-color: darken($bg-download-button, 10%) !important;
-            border-color: darken($bg-download-button, 10%) !important;
-        }
-    }
-
-    &__download-button,
-    &__save-button,
-    &__bulk-action-button {
-        border: $bg-download-button;
-        background-color: $bg-download-button;
-        border-radius: 0.2rem;
-
-        &:hover,
-        &:focus,
-        &:active {
-            background-color: darken($bg-download-button, 10%) !important;
-            border-color: darken($bg-download-button, 10%) !important;
-        }
-    }
-
     .table-responsive {
         min-height: 550px;
     }
@@ -156,11 +66,6 @@
         background-color: white;
     }
 
-    .dropdown-toggle {
-        width: 100% !important;
-        text-align: left;
-    }
-
     input[type="radio"],
     input[type="checkbox"] {
         width: 18px;
@@ -201,64 +106,11 @@
     }
 
     .input-group-text {
-        background-color: #fff !important; 
+        background-color: #fff !important;
         border-right: none !important;
     }
 
     .pb-40 {
         padding-bottom: 100px;
-    }
-
-    .status-select,
-    .filter-select,
-    .dropdown-toggle
-    {
-        min-width: 260px !important;
-        // margin-right: 10px;
-    }
-
-    #dropdown-basic-button{
-        overflow: hidden !important;
-        white-space: nowrap !important;
-        display: block !important;
-        text-overflow: ellipsis !important;
-    }
-
-    .time-wrapper {
-        margin-left: 226px;
-    }
-
-    .rdrTime {
-        padding: 0 0.833em;
-        width: 100%;
-    }
-
-    .rdrDateRangePickerWrapper{
-        height: 380px !important
-    }
-
-    input[type='time'] {
-        color: transparent;
-        display: block;
-        margin: 10px;
-        padding: 10px;
-
-        &:invalid {
-            &:before{
-                color: grey;
-                content: attr(placeholder);
-                pointer-events: none;
-                position: relative;
-            }
-        }
-            
-        &:valid,
-        &:focus,
-        &:active {
-            color: black;
-            &:before {
-                display: none
-            }
-        }
     }
 }

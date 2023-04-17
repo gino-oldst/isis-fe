@@ -115,7 +115,7 @@ function CommunicationSearchScreen({
     const [activeModal, setActiveModal] = useState('invalid-range');
 
     useEffect(() => {
-        var newDate = [{
+        const newDate = [{
             startDate: filterDate[0].startDate ? filterDate[0].startDate : new Date(today.setHours(0, 0, 0, 0)),
             endDate: filterDate[0].endDate ? filterDate[0].endDate : new Date(today.setHours(23, 59, 0, 0)),
             key: 'selection'
@@ -139,7 +139,7 @@ function CommunicationSearchScreen({
     const convertedEndDate = DATE_TO_SHORT_DATE(dateState[0].endDate);
 
     const handleDates = (dates) => {
-        var copyDates = dateState[0];
+        const copyDates = dateState[0];
 
         const clonedDate = JSON.parse(JSON.stringify(dates));
 
@@ -165,8 +165,8 @@ function CommunicationSearchScreen({
     };
 
     const handleTime = (event) => {
-        var name = event.target.getAttribute('name');
-        var timeParts = event.target.value.match(/(\d+):(\d+)/);
+        const name = event.target.getAttribute('name');
+        const timeParts = event.target.value.match(/(\d+):(\d+)/);
 
         const clonedDate = JSON.parse(JSON.stringify(dateState));
 
@@ -428,25 +428,6 @@ const ActionModal = ({
             size: 'md'
         }));
     };
-
-    // const downloadData = async () => {
-    //     setSubmit(true);
-
-    //     const payload = {
-    //         dateFrom: dateFrom,
-    //         dateTo: dateTo
-    //     }
-
-    //     try {
-    //         // const result = await downloadHistoricData(payload);
-
-    //         if (result.status === 200) {
-    //             console.log(true);
-    //         }
-    //     } catch (err) {
-    //         console.log(err);
-    //     }
-    // };
 
     const handleClose = () => {
         handleCloseActionsModal();

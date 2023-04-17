@@ -25,9 +25,8 @@
     }
 
     &__text-cell {
-        .typography{
+        .typography {
             padding-left: 0 !important;
-            
         }
     }
 
@@ -35,11 +34,11 @@
         display: inline-block;
         line-height: 0px;
         border-radius: 5%;
-        background-color: #C8E4FF;
+        background-color: #c8e4ff;
         font-size: 16px;
         width: 50px;
         height: 35px;
-      }
+    }
     &__arrow-square {
         display: inline-block;
         line-height: 0px;
@@ -48,9 +47,8 @@
         width: 30px;
         height: 35px;
         right: 100px;
+    }
 
-      }  
-      
     // &__number-square p {
     //     display: inline-block;
     //     padding-top: 50%;
@@ -112,15 +110,24 @@
         }
     }
 
+    .historic-data-dropdown {
+        margin-left: 0 !important;
+        width: auto !important;
+
+        .dropdown-divider {
+            border-top: 1px solid #dee2e6;
+        }
+    }
+
     .dropup .dropdown-toggle::after {
         display: inline-block;
-        margin-left: .255em;
-        vertical-align: .255em;
+        margin-left: 0.255em;
+        vertical-align: 0.255em;
         content: "";
         border-top: 0;
-        border-right: .3em solid transparent;
-        border-bottom: .3em solid;
-        border-left: .3em solid transparent;
+        border-right: 0.3em solid transparent;
+        border-bottom: 0.3em solid;
+        border-left: 0.3em solid transparent;
     }
 
     // react-select dropdown field
@@ -220,7 +227,8 @@
     float: right;
 }
 
-input[type="radio"], input[type="checkbox"] {
+input[type="radio"],
+input[type="checkbox"] {
     width: 18px;
     height: 18px;
 }
@@ -233,27 +241,25 @@ input[type="radio"], input[type="checkbox"] {
     padding-left: 0 !important;
 }
 
-
-.alert-status-column{
+.alert-status-column {
     width: 150px !important;
 }
-.keyword-column{
+.keyword-column {
     text-align: left;
     width: 80px !important;
 }
-.alert-summary-message-column{
+.alert-summary-message-column {
     width: 300px !important;
 }
-.alert-accordion-message-column{
+.alert-accordion-message-column {
     width: 300px !important;
     height: 130px !important;
 }
-.date-column{
+.date-column {
     width: 140px !important;
 }
-.recipient-column{
+.recipient-column {
     width: 230px !important;
     height: 130px !important;
     overflow: hidden !important;
-    
 }

@@ -2,7 +2,7 @@
 import React, { useState, useEffect, createRef } from 'react';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
-// import Table from '../../components/base/Table/Table';
+import Table from '../../components/base/Table/Table';
 import Button from '../../components/base/Button/Button';
 import Select, { components } from 'react-select';
 import Badge from '../../components/base/Badge/Badge';
@@ -98,10 +98,27 @@ function HistoricIngestionScreen({
     sidebarMenu,
     table,
     history,
-    data
+    data,
+    setViewModal,
+    viewModal,
+    handleCloseModal,
+    purgeHistoricData,
+    activePage
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
     const { profileData } = useSelector(({ authentication }) => authentication);
+
+    const showActionsModal = (data) => {
+        dispatch(setModalContent({
+            modalContent: <ActionModal
+                userId={profileData.userId}
+                handleCloseModal={handleCloseModal}
+                setViewModal={setViewModal}
+                data={data}
+                purgeHistoricData={purgeHistoricData} />,
+            size: 'md'
+        }));
+    };
 
     return (
         <div className='historic-ingestion'>
@@ -127,7 +144,10 @@ function HistoricIngestionScreen({
                                                 tablePagination={table.totalPages}
                                                 totalNoOfRecords={table.totalNoOfRecords}
                                                 selectableRows={false}
-                                                // pagination={true}
+                                                pagination={true}
+                                                viewDeleteModal={showActionsModal}
+                                                fetching={table.loading}
+                                                activePage={activePage}
                                                 sortable={false}/>
                                         </Col>
                                     </Row>
@@ -144,3 +164,43 @@ function HistoricIngestionScreen({
 const HistoricIngestionSearch: any = withLoading<React$Element<Props>>(HistoricIngestionScreen);
 
 export default HistoricIngestionSearch;
+
+const ActionModal = ({
+    userId,
+    handleCloseModal,
+    setViewModal,
+    data,
+    purgeHistoricData
+}) => {
+    const dispatch = useDispatch();
+
+    const handleClose = () => {
+        handleCloseModal();
+        setViewModal(false);
+    };
+
+    return (
+        <div className='action-modal p-4'>
+            <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
+                onClick={handleClose} />
+            <div className='row action-modal__content mt-5 mb-4 d-flex justify-content-center align-items-center'>
+                <Typography variant='size-35' color='color-3'
+                    className='mb-4 playfair-font'> Delete Data? </Typography>
+                <Typography color='color-3' variant='size-16' className='mb-3 playfair-font text-center'>
+                Once deleted, this data may need to be re-imported to be viewed again in the search tab. Do you wish to continue?
+                </Typography>
+            </div>
+            <div className='action-modal__buttons d-flex justify-content-center align-items-center'>
+                <Button label='Cancel' variant='light' className='cancel-button px-4 mr-2 py-2'
+                    onClick={() => {
+                        handleClose();
+                    }}/>
+                <Button label='Delete Data' variant='primary' className='search__download-button px-4 py-2'
+                    onClick={() => {
+                        purgeHistoricData(data);
+                        handleClose();
+                    }} />
+            </div>
+        </div>
+    );
+};
