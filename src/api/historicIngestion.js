@@ -59,10 +59,16 @@ export async function purgeHistoricData(data) {
         dataDate: data.dataDate,
         dateImported: data.dateImported,
         dateExpiry: data.dateExpiry,
-        historicDataStatus: 'Deleted',
+        historicDataStatus: 'Deleting...',
         expired: true,
         source: data.source
     };
 
     return await makeApiCall(PURGE_HISTORIC_DATA, 'PUT', request);
+}
+
+const GET_UNEXPIRED_DATA = `${config.apiExtraction}/extraction-service/historic-data/unexpired-data`;
+
+export async function getUnexpiredData() {
+    return await makeApiCall(GET_UNEXPIRED_DATA, 'GET', {});
 }

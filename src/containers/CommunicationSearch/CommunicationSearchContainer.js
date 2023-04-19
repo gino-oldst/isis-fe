@@ -8,7 +8,7 @@ import type { Menu } from '../../types';
 import CommunicationSearchScreen from './CommunicationSearchScreen';
 
 import { getEmails } from '../../api/communicationSearch';
-import { getData, downloadBloombergHistoricData, downloadAllHistoricData, downloadReutersHistoricData } from '../../api/historicIngestion';
+import { getData, getUnexpiredData, downloadBloombergHistoricData, downloadAllHistoricData, downloadReutersHistoricData } from '../../api/historicIngestion';
 import { storageKey } from '../../config/constants';
 import Storage from '../../utils/Storage';
 import { DATE_TO_UTC_LOCAL } from '../../utils/helpers';
@@ -121,7 +121,7 @@ export default function CommunicationSearchContainer({
     }, []);
 
     const loadHistoricData = async () => {
-        await getData().then((result) => {
+        await getUnexpiredData().then((result) => {
             setHistoricData(result.data);
         });
     };

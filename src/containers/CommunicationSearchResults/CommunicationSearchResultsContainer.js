@@ -8,7 +8,7 @@ import dataSample from '../CommunicationAlerts/MOCK_DATA.json';
 import filterSample from '../CommunicationAlerts/filters.json';
 import moment from 'moment';
 import { downloadCommSearchList, getCommunicationSearchData, getCommunicationSearchDataOpenSearch, getEmails, getEmailsAll } from '../../api/communicationSearch';
-import { getData, downloadBloombergHistoricData, downloadAllHistoricData, downloadReutersHistoricData } from '../../api/historicIngestion';
+import { getData, getUnexpiredData, downloadBloombergHistoricData, downloadAllHistoricData, downloadReutersHistoricData } from '../../api/historicIngestion';
 import { setCommunicationSearchData, setColumnFilterValues, setSearchFilterValues } from '../../redux/modules/communicationSearch';
 import { setActivePage } from '../../redux/modules/isisTable';
 import { filter } from 'underscore';
@@ -162,7 +162,7 @@ export default function CommunicationSearchResultsContainer({
     }, []);
 
     const loadHistoricData = async () => {
-        await getData().then((result) => {
+        await getUnexpiredData().then((result) => {
             setHistoricData(result.data);
         });
     };
