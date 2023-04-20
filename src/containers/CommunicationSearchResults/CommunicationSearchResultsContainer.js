@@ -45,6 +45,8 @@ export default function CommunicationSearchResultsContainer({
     const [threeMonths, setThreeMonths] = useState('');
     const [viewModal, setViewModal] = useState(false);
     const [historicData, setHistoricData] = useState('');
+    const [missingBloomberg, setMissingBloomberg] = useState(false);
+    const [missingReuters, setMissingReuters] = useState(false);
     const breadcrumb = [
         {
             label: 'Home',
@@ -480,25 +482,103 @@ export default function CommunicationSearchResultsContainer({
             const dateList = getDaysArray(moment(dateFrom), moment(dateTo));
 
             console.log(dateList);
+            const bloombergArray = [];
+            const reutersArray = [];
+            let validRange = true;
 
-            const dataDates = new Array();
-
-            for (let i = 0; i < historicData.length; i++) {
-                dataDates.push(historicData[i].dataDate);
-            }
-
-            for (let i = 0; i < dateList.length; i++) {
-                for (let j = 0; j < dataDates.length; j++) {
-                    if (dateList[i] === dataDates[j]) {
-                        break;
-                    }
-
-                    if (j === dataDates.length - 1) {
-                        console.log(dateList[i]);
-
-                        return false;
+            // search all
+            if (filterSearchForm.filterSource.length === 0 || filterSearchForm.filterSource.length === 3 ||
+                (filterSearchForm.filterSource.length === 2 &&
+                    (filterSearchForm.filterSource[0].label === 'Reuters' || filterSearchForm.filterSource[1].label === 'Reuters'))) {
+                for (let i = 0; i < historicData.length; i++) {
+                    if (historicData[i].source === 'Bloomberg') {
+                        bloombergArray.push(historicData[i].dataDate);
+                    } else if (historicData[i].source === 'Reuters') {
+                        reutersArray.push(historicData[i].dataDate);
                     }
                 }
+
+                for (let i = 0; i < dateList.length; i++) {
+                    for (let j = 0; j < bloombergArray.length; j++) {
+                        if (dateList[i] === bloombergArray[j]) {
+                            break;
+                        }
+
+                        if (j === bloombergArray.length - 1) {
+                            console.log(dateList[i]);
+
+                            validRange = false;
+                            setMissingBloomberg(true);
+                        }
+                    }
+
+                    for (let j = 0; j < reutersArray.length; j++) {
+                        if (dateList[i] === reutersArray[j]) {
+                            break;
+                        }
+
+                        if (j === reutersArray.length - 1) {
+                            console.log(dateList[i]);
+
+                            validRange = false;
+                            setMissingReuters(true);
+                        }
+                    }
+                }
+
+                return validRange;
+            } else if (filterSearchForm.filterSource.length === 1 && filterSearchForm.filterSource[0].label === 'Reuters') {
+                // search reuters ONLY
+                for (let i = 0; i < historicData.length; i++) {
+                    if (historicData[i].source === 'Reuters') {
+                        reutersArray.push(historicData[i].dataDate);
+                    }
+                }
+
+                for (let i = 0; i < dateList.length; i++) {
+                    if (!validRange) break;
+
+                    for (let j = 0; j < reutersArray.length; j++) {
+                        if (dateList[i] === reutersArray[j]) {
+                            break;
+                        }
+
+                        if (j === reutersArray.length - 1) {
+                            console.log(dateList[i]);
+
+                            validRange = false;
+                            setMissingReuters(true);
+                        }
+                    }
+                }
+
+                return validRange;
+            } else {
+                // search bloomberg ONLY
+                for (let i = 0; i < historicData.length; i++) {
+                    if (historicData[i].source === 'Bloomberg') {
+                        bloombergArray.push(historicData[i].dataDate);
+                    }
+                }
+
+                for (let i = 0; i < dateList.length; i++) {
+                    if (!validRange) break;
+
+                    for (let j = 0; j < bloombergArray.length; j++) {
+                        if (dateList[i] === bloombergArray[j]) {
+                            break;
+                        }
+
+                        if (j === bloombergArray.length - 1) {
+                            console.log(dateList[i]);
+
+                            validRange = false;
+                            setMissingBloomberg(true);
+                        }
+                    }
+                }
+
+                return validRange;
             }
 
             return true;
@@ -514,7 +594,19 @@ export default function CommunicationSearchResultsContainer({
     };
 
     const downloadAllData = async () => {
-        await downloadAllHistoricData(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
+        if (missingReuters && missingBloomberg) {
+            console.log('download all');
+            // await downloadAllHistoricData(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
+        } else if (missingReuters) {
+            console.log('download reuters');
+            // await downloadReutersHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
+        } else {
+            console.log('download bloomberg');
+            // await downloadBloombergHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
+        }
+
+        setMissingBloomberg(false);
+        setMissingReuters(false);
     };
 
     const downloadBloombergData = async () => {

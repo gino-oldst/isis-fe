@@ -31,6 +31,8 @@ export default function CommunicationSearchContainer({
     const { table, selected, searchFilterValue } = useSelector(({ communicationSearch }) => communicationSearch);
     const [threeMonths, setThreeMonths] = useState(moment().subtract(3, 'months'));
     const [viewModal, setViewModal] = useState(false);
+    const [sourceList, setSourceList] = useState([]);
+
     const breadcrumb = [
         {
             label: 'Home',
@@ -84,6 +86,9 @@ export default function CommunicationSearchContainer({
         errorRecipients: ''
     });
 
+    const [missingBloomberg, setMissingBloomberg] = useState(false);
+    const [missingReuters, setMissingReuters] = useState(false);
+
     const getDaysArray = function(start, end) {
         const arr = [];
 
@@ -98,11 +103,16 @@ export default function CommunicationSearchContainer({
         const dateFrom = filterDate[0].startDate != '' ? DATE_TO_UTC_LOCAL(filterDate[0].startDate) : '';
         const dateTo = filterDate[0].endDate != '' ? DATE_TO_UTC_LOCAL(filterDate[0].endDate) : '';
 
+        console.log(dateFrom);
+        console.log(dateTo);
+
         setFilterSearchForm({
             ...filterSearchForm,
             filterDateFrom: dateFrom,
             filterDateTo: dateTo
         });
+
+        // console.log(filterSearchForm);
 
         setErrorForm({
             ...errorForm,
@@ -131,6 +141,8 @@ export default function CommunicationSearchContainer({
 
         if (searchParams) {
             const values = searchParams.filterSearchForm;
+
+            setSourceList(values.filterSource);
 
             const newFilters = {
                 filterId: values.filterId,
@@ -215,6 +227,10 @@ export default function CommunicationSearchContainer({
         });
     };
 
+    const compareArrays = (a, b) => {
+        return JSON.stringify(a) === JSON.stringify(b);
+    };
+
     const handleSource = (event) => {
         const updatedList = [];
 
@@ -224,10 +240,13 @@ export default function CommunicationSearchContainer({
             }
         });
 
-        setFilterSearchForm({
-            ...filterSearchForm,
-            filterSource: updatedList
-        });
+        if (!compareArrays(updatedList, sourceList)) {
+            setSourceList(updatedList);
+            setFilterSearchForm({
+                ...filterSearchForm,
+                filterSource: updatedList
+            });
+        }
     };
 
     const onSubmit = async e => {
@@ -317,28 +336,103 @@ export default function CommunicationSearchContainer({
             const dateList = getDaysArray(moment(dateFrom), moment(dateTo));
 
             console.log(dateList);
+            const bloombergArray = [];
+            const reutersArray = [];
+            let validRange = true;
 
-            const dataDates = new Array();
-
-            for (let i = 0; i < historicData.length; i++) {
-                dataDates.push(historicData[i].dataDate);
-            }
-
-            for (let i = 0; i < dateList.length; i++) {
-                for (let j = 0; j < dataDates.length; j++) {
-                    if (dateList[i] === dataDates[j]) {
-                        break;
-                    }
-
-                    if (j === dataDates.length - 1) {
-                        console.log(dateList[i]);
-
-                        return false;
+            // search all
+            if (filterSearchForm.filterSource.length === 0 || filterSearchForm.filterSource.length === 3 ||
+                (filterSearchForm.filterSource.length === 2 && filterSearchForm.filterSource[0].label === 'Reuters')) {
+                for (let i = 0; i < historicData.length; i++) {
+                    if (historicData[i].source === 'Bloomberg') {
+                        bloombergArray.push(historicData[i].dataDate);
+                    } else if (historicData[i].source === 'Reuters') {
+                        reutersArray.push(historicData[i].dataDate);
                     }
                 }
-            }
 
-            return true;
+                for (let i = 0; i < dateList.length; i++) {
+                    for (let j = 0; j < bloombergArray.length; j++) {
+                        if (dateList[i] === bloombergArray[j]) {
+                            break;
+                        }
+
+                        if (j === bloombergArray.length - 1) {
+                            console.log(dateList[i]);
+
+                            validRange = false;
+                            setMissingBloomberg(true);
+                        }
+                    }
+
+                    for (let j = 0; j < reutersArray.length; j++) {
+                        if (dateList[i] === reutersArray[j]) {
+                            break;
+                        }
+
+                        if (j === reutersArray.length - 1) {
+                            console.log(dateList[i]);
+
+                            validRange = false;
+                            setMissingReuters(true);
+                        }
+                    }
+                }
+
+                return validRange;
+            } else if (filterSearchForm.filterSource.length === 1 && filterSearchForm.filterSource[0].label === 'Reuters') {
+                // search reuters ONLY
+                for (let i = 0; i < historicData.length; i++) {
+                    if (historicData[i].source === 'Reuters') {
+                        reutersArray.push(historicData[i].dataDate);
+                    }
+                }
+
+                for (let i = 0; i < dateList.length; i++) {
+                    if (!validRange) break;
+
+                    for (let j = 0; j < reutersArray.length; j++) {
+                        if (dateList[i] === reutersArray[j]) {
+                            break;
+                        }
+
+                        if (j === reutersArray.length - 1) {
+                            console.log(dateList[i]);
+
+                            validRange = false;
+                            setMissingReuters(true);
+                        }
+                    }
+                }
+
+                return validRange;
+            } else {
+                // search bloomberg ONLY
+                for (let i = 0; i < historicData.length; i++) {
+                    if (historicData[i].source === 'Bloomberg') {
+                        bloombergArray.push(historicData[i].dataDate);
+                    }
+                }
+
+                for (let i = 0; i < dateList.length; i++) {
+                    if (!validRange) break;
+
+                    for (let j = 0; j < bloombergArray.length; j++) {
+                        if (dateList[i] === bloombergArray[j]) {
+                            break;
+                        }
+
+                        if (j === bloombergArray.length - 1) {
+                            console.log(dateList[i]);
+
+                            validRange = false;
+                            setMissingBloomberg(true);
+                        }
+                    }
+                }
+
+                return validRange;
+            }
         }
 
         return true;
@@ -351,7 +445,16 @@ export default function CommunicationSearchContainer({
     };
 
     const downloadAllData = async () => {
-        await downloadAllHistoricData(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
+        if (missingReuters && missingBloomberg) {
+            await downloadAllHistoricData(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
+        } else if (missingReuters) {
+            await downloadReutersHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
+        } else {
+            await downloadBloombergHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
+        }
+
+        setMissingBloomberg(false);
+        setMissingReuters(false);
     };
 
     const downloadBloombergData = async () => {
