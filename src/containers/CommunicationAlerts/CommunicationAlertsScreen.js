@@ -189,13 +189,14 @@ function CommunicationAlertsScreen({
                                 loading={loading}
                                 tableColumns={table.columns}
                                 tableData={selectedRows}
-                                defaultPageSize={1}
+                                defaultPageSize={selectedRows.length}
                                 selectableRows={false}
                                 hideHeader={true}
                                 activePage={activePage}
                                 viewDetails={viewCommunicationAlertDetails}
                                 fetching={table.loading}
-                                isDisabled={true}/>
+                                isDisabled={true}
+                                modal={true}/>
                         </Col>
                     </Row>
                 </div>
@@ -332,7 +333,7 @@ function CommunicationAlertsScreen({
     ]);
 
     useEffect(() => {
-        var newDate = [{
+        const newDate = [{
             startDate: filterDate[0].startDate ? filterDate[0].startDate : new Date(today.setHours(0, 0, 0, 0)),
             endDate: filterDate[0].endDate ? filterDate[0].endDate : new Date(today.setHours(23, 59, 0, 0)),
             key: 'selection'
@@ -391,7 +392,7 @@ function CommunicationAlertsScreen({
     };
 
     const handleDates = (dates) => {
-        var copyDates = dateState[0];
+        const copyDates = dateState[0];
 
         const clonedDate = JSON.parse(JSON.stringify(dates));
 
@@ -417,8 +418,8 @@ function CommunicationAlertsScreen({
     };
 
     const handleTime = (event) => {
-        var name = event.target.getAttribute('name');
-        var timeParts = event.target.value.match(/(\d+):(\d+)/);
+        const name = event.target.getAttribute('name');
+        const timeParts = event.target.value.match(/(\d+):(\d+)/);
 
         const clonedDate = JSON.parse(JSON.stringify(dateState));
 

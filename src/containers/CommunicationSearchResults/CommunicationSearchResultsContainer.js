@@ -488,14 +488,23 @@ export default function CommunicationSearchResultsContainer({
 
             // search all
             if (filterSearchForm.filterSource.length === 0 || filterSearchForm.filterSource.length === 3 ||
-                (filterSearchForm.filterSource.length === 2 &&
-                    (filterSearchForm.filterSource[0].label === 'Reuters' || filterSearchForm.filterSource[1].label === 'Reuters'))) {
+                (filterSearchForm.filterSource.length === 2 && filterSearchForm.filterSource[0].label === 'Reuters')) {
                 for (let i = 0; i < historicData.length; i++) {
-                    if (historicData[i].source === 'Bloomberg') {
+                    if (historicData[i].source.toLowerCase() === 'bloomberg') {
                         bloombergArray.push(historicData[i].dataDate);
-                    } else if (historicData[i].source === 'Reuters') {
+                    } else if (historicData[i].source.toLowerCase() === 'reuters') {
                         reutersArray.push(historicData[i].dataDate);
                     }
+                }
+
+                if (bloombergArray.length === 0) {
+                    validRange = false;
+                    setMissingBloomberg(true);
+                }
+
+                if (reutersArray.length === 0) {
+                    validRange = false;
+                    setMissingReuters(true);
                 }
 
                 for (let i = 0; i < dateList.length; i++) {
@@ -530,9 +539,14 @@ export default function CommunicationSearchResultsContainer({
             } else if (filterSearchForm.filterSource.length === 1 && filterSearchForm.filterSource[0].label === 'Reuters') {
                 // search reuters ONLY
                 for (let i = 0; i < historicData.length; i++) {
-                    if (historicData[i].source === 'Reuters') {
+                    if (historicData[i].source.toLowerCase() === 'reuters') {
                         reutersArray.push(historicData[i].dataDate);
                     }
+                }
+
+                if (reutersArray.length === 0) {
+                    validRange = false;
+                    setMissingReuters(true);
                 }
 
                 for (let i = 0; i < dateList.length; i++) {
@@ -556,9 +570,14 @@ export default function CommunicationSearchResultsContainer({
             } else {
                 // search bloomberg ONLY
                 for (let i = 0; i < historicData.length; i++) {
-                    if (historicData[i].source === 'Bloomberg') {
+                    if (historicData[i].source.toLowerCase() === 'bloomberg') {
                         bloombergArray.push(historicData[i].dataDate);
                     }
+                }
+
+                if (bloombergArray.length === 0) {
+                    validRange = false;
+                    setMissingBloomberg(true);
                 }
 
                 for (let i = 0; i < dateList.length; i++) {
@@ -580,8 +599,6 @@ export default function CommunicationSearchResultsContainer({
 
                 return validRange;
             }
-
-            return true;
         }
 
         return true;
@@ -595,14 +612,14 @@ export default function CommunicationSearchResultsContainer({
 
     const downloadAllData = async () => {
         if (missingReuters && missingBloomberg) {
-            console.log('download all');
-            // await downloadAllHistoricData(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
+            // console.log('download all');
+            await downloadAllHistoricData(filterSearchForm.filterDateFrom, filterSearchForm.filterDateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
         } else if (missingReuters) {
-            console.log('download reuters');
-            // await downloadReutersHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
+            // console.log('download reuters');
+            await downloadReutersHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
         } else {
-            console.log('download bloomberg');
-            // await downloadBloombergHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
+            // console.log('download bloomberg');
+            await downloadBloombergHistoricData(filterSearchForm.dateFrom, filterSearchForm.dateTo, JSON.parse(Storage.getItem(storageKey.user)).username);
         }
 
         setMissingBloomberg(false);
@@ -654,5 +671,7 @@ export default function CommunicationSearchResultsContainer({
         downloadAllHistoricData={downloadAllData}
         downloadBloombergHistoricData={downloadBloombergData}
         downloadReutersHistoricData={downloadReutersData}
+        setMissingBloomberg={setMissingBloomberg}
+        setMissingReuters={setMissingReuters}
         redirectToPage={redirectToPage}/>;
 }

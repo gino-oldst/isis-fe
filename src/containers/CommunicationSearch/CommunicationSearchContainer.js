@@ -344,11 +344,21 @@ export default function CommunicationSearchContainer({
             if (filterSearchForm.filterSource.length === 0 || filterSearchForm.filterSource.length === 3 ||
                 (filterSearchForm.filterSource.length === 2 && filterSearchForm.filterSource[0].label === 'Reuters')) {
                 for (let i = 0; i < historicData.length; i++) {
-                    if (historicData[i].source === 'Bloomberg') {
+                    if (historicData[i].source.toLowerCase() === 'bloomberg') {
                         bloombergArray.push(historicData[i].dataDate);
-                    } else if (historicData[i].source === 'Reuters') {
+                    } else if (historicData[i].source.toLowerCase() === 'reuters') {
                         reutersArray.push(historicData[i].dataDate);
                     }
+                }
+
+                if (bloombergArray.length === 0) {
+                    validRange = false;
+                    setMissingBloomberg(true);
+                }
+
+                if (reutersArray.length === 0) {
+                    validRange = false;
+                    setMissingReuters(true);
                 }
 
                 for (let i = 0; i < dateList.length; i++) {
@@ -383,9 +393,14 @@ export default function CommunicationSearchContainer({
             } else if (filterSearchForm.filterSource.length === 1 && filterSearchForm.filterSource[0].label === 'Reuters') {
                 // search reuters ONLY
                 for (let i = 0; i < historicData.length; i++) {
-                    if (historicData[i].source === 'Reuters') {
+                    if (historicData[i].source.toLowerCase() === 'reuters') {
                         reutersArray.push(historicData[i].dataDate);
                     }
+                }
+
+                if (reutersArray.length === 0) {
+                    validRange = false;
+                    setMissingReuters(true);
                 }
 
                 for (let i = 0; i < dateList.length; i++) {
@@ -409,9 +424,14 @@ export default function CommunicationSearchContainer({
             } else {
                 // search bloomberg ONLY
                 for (let i = 0; i < historicData.length; i++) {
-                    if (historicData[i].source === 'Bloomberg') {
+                    if (historicData[i].source.toLowerCase() === 'bloomberg') {
                         bloombergArray.push(historicData[i].dataDate);
                     }
+                }
+
+                if (bloombergArray.length === 0) {
+                    validRange = false;
+                    setMissingBloomberg(true);
                 }
 
                 for (let i = 0; i < dateList.length; i++) {
@@ -491,6 +511,8 @@ export default function CommunicationSearchContainer({
         downloadBloombergHistoricData={downloadBloombergData}
         downloadReutersHistoricData={downloadReutersData}
         redirectToPage={redirectToPage}
+        setMissingBloomberg={setMissingBloomberg}
+        setMissingReuters={setMissingReuters}
         // status={status}
         source={source}/>;
 }

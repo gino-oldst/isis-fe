@@ -82,6 +82,8 @@ function CommunicationSearchScreen({
     downloadAllHistoricData,
     downloadReutersHistoricData,
     downloadBloombergHistoricData,
+    setMissingBloomberg,
+    setMissingReuters,
     redirectToPage
 }: Props): React$Element<any> {
     const dispatch = useDispatch();
@@ -209,7 +211,9 @@ function CommunicationSearchScreen({
                 filterDate={filterDate}
                 setFilterDate={setFilterDate}
                 redirectToPage={redirectToPage}
-                downloadAllHistoricData={downloadAllHistoricData} />,
+                downloadAllHistoricData={downloadAllHistoricData}
+                setMissingBloomberg={setMissingBloomberg}
+                setMissingReuters={setMissingReuters} />,
             size: 'md'
         }));
     };
@@ -412,7 +416,9 @@ const ActionModal = ({
     setFilterDate,
     filterDate,
     redirectToPage,
-    downloadAllHistoricData
+    downloadAllHistoricData,
+    setMissingBloomberg,
+    setMissingReuters
 }) => {
     const dispatch = useDispatch();
     const [submit, setSubmit] = useState(false);
@@ -432,12 +438,16 @@ const ActionModal = ({
     const handleClose = () => {
         handleCloseActionsModal();
         setViewModal(false);
+        setMissingBloomberg(false);
+        setMissingReuters(false);
     };
 
     return (
         <div className='action-modal p-4'>
             <FontAwesomeIcon className='color-sidebar-2 cursor-pointer float-right' icon='times' size='lg'
-                onClick={handleCloseModal} />
+                onClick={() => {
+                    handleClose();
+                }} />
             <div className='row action-modal__content mt-5 mb-4 d-flex justify-content-center align-items-center'>
                 <Typography variant='size-35' color='color-3'
                     className='mb-4 playfair-font'> Missing Data </Typography>

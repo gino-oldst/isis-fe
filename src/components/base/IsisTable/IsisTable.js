@@ -420,7 +420,8 @@ function IsisTable({
     renderRowSubComponent,
     isDisabled,
     fetching,
-    toggleSelection
+    toggleSelection,
+    modal
 }) {
     const [isAsc, setIsAsc] = useState(true);
     const [sortBy, setSortBy] = useState('id');
@@ -513,6 +514,12 @@ function IsisTable({
         // dispatch(setAppliedFilters(state.filters));
         dispatch(setFilteredRows(page.map(p => p.original.id)));
     }, [state.filters]);
+
+    useEffect(() => {
+        if (modal) {
+            setPageSize(Number(data.length));
+        }
+    }, []);
 
     const dispatch = useDispatch();
     const maxPage = 2; // max page for pagination button
@@ -741,7 +748,7 @@ function IsisTable({
                             {Array.from(Array(tablePagination), (_, i) => {
                                 const dynamicPageIndex = activePage > maxPage ? activePage - 2 + i : i + 1;
 
-                                console.log(tablePagination);
+                                // console.log(tablePagination);
 
                                 return i <= maxPage + 3 && dynamicPageIndex <= tablePagination && <span key={i}
                                     className={`cursor-pointer ${activePage + 1 === dynamicPageIndex ? 'active' : ''} ${fetching ? 'text-muted' : ''}`}
@@ -1077,7 +1084,8 @@ type Props = {
     viewDetails: Function,
     viewEditModal: Function,
     viewDeleteModal: Function,
-    toggleSelection: Boolean
+    toggleSelection: Boolean,
+    isModal: Boolean
 }
 
 export default function ReactTable({
@@ -1101,7 +1109,8 @@ export default function ReactTable({
     viewDetails,
     viewEditModal,
     viewDeleteModal,
-    toggleSelection
+    toggleSelection,
+    modal = false
 }: Props): React$Element<any> {
     const columns = useMemo(
         () => tableColumns.map(column => {
@@ -1637,7 +1646,8 @@ export default function ReactTable({
                 hideHeader={hideHeader}
                 isDisabled={isDisabled}
                 renderRowSubComponent={renderSubRowComponent}
-                toggleSelection={toggleSelection}/>
+                toggleSelection={toggleSelection}
+                modal={modal}/>
         </div>
     );
 }

@@ -14,7 +14,7 @@
         max-height: 800px;
         overflow: scroll;
     }
-    
+
     &__message-activity {
         max-height: 400px;
         overflow: scroll;
@@ -49,7 +49,7 @@
         }
     }
 
-    &__messages{
+    &__messages {
         width: 600px;
     }
 
@@ -166,7 +166,7 @@
 
     .alertKeyword {
         font-weight: 700;
-        color: #F05F5F;
+        color: #f05f5f;
         background-color: rgba(240, 95, 95, 0.1) !important;
     }
 
@@ -200,50 +200,50 @@
     }
 
     .active-message {
-        background: #15273E;
+        background: #15273e;
         border-radius: 4px;
 
-        .messageID{
+        .messageID {
             color: #37a187 !important;
         }
 
         p :not(.messageID) {
-            color: #FFFFFF !important;
+            color: #ffffff !important;
         }
     }
 
-    .element{
-        padding: 10px;
+    .element {
+        padding: 5px;
     }
 }
 
-.popover{
+.popover {
     padding: 15px !important;
-    max-width:523px !important;
+    max-width: 523px !important;
 }
 
-.action-modal{
-    .table th{
+.action-modal {
+    .table th {
         border-top: 0px !important;
     }
 }
 
-.modal-body{
+.modal-body {
     min-height: 280px !important;
 }
 
-.message-box{
-    padding: 15px 20px;
-    background-color: #F6F6F6;
+.message-box {
+    padding: 5px 10px;
+    background-color: #f6f6f6;
     border-radius: 0px 10px 10px 10px;
 }
 
-.message-box-event{
+.message-box-event {
     padding: 15px 20px;
     background-color: #d7f8fb;
     border-radius: 10px 10px 10px 10px;
 }
 
-.activity-content{
+.activity-content {
     width: 550px !important;
 }
