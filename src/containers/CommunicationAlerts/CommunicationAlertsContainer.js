@@ -59,6 +59,7 @@ export default function CommunicationAlertsContainer({
     const [senderStore, setSenderStore] = useState([]);
     const [recipientStore, setRecipientStore] = useState([]);
     const [tableResultStore, setTableResultStore] = useState([]);
+    const [lastQueriedSize, setLastQueriedSize] = useState();
 
     const [isTimeout, setIsTimeout] = useState(false);
     const [pageStore, setPageStore] = useState('');
@@ -94,6 +95,7 @@ export default function CommunicationAlertsContainer({
     ]);
 
     useEffect(() => {
+        setLastQueriedSize(pageSize);
         setTimeout(() => {
             loadSearchValuesFromStorage();
             loadColumnFilterValues();
@@ -140,18 +142,25 @@ export default function CommunicationAlertsContainer({
         const tempUpdatedInDetails = JSON.parse(await Storage.getItem(storageKey.tempUpdatedInDetails));
         const tempSorted = JSON.parse(await Storage.getItem(storageKey.tempSorted));
 
-        var filterAlert = [];
-        var filterStatus = [];
-        var filterSources = [];
-        var filterSender = [];
-        var filterRecipient = [];
-        var filterDateFrom = '';
-        var filterDateTo = '';
-        var isPageChange = 0;
-        var insidePage = 0;
-        var updateInMsg = false;
-        var updateInSort = false;
-        var filterEscalations = [];
+        let sizeQuery = false;
+
+        let filterAlert = [];
+        let filterStatus = [];
+        let filterSources = [];
+        let filterSender = [];
+        let filterRecipient = [];
+        let filterDateFrom = '';
+        let filterDateTo = '';
+        let isPageChange = 0;
+        let insidePage = 0;
+        let updateInMsg = false;
+        let updateInSort = false;
+        let filterEscalations = [];
+
+        if (size !== lastQueriedSize) {
+            sizeQuery = true;
+            setLastQueriedSize(size);
+        }
 
         if (tempUpdatedInDetails) {
             updateInMsg = tempUpdatedInDetails;
@@ -199,6 +208,8 @@ export default function CommunicationAlertsContainer({
 
                 Storage.removeItem(storageKey.tempSorted);
                 Storage.setItem(storageKey.tempSorted, false);
+            } else if (sizeQuery) {
+                alerts = await getCommunicationAlertData(insidePage, size, sort, filterAlert, filterStatus, filterDateFrom, filterDateTo, filterSources, filterSender, filterRecipient, filterEscalations);
             } else {
                 alerts = alertSearchParams != null && !isRequery
                     ? !isPageChange
@@ -224,7 +235,8 @@ export default function CommunicationAlertsContainer({
                 recipients: filterRecipient,
                 data: alerts.data,
                 activePage: insidePage,
-                escalation: escalations
+                escalation: escalations,
+                size: size
             }));
 
             Storage.removeItem(storageKey.tempUpdatedInDetails);
@@ -244,7 +256,7 @@ export default function CommunicationAlertsContainer({
         // const keywords = await getKeywords();
         const policies = await getPolicies();
 
-        var sortedKeywords = policies.sort((a, b) => a.label.match(/\d+/) - b.label.match(/\d+/));
+        const sortedKeywords = policies.sort((a, b) => a.label.match(/\d+/) - b.label.match(/\d+/));
 
         dispatch(setAlertsList(policies));
         setKeywords(policies);
@@ -258,8 +270,8 @@ export default function CommunicationAlertsContainer({
             setSource(alertSearchParams.source);
             setStatus(alertSearchParams.status);
 
-            var slist = [];
-            var rlist = [];
+            const slist = [];
+            const rlist = [];
 
             alertSearchParams.senders.map(sender => {
                 slist.push({ label: sender.label, value: sender.value });
@@ -275,12 +287,14 @@ export default function CommunicationAlertsContainer({
             setRecipients(rlist);
             setRecipientStore(alertSearchParams.recipients);
 
-            var newDate = {
+            const newDate = {
                 startDate: alertSearchParams.dateFrom ? new Date(alertSearchParams.dateFrom) : '',
                 endDate: alertSearchParams.dateTo ? new Date(alertSearchParams.dateTo) : ''
             };
 
             setFilterDate([newDate]);
+
+            setLastQueriedSize(alertSearchParams.size);
         }
     };
 
@@ -348,17 +362,19 @@ export default function CommunicationAlertsContainer({
     };
 
     const handleCloseBulkUpdate = () => {
-        var stat = !toggle;
+        const stat = !toggle;
 
         dispatch(setToggle(stat));
         dispatch(setIsRowSelected(0, []));
         onSearchClick();
-
+        setTimeout(() => {
+            loadSearchValuesFromStorage();
+        }, 100);
         handleCloseModal();
     };
 
     const handleCloseSuccessModal = () => {
-        var stat = !toggle;
+        const stat = !toggle;
 
         dispatch(setToggle(stat));
         dispatch(setIsRowSelected(0, []));
@@ -384,7 +400,7 @@ export default function CommunicationAlertsContainer({
     };
 
     const handleSenderChange = (updatedList) => {
-        var list = [];
+        const list = [];
 
         updatedList.map(op => {
             list.push(op);
@@ -395,7 +411,7 @@ export default function CommunicationAlertsContainer({
     };
 
     const handleRecipientChange = (updatedList) => {
-        var list = [];
+        const list = [];
 
         updatedList.map(op => {
             list.push(op);
@@ -428,10 +444,12 @@ export default function CommunicationAlertsContainer({
     });
 
     const onSearchClick = () => {
-        var formValid = true;
+        let formValid = true;
         const initialError = {
             errorDate: ''
         };
+
+        dispatch(setIsRowSelected(0, []));
 
         if (moment(dateFrom).format('YYYY-MM-DD') === moment(dateTo).format('YYYY-MM-DD') &&
             moment(dateFrom).format('HH:mm') > moment(dateTo).format('HH:mm')) {
@@ -463,7 +481,8 @@ export default function CommunicationAlertsContainer({
                 senders: senderStore,
                 recipients: recipientStore,
                 data: tableResultStore,
-                escalation: escalation
+                escalation: escalation,
+                size: pageSize
             }));
 
             Storage.removeItem(storageKey.tempUpdatedInDetails);
